@@ -1,11 +1,12 @@
 <?php
 
+uses()->group('ledger:rest:GET:/health', 'ledger:rest:GET:/ready');
+
 use Illuminate\Support\Facades\DB;
 
 /**
  * Port of ApplicationController#health / #ready (Rails: GET /health, GET /ready).
  */
-->group('ledger:rest:GET:/health');
 
 it('answers GET /health with version, github_url and Success when the database is reachable', function () {
     $response = $this->getJson('/health');
@@ -33,7 +34,6 @@ it('answers GET /health with 500 Unhealthy and details when the database check f
         ]);
 });
 
-->group('ledger:rest:GET:/ready');
 
 it('answers GET /ready with status ok', function () {
     $this->getJson('/ready')

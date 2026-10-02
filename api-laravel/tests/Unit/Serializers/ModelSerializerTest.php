@@ -1,5 +1,7 @@
 <?php
 
+uses()->group('ledger:ser:ModelSerializer', 'ledger:ser:CollectionSerializer');
+
 use App\Serializers\Base\CollectionSerializer;
 use App\Serializers\Base\ModelSerializer;
 
@@ -7,7 +9,6 @@ use App\Serializers\Base\ModelSerializer;
  * Port of Rails' spec/serializers/model_serializer_spec.rb
  * (ModelSerializer#include? and #included_relations scenarios).
  */
-->group('ledger:ser:ModelSerializer');
 
 /**
  * A minimal concrete serializer — the base class is abstract only for
@@ -86,7 +87,6 @@ it('returns an empty array from includedRelations when the include is not found'
  * CollectionSerializer contract conventions (no dedicated Rails spec — the
  * meta-in-body convention is locked by the port plan).
  */
-->group('ledger:ser:CollectionSerializer');
 
 it('wraps collections under the collection name and puts meta in the body', function () use ($model) {
     $items = [$model, $model];

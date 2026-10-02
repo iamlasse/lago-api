@@ -1,12 +1,13 @@
 <?php
 
+uses()->group('ledger:rest:error_envelope');
+
 use App\Support\CurrentContext;
 
 /**
  * Error envelope contract (port of Rails' api_errors.rb / api_responses.rb
  * + ApplicationController#not_found catch-all).
  */
-->group('ledger:rest:error_envelope');
 
 it('renders the 404 envelope for unmatched api routes', function () {
     $this->getJson('/api/v1/definitely/not/a/route')

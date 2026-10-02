@@ -1,5 +1,7 @@
 <?php
 
+uses()->group('ledger:rest:api.base_controller');
+
 use App\Models\ApiKey;
 use App\Models\Organization;
 use App\Support\CurrentContext;
@@ -10,7 +12,6 @@ use Illuminate\Support\Str;
  * Port of Rails' spec/requests/api/base_controller_spec.rb against the
  * `lago.auth` middleware, plus the v2 beta header and permission scenarios.
  */
-->group('ledger:rest:api.base_controller');
 
 function createOrganizationWithApiKey(array $orgAttributes = [], array $apiKeyAttributes = []): array
 {

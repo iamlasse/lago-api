@@ -1,5 +1,7 @@
 <?php
 
+uses()->group('ledger:concern:Pagination');
+
 use App\Http\Controllers\Concerns\Pagination;
 use App\Models\Customer;
 use App\Models\Organization;
@@ -10,7 +12,6 @@ use Illuminate\Support\Facades\Cache;
  * Port of Rails' app/controllers/concerns/pagination.rb exercised through a
  * trait user, against real Customer rows.
  */
-->group('ledger:concern:Pagination');
 
 class PaginationUser
 {
