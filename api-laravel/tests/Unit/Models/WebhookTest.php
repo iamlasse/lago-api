@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
+use Firebase\JWT\JWT;
+use App\Models\Webhook;
 use App\Enums\WebhookStatus;
 use App\Models\Organization;
-use App\Models\Webhook;
 use App\Models\WebhookEndpoint;
-use Firebase\JWT\JWT;
 use Illuminate\Support\Facades\Config;
 
 beforeEach(function () {
@@ -63,10 +63,18 @@ it('generates the JWT signature headers and signs the payload with RS256', funct
     file_put_contents($path, $privatePem);
     Config::set('lago.webhook.rsa_private_key_path', $path);
 
+    expect(is_string($privatePem))->toBeTrue()
+        ->and(mb_strlen(file_get_contents($path) ?: ''))->toBeGreaterThan(500)
+        ->and(config('lago.webhook.rsa_private_key_path'))->toBe($path)
+        ->and(openssl_pkey_get_private(file_get_contents($path)) !== false)->toBeTrue()
+        ->and(JWT::encode(['data' => 'x'], file_get_contents($path), 'RS256'))->toContain('eyJ');
+
     Config::set('lago.api_url', 'https://api.getlago.com');
     $this->endpoint->update(['signature_algo' => 0]); // :jwt
 
-    $headers = $this->webhook->fresh()->generateHeaders();
+    $webhook = $this->webhook->fresh();
+
+    $headers = $webhook->generateHeaders();
 
     expect($headers['X-Lago-Signature-Algorithm'])->toBe('jwt')
         ->and($headers['X-Lago-Unique-Key'])->toBe($this->webhook->id);

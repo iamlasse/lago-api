@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace App\Services\Subscriptions;
 
-use App\Enums\BillingTime;
-use App\Enums\SubscriptionStatus;
-use App\Models\Customer;
-use App\Models\Organization;
 use App\Models\Plan;
+use App\Models\Customer;
+use App\Enums\BillingTime;
+use Carbon\CarbonImmutable;
+use App\Models\Organization;
 use App\Models\Subscription;
 use App\Services\BaseResult;
 use App\Services\BaseService;
+use App\Support\Utils\Datetime;
+use App\Enums\SubscriptionStatus;
+use Illuminate\Support\Facades\DB;
 use App\Services\BillingEntities\ResolveService;
 use App\Services\Customers\UpdateCurrencyService;
-use App\Support\Utils\Datetime;
-use Carbon\CarbonImmutable;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Port of Rails' Subscriptions::CreateService
@@ -69,12 +69,12 @@ class CreateService extends BaseService
         $this->plan = $plan;
         $this->params = $params;
 
-        $this->name = trim((string) ($params['name'] ?? ''));
+        $this->name = mb_trim((string) ($params['name'] ?? ''));
         $this->subscriptionAt = $this->toCarbon($params['subscription_at'] ?? null) ?? CarbonImmutable::now();
         $this->billingTime = isset($params['billing_time']) && $params['billing_time'] !== null
             ? (string) $params['billing_time']
             : null;
-        $this->externalId = trim((string) ($params['external_id'] ?? ''));
+        $this->externalId = mb_trim((string) ($params['external_id'] ?? ''));
     }
 
     public function execute(): BaseResult
@@ -395,7 +395,7 @@ class CreateService extends BaseService
             ->where('on_termination_invoice', 'generate')
             ->max('terminated_at');
 
-        return $max !== null ? CarbonImmutable::instance($max)->utc() : null;
+        return $max !== null ? CarbonImmutable::parse($max)->utc() : null;
     }
 
     /**

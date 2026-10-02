@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 /**
  * Frozen-schema model for `adjusted_fees` — Rails' AdjustedFee
  * (app/models/adjusted_fee.rb): per-fee overrides (units / amount / display
@@ -31,6 +33,8 @@ namespace App\Models;
 #[\Illuminate\Database\Eloquent\Attributes\Table(name: 'adjusted_fees')]
 class AdjustedFee extends BaseModel
 {
+    use HasFactory;
+
     protected function casts(): array
     {
         return [

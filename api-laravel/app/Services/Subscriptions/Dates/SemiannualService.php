@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services\Subscriptions\Dates;
 
-use App\Services\Subscriptions\DatesService;
+use LogicException;
 use Carbon\CarbonImmutable;
+use App\Services\Subscriptions\DatesService;
 
 /**
  * Port of Rails' Subscriptions::Dates::SemiannualService.
@@ -34,6 +35,21 @@ class SemiannualService extends DatesService
 
         return $this->billingFromDate()->month === $this->subscriptionAt()->month
             && $this->billingFromDate()->year === $this->subscriptionAt()->year;
+    }
+
+    public function computeFromDate(?CarbonImmutable $date = null): CarbonImmutable
+    {
+        $date ??= $this->baseDate();
+
+        if ($this->plan->pay_in_advance || $this->terminatedPayInArrears()) {
+            return $this->subscription->anniversary()
+                ? $this->previousAnniversaryDay($this->billingDate())
+                : $this->beginningOfHalfYear($this->billingDate());
+        }
+
+        return $this->subscription->anniversary()
+            ? $this->previousAnniversaryDay($date)
+            : $this->beginningOfHalfYear($date);
     }
 
     protected function shouldFillChargesBoundaries(): bool
@@ -74,21 +90,6 @@ class SemiannualService extends DatesService
     protected function billingFromDate(): CarbonImmutable
     {
         return $this->monthlyService()->computeFromDate($this->billingDate());
-    }
-
-    public function computeFromDate(?CarbonImmutable $date = null): CarbonImmutable
-    {
-        $date ??= $this->baseDate();
-
-        if ($this->plan->pay_in_advance || $this->terminatedPayInArrears()) {
-            return $this->subscription->anniversary()
-                ? $this->previousAnniversaryDay($this->billingDate())
-                : $this->beginningOfHalfYear($this->billingDate());
-        }
-
-        return $this->subscription->anniversary()
-            ? $this->previousAnniversaryDay($date)
-            : $this->beginningOfHalfYear($date);
     }
 
     protected function computeChargesFromDate(): CarbonImmutable
@@ -321,6 +322,6 @@ class SemiannualService extends DatesService
             }
         }
 
-        throw new \LogicException('No billing month before the requested month');
+        throw new LogicException('No billing month before the requested month');
     }
 }

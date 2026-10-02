@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Support\Utils;
 
+use Exception;
+use DateTimeInterface;
 use Carbon\CarbonImmutable;
 use Carbon\CarbonInterface;
 use Carbon\Exceptions\InvalidFormatException;
@@ -20,7 +22,7 @@ final class Datetime
     /** Rails: `datetime_like?` — anything that can format itself (Carbon). */
     public static function datetimeLike(mixed $value): bool
     {
-        return $value instanceof CarbonInterface || $value instanceof \DateTimeInterface;
+        return $value instanceof CarbonInterface || $value instanceof DateTimeInterface;
     }
 
     /**
@@ -39,7 +41,7 @@ final class Datetime
 
         try {
             return CarbonImmutable::parse($datetime, 'UTC');
-        } catch (InvalidFormatException|\Exception) {
+        } catch (InvalidFormatException|Exception) {
             return null;
         }
     }
@@ -72,7 +74,7 @@ final class Datetime
                 : CarbonImmutable::createFromFormat(DATE_ATOM, $datetime, 'UTC');
 
             return $parsed !== false;
-        } catch (InvalidFormatException|\Exception) {
+        } catch (InvalidFormatException|Exception) {
             return false;
         }
     }
@@ -151,7 +153,7 @@ final class Datetime
             return null;
         }
 
-        if ($value instanceof CarbonInterface || $value instanceof \DateTimeInterface) {
+        if ($value instanceof CarbonInterface || $value instanceof DateTimeInterface) {
             return CarbonImmutable::instance($value)->toIso8601String();
         }
 

@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services\Subscriptions;
 
-use App\Models\InvoiceSubscription;
-use App\Models\Subscription;
-use App\Services\Subscriptions\DatesService;
 use Carbon\CarbonImmutable;
+use App\Models\Subscription;
+use App\Models\InvoiceSubscription;
 
 /**
  * Port of Rails' Subscriptions::TerminatedDatesService

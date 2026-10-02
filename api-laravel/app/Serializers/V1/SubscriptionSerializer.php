@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Serializers\V1;
 
+use stdClass;
+use LogicException;
 use App\Serializers\Base\ModelSerializer;
-use App\Serializers\Base\CollectionSerializer;
-use App\Serializers\V1\Concerns\FormatsDatetime;
 use App\Services\Subscriptions\DatesService;
+use App\Serializers\V1\Concerns\FormatsDatetime;
 
 /**
  * Port of Rails' V1::SubscriptionSerializer
@@ -105,7 +106,7 @@ class SubscriptionSerializer extends ModelSerializer
         $payload['activation_rules'] = [];
 
         // TODO(port): model.connection_routing (ConnectionResolvable) — empty map.
-        $payload['connections'] = new \stdClass();
+        $payload['connections'] = new stdClass();
 
         return $payload;
     }
@@ -144,7 +145,7 @@ class SubscriptionSerializer extends ModelSerializer
 
         try {
             return DatesService::newInstance($this->model, $this->model->billingReferenceTime(), true);
-        } catch (\LogicException) {
+        } catch (LogicException) {
             // NotImplementedError port — an unusable plan interval yields no
             // current billing period.
             return null;

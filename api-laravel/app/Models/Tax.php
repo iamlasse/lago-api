@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Concerns\BelongsToOrganization;
@@ -72,7 +73,8 @@ class Tax extends BaseModel
     // -- Scopes ---------------------------------------------------------------
 
     /** Rails: `scope :applied_to_organization`. */
-    public function scopeAppliedToOrganization(Builder $query): Builder
+    #[Scope]
+    protected function appliedToOrganization(Builder $query): Builder
     {
         return $query->where('applied_to_organization', true);
     }
@@ -82,7 +84,8 @@ class Tax extends BaseModel
      * billing entity through the `billing_entities_taxes` join (no model for
      * the join table yet — queried directly).
      */
-    public function scopeAppliedToBillingEntity(Builder $query, BillingEntity $billingEntity): Builder
+    #[Scope]
+    protected function appliedToBillingEntity(Builder $query, BillingEntity $billingEntity): Builder
     {
         return $query->whereIn('id', static::billingEntitiesTaxes()
             ->where('billing_entity_id', $billingEntity->id)

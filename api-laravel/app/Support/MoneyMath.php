@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Support;
 
+use InvalidArgumentException;
+
 /**
  * Money/decimal math helpers porting Ruby's rounding semantics for the
  * billing pipeline.
@@ -37,6 +39,38 @@ final class MoneyMath
     }
 
     /**
+     * Port of Ruby's `.ceil` (no precision argument) — returns an int,
+     * rounding up (toward positive infinity).
+     */
+    public static function ceil(string|int|float $value): int
+    {
+        $dec = self::toDecimalString($value);
+        $truncated = (int) bcmul($dec, '1', 0);
+
+        // exact integer already
+        if (bccomp($dec, (string) $truncated, self::SCALE) === 0) {
+            return $truncated;
+        }
+
+        return $dec[0] === '-' ? $truncated : $truncated + 1;
+    }
+
+    /**
+     * Port of Ruby's `.floor` (no precision argument).
+     */
+    public static function floor(string|int|float $value): int
+    {
+        $dec = self::toDecimalString($value);
+        $truncated = (int) bcmul($dec, '1', 0);
+
+        if (bccomp($dec, (string) $truncated, self::SCALE) === 0) {
+            return $truncated;
+        }
+
+        return $dec[0] === '-' ? $truncated - 1 : $truncated;
+    }
+
+    /**
      * Port of Ruby's `.round(precision)` — returns a decimal string with
      * exactly $precision fractional digits, halves away from zero.
      */
@@ -45,7 +79,7 @@ final class MoneyMath
         $dec = self::toDecimalString($value);
         $negative = str_starts_with($dec, '-');
         if ($negative) {
-            $dec = substr($dec, 1);
+            $dec = mb_substr($dec, 1);
         }
 
         $shifted = bcmul($dec, bcpow('10', (string) $precision, 0), self::SCALE);
@@ -83,7 +117,7 @@ final class MoneyMath
         $divisor = self::toDecimalString($b);
 
         if (bccomp($divisor, '0', self::SCALE) === 0) {
-            throw new \InvalidArgumentException('Division by zero');
+            throw new InvalidArgumentException('Division by zero');
         }
 
         return bcdiv(self::toDecimalString($a), $divisor, $scale);
@@ -108,10 +142,10 @@ final class MoneyMath
         }
 
         if (is_string($value)) {
-            $trimmed = trim($value);
+            $trimmed = mb_trim($value);
 
             if (! is_numeric($trimmed)) {
-                throw new \InvalidArgumentException("Not a numeric value: {$value}");
+                throw new InvalidArgumentException("Not a numeric value: {$value}");
             }
 
             return self::normalize($trimmed);
@@ -123,8 +157,8 @@ final class MoneyMath
     private static function normalize(string $numeric): string
     {
         // bcmath rejects exponent notation; expand it.
-        if (str_contains(strtolower($numeric), 'e')) {
-            $numeric = self::expandExponent(strtolower($numeric));
+        if (str_contains(mb_strtolower($numeric), 'e')) {
+            $numeric = self::expandExponent(mb_strtolower($numeric));
         }
 
         if (! str_contains($numeric, '.')) {
@@ -132,7 +166,7 @@ final class MoneyMath
         }
 
         // strip trailing fractional zeros / bare dot ("3.00" -> "3")
-        $trimmed = rtrim(rtrim($numeric, '0'), '.');
+        $trimmed = mb_rtrim(mb_rtrim($numeric, '0'), '.');
 
         return ($trimmed === '' || $trimmed === '-') ? '0' : $trimmed;
     }
@@ -141,7 +175,7 @@ final class MoneyMath
     {
         $negative = str_starts_with($numeric, '-');
         if ($negative) {
-            $numeric = substr($numeric, 1);
+            $numeric = mb_substr($numeric, 1);
         }
 
         [$mantissa, $exponent] = explode('e', $numeric);
@@ -149,14 +183,14 @@ final class MoneyMath
         [$intPart, $fracPart] = array_pad(explode('.', $mantissa), 2, '');
 
         $digits = $intPart.$fracPart;
-        $point = strlen($intPart) + $exponent;
+        $point = mb_strlen($intPart) + $exponent;
 
         if ($point <= 0) {
             $expanded = '0.'.str_repeat('0', -$point).$digits;
-        } elseif ($point >= strlen($digits)) {
-            $expanded = $digits.str_repeat('0', $point - strlen($digits));
+        } elseif ($point >= mb_strlen($digits)) {
+            $expanded = $digits.str_repeat('0', $point - mb_strlen($digits));
         } else {
-            $expanded = substr($digits, 0, $point).'.'.substr($digits, $point);
+            $expanded = mb_substr($digits, 0, $point).'.'.mb_substr($digits, $point);
         }
 
         return ($negative ? '-' : '').$expanded;

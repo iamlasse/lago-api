@@ -4,21 +4,22 @@ declare(strict_types=1);
 
 namespace App\Jobs;
 
-use App\Models\Organization;
+use LogicException;
 use App\Models\Webhook;
-use App\Services\Webhooks\Customers\CreatedService as CustomerCreatedService;
-use App\Services\Webhooks\Customers\UpdatedService as CustomerUpdatedService;
-use App\Services\Webhooks\Invoices\CreatedService as InvoiceCreatedService;
-use App\Services\Webhooks\Invoices\DraftedService as InvoiceDraftedService;
-use App\Services\Webhooks\Subscriptions\CanceledService as SubscriptionCanceledService;
-use App\Services\Webhooks\Subscriptions\StartedService as SubscriptionStartedService;
-use App\Services\Webhooks\Subscriptions\TerminatedService as SubscriptionTerminatedService;
-use App\Services\Webhooks\Subscriptions\UpdatedService as SubscriptionUpdatedService;
+use App\Models\Organization;
 use Illuminate\Bus\Queueable;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
+use App\Services\Webhooks\Invoices\CreatedService as InvoiceCreatedService;
+use App\Services\Webhooks\Invoices\DraftedService as InvoiceDraftedService;
+use App\Services\Webhooks\Customers\CreatedService as CustomerCreatedService;
+use App\Services\Webhooks\Customers\UpdatedService as CustomerUpdatedService;
+use App\Services\Webhooks\Subscriptions\StartedService as SubscriptionStartedService;
+use App\Services\Webhooks\Subscriptions\UpdatedService as SubscriptionUpdatedService;
+use App\Services\Webhooks\Subscriptions\CanceledService as SubscriptionCanceledService;
+use App\Services\Webhooks\Subscriptions\TerminatedService as SubscriptionTerminatedService;
 
 /**
  * Port of Rails' SendWebhookJob (app/jobs/send_webhook_job.rb).
@@ -47,17 +48,17 @@ class SendWebhookJob implements ShouldQueue
     public const array WEBHOOK_SERVICES = [
         // "alert.triggered" => Webhooks\UsageMonitoring\AlertTriggeredService,
         // "billable_metric.created" => ..., (billable metrics webhooks — later slice)
-        "customer.created" => CustomerCreatedService::class,
-        "customer.updated" => CustomerUpdatedService::class,
+        'customer.created' => CustomerCreatedService::class,
+        'customer.updated' => CustomerUpdatedService::class,
         // "customer.tax_provider_error", "customer.vies_check", integration /
         // payment-provider customer types — later slices.
-        "invoice.created" => InvoiceCreatedService::class,
-        "invoice.drafted" => InvoiceDraftedService::class,
+        'invoice.created' => InvoiceCreatedService::class,
+        'invoice.drafted' => InvoiceDraftedService::class,
         // "invoice.generated", "invoice.voided", ... — later slices.
-        "subscription.started" => SubscriptionStartedService::class,
-        "subscription.updated" => SubscriptionUpdatedService::class,
-        "subscription.terminated" => SubscriptionTerminatedService::class,
-        "subscription.canceled" => SubscriptionCanceledService::class,
+        'subscription.started' => SubscriptionStartedService::class,
+        'subscription.updated' => SubscriptionUpdatedService::class,
+        'subscription.terminated' => SubscriptionTerminatedService::class,
+        'subscription.canceled' => SubscriptionCanceledService::class,
         // "subscription.incomplete", "subscription.trial_ended", ... — later slices.
     ];
 
@@ -112,20 +113,6 @@ class SendWebhookJob implements ShouldQueue
         return null;
     }
 
-    /** Rails: `object.organization.webhook_endpoints.none?`. */
-    protected static function objectHasEndpoints(mixed $object): bool
-    {
-        $organization = match (true) {
-            $object instanceof \App\Models\Organization => $object,
-            is_object($object) && method_exists($object, 'organization') => $object->organization,
-            is_array($object) && isset($object['organization_id'])
-                => Organization::find($object['organization_id']),
-            default => null,
-        };
-
-        return $organization !== null && $organization->webhookEndpoints()->exists();
-    }
-
     /**
      * Rails: `perform` — legacy webhook_id enqueues go straight to the HTTP
      * job; everything else resolves the registry and runs the builder.
@@ -134,7 +121,7 @@ class SendWebhookJob implements ShouldQueue
     {
         if (! array_key_exists($this->webhookType, static::WEBHOOK_SERVICES)) {
             // Rails: `raise(NotImplementedError) unless WEBHOOK_SERVICES.include?`
-            throw new \LogicException(
+            throw new LogicException(
                 "No webhook service registered for webhook_type '{$this->webhookType}'",
             );
         }
@@ -148,5 +135,18 @@ class SendWebhookJob implements ShouldQueue
 
         $builder = static::WEBHOOK_SERVICES[$this->webhookType];
         $builder::call(object: $this->object, options: $this->options);
+    }
+
+    /** Rails: `object.organization.webhook_endpoints.none?`. */
+    protected static function objectHasEndpoints(mixed $object): bool
+    {
+        $organization = match (true) {
+            $object instanceof Organization => $object,
+            is_object($object) && method_exists($object, 'organization') => $object->organization,
+            is_array($object) && isset($object['organization_id']) => Organization::find($object['organization_id']),
+            default => null,
+        };
+
+        return $organization !== null && $organization->webhookEndpoints()->exists();
     }
 }

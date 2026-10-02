@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-use App\Models\Customer;
-use App\Models\Invoice;
-use App\Models\InvoiceSubscription;
 use App\Models\Plan;
-use App\Models\Subscription;
+use App\Models\Invoice;
+use App\Models\Customer;
 use Carbon\CarbonImmutable;
+use App\Models\Subscription;
+use App\Models\InvoiceSubscription;
 
 /**
  * Shared fixtures for the Subscriptions::DatesService spec ports — the
@@ -39,6 +39,13 @@ function datesSubscriptionFor(string $interval, array $overrides = []): Subscrip
     $subscription->started_at = array_key_exists('started_at', $overrides)
         ? $overrides['started_at']
         : ($overrides['subscription_at'] ?? '2021-02-02 00:00:00');
+
+    // Rails trait :pending clears activated_at together with started_at.
+    if (array_key_exists('activated_at', $overrides)) {
+        $subscription->activated_at = $overrides['activated_at'];
+    } elseif ($subscription->started_at === null) {
+        $subscription->activated_at = null;
+    }
 
     if (($overrides['external_id'] ?? null) !== null) {
         $subscription->external_id = $overrides['external_id'];

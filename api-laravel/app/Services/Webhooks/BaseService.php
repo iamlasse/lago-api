@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Services\Webhooks;
 
-use App\Jobs\SendHttpWebhookJob;
 use App\Models\Webhook;
-use App\Models\WebhookEndpoint;
 use App\Services\BaseResult;
-use App\Services\BaseService as RootBaseService;
-use Illuminate\Database\QueryException;
+use App\Models\WebhookEndpoint;
+use App\Jobs\SendHttpWebhookJob;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Database\QueryException;
+use App\Services\BaseService as RootBaseService;
 
 /**
  * Port of Rails' Webhooks::BaseService
@@ -32,6 +32,12 @@ abstract class BaseService extends RootBaseService
     ) {
         parent::__construct();
     }
+
+    /** Rails: `webhook_type` — e.g. "customer.created". */
+    abstract protected function webhookType(): string;
+
+    /** Rails: `object_type` — the payload key holding the serialized object. */
+    abstract protected function objectType(): string;
 
     public function execute(): BaseResult
     {
@@ -68,6 +74,7 @@ abstract class BaseService extends RootBaseService
                 }
 
                 Log::error("SendWebhookJob failed for deleted webhook endpoint {$webhookEndpoint->id}");
+
                 continue;
             }
         }
@@ -101,12 +108,6 @@ abstract class BaseService extends RootBaseService
 
         return $this->object?->organization;
     }
-
-    /** Rails: `webhook_type` — e.g. "customer.created". */
-    abstract protected function webhookType(): string;
-
-    /** Rails: `object_type` — the payload key holding the serialized object. */
-    abstract protected function objectType(): string;
 
     /** Rails: `create_webhook`. */
     protected function createWebhook(WebhookEndpoint $webhookEndpoint, array $payload): Webhook

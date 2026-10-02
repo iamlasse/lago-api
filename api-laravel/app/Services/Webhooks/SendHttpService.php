@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace App\Services\Webhooks;
 
-use App\Http\Client\BlockedAddressError;
+use Throwable;
+use App\Services\BaseResult;
+use App\Jobs\SendHttpWebhookJob;
 use App\Http\Client\LagoHttpError;
 use App\Http\Client\LagoHttpClient;
-use App\Jobs\SendHttpWebhookJob;
-use App\Services\BaseResult;
-use App\Services\BaseService as RootBaseService;
+use App\Http\Client\BlockedAddressError;
 use Illuminate\Http\Client\ConnectionException;
+use App\Services\BaseService as RootBaseService;
 
 /**
  * Port of Rails' Webhooks::SendHttpService
@@ -88,7 +89,7 @@ class SendHttpService extends RootBaseService
         $this->webhook->save();
     }
 
-    protected function markWebhookAsUnsuccessful(\Throwable $error, bool $retrying): void
+    protected function markWebhookAsUnsuccessful(Throwable $error, bool $retrying): void
     {
         if ($error instanceof LagoHttpError) {
             $this->webhook->http_status = (int) $error->errorCode;
@@ -119,9 +120,15 @@ class SendHttpService extends RootBaseService
             return $body;
         }
 
-        $scrubbed = static fn (string $value): string => (string) mb_convert_encoding($value, 'UTF-8', 'UTF-8');
+        // Ruby's String#scrub("") drops invalid UTF-8 sequences; mb's
+        // substitute character must be "none" for the same behaviour.
+        $scrubbed = static function (string $value): string {
+            mb_substitute_character('none');
 
-        return $scrubbed(substr($scrubbed($body), 0, self::MAX_STORED_RESPONSE_BYTES));
+            return (string) mb_convert_encoding($value, 'UTF-8', 'UTF-8');
+        };
+
+        return $scrubbed(mb_substr($scrubbed($body), 0, self::MAX_STORED_RESPONSE_BYTES, '8bit'));
     }
 
     /**

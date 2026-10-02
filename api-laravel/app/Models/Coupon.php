@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\CouponExpiration;
-use App\Enums\CouponFrequency;
-use App\Enums\CouponStatus;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 use App\Enums\CouponType;
+use App\Enums\CouponStatus;
+use App\Enums\CouponFrequency;
+use App\Enums\CouponExpiration;
 use App\Models\Casts\BcNumeric;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -40,6 +42,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[\Illuminate\Database\Eloquent\Attributes\Table(name: 'coupons')]
 class Coupon extends BaseModel
 {
+    use HasFactory;
+
     use SoftDeletes;
 
     public function appliedCoupons(): HasMany

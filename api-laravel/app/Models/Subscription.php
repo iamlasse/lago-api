@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\BillingTime;
-use App\Enums\SubscriptionStatus;
-use App\Models\Concerns\BelongsToOrganization;
-use App\Services\Subscriptions\DatesService;
 use Carbon\CarbonImmutable;
 use Carbon\CarbonInterface;
+use App\Enums\SubscriptionStatus;
 use Illuminate\Database\Eloquent\Builder;
+use App\Services\Subscriptions\DatesService;
+use App\Models\Concerns\BelongsToOrganization;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 /**
@@ -100,6 +100,20 @@ class Subscription extends BaseModel
         'consolidate_invoice' => true,
         'skip_daily_usage' => false,
     ];
+
+    /** Rails: `subscription_at_in_timezone_sql`. */
+    public static function subscriptionAtInTimezoneSql(): string
+    {
+        return "subscriptions.subscription_at::timestamptz AT TIME ZONE
+            COALESCE(customers.timezone, organizations.timezone, 'UTC')";
+    }
+
+    /** Rails: `ending_at_in_timezone_sql`. */
+    public static function endingAtInTimezoneSql(): string
+    {
+        return "subscriptions.ending_at::timestamptz AT TIME ZONE
+            COALESCE(customers.timezone, organizations.timezone, 'UTC')";
+    }
 
     // -- Relationships -----------------------------------------------------------
 
@@ -187,20 +201,6 @@ class Subscription extends BaseModel
         return $query->where('status', SubscriptionStatus::Incomplete->value);
     }
 
-    /** Rails: `subscription_at_in_timezone_sql`. */
-    public static function subscriptionAtInTimezoneSql(): string
-    {
-        return "subscriptions.subscription_at::timestamptz AT TIME ZONE
-            COALESCE(customers.timezone, organizations.timezone, 'UTC')";
-    }
-
-    /** Rails: `ending_at_in_timezone_sql`. */
-    public static function endingAtInTimezoneSql(): string
-    {
-        return "subscriptions.ending_at::timestamptz AT TIME ZONE
-            COALESCE(customers.timezone, organizations.timezone, 'UTC')";
-    }
-
     // -- Rails enum suffix helpers ------------------------------------------------
 
     public function pending(): bool
@@ -264,9 +264,9 @@ class Subscription extends BaseModel
     // -- State transitions (Rails mark_as_*! bang methods) -------------------------
 
     /** Rails: `mark_as_active!(timestamp = Time.current)`. */
-    public function markAsActive(CarbonInterface|int|null $timestamp = null): static
+    public function markAsActive(CarbonInterface|int|string|null $timestamp = null): static
     {
-        $timestamp ??= now();
+        $timestamp = $this->normalizeTimestamp($timestamp);
 
         $this->started_at ??= $timestamp;
         $this->activated_at ??= $timestamp;
@@ -278,9 +278,9 @@ class Subscription extends BaseModel
     }
 
     /** Rails: `mark_as_terminated!(timestamp = Time.current)`. */
-    public function markAsTerminated(CarbonInterface|int|null $timestamp = null): static
+    public function markAsTerminated(CarbonInterface|int|string|null $timestamp = null): static
     {
-        $timestamp ??= now();
+        $timestamp = $this->normalizeTimestamp($timestamp);
 
         $this->terminated_at ??= $timestamp;
         $this->status = SubscriptionStatus::Terminated->value;
@@ -298,9 +298,9 @@ class Subscription extends BaseModel
     }
 
     /** Rails: `mark_as_incomplete!(timestamp = Time.current)`. */
-    public function markAsIncomplete(CarbonInterface|int|null $timestamp = null): static
+    public function markAsIncomplete(CarbonInterface|int|string|null $timestamp = null): static
     {
-        $timestamp ??= now();
+        $timestamp = $this->normalizeTimestamp($timestamp);
 
         $this->started_at ??= $timestamp;
         $this->status = SubscriptionStatus::Incomplete->value;
@@ -610,6 +610,22 @@ class Subscription extends BaseModel
         return $errors;
     }
 
+    /** Accepts Carbon instances, unix timestamps and datetime strings. */
+    protected function normalizeTimestamp(CarbonInterface|int|string|null $timestamp): CarbonInterface
+    {
+        if ($timestamp === null) {
+            return now();
+        }
+
+        if ($timestamp instanceof CarbonInterface) {
+            return $timestamp;
+        }
+
+        return is_int($timestamp)
+            ? CarbonImmutable::createFromTimestampUTC($timestamp)
+            : CarbonImmutable::parse($timestamp, 'UTC');
+    }
+
     // -- Attribute normalization ---------------------------------------------------
 
     /**
@@ -623,7 +639,7 @@ class Subscription extends BaseModel
                 return null;
             }
 
-            $trimmed = is_string($value) ? trim($value) : $value;
+            $trimmed = is_string($value) ? mb_trim($value) : $value;
 
             return ($trimmed === '') ? null : $trimmed;
         });

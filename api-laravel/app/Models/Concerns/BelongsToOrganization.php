@@ -8,6 +8,7 @@ use LogicException;
 use App\Models\Organization;
 use App\Support\CurrentContext;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -30,7 +31,8 @@ trait BelongsToOrganization
         return $this->belongsTo(Organization::class);
     }
 
-    public function scopeOfCurrentOrganization(Builder $query): Builder
+    #[Scope]
+    protected function ofCurrentOrganization(Builder $query): Builder
     {
         $organization = CurrentContext::$organization;
 
@@ -44,7 +46,8 @@ trait BelongsToOrganization
     }
 
     /** Explicit escape hatch for system jobs (clock, billing workers). */
-    public function scopeWithoutTenancy(Builder $query): Builder
+    #[Scope]
+    protected function withoutTenancy(Builder $query): Builder
     {
         return $query;
     }

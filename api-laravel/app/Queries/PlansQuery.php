@@ -93,7 +93,7 @@ class PlansQuery extends BaseService
         return $scope
             ->orderByRaw('plans.deleted_at is not null asc')
             ->orderBy('name')
-            ->orderByDesc('created_at')
+            ->latest()
             ->orderBy('id')
             ->paginate($perPage, ['*'], 'page', $page);
     }

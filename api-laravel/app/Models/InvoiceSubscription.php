@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\SubscriptionInvoicingReason;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 use Illuminate\Database\Eloquent\Builder;
+use App\Enums\SubscriptionInvoicingReason;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
@@ -32,21 +35,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[\Illuminate\Database\Eloquent\Attributes\Table(name: 'invoice_subscriptions')]
 class InvoiceSubscription extends BaseModel
 {
-    public function invoice(): BelongsTo
-    {
-        return $this->belongsTo(Invoice::class);
-    }
-
-    public function subscription(): BelongsTo
-    {
-        return $this->belongsTo(Subscription::class);
-    }
-
-    /** Port of `scope :recurring`. */
-    public function scopeRecurring(Builder $query): Builder
-    {
-        return $query->where('recurring', true);
-    }
+    use HasFactory;
 
     /**
      * Port of `InvoiceSubscription.matching?(subscription, boundaries, recurring: true)`:
@@ -81,6 +70,16 @@ class InvoiceSubscription extends BaseModel
         return $baseQuery->exists();
     }
 
+    public function invoice(): BelongsTo
+    {
+        return $this->belongsTo(Invoice::class);
+    }
+
+    public function subscription(): BelongsTo
+    {
+        return $this->belongsTo(Subscription::class);
+    }
+
     /**
      * Port of `fees` — the subscription's fees attached to this invoice.
      */
@@ -106,7 +105,7 @@ class InvoiceSubscription extends BaseModel
             ->where('subscription_id', $this->subscription_id)
             ->where('from_datetime', '<=', $this->from_datetime)
             ->where('id', '!=', $this->id)
-            ->orderByDesc('from_datetime')
+            ->latest('from_datetime')
             ->get()
             ->first(fn (self $invoiceSubscription) => $invoiceSubscription->subscriptionFee() !== null);
     }
@@ -118,13 +117,20 @@ class InvoiceSubscription extends BaseModel
             return null;
         }
 
-        return SubscriptionInvoicingReason::tryFrom((string) $this->invoicing_reason)?->label()
+        return SubscriptionInvoicingReason::tryFrom((string) $this->invoicing_reason)?->value
             ?? (string) $this->invoicing_reason;
     }
 
     public function subscriptionStarting(): bool
     {
         return $this->invoicingReasonName() === 'subscription_starting';
+    }
+
+    /** Port of `scope :recurring`. */
+    #[Scope]
+    protected function recurring(Builder $query): Builder
+    {
+        return $query->where('recurring', true);
     }
 
     protected function casts(): array

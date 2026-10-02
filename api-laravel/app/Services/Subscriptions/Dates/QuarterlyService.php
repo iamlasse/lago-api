@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services\Subscriptions\Dates;
 
-use App\Services\Subscriptions\DatesService;
+use LogicException;
 use Carbon\CarbonImmutable;
+use App\Services\Subscriptions\DatesService;
 
 /**
  * Port of Rails' Subscriptions::Dates::QuarterlyService.
@@ -225,6 +226,6 @@ class QuarterlyService extends DatesService
         }
 
         // Guarded by should_find_previous_billing_date? — never reached in Rails.
-        throw new \LogicException('No billing month before the requested month');
+        throw new LogicException('No billing month before the requested month');
     }
 }

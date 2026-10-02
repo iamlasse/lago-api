@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Subscriptions\Dates;
 
-use App\Services\Subscriptions\DatesService;
 use Carbon\CarbonImmutable;
+use App\Services\Subscriptions\DatesService;
 
 /**
  * Port of Rails' Subscriptions::Dates::MonthlyService.

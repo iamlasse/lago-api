@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\WebhookStatus;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Frozen-schema model for `webhooks`.
@@ -37,15 +38,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[\Illuminate\Database\Eloquent\Attributes\Table(name: 'webhooks')]
 class Webhook extends BaseModel
 {
-    protected function casts(): array
-    {
-        return [
-            'retries' => 'integer',
-            'http_status' => 'integer',
-            'payload' => 'array',
-            'last_retried_at' => 'datetime',
-        ];
-    }
+    use HasFactory;
 
     public function webhookEndpoint(): BelongsTo
     {
@@ -196,9 +189,19 @@ class Webhook extends BaseModel
         return json_decode(is_string($raw) ? $raw : (string) $raw, true);
     }
 
+    protected function casts(): array
+    {
+        return [
+            'retries' => 'integer',
+            'http_status' => 'integer',
+            'payload' => 'array',
+            'last_retried_at' => 'datetime',
+        ];
+    }
+
     private function rsaPrivateKey(): string
     {
-        $path = config('lago.rsa_private_key_path');
+        $path = config('lago.webhook.rsa_private_key_path');
 
         if (is_string($path) && is_file($path)) {
             return (string) file_get_contents($path);

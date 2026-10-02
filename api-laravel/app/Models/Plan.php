@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\PlanInterval;
 use App\Services\Validators\Currencies;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Concerns\BelongsToOrganization;
@@ -120,7 +121,8 @@ class Plan extends BaseModel
     // -- Scopes ------------------------------------------------------------------
 
     /** Rails: `scope :parents, -> { where(parent_id: nil) }`. */
-    public function scopeParents(Builder $query): Builder
+    #[Scope]
+    protected function parents(Builder $query): Builder
     {
         return $query->whereNull('parent_id');
     }

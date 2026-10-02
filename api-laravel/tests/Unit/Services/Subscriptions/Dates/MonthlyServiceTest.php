@@ -5,9 +5,9 @@ declare(strict_types=1);
 require_once __DIR__.'/../../../../Concerns/SubscriptionDateTestHelpers.php';
 
 use App\Models\Customer;
-use App\Services\Subscriptions\Dates\MonthlyService;
-use App\Services\Subscriptions\DatesService;
 use Carbon\CarbonImmutable;
+use App\Services\Subscriptions\DatesService;
+use App\Services\Subscriptions\Dates\MonthlyService;
 
 /**
  * Port of spec/services/subscriptions/dates/monthly_service_spec.rb.

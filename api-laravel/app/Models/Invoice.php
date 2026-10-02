@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\InvoicePaymentStatus;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+use App\Enums\InvoiceType;
 use App\Enums\InvoiceStatus;
 use App\Enums\InvoiceTaxStatus;
-use App\Enums\InvoiceType;
 use App\Models\Concerns\Sequenced;
+use Illuminate\Support\Facades\DB;
+use App\Enums\InvoicePaymentStatus;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Port of Rails' Invoice (app/models/invoice.rb) for the billing pipeline.
@@ -78,6 +80,8 @@ use Illuminate\Support\Facades\DB;
 #[\Illuminate\Database\Eloquent\Attributes\Table(name: 'invoices')]
 class Invoice extends BaseModel
 {
+    use HasFactory;
+
     use Sequenced;
 
     /**
@@ -85,6 +89,17 @@ class Invoice extends BaseModel
      * NOTE: `open` is deliberately NOT generated — Rails stores names here.
      */
     public const GENERATED_STATUS_NAMES = ['finalized', 'closed'];
+
+    /**
+     * Port of the RefreshSearchTermsService update_all — search_terms is a
+     * computed concatenation of number, PO number and customer identity.
+     */
+    public static function searchTermsSql(): string
+    {
+        return "concat_ws(' ', invoices.number, invoices.purchase_order_number, ".
+            "(SELECT concat_ws(' ', c.name, c.firstname, c.lastname, c.legal_name, c.external_id, c.email) ".
+            'FROM customers c WHERE c.id = invoices.customer_id))';
+    }
 
     public function customer(): BelongsTo
     {
@@ -137,30 +152,16 @@ class Invoice extends BaseModel
         return $this->belongsToMany(Tax::class, 'invoices_taxes', 'invoice_id', 'tax_id');
     }
 
-    /**
-     * Port of: sequenced scope: ->(invoice) { invoice.customer.invoices.where(billing_entity_id:) },
-     *          lock_key: ->(invoice) { "#{invoice.customer_id}-#{invoice.billing_entity_id}" }
-     */
-    protected function sequenceScope(): Builder
-    {
-        return $this->customer->invoices()->getQuery()->where('billing_entity_id', $this->billing_entity_id);
-    }
-
-    protected function sequencedLockKey(): ?string
-    {
-        return $this->customer_id.'-'.$this->billing_entity_id;
-    }
-
     // -- Status helpers (Rails enum predicates) -------------------------------
 
     public function statusEnum(): ?InvoiceStatus
     {
-        return $this->status === null ? null : InvoiceStatus::tryFrom((int) $this->status);
+        return $this->status instanceof InvoiceStatus ? $this->status : ($this->status === null ? null : InvoiceStatus::tryFrom((int) $this->status));
     }
 
     public function typeEnum(): ?InvoiceType
     {
-        return $this->invoice_type === null ? null : InvoiceType::tryFrom((int) $this->invoice_type);
+        return $this->invoice_type instanceof InvoiceType ? $this->invoice_type : ($this->invoice_type === null ? null : InvoiceType::tryFrom((int) $this->invoice_type));
     }
 
     public function isDraft(): bool
@@ -251,17 +252,6 @@ class Invoice extends BaseModel
         return (int) $this->total_amount_cents - (int) $this->total_paid_amount_cents;
     }
 
-    // -- Rails before_save hooks ----------------------------------------------
-
-    protected static function bootInvoice(): void
-    {
-        static::saving(function (self $invoice): void {
-            $invoice->ensureBillingEntitySequentialId();
-            $invoice->ensureNumber();
-            $invoice->setFinalizedAt();
-        });
-    }
-
     /**
      * Port of `status_changed_to_finalized?` — the from-states Rails
      * enumerates (draft, generating, open, failed, pending) → finalized.
@@ -317,7 +307,7 @@ class Invoice extends BaseModel
         $connection->statement("SET LOCAL lock_timeout = '10s'");
         $connection->select('SELECT pg_advisory_xact_lock(hashtext(?))', [$lockKey]);
 
-        $generated = Invoice::query()
+        $generated = self::query()
             ->where('billing_entity_id', $this->billing_entity_id)
             ->where('self_billed', false)
             ->whereIn('status', [InvoiceStatus::Finalized->value, InvoiceStatus::Voided->value]);
@@ -377,23 +367,37 @@ class Invoice extends BaseModel
         $this->finalized_at ??= now();
     }
 
-    /**
-     * Port of the RefreshSearchTermsService update_all — search_terms is a
-     * computed concatenation of number, PO number and customer identity.
-     */
-    public static function searchTermsSql(): string
-    {
-        return "concat_ws(' ', invoices.number, invoices.purchase_order_number, ".
-            "(SELECT concat_ws(' ', c.name, c.firstname, c.lastname, c.legal_name, c.external_id, c.email) ".
-            'FROM customers c WHERE c.id = invoices.customer_id))';
-    }
-
     /** Refresh `search_terms` for this invoice (port of Invoices::RefreshSearchTermsService). */
     public function refreshSearchTerms(): void
     {
         DB::table('invoices')
             ->where('id', $this->id)
             ->update(['search_terms' => DB::raw(self::searchTermsSql())]);
+    }
+
+    // -- Rails before_save hooks ----------------------------------------------
+
+    protected static function bootInvoice(): void
+    {
+        static::saving(function (self $invoice): void {
+            $invoice->ensureBillingEntitySequentialId();
+            $invoice->ensureNumber();
+            $invoice->setFinalizedAt();
+        });
+    }
+
+    /**
+     * Port of: sequenced scope: ->(invoice) { invoice.customer.invoices.where(billing_entity_id:) },
+     *          lock_key: ->(invoice) { "#{invoice.customer_id}-#{invoice.billing_entity_id}" }
+     */
+    protected function sequenceScope(): Builder
+    {
+        return $this->customer->invoices()->getQuery()->where('billing_entity_id', $this->billing_entity_id);
+    }
+
+    protected function sequencedLockKey(): ?string
+    {
+        return $this->customer_id.'-'.$this->billing_entity_id;
     }
 
     protected function casts(): array

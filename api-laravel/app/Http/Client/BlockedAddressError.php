@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Client;
 
+use RuntimeException;
+
 /**
  * Port of LagoHttpClient::BlockedAddressError
  * (lib/lago_http_client/lago_http_client/blocked_address_error.rb).
  */
-class BlockedAddressError extends \RuntimeException
+class BlockedAddressError extends RuntimeException
 {
     public function __construct(string $host)
     {

@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Services\ChargeModels;
 
-use App\Enums\ChargeModel;
 use App\Models\Charge;
+use App\Enums\ChargeModel;
 use App\Models\FixedCharge;
+use NotImplementedException;
+use InvalidArgumentException;
 
 /**
  * Port of Rails' ChargeModels::PricingStructure
@@ -23,14 +25,14 @@ final class PricingStructure
         public readonly string $currency,
     ) {
         if ($this->currency === '') {
-            throw new \InvalidArgumentException('currency is mandatory');
+            throw new InvalidArgumentException('currency is mandatory');
         }
     }
 
     public static function fromCharge(Charge $charge): self
     {
         $chargeModel = ChargeModel::tryFrom((int) $charge->charge_model)
-            ?? throw new \NotImplementedException("Charge model {$charge->charge_model} is not implemented");
+            ?? throw new NotImplementedException("Charge model {$charge->charge_model} is not implemented");
 
         return new self(
             chargeModel: $chargeModel,
@@ -44,7 +46,7 @@ final class PricingStructure
     public static function fromFixedCharge(FixedCharge $fixedCharge): self
     {
         $chargeModel = ChargeModel::tryFrom((int) $fixedCharge->charge_model)
-            ?? throw new \NotImplementedException("Charge model {$fixedCharge->charge_model} is not implemented");
+            ?? throw new NotImplementedException("Charge model {$fixedCharge->charge_model} is not implemented");
 
         return new self(
             chargeModel: $chargeModel,

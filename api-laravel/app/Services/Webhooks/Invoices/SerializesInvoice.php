@@ -4,19 +4,20 @@ declare(strict_types=1);
 
 namespace App\Services\Webhooks\Invoices;
 
-use App\Services\Webhooks\BaseService;
 use DateTimeInterface;
+use App\Enums\InvoiceStatus;
+use App\Services\Webhooks\BaseService;
 
 /**
  * Shared invoice webhook payload builder.
  *
- * TODO(integration): swap to the ported V1::InvoiceSerializer once the
- * invoices slice lands — Rails builds this payload with
- * `V1::InvoiceSerializer.new(object, root_name: "invoice", includes: ...)`.
- * The top-level scalar fields below match Rails' InvoiceSerializer#serialize
- * head; the relation includes (customer, subscriptions, billing_periods,
- * fees, credits, applied_taxes, error_details, applied_invoice_custom_sections)
- * are emitted as empty collections until then.
+ * TODO(integration): swap to the ported V1::InvoiceSerializer
+ * (app/Serializers/V1/InvoiceSerializer.php, invoices slice in flight) —
+ * Rails builds this payload with `V1::InvoiceSerializer.new(object,
+ * root_name: "invoice", includes: ...)`. The top-level scalar fields below
+ * match Rails' InvoiceSerializer#serialize head; the relation includes
+ * (customer, subscriptions, billing_periods, fees, credits, applied_taxes,
+ * error_details, applied_invoice_custom_sections) are omitted until then.
  *
  * @mixin BaseService
  */
@@ -27,7 +28,7 @@ trait SerializesInvoice
     {
         $invoice = $this->object;
 
-        $payload = [
+        return [
             'lago_id' => $invoice->id,
             'billing_entity_code' => $invoice->billingEntity?->code,
             'sequential_id' => $invoice->sequential_id,
@@ -50,7 +51,12 @@ trait SerializesInvoice
             'sub_total_excluding_taxes_amount_cents' => $invoice->sub_total_excluding_taxes_amount_cents,
             'sub_total_including_taxes_amount_cents' => $invoice->sub_total_including_taxes_amount_cents,
             'total_amount_cents' => $invoice->total_amount_cents,
-            'total_due_amount_cents' => $invoice->totalDueAmountCents(),
+            // Rails: total_due_amount_cents — voided invoices are due 0.
+            // Inlined from Invoice::totalDueAmountCents to avoid the enum
+            // cast; TODO(port): the credit-note offset amounts.
+            'total_due_amount_cents' => ((int) $invoice->getRawOriginal('status')) === InvoiceStatus::Voided->value
+                ? 0
+                : ((int) $invoice->total_amount_cents - (int) $invoice->total_paid_amount_cents),
             'total_paid_amount_cents' => $invoice->total_paid_amount_cents,
             'total_offsetted_credit_note_amount_cents' => $invoice->offset_amount_cents,
             'prepaid_credit_amount_cents' => $invoice->prepaid_credit_amount_cents,
@@ -72,7 +78,6 @@ trait SerializesInvoice
         // credits, applied_taxes, error_details for drafted invoices,
         // applied_invoice_custom_sections) are omitted until the V1
         // InvoiceSerializer port exists.
-        return $payload;
     }
 
     /** Rails: `iso8601` on a date column (Y-m-d). */

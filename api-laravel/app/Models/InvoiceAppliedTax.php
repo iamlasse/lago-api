@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 /**
  * Port of Rails' Invoice::AppliedTax (app/models/invoice/applied_tax.rb) —
  * the frozen `invoices_taxes` snapshot rows written when invoice-level
@@ -25,6 +27,8 @@ namespace App\Models;
 #[\Illuminate\Database\Eloquent\Attributes\Table(name: 'invoices_taxes')]
 class InvoiceAppliedTax extends BaseModel
 {
+    use HasFactory;
+
     public function invoice()
     {
         return $this->belongsTo(Invoice::class);

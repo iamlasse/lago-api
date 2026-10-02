@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 require_once __DIR__.'/../../../../Concerns/SubscriptionDateTestHelpers.php';
 
-use App\Services\Subscriptions\Dates\SemiannualService;
 use Carbon\CarbonImmutable;
+use App\Services\Subscriptions\Dates\SemiannualService;
 
 /**
  * Port of spec/services/subscriptions/dates/semiannual_service_spec.rb.
@@ -93,8 +93,11 @@ it('resolves the previous-year half when the terminated billing day is in the se
         'subscription_at' => '2021-02-28 00:00:00',
         'started_at' => '2021-02-28 00:00:00',
     ]);
-    datesTerminate($subscription, '2022-03-09 00:00:00'); // enclosing terminate first
-    datesTerminate($subscription, '2022-02-27 00:00:00');
+    // Rails: the enclosing context terminated on 9 May, and this case moves
+    // terminated_at earlier (25 Feb) so the termination covers the billing day.
+    $subscription->terminated_at = '2022-02-25 00:00:00';
+    $subscription->status = 'terminated';
+    $subscription->save();
     $service = semiannualService($subscription, '2022-02-27 00:00:00');
 
     expect(datesUtc($service->fromDatetime()))->toBe('2021-08-28 00:00:00');
@@ -142,7 +145,8 @@ it('returns the end of the previous half year (calendar)', function () {
 it('takes the customer timezone into account on to_datetime (semiannual calendar)', function () {
     $service = semiannualService(semiannualSub(['billing_time' => 'calendar', 'timezone' => 'America/New_York']), '2022-07-01 00:00:00');
 
-    expect(datesUtc($service->toDatetime()))->toBe('2022-01-01 03:59:59');
+    // Dec 31 23:59:59 in New York (EST, UTC-5).
+    expect(datesUtc($service->toDatetime()))->toBe('2022-01-01 04:59:59');
 });
 
 it('returns the end of the current half year when pay in advance (calendar)', function () {
@@ -174,11 +178,13 @@ it('returns the termination date for a subscription terminated on the anniversar
 
 // -- fixed charge gating (bill_fixed_charges_monthly) -------------------------------
 
-it('returns nil fixed charge boundaries outside the first month of the half when billing monthly', function () {
+it('returns nil fixed charge boundaries outside the first month of the half when charges bill monthly', function () {
+    // Rails: fixed boundaries are gated to the first month of the half when
+    // charges bill monthly but fixed charges do not.
     $subscription = semiannualSub([
         'billing_time' => 'calendar',
-        'bill_fixed_charges_monthly' => true,
-        'bill_charges_monthly' => false,
+        'bill_charges_monthly' => true,
+        'bill_fixed_charges_monthly' => false,
     ]);
     $service = semiannualService($subscription, '2022-03-07 00:00:00');
 
@@ -186,11 +192,11 @@ it('returns nil fixed charge boundaries outside the first month of the half when
         ->and($service->fixedChargesToDatetime())->toBeNull();
 });
 
-it('returns fixed charge boundaries in the first month of the half when billing monthly', function () {
+it('returns fixed charge boundaries in the first month of the half when charges bill monthly', function () {
     $subscription = semiannualSub([
         'billing_time' => 'calendar',
-        'bill_fixed_charges_monthly' => true,
-        'bill_charges_monthly' => false,
+        'bill_charges_monthly' => true,
+        'bill_fixed_charges_monthly' => false,
     ]);
     $service = semiannualService($subscription, '2022-01-07 00:00:00');
 
@@ -201,8 +207,8 @@ it('returns fixed charge boundaries in the first month of the half when billing 
 it('still returns the period end via fixed_charges_period_to_datetime even when boundaries are nil', function () {
     $subscription = semiannualSub([
         'billing_time' => 'calendar',
-        'bill_fixed_charges_monthly' => true,
-        'bill_charges_monthly' => false,
+        'bill_charges_monthly' => true,
+        'bill_fixed_charges_monthly' => false,
     ]);
     $service = semiannualService($subscription, '2022-03-07 00:00:00');
 
@@ -235,13 +241,15 @@ it('returns the end of the billing half year (anniversary)', function () {
     expect(datesUtc($service->nextEndOfPeriod()))->toBe('2022-11-01 23:59:59');
 });
 
-it('walks into the next year for semiannual next_end_of_period', function () {
+it('walks into the next half-year period for next_end_of_period', function () {
+    // Billing 2022-10-02 is a non-billing month (months are May & Nov); the
+    // previous anniversary resolves to May 2, closing on Nov 1.
     $service = semiannualService(semiannualSub([
         'subscription_at' => '2021-11-02 00:00:00',
         'started_at' => '2021-11-02 00:00:00',
     ]), '2022-10-02 00:00:00');
 
-    expect(datesUtc($service->nextEndOfPeriod()))->toBe('2023-05-01 23:59:59');
+    expect(datesUtc($service->nextEndOfPeriod()))->toBe('2022-11-01 23:59:59');
 });
 
 it('returns the billing day when it already is the end of the half-year period', function () {

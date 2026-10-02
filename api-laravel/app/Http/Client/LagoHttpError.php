@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Http\Client;
 
+use RuntimeException;
+
 /**
  * Port of LagoHttpClient::HttpError
  * (lib/lago_http_client/lago_http_client/http_error.rb) — raised for any
  * response outside RESPONSE_SUCCESS_CODES.
  */
-class LagoHttpError extends \RuntimeException
+class LagoHttpError extends RuntimeException
 {
     public function __construct(
         public readonly int|string $errorCode,

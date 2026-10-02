@@ -7,6 +7,7 @@ namespace App\Models\Concerns;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\QueryException;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\Exceptions\SequenceException;
 
@@ -35,7 +36,8 @@ trait Sequenced
         });
     }
 
-    public function scopeWithSequentialId($query)
+    #[Scope]
+    protected function withSequentialId($query)
     {
         return $query->whereNotNull('sequential_id');
     }

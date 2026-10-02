@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 /**
  * Port of Rails' Credit (app/models/credit.rb) — invoice credits from
  * coupons, progressive billing, credit notes and prepaid wallets.
@@ -21,6 +23,8 @@ namespace App\Models;
 #[\Illuminate\Database\Eloquent\Attributes\Table(name: 'credits')]
 class Credit extends BaseModel
 {
+    use HasFactory;
+
     public function invoice()
     {
         return $this->belongsTo(Invoice::class);

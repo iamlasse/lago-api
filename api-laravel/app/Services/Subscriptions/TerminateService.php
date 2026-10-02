@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\Services\Subscriptions;
 
+use Carbon\CarbonImmutable;
 use App\Models\Subscription;
 use App\Services\BaseResult;
 use App\Services\BaseService;
-use Carbon\CarbonImmutable;
-use Carbon\CarbonInterface;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -18,7 +17,7 @@ use Illuminate\Support\Facades\DB;
  * Not ported (dependencies do not exist yet):
  * - TODO(port): Subscriptions::ActivationRules::CancelService (cancel of an
  *   incomplete subscription) — the incomplete subscription is canceled
-    *   outright meanwhile.
+ *   outright meanwhile.
  * - TODO(port): CreditNotes::CreateFromTermination — credit notes are part of
  *   the invoice pipeline (M1 task 9); the unconsumed-subscription credit note
  *   branch is marked at its hook below.

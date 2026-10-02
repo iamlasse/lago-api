@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Services\Customers;
 
 use App\Models\Customer;
+use App\Jobs\SendWebhookJob;
 use App\Models\Organization;
 use App\Services\BaseResult;
 use App\Services\BaseService;
-use App\Jobs\SendWebhookJob;
 use Illuminate\Support\Facades\DB;
 use App\Enums\FinalizeZeroAmountInvoice;
 use App\Services\BillingEntities\ResolveService;

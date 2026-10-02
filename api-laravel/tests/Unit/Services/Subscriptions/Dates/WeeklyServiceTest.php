@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 require_once __DIR__.'/../../../../Concerns/SubscriptionDateTestHelpers.php';
 
-use App\Services\Subscriptions\Dates\WeeklyService;
 use Carbon\CarbonImmutable;
+use App\Services\Subscriptions\Dates\WeeklyService;
 
 /**
  * Port of spec/services/subscriptions/dates/weekly_service_spec.rb.

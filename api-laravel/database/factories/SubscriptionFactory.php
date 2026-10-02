@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Models\Customer;
-use App\Models\Organization;
 use App\Models\Plan;
+use App\Models\Customer;
 use App\Models\Subscription;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 /**
  * Port of Rails' :subscription factory

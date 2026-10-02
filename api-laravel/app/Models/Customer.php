@@ -213,7 +213,7 @@ class Customer extends BaseModel
     /** Rails: `active_subscription` (status enum: pending=0, active=1, …). */
     public function activeSubscription(): ?Subscription
     {
-        return $this->subscriptions()->where('status', 1)->orderByDesc('started_at')->first();
+        return $this->subscriptions()->where('status', 1)->latest('started_at')->first();
     }
 
     public function applicableTimezone(): string

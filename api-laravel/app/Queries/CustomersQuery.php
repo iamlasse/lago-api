@@ -291,7 +291,7 @@ class CustomersQuery extends BaseService
 
         // Rails applies apply_consistent_ordering after paginate.
         return $scope
-            ->orderByDesc('created_at')
+            ->latest()
             ->orderBy('id')
             ->paginate($perPage, ['*'], 'page', $page);
     }

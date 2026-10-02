@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Casts\PostgresArray;
 use App\Enums\WebhookEndpointSignatureAlgo;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Frozen-schema model for `webhook_endpoints`.
@@ -26,16 +28,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[\Illuminate\Database\Eloquent\Attributes\Table(name: 'webhook_endpoints')]
 class WebhookEndpoint extends BaseModel
 {
+    use HasFactory;
+
     /** Rails: LIMIT = 10 (app/models/webhook_endpoint.rb). */
     public const int LIMIT = 10;
-
-    protected function casts(): array
-    {
-        return [
-            'signature_algo' => 'integer',
-            'event_types' => 'array',
-        ];
-    }
 
     public function organization(): BelongsTo
     {
@@ -72,5 +68,13 @@ class WebhookEndpoint extends BaseModel
         }
 
         return in_array($webhookType, $eventTypes, true);
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'signature_algo' => 'integer',
+            'event_types' => PostgresArray::class,
+        ];
     }
 }

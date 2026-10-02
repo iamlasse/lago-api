@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Services\Subscriptions;
 
+use Carbon\CarbonInterface;
 use App\Models\Subscription;
 use App\Services\BaseResult;
 use App\Services\BaseService;
-use Carbon\CarbonInterface;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -109,7 +109,7 @@ class ActivateService extends BaseService
         if (! $billedDuringGating) {
             $trialFree = ! $this->subscription->inTrialPeriod();
 
-            if ($this->subscription->fixedCharges()->where('pay_in_advance', true)->exists()
+            if ($this->subscription->fixedCharges()->where('fixed_charges.pay_in_advance', true)->exists()
                 || ($this->subscription->plan->pay_in_advance && $trialFree)) {
                 $billableSubscriptions[] = $this->subscription;
             }
@@ -148,7 +148,7 @@ class ActivateService extends BaseService
         }
 
         if (! $billedDuringGating) {
-            if ($this->subscription->fixedCharges()->where('pay_in_advance', true)->exists()
+            if ($this->subscription->fixedCharges()->where('fixed_charges.pay_in_advance', true)->exists()
                 || $this->subscription->plan->pay_in_advance) {
                 $billableSubscriptions[] = $this->subscription;
             }

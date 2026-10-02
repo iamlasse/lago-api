@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Webhooks\Customers;
 
-use App\Serializers\V1\CustomerSerializer;
 use App\Services\Webhooks\BaseService;
+use App\Serializers\V1\CustomerSerializer;
 
 /**
  * Port of Rails' Webhooks::Customers::CreatedService

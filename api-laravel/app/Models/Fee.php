@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\FeePaymentStatus;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 use App\Enums\FeeType;
-use App\Models\Casts\BcNumeric;
 use App\Support\MoneyMath;
+use App\Enums\FeePaymentStatus;
+use App\Models\Casts\BcNumeric;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Port of Rails' Fee (app/models/fee.rb) for the billing pipeline.
@@ -71,6 +74,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 #[\Illuminate\Database\Eloquent\Attributes\Table(name: 'fees')]
 class Fee extends BaseModel
 {
+    use HasFactory;
+
     use SoftDeletes;
 
     public function invoice(): BelongsTo
@@ -99,28 +104,26 @@ class Fee extends BaseModel
         return $this->belongsToMany(Tax::class, 'fees_taxes', 'fee_id', 'tax_id');
     }
 
+    public function addOn(): BelongsTo
+    {
+        return $this->belongsTo(AddOn::class, 'add_on_id');
+    }
+
+    public function fixedCharge(): BelongsTo
+    {
+        return $this->belongsTo(FixedCharge::class, 'fixed_charge_id');
+    }
+
     public function trueUpParentFee(): BelongsTo
     {
-        return $this->belongsTo(Fee::class, 'true_up_parent_fee_id');
-    }
-
-    // -- Scopes (Rails enum scopes) -------------------------------------------
-
-    public function scopeSubscription(Builder $query): Builder
-    {
-        return $query->where('fee_type', FeeType::Subscription->value);
-    }
-
-    public function scopeCharge(Builder $query): Builder
-    {
-        return $query->where('fee_type', FeeType::Charge->value);
+        return $this->belongsTo(self::class, 'true_up_parent_fee_id');
     }
 
     // -- Type predicates -------------------------------------------------------
 
     public function typeEnum(): ?FeeType
     {
-        return $this->fee_type === null ? null : FeeType::tryFrom((int) $this->fee_type);
+        return $this->fee_type instanceof FeeType ? $this->fee_type : ($this->fee_type === null ? null : FeeType::tryFrom((int) $this->fee_type));
     }
 
     public function isCharge(): bool
@@ -174,6 +177,20 @@ class Fee extends BaseModel
         $remaining = MoneyMath::sub((int) $this->amount_cents, (string) $this->precise_coupons_amount_cents);
 
         return MoneyMath::mul((string) $creditAmount, MoneyMath::fdiv($remaining, (string) $baseAmountCents));
+    }
+
+    // -- Scopes (Rails enum scopes) -------------------------------------------
+    // Legacy scopeXyz() form: #[Scope] subscription()/charge() would collide
+    // with the subscription()/charge() relations above.
+
+    protected function scopeSubscription(Builder $query): Builder
+    {
+        return $query->where('fee_type', FeeType::Subscription->value);
+    }
+
+    protected function scopeCharge(Builder $query): Builder
+    {
+        return $query->where('fee_type', FeeType::Charge->value);
     }
 
     protected function casts(): array

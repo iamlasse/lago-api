@@ -6,9 +6,9 @@ namespace App\Services\Customers;
 
 use Throwable;
 use App\Models\Customer;
+use App\Jobs\SendWebhookJob;
 use App\Services\BaseResult;
 use App\Services\BaseService;
-use App\Jobs\SendWebhookJob;
 use Illuminate\Support\Facades\DB;
 use App\Enums\FinalizeZeroAmountInvoice;
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\ChargeModels;
 
+use Throwable;
 use App\Support\MoneyMath;
 
 /**
@@ -26,6 +27,12 @@ abstract class AbstractChargeModel
     ) {
         $this->result = new ChargeModelResult;
     }
+
+    abstract protected function computeProjectedAmount(): string;
+
+    abstract protected function computeAmount(): string;
+
+    abstract protected function unitAmount(): string;
 
     public function apply(): ChargeModelResult
     {
@@ -84,16 +91,10 @@ abstract class AbstractChargeModel
             }
 
             return '0';
-        } catch (\Throwable) {
+        } catch (Throwable) {
             return '0';
         }
     }
-
-    abstract protected function computeProjectedAmount(): string;
-
-    abstract protected function computeAmount(): string;
-
-    abstract protected function unitAmount(): string;
 
     /** @return array<string, mixed> */
     protected function amountDetails(): array

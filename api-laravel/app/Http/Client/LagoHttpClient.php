@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Client;
 
-use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Http\Client\ConnectionException;
 
 /**
  * Port of LagoHttpClient::Client
@@ -29,11 +29,11 @@ class LagoHttpClient
     public const array RESPONSE_SUCCESS_CODES = [200, 201, 202, 204];
 
     public function __construct(
-        protected readonly string $url,
-        protected readonly ?int $openTimeout = null,
-        protected readonly ?int $readTimeout = null,
-        protected readonly ?int $writeTimeout = null,
-        protected readonly bool $blockPrivateAddresses = false,
+        public readonly string $url,
+        public readonly ?int $openTimeout = null,
+        public readonly ?int $readTimeout = null,
+        public readonly ?int $writeTimeout = null,
+        public readonly bool $blockPrivateAddresses = false,
     ) {}
 
     /**
@@ -64,7 +64,7 @@ class LagoHttpClient
             ->when($this->readTimeout !== null, fn ($http) => $http->timeout($this->readTimeout))
             ->when($this->openTimeout !== null, fn ($http) => $http->connectTimeout($this->openTimeout));
 
-        $response = $pending->withBody($encodedBody, 'application/json')->send($method, [$this->url]);
+        $response = $pending->withBody($encodedBody, 'application/json')->send($method, $this->url);
 
         $code = $response->status();
         if (! in_array($code, self::RESPONSE_SUCCESS_CODES, true)) {

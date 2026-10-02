@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\ChargeModel;
 use App\Models\Casts\JsonbProperties;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use App\Services\Charges\AggregationChecks;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -129,14 +130,19 @@ class Charge extends BaseModel
 
     // -- Scopes ----------------------------------------------------------------
 
-    /** Rails: `scope :pay_in_advance, -> { where(pay_in_advance: true) }`. */
-    public function scopePayInAdvance(Builder $query): Builder
+    /**
+     * Rails: `scope :pay_in_advance, -> { where(pay_in_advance: true) }`.
+     * Legacy scopeXyz() form: #[Scope] payInAdvance() would collide with the
+     * payInAdvance() boolean helper below.
+     */
+    protected function scopePayInAdvance(Builder $query): Builder
     {
         return $query->where('pay_in_advance', true);
     }
 
     /** Rails: `scope :parents, -> { where(parent_id: nil) }`. */
-    public function scopeParents(Builder $query): Builder
+    #[Scope]
+    protected function parents(Builder $query): Builder
     {
         return $query->whereNull('parent_id');
     }

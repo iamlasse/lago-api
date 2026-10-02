@@ -4,17 +4,18 @@ declare(strict_types=1);
 
 namespace App\Services\Subscriptions;
 
-use App\Enums\PlanInterval;
-use App\Models\InvoiceSubscription;
+use LogicException;
 use App\Models\Plan;
+use App\Enums\PlanInterval;
+use Carbon\CarbonImmutable;
+use Carbon\CarbonInterface;
 use App\Models\Subscription;
+use App\Models\InvoiceSubscription;
+use App\Services\Subscriptions\Dates\WeeklyService;
+use App\Services\Subscriptions\Dates\YearlyService;
 use App\Services\Subscriptions\Dates\MonthlyService;
 use App\Services\Subscriptions\Dates\QuarterlyService;
 use App\Services\Subscriptions\Dates\SemiannualService;
-use App\Services\Subscriptions\Dates\WeeklyService;
-use App\Services\Subscriptions\Dates\YearlyService;
-use Carbon\CarbonImmutable;
-use Carbon\CarbonInterface;
 
 /**
  * Port of Rails' Subscriptions::DatesService
@@ -72,8 +73,28 @@ abstract class DatesService
         $this->billingDateOverride = $billingDateOverride;
     }
 
+    abstract protected function computeBaseDate(): CarbonImmutable;
+
+    abstract protected function computeFromDate(): CarbonImmutable;
+
+    abstract protected function computeToDate(): CarbonImmutable;
+
+    abstract protected function computeChargesFromDate(): CarbonImmutable;
+
+    abstract protected function computeChargesToDate(): CarbonImmutable;
+
+    abstract protected function computeFixedChargesFromDate(): CarbonImmutable;
+
+    abstract protected function computeFixedChargesToDate(): CarbonImmutable;
+
+    abstract protected function computeNextEndOfPeriod(): CarbonImmutable;
+
+    abstract protected function computePreviousBeginningOfPeriod(CarbonImmutable $date): CarbonImmutable;
+
+    abstract protected function computeDuration(CarbonImmutable $fromDate): int;
+
     /** Rails: `Subscriptions::DatesService.new_instance`. */
-    public static function newInstance(Subscription $subscription, CarbonInterface|int|null $billingAt, bool $currentUsage = false): DatesService
+    public static function newInstance(Subscription $subscription, CarbonInterface|int|null $billingAt, bool $currentUsage = false): self
     {
         $interval = $subscription->plan->interval;
 
@@ -83,7 +104,7 @@ abstract class DatesService
             PlanInterval::Yearly => YearlyService::class,
             PlanInterval::Quarterly => QuarterlyService::class,
             PlanInterval::Semiannual => SemiannualService::class,
-            default => throw new \LogicException('NotImplementedError'), // port of Rails' raise(NotImplementedError)
+            default => throw new LogicException('NotImplementedError'), // port of Rails' raise(NotImplementedError)
         };
 
         return new $klass($subscription, $billingAt, $currentUsage);
@@ -343,6 +364,18 @@ abstract class DatesService
         return $this->computeFixedChargesDuration($this->computeFixedChargesFromDate());
     }
 
+    /** Rails: Time.days_in_month(month, year). */
+    protected static function daysInMonth(int $month, int $year): int
+    {
+        return CarbonImmutable::create($year, $month, 1, 0, 0, 0, 'UTC')->daysInMonth;
+    }
+
+    /** Rails: Time.days_in_year(year). */
+    protected static function daysInYear(int $year): int
+    {
+        return CarbonImmutable::create($year, 1, 1, 0, 0, 0, 'UTC')->isLeapYear() ? 366 : 365;
+    }
+
     // -- Abstract / overridable computation hooks -----------------------------------
 
     /** Determines if charges should be billed this cycle. */
@@ -356,26 +389,6 @@ abstract class DatesService
     {
         return true;
     }
-
-    abstract protected function computeBaseDate(): CarbonImmutable;
-
-    abstract protected function computeFromDate(): CarbonImmutable;
-
-    abstract protected function computeToDate(): CarbonImmutable;
-
-    abstract protected function computeChargesFromDate(): CarbonImmutable;
-
-    abstract protected function computeChargesToDate(): CarbonImmutable;
-
-    abstract protected function computeFixedChargesFromDate(): CarbonImmutable;
-
-    abstract protected function computeFixedChargesToDate(): CarbonImmutable;
-
-    abstract protected function computeNextEndOfPeriod(): CarbonImmutable;
-
-    abstract protected function computePreviousBeginningOfPeriod(CarbonImmutable $date): CarbonImmutable;
-
-    abstract protected function computeDuration(CarbonImmutable $fromDate): int;
 
     protected function computeChargesDuration(CarbonImmutable $fromDate): int
     {
@@ -546,18 +559,6 @@ abstract class DatesService
         }
 
         return CarbonImmutable::create($year, $month, $day, 0, 0, 0, 'UTC');
-    }
-
-    /** Rails: Time.days_in_month(month, year). */
-    protected static function daysInMonth(int $month, int $year): int
-    {
-        return CarbonImmutable::create($year, $month, 1, 0, 0, 0, 'UTC')->daysInMonth;
-    }
-
-    /** Rails: Time.days_in_year(year). */
-    protected static function daysInYear(int $year): int
-    {
-        return CarbonImmutable::create($year, 1, 1, 0, 0, 0, 'UTC')->isLeapYear() ? 366 : 365;
     }
 
     protected function lastDayOfMonth(CarbonImmutable $date): bool

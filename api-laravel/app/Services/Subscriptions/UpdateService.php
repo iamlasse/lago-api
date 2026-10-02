@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Services\Subscriptions;
 
-use App\Enums\SubscriptionStatus;
+use Carbon\CarbonImmutable;
+use Carbon\CarbonInterface;
 use App\Models\Subscription;
 use App\Services\BaseResult;
 use App\Services\BaseService;
 use App\Support\Utils\Datetime;
-use Carbon\CarbonImmutable;
-use Carbon\CarbonInterface;
+use App\Enums\SubscriptionStatus;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -166,7 +166,7 @@ class UpdateService extends BaseService
                 $subscription->save();
 
                 if ($subscription->active()
-                    && $subscription->fixedCharges()->where('pay_in_advance', true)->exists()
+                    && $subscription->fixedCharges()->where('fixed_charges.pay_in_advance', true)->exists()
                     && $subscription->isDirty('plan_id')
                 ) {
                     // TODO(port): Invoices::CreatePayInAdvanceFixedChargesJob
@@ -204,7 +204,7 @@ class UpdateService extends BaseService
         }
 
         $raw = $this->params['purchase_order_number'];
-        $normalized = is_string($raw) ? (trim($raw) === '' ? null : trim($raw)) : $raw;
+        $normalized = is_string($raw) ? (mb_trim($raw) === '' ? null : mb_trim($raw)) : $raw;
 
         return $normalized !== $subscription->purchase_order_number;
     }
@@ -235,6 +235,8 @@ class UpdateService extends BaseService
 
         if ($isFuture || ($isToday && $this->activationRulesPresent($subscription))) {
             $subscription->status = SubscriptionStatus::Pending->value;
+            // Rails: pending! persists — carries the new subscription_at.
+            $subscription->save();
 
             return;
         }
@@ -252,7 +254,7 @@ class UpdateService extends BaseService
                 // TODO(port): BillSubscriptionJob.perform_after_commit(
                 //   [subscription], Time.current.to_i,
                 //   invoicing_reason: :subscription_starting)
-            } elseif ($subscription->fixedCharges()->where('pay_in_advance', true)->exists()) {
+            } elseif ($subscription->fixedCharges()->where('fixed_charges.pay_in_advance', true)->exists()) {
                 // TODO(port): Invoices::CreatePayInAdvanceFixedChargesJob
                 //   .perform_after_commit(subscription, started_at + 1.second)
             }

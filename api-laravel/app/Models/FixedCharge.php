@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
+
 use App\Models\Casts\JsonbProperties;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Concerns\BelongsToOrganization;
@@ -93,7 +95,8 @@ class FixedCharge extends BaseModel
     // -- Enum helpers (Rails enum suffix methods) -------------------------------
 
     /** Rails: `scope :parents, -> { where(parent_id: nil) }`. */
-    public function scopeParents(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    #[Scope]
+    protected function parents(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
     {
         return $query->whereNull('parent_id');
     }

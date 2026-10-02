@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 use App\Models\Casts\BcNumeric;
 
 /**
@@ -29,6 +31,8 @@ use App\Models\Casts\BcNumeric;
 #[\Illuminate\Database\Eloquent\Attributes\Table(name: 'cached_aggregations')]
 class CachedAggregation extends BaseModel
 {
+    use HasFactory;
+
     protected function casts(): array
     {
         return [

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 use App\Models\Casts\BcNumeric;
 
 /**
@@ -25,6 +27,8 @@ use App\Models\Casts\BcNumeric;
 #[\Illuminate\Database\Eloquent\Attributes\Table(name: 'fees_taxes')]
 class FeeAppliedTax extends BaseModel
 {
+    use HasFactory;
+
     public function fee()
     {
         return $this->belongsTo(Fee::class);

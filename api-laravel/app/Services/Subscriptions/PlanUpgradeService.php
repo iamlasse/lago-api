@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Services\Subscriptions;
 
-use App\Enums\SubscriptionStatus;
 use App\Models\Plan;
 use App\Models\Subscription;
 use App\Services\BaseResult;
 use App\Services\BaseService;
+use App\Enums\SubscriptionStatus;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -41,7 +41,7 @@ class PlanUpgradeService extends BaseService
         $this->currentSubscription = $currentSubscription;
         $this->plan = $plan;
         $this->params = $params;
-        $this->name = trim((string) ($params['name'] ?? ''));
+        $this->name = mb_trim((string) ($params['name'] ?? ''));
     }
 
     public function execute(): BaseResult

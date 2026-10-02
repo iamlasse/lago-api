@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services\Subscriptions\Dates;
 
-use App\Services\Subscriptions\DatesService;
 use Carbon\CarbonImmutable;
+use InvalidArgumentException;
+use App\Services\Subscriptions\DatesService;
 
 /**
  * Port of Rails' Subscriptions::Dates::WeeklyService.
@@ -13,6 +14,21 @@ use Carbon\CarbonImmutable;
 class WeeklyService extends DatesService
 {
     public const WEEK_DURATION = 7;
+
+    /** Ruby wday numbering (0 = Sunday). */
+    protected static function weekdayNumber(string $dayName): int
+    {
+        return match ($dayName) {
+            'sunday' => 0,
+            'monday' => 1,
+            'tuesday' => 2,
+            'wednesday' => 3,
+            'thursday' => 4,
+            'friday' => 5,
+            'saturday' => 6,
+            default => throw new InvalidArgumentException("Unknown weekday {$dayName}"),
+        };
+    }
 
     protected function computeBaseDate(): CarbonImmutable
     {
@@ -108,7 +124,7 @@ class WeeklyService extends DatesService
     /** e.g. :monday — the subscription_at weekday name. */
     protected function subscriptionDayName(): string
     {
-        return strtolower($this->subscriptionAt()->format('l'));
+        return mb_strtolower($this->subscriptionAt()->format('l'));
     }
 
     protected function computeDuration(CarbonImmutable $fromDate): int
@@ -154,20 +170,5 @@ class WeeklyService extends DatesService
         $diff = $diff === 0 ? 7 : $diff;
 
         return $date->subDays($diff)->startOfDay();
-    }
-
-    /** Ruby wday numbering (0 = Sunday). */
-    protected static function weekdayNumber(string $dayName): int
-    {
-        return match ($dayName) {
-            'sunday' => 0,
-            'monday' => 1,
-            'tuesday' => 2,
-            'wednesday' => 3,
-            'thursday' => 4,
-            'friday' => 5,
-            'saturday' => 6,
-            default => throw new \InvalidArgumentException("Unknown weekday {$dayName}"),
-        };
     }
 }

@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\AppliedCouponStatus;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 use App\Enums\CouponFrequency;
 use App\Models\Casts\BcNumeric;
+use App\Enums\AppliedCouponStatus;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
@@ -29,6 +32,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[\Illuminate\Database\Eloquent\Attributes\Table(name: 'applied_coupons')]
 class AppliedCoupon extends BaseModel
 {
+    use HasFactory;
+
     public function coupon(): BelongsTo
     {
         return $this->belongsTo(Coupon::class);
@@ -37,12 +42,6 @@ class AppliedCoupon extends BaseModel
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
-    }
-
-    /** Port of `scope :active`. */
-    public function scopeActive(Builder $query): Builder
-    {
-        return $query->where('status', AppliedCouponStatus::Active->value);
     }
 
     public function statusEnum(): ?AppliedCouponStatus
@@ -109,6 +108,13 @@ class AppliedCoupon extends BaseModel
         $this->status = AppliedCouponStatus::Terminated;
         $this->terminated_at = now();
         $this->save();
+    }
+
+    /** Port of `scope :active`. */
+    #[Scope]
+    protected function active(Builder $query): Builder
+    {
+        return $query->where('status', AppliedCouponStatus::Active->value);
     }
 
     protected function casts(): array

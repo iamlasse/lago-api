@@ -84,7 +84,7 @@ class AddressGuard
      */
     public static function lookup(string $host): array
     {
-        $host = strtolower(trim($host));
+        $host = mb_strtolower(mb_trim($host));
 
         // Literal IPs skip the resolver, exactly like getaddrinfo.
         if (filter_var($host, FILTER_VALIDATE_IP) !== false) {
@@ -127,10 +127,10 @@ class AddressGuard
         // DNS64 synthesizes these for IPv4-only hosts, so the embedded IPv4
         // address is what gets checked.
         if (self::inCidr($packed, '64:ff9b::/96')) {
-            $packed = substr($packed, 12, 4);
+            $packed = mb_substr($packed, 12, 4, '8bit');
         }
 
-        $isIpv6 = strlen($packed) === 16;
+        $isIpv6 = mb_strlen($packed, '8bit') === 16;
 
         // Anything outside global unicast (loopback, mapped IPv4, ULA,
         // link-local, SRv6, multicast...) is blocked.
@@ -156,7 +156,7 @@ class AddressGuard
             return false;
         }
 
-        if (strlen($subnetPacked) !== strlen($packed)) {
+        if (mb_strlen($subnetPacked, '8bit') !== mb_strlen($packed, '8bit')) {
             return false;
         }
 
@@ -164,11 +164,11 @@ class AddressGuard
         $fullBytes = intdiv($prefixLength, 8);
         $remainderBits = $prefixLength % 8;
 
-        if ($fullBytes > 0 && substr($packed, 0, $fullBytes) !== substr($subnetPacked, 0, $fullBytes)) {
+        if ($fullBytes > 0 && mb_substr($packed, 0, $fullBytes, '8bit') !== mb_substr($subnetPacked, 0, $fullBytes, '8bit')) {
             return false;
         }
 
-        if ($remainderBits > 0 && $fullBytes < strlen($packed)) {
+        if ($remainderBits > 0 && $fullBytes < mb_strlen($packed, '8bit')) {
             $mask = 0xFF << (8 - $remainderBits) & 0xFF;
 
             return ((ord($packed[$fullBytes]) ^ ord($subnetPacked[$fullBytes])) & $mask) === 0;

@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Services\Subscriptions;
 
-use App\Enums\SubscriptionStatus;
-use App\Models\Customer;
 use App\Models\Plan;
+use App\Models\Customer;
 use App\Models\Subscription;
 use App\Services\BaseResult;
 use App\Services\BaseService;
-use App\Services\BillingEntities\ResolveService;
+use App\Enums\SubscriptionStatus;
 use Illuminate\Support\Facades\DB;
+use App\Services\BillingEntities\ResolveService;
 
 /**
  * Port of Rails' Subscriptions::PlanDowngradeService
@@ -47,7 +47,7 @@ class PlanDowngradeService extends BaseService
         $this->currentSubscription = $currentSubscription;
         $this->plan = $plan;
         $this->params = $params;
-        $this->name = trim((string) ($params['name'] ?? ''));
+        $this->name = mb_trim((string) ($params['name'] ?? ''));
     }
 
     public function execute(): BaseResult

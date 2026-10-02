@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Webhooks\Subscriptions;
 
-use App\Serializers\V1\SubscriptionSerializer;
 use App\Services\Webhooks\BaseService;
+use App\Serializers\V1\SubscriptionSerializer;
 
 /**
  * Port of Rails' Webhooks::Subscriptions::TerminatedService
