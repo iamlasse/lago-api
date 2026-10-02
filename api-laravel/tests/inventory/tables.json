@@ -1,0 +1,1175 @@
+{
+    "generator": "gen_tables",
+    "source": "db/structure.sql CREATE TABLE blocks",
+    "row_count": 146,
+    "rows": [
+        {
+            "id": "table:active_storage_attachments",
+            "name": "active_storage_attachments",
+            "source": "db/structure.sql",
+            "columns": 6,
+            "columns_hash": "e5d18dc5a36a8d64c26c1ba5ef7645c8",
+            "partitioned": false
+        },
+        {
+            "id": "table:active_storage_blobs",
+            "name": "active_storage_blobs",
+            "source": "db/structure.sql",
+            "columns": 9,
+            "columns_hash": "8b5a3a4dbbb9dd4c85d8089c78ed9fb7",
+            "partitioned": false
+        },
+        {
+            "id": "table:active_storage_variant_records",
+            "name": "active_storage_variant_records",
+            "source": "db/structure.sql",
+            "columns": 3,
+            "columns_hash": "d8ec07851c411ec49a1ba8c7969577ff",
+            "partitioned": false
+        },
+        {
+            "id": "table:add_ons",
+            "name": "add_ons",
+            "source": "db/structure.sql",
+            "columns": 11,
+            "columns_hash": "118951df5b4fe0caaa494d68290a637f",
+            "partitioned": false
+        },
+        {
+            "id": "table:add_ons_taxes",
+            "name": "add_ons_taxes",
+            "source": "db/structure.sql",
+            "columns": 6,
+            "columns_hash": "24e5280de6cc8ec922104f066611e89d",
+            "partitioned": false
+        },
+        {
+            "id": "table:adjusted_fees",
+            "name": "adjusted_fees",
+            "source": "db/structure.sql",
+            "columns": 20,
+            "columns_hash": "c81eb4c248cb1d1ece6854ecccc5ba6c",
+            "partitioned": false
+        },
+        {
+            "id": "table:ai_conversations",
+            "name": "ai_conversations",
+            "source": "db/structure.sql",
+            "columns": 7,
+            "columns_hash": "2207fa53e717ef557738eeb3c1d0d093",
+            "partitioned": false
+        },
+        {
+            "id": "table:api_keys",
+            "name": "api_keys",
+            "source": "db/structure.sql",
+            "columns": 9,
+            "columns_hash": "1a3c6c22546b84b6c31be57ab6f5ac80",
+            "partitioned": false
+        },
+        {
+            "id": "table:applied_add_ons",
+            "name": "applied_add_ons",
+            "source": "db/structure.sql",
+            "columns": 7,
+            "columns_hash": "16af442040d396aa29afe9b5a5cf2070",
+            "partitioned": false
+        },
+        {
+            "id": "table:applied_coupons",
+            "name": "applied_coupons",
+            "source": "db/structure.sql",
+            "columns": 14,
+            "columns_hash": "2c7a1de8dea11da831e3986b3b29333f",
+            "partitioned": false
+        },
+        {
+            "id": "table:applied_invoice_custom_sections",
+            "name": "applied_invoice_custom_sections",
+            "source": "db/structure.sql",
+            "columns": 9,
+            "columns_hash": "627d2ab2668998717ccfcf9a6e1699d6",
+            "partitioned": false
+        },
+        {
+            "id": "table:applied_pricing_units",
+            "name": "applied_pricing_units",
+            "source": "db/structure.sql",
+            "columns": 8,
+            "columns_hash": "04ebac74a819133fe97a0169266c9ddc",
+            "partitioned": false
+        },
+        {
+            "id": "table:applied_usage_thresholds",
+            "name": "applied_usage_thresholds",
+            "source": "db/structure.sql",
+            "columns": 7,
+            "columns_hash": "ce74bb69842ef4425e1f6c6fb0d1e4d9",
+            "partitioned": false
+        },
+        {
+            "id": "table:ar_internal_metadata",
+            "name": "ar_internal_metadata",
+            "source": "db/structure.sql",
+            "columns": 4,
+            "columns_hash": "e46df62b3635266e839fe90787d4d87d",
+            "partitioned": false
+        },
+        {
+            "id": "table:billable_metric_filters",
+            "name": "billable_metric_filters",
+            "source": "db/structure.sql",
+            "columns": 8,
+            "columns_hash": "a93d2d4113b468bf199c44408fadecf6",
+            "partitioned": false
+        },
+        {
+            "id": "table:billable_metrics",
+            "name": "billable_metrics",
+            "source": "db/structure.sql",
+            "columns": 17,
+            "columns_hash": "8edb285ed9f985792003aa29d2442ec5",
+            "partitioned": false
+        },
+        {
+            "id": "table:billing_entities",
+            "name": "billing_entities",
+            "source": "db/structure.sql",
+            "columns": 37,
+            "columns_hash": "6b270ee5aa07ce0376740fe79687e3ea",
+            "partitioned": false
+        },
+        {
+            "id": "table:billing_entities_invoice_custom_sections",
+            "name": "billing_entities_invoice_custom_sections",
+            "source": "db/structure.sql",
+            "columns": 6,
+            "columns_hash": "795674b23edb1f3980d53738f5606438",
+            "partitioned": false
+        },
+        {
+            "id": "table:billing_entities_taxes",
+            "name": "billing_entities_taxes",
+            "source": "db/structure.sql",
+            "columns": 6,
+            "columns_hash": "9e2f0a9683ad04b40f92c3d8001b9eed",
+            "partitioned": false
+        },
+        {
+            "id": "table:billing_object_connections",
+            "name": "billing_object_connections",
+            "source": "db/structure.sql",
+            "columns": 10,
+            "columns_hash": "a2cc3fcc4a9e31cdb3156bbdd679a24a",
+            "partitioned": false
+        },
+        {
+            "id": "table:billing_segments",
+            "name": "billing_segments",
+            "source": "db/structure.sql",
+            "columns": 19,
+            "columns_hash": "30df97527e4bb4a0d389eedaf1f0a583",
+            "partitioned": false
+        },
+        {
+            "id": "table:cached_aggregations",
+            "name": "cached_aggregations",
+            "source": "db/structure.sql",
+            "columns": 16,
+            "columns_hash": "01ab46f2dfe4f9709b4c2e496144bc7c",
+            "partitioned": false
+        },
+        {
+            "id": "table:catalog_plans",
+            "name": "catalog_plans",
+            "source": "db/structure.sql",
+            "columns": 10,
+            "columns_hash": "288de36d89ef3f1ec6d6ba5aa95746c9",
+            "partitioned": false
+        },
+        {
+            "id": "table:charge_filter_values",
+            "name": "charge_filter_values",
+            "source": "db/structure.sql",
+            "columns": 8,
+            "columns_hash": "95b3522d1c81584976a39801ab4a1a89",
+            "partitioned": false
+        },
+        {
+            "id": "table:charge_filters",
+            "name": "charge_filters",
+            "source": "db/structure.sql",
+            "columns": 9,
+            "columns_hash": "5e564dc3ce8216c7c2d864a5838ae20f",
+            "partitioned": false
+        },
+        {
+            "id": "table:charges",
+            "name": "charges",
+            "source": "db/structure.sql",
+            "columns": 19,
+            "columns_hash": "6ddc41d40468367b3cf3a3085e87b2f6",
+            "partitioned": false
+        },
+        {
+            "id": "table:charges_taxes",
+            "name": "charges_taxes",
+            "source": "db/structure.sql",
+            "columns": 6,
+            "columns_hash": "eba572de24b756c6f46642ca0b7c26dc",
+            "partitioned": false
+        },
+        {
+            "id": "table:commitments",
+            "name": "commitments",
+            "source": "db/structure.sql",
+            "columns": 8,
+            "columns_hash": "dad6d4b8238fe54809d1e4aeb61ef838",
+            "partitioned": false
+        },
+        {
+            "id": "table:commitments_taxes",
+            "name": "commitments_taxes",
+            "source": "db/structure.sql",
+            "columns": 6,
+            "columns_hash": "728a71dff779214e974c2e1a3a0a95a4",
+            "partitioned": false
+        },
+        {
+            "id": "table:contract_rate_cards",
+            "name": "contract_rate_cards",
+            "source": "db/structure.sql",
+            "columns": 11,
+            "columns_hash": "8e6b0b84b90113e0ccadd036e68a3bb8",
+            "partitioned": false
+        },
+        {
+            "id": "table:contracts",
+            "name": "contracts",
+            "source": "db/structure.sql",
+            "columns": 20,
+            "columns_hash": "64189d6d25cc9e27c0c52b5080d1bb41",
+            "partitioned": false
+        },
+        {
+            "id": "table:coupon_targets",
+            "name": "coupon_targets",
+            "source": "db/structure.sql",
+            "columns": 9,
+            "columns_hash": "bff681f1f343adb6c51ed92f167d10ae",
+            "partitioned": false
+        },
+        {
+            "id": "table:coupons",
+            "name": "coupons",
+            "source": "db/structure.sql",
+            "columns": 21,
+            "columns_hash": "196e03f374067b78b1f6b0643423f3a8",
+            "partitioned": false
+        },
+        {
+            "id": "table:credit_note_items",
+            "name": "credit_note_items",
+            "source": "db/structure.sql",
+            "columns": 9,
+            "columns_hash": "6ec9645c05e8b618fa3be20ef8867a5b",
+            "partitioned": false
+        },
+        {
+            "id": "table:credit_notes",
+            "name": "credit_notes",
+            "source": "db/structure.sql",
+            "columns": 33,
+            "columns_hash": "fbfdb0e6e3d323130074c0d5b95d57e2",
+            "partitioned": false
+        },
+        {
+            "id": "table:credit_notes_taxes",
+            "name": "credit_notes_taxes",
+            "source": "db/structure.sql",
+            "columns": 13,
+            "columns_hash": "3f0308d8628ae59c80331f5806fd96c7",
+            "partitioned": false
+        },
+        {
+            "id": "table:credits",
+            "name": "credits",
+            "source": "db/structure.sql",
+            "columns": 11,
+            "columns_hash": "72dbc0f7aace81228cb8c5882e154e6d",
+            "partitioned": false
+        },
+        {
+            "id": "table:cs_admin_audit_logs",
+            "name": "cs_admin_audit_logs",
+            "source": "db/structure.sql",
+            "columns": 14,
+            "columns_hash": "05d750d2d7a7a8b0007cff0e61834405",
+            "partitioned": false
+        },
+        {
+            "id": "table:customer_metadata",
+            "name": "customer_metadata",
+            "source": "db/structure.sql",
+            "columns": 8,
+            "columns_hash": "fb9485acf314a4e71a14eb1b216b5eb9",
+            "partitioned": false
+        },
+        {
+            "id": "table:customers",
+            "name": "customers",
+            "source": "db/structure.sql",
+            "columns": 54,
+            "columns_hash": "066f42b5145ab8ad90a4dbe05a307257",
+            "partitioned": false
+        },
+        {
+            "id": "table:customers_invoice_custom_sections",
+            "name": "customers_invoice_custom_sections",
+            "source": "db/structure.sql",
+            "columns": 7,
+            "columns_hash": "19e626522d91ff79353fd799265729a5",
+            "partitioned": false
+        },
+        {
+            "id": "table:customers_taxes",
+            "name": "customers_taxes",
+            "source": "db/structure.sql",
+            "columns": 6,
+            "columns_hash": "108c5cd92c203e955985fed7fa3da8cc",
+            "partitioned": false
+        },
+        {
+            "id": "table:daily_usages",
+            "name": "daily_usages",
+            "source": "db/structure.sql",
+            "columns": 13,
+            "columns_hash": "6fcd15b7febd7f3aacecfa4cf0f5fb8a",
+            "partitioned": false
+        },
+        {
+            "id": "table:data_export_parts",
+            "name": "data_export_parts",
+            "source": "db/structure.sql",
+            "columns": 9,
+            "columns_hash": "72209bc6c0d2b281a8717e3e7b23e10e",
+            "partitioned": false
+        },
+        {
+            "id": "table:data_exports",
+            "name": "data_exports",
+            "source": "db/structure.sql",
+            "columns": 12,
+            "columns_hash": "1984e17ba3c13a5aa21a8c6a044ad28a",
+            "partitioned": false
+        },
+        {
+            "id": "table:dunning_campaign_thresholds",
+            "name": "dunning_campaign_thresholds",
+            "source": "db/structure.sql",
+            "columns": 8,
+            "columns_hash": "d4a8e32459f03301b3d75dadf39c9bea",
+            "partitioned": false
+        },
+        {
+            "id": "table:dunning_campaigns",
+            "name": "dunning_campaigns",
+            "source": "db/structure.sql",
+            "columns": 12,
+            "columns_hash": "3cb42d274eedfc6bf82e7a80916ff67b",
+            "partitioned": false
+        },
+        {
+            "id": "table:enriched_events",
+            "name": "enriched_events",
+            "source": "db/structure.sql",
+            "columns": 18,
+            "columns_hash": "fcede32ed4b3127197548dbcdd9dda9e",
+            "partitioned": true
+        },
+        {
+            "id": "table:enriched_events_default",
+            "name": "enriched_events_default",
+            "source": "db/structure.sql",
+            "columns": 18,
+            "columns_hash": "fcede32ed4b3127197548dbcdd9dda9e",
+            "partitioned": false
+        },
+        {
+            "id": "table:entitlement_entitlement_values",
+            "name": "entitlement_entitlement_values",
+            "source": "db/structure.sql",
+            "columns": 8,
+            "columns_hash": "c642d2fd207a3a23f1fcafb466e99a0c",
+            "partitioned": false
+        },
+        {
+            "id": "table:entitlement_entitlements",
+            "name": "entitlement_entitlements",
+            "source": "db/structure.sql",
+            "columns": 9,
+            "columns_hash": "881e045f1e81dee2aefdb3159b930e7a",
+            "partitioned": false
+        },
+        {
+            "id": "table:entitlement_features",
+            "name": "entitlement_features",
+            "source": "db/structure.sql",
+            "columns": 8,
+            "columns_hash": "4c66e1401637853ca849ea9b4d6ff9c2",
+            "partitioned": false
+        },
+        {
+            "id": "table:entitlement_privileges",
+            "name": "entitlement_privileges",
+            "source": "db/structure.sql",
+            "columns": 10,
+            "columns_hash": "87008298d8b9261e74e99d48baa2e384",
+            "partitioned": false
+        },
+        {
+            "id": "table:entitlement_subscription_feature_removals",
+            "name": "entitlement_subscription_feature_removals",
+            "source": "db/structure.sql",
+            "columns": 8,
+            "columns_hash": "16bb8b21fd87bf8d2faca56cabdce251",
+            "partitioned": false
+        },
+        {
+            "id": "table:error_details",
+            "name": "error_details",
+            "source": "db/structure.sql",
+            "columns": 9,
+            "columns_hash": "5a89ba0cf733ad21453099c21f4ddd51",
+            "partitioned": false
+        },
+        {
+            "id": "table:events",
+            "name": "events",
+            "source": "db/structure.sql",
+            "columns": 15,
+            "columns_hash": "35c635edec71d268778a3497699562a5",
+            "partitioned": false
+        },
+        {
+            "id": "table:fees",
+            "name": "fees",
+            "source": "db/structure.sql",
+            "columns": 51,
+            "columns_hash": "3e5e353e5bb6111ac9543d7e68008e73",
+            "partitioned": false
+        },
+        {
+            "id": "table:fees_taxes",
+            "name": "fees_taxes",
+            "source": "db/structure.sql",
+            "columns": 13,
+            "columns_hash": "5e667b69be18d13c24fb62d00904f721",
+            "partitioned": false
+        },
+        {
+            "id": "table:fixed_charge_events",
+            "name": "fixed_charge_events",
+            "source": "db/structure.sql",
+            "columns": 9,
+            "columns_hash": "613914ce48c9f14ed32e0829f3c675f4",
+            "partitioned": false
+        },
+        {
+            "id": "table:fixed_charges",
+            "name": "fixed_charges",
+            "source": "db/structure.sql",
+            "columns": 15,
+            "columns_hash": "e06c4efe327c2a3b0f48e85b1bca4bbb",
+            "partitioned": false
+        },
+        {
+            "id": "table:fixed_charges_taxes",
+            "name": "fixed_charges_taxes",
+            "source": "db/structure.sql",
+            "columns": 6,
+            "columns_hash": "c6c42d2bbfe7c69e851373d3fdf44c51",
+            "partitioned": false
+        },
+        {
+            "id": "table:group_properties",
+            "name": "group_properties",
+            "source": "db/structure.sql",
+            "columns": 8,
+            "columns_hash": "66c668c77045e9b43bbe20ab4bd13bff",
+            "partitioned": false
+        },
+        {
+            "id": "table:groups",
+            "name": "groups",
+            "source": "db/structure.sql",
+            "columns": 8,
+            "columns_hash": "51249ffbb94b9c62772dda89190ecbe6",
+            "partitioned": false
+        },
+        {
+            "id": "table:idempotency_records",
+            "name": "idempotency_records",
+            "source": "db/structure.sql",
+            "columns": 7,
+            "columns_hash": "679d105d8bff3a94fa80c9bcfcada486",
+            "partitioned": false
+        },
+        {
+            "id": "table:inbound_webhooks",
+            "name": "inbound_webhooks",
+            "source": "db/structure.sql",
+            "columns": 11,
+            "columns_hash": "14752eef46c576e45ad65b17da2d05c1",
+            "partitioned": false
+        },
+        {
+            "id": "table:integration_collection_mappings",
+            "name": "integration_collection_mappings",
+            "source": "db/structure.sql",
+            "columns": 9,
+            "columns_hash": "611fa126e5948185cb0491b2f88d140d",
+            "partitioned": false
+        },
+        {
+            "id": "table:integration_customers",
+            "name": "integration_customers",
+            "source": "db/structure.sql",
+            "columns": 12,
+            "columns_hash": "c764db66e9dce4512cec61923b5636e3",
+            "partitioned": false
+        },
+        {
+            "id": "table:integration_items",
+            "name": "integration_items",
+            "source": "db/structure.sql",
+            "columns": 9,
+            "columns_hash": "99cf36860ccdfb38ab00b2e74e41de81",
+            "partitioned": false
+        },
+        {
+            "id": "table:integration_mappings",
+            "name": "integration_mappings",
+            "source": "db/structure.sql",
+            "columns": 10,
+            "columns_hash": "11a7d408374cca85609f03012529ed04",
+            "partitioned": false
+        },
+        {
+            "id": "table:integration_resources",
+            "name": "integration_resources",
+            "source": "db/structure.sql",
+            "columns": 9,
+            "columns_hash": "ba10c8690a84f3b6743a580fa7772a02",
+            "partitioned": false
+        },
+        {
+            "id": "table:integrations",
+            "name": "integrations",
+            "source": "db/structure.sql",
+            "columns": 9,
+            "columns_hash": "0e36222605f11d275b55dfdc2dd0896c",
+            "partitioned": false
+        },
+        {
+            "id": "table:invites",
+            "name": "invites",
+            "source": "db/structure.sql",
+            "columns": 11,
+            "columns_hash": "c25e98a0eda01413612b86a10bdc0fe0",
+            "partitioned": false
+        },
+        {
+            "id": "table:invoice_connections",
+            "name": "invoice_connections",
+            "source": "db/structure.sql",
+            "columns": 8,
+            "columns_hash": "f4f69f801e2eca4abe3744c11d94ec8c",
+            "partitioned": false
+        },
+        {
+            "id": "table:invoice_custom_sections",
+            "name": "invoice_custom_sections",
+            "source": "db/structure.sql",
+            "columns": 11,
+            "columns_hash": "e17d20e6d483eee3cdff13b18edacaaf",
+            "partitioned": false
+        },
+        {
+            "id": "table:invoice_metadata",
+            "name": "invoice_metadata",
+            "source": "db/structure.sql",
+            "columns": 7,
+            "columns_hash": "fbec54739e226d7fe51c9f4ee98812a7",
+            "partitioned": false
+        },
+        {
+            "id": "table:invoice_settlements",
+            "name": "invoice_settlements",
+            "source": "db/structure.sql",
+            "columns": 11,
+            "columns_hash": "c11ba95db1df16702b07a481a145dd5e",
+            "partitioned": false
+        },
+        {
+            "id": "table:invoice_subscriptions",
+            "name": "invoice_subscriptions",
+            "source": "db/structure.sql",
+            "columns": 16,
+            "columns_hash": "a8fa44522ab6489bb4dcd4fe8a14c7d0",
+            "partitioned": false
+        },
+        {
+            "id": "table:invoices",
+            "name": "invoices",
+            "source": "db/structure.sql",
+            "columns": 54,
+            "columns_hash": "48df03b7458d2a431e533d00a11c8276",
+            "partitioned": false
+        },
+        {
+            "id": "table:invoices_payment_requests",
+            "name": "invoices_payment_requests",
+            "source": "db/structure.sql",
+            "columns": 6,
+            "columns_hash": "b6e8c50a5cbf47707128d486e4e9dc21",
+            "partitioned": false
+        },
+        {
+            "id": "table:invoices_taxes",
+            "name": "invoices_taxes",
+            "source": "db/structure.sql",
+            "columns": 14,
+            "columns_hash": "e95421c01cf63dcd90c126b0d419a1be",
+            "partitioned": false
+        },
+        {
+            "id": "table:item_metadata",
+            "name": "item_metadata",
+            "source": "db/structure.sql",
+            "columns": 7,
+            "columns_hash": "5fe951474d535803e37e9cdafefb4a85",
+            "partitioned": false
+        },
+        {
+            "id": "table:lifetime_usages",
+            "name": "lifetime_usages",
+            "source": "db/structure.sql",
+            "columns": 13,
+            "columns_hash": "b20c045191ef222387e794ae81c5d57a",
+            "partitioned": false
+        },
+        {
+            "id": "table:membership_roles",
+            "name": "membership_roles",
+            "source": "db/structure.sql",
+            "columns": 7,
+            "columns_hash": "e20cf18ddd0bbc38e59ac75f8702d417",
+            "partitioned": false
+        },
+        {
+            "id": "table:memberships",
+            "name": "memberships",
+            "source": "db/structure.sql",
+            "columns": 7,
+            "columns_hash": "bf949cf1f3c94f3fa2de5866924fc4e7",
+            "partitioned": false
+        },
+        {
+            "id": "table:order_forms",
+            "name": "order_forms",
+            "source": "db/structure.sql",
+            "columns": 13,
+            "columns_hash": "b925c79e8067019ee7938c1d6fc8367c",
+            "partitioned": false
+        },
+        {
+            "id": "table:orders",
+            "name": "orders",
+            "source": "db/structure.sql",
+            "columns": 13,
+            "columns_hash": "c081615b24bfe59f4ab4586afe217ecc",
+            "partitioned": false
+        },
+        {
+            "id": "table:organizations",
+            "name": "organizations",
+            "source": "db/structure.sql",
+            "columns": 40,
+            "columns_hash": "ea8c64f94bdc1f4b3a2cb94673c2eb1e",
+            "partitioned": false
+        },
+        {
+            "id": "table:password_resets",
+            "name": "password_resets",
+            "source": "db/structure.sql",
+            "columns": 6,
+            "columns_hash": "300df7ed8a752aa2bd5b47d562f36c0e",
+            "partitioned": false
+        },
+        {
+            "id": "table:payment_intents",
+            "name": "payment_intents",
+            "source": "db/structure.sql",
+            "columns": 9,
+            "columns_hash": "8a48230c115bd8e1f8faed3ee2444fd0",
+            "partitioned": false
+        },
+        {
+            "id": "table:payment_methods",
+            "name": "payment_methods",
+            "source": "db/structure.sql",
+            "columns": 12,
+            "columns_hash": "40bf92f665f7b42346effd40792d142f",
+            "partitioned": false
+        },
+        {
+            "id": "table:payment_provider_customers",
+            "name": "payment_provider_customers",
+            "source": "db/structure.sql",
+            "columns": 12,
+            "columns_hash": "48fbbda2cf041fa0881fad4343768530",
+            "partitioned": false
+        },
+        {
+            "id": "table:payment_providers",
+            "name": "payment_providers",
+            "source": "db/structure.sql",
+            "columns": 10,
+            "columns_hash": "a61fdf365de1acd315d568d248d30d1c",
+            "partitioned": false
+        },
+        {
+            "id": "table:payment_receipts",
+            "name": "payment_receipts",
+            "source": "db/structure.sql",
+            "columns": 7,
+            "columns_hash": "6724a229c724565db963f8ebdbd08e25",
+            "partitioned": false
+        },
+        {
+            "id": "table:payment_requests",
+            "name": "payment_requests",
+            "source": "db/structure.sql",
+            "columns": 12,
+            "columns_hash": "2294e5a0f987fbb714e292806636b4c4",
+            "partitioned": false
+        },
+        {
+            "id": "table:payments",
+            "name": "payments",
+            "source": "db/structure.sql",
+            "columns": 22,
+            "columns_hash": "469f63797ae46cc1971a96ca18a8e8c0",
+            "partitioned": false
+        },
+        {
+            "id": "table:pending_vies_checks",
+            "name": "pending_vies_checks",
+            "source": "db/structure.sql",
+            "columns": 11,
+            "columns_hash": "6223834ae9f9528d9e9e5631e5df7014",
+            "partitioned": false
+        },
+        {
+            "id": "table:plan_rate_cards",
+            "name": "plan_rate_cards",
+            "source": "db/structure.sql",
+            "columns": 8,
+            "columns_hash": "010ac67d3c4ce1ea7099ff2dec9fcbb1",
+            "partitioned": false
+        },
+        {
+            "id": "table:plans",
+            "name": "plans",
+            "source": "db/structure.sql",
+            "columns": 18,
+            "columns_hash": "c1645d45d655819bd10a12c178415b8c",
+            "partitioned": false
+        },
+        {
+            "id": "table:plans_taxes",
+            "name": "plans_taxes",
+            "source": "db/structure.sql",
+            "columns": 7,
+            "columns_hash": "40e198487e1fd689c705390e9429ed2a",
+            "partitioned": false
+        },
+        {
+            "id": "table:presentation_breakdowns",
+            "name": "presentation_breakdowns",
+            "source": "db/structure.sql",
+            "columns": 7,
+            "columns_hash": "470bb28cc1090cc89615ff12e5d99290",
+            "partitioned": false
+        },
+        {
+            "id": "table:pricing_unit_usages",
+            "name": "pricing_unit_usages",
+            "source": "db/structure.sql",
+            "columns": 12,
+            "columns_hash": "2f3c6d02781773a1228de7d7f6ceef9d",
+            "partitioned": false
+        },
+        {
+            "id": "table:pricing_units",
+            "name": "pricing_units",
+            "source": "db/structure.sql",
+            "columns": 8,
+            "columns_hash": "0d29e4c67efbb371f11a1593c694230b",
+            "partitioned": false
+        },
+        {
+            "id": "table:product_categories",
+            "name": "product_categories",
+            "source": "db/structure.sql",
+            "columns": 9,
+            "columns_hash": "4bd78f01e4ae29a0361d0d199c66c1c8",
+            "partitioned": false
+        },
+        {
+            "id": "table:product_filter_values",
+            "name": "product_filter_values",
+            "source": "db/structure.sql",
+            "columns": 8,
+            "columns_hash": "15200fa631a6daac859a5d8ee08c5a77",
+            "partitioned": false
+        },
+        {
+            "id": "table:product_filters",
+            "name": "product_filters",
+            "source": "db/structure.sql",
+            "columns": 10,
+            "columns_hash": "1574c7f46f24b4004c7ffd9f993c7615",
+            "partitioned": false
+        },
+        {
+            "id": "table:products",
+            "name": "products",
+            "source": "db/structure.sql",
+            "columns": 14,
+            "columns_hash": "eb7e238fcbfa74e2afdc8a527122b680",
+            "partitioned": false
+        },
+        {
+            "id": "table:quantified_events",
+            "name": "quantified_events",
+            "source": "db/structure.sql",
+            "columns": 14,
+            "columns_hash": "37bcb9cccd0850311c1d6fce3b719179",
+            "partitioned": false
+        },
+        {
+            "id": "table:quote_owners",
+            "name": "quote_owners",
+            "source": "db/structure.sql",
+            "columns": 6,
+            "columns_hash": "928e135b34898fda20ba48219e5523f8",
+            "partitioned": false
+        },
+        {
+            "id": "table:quote_versions",
+            "name": "quote_versions",
+            "source": "db/structure.sql",
+            "columns": 16,
+            "columns_hash": "766ab458879dd90c2cdc479e53c0b6bd",
+            "partitioned": false
+        },
+        {
+            "id": "table:quotes",
+            "name": "quotes",
+            "source": "db/structure.sql",
+            "columns": 9,
+            "columns_hash": "b002b8c23d2da2f92761157326769380",
+            "partitioned": false
+        },
+        {
+            "id": "table:rate_card_rates",
+            "name": "rate_card_rates",
+            "source": "db/structure.sql",
+            "columns": 14,
+            "columns_hash": "334e5794e0dcb1a300732fa153f4ace8",
+            "partitioned": false
+        },
+        {
+            "id": "table:rate_cards",
+            "name": "rate_cards",
+            "source": "db/structure.sql",
+            "columns": 16,
+            "columns_hash": "bae2a80aa5e7d30dc30e42b13faa3720",
+            "partitioned": false
+        },
+        {
+            "id": "table:rate_cards_taxes",
+            "name": "rate_cards_taxes",
+            "source": "db/structure.sql",
+            "columns": 6,
+            "columns_hash": "a520633cc5f27835f3b98d07b5bbc90e",
+            "partitioned": false
+        },
+        {
+            "id": "table:rate_overrides",
+            "name": "rate_overrides",
+            "source": "db/structure.sql",
+            "columns": 11,
+            "columns_hash": "11e08075c4dd7aeda8af3f4917664d63",
+            "partitioned": false
+        },
+        {
+            "id": "table:rate_phases",
+            "name": "rate_phases",
+            "source": "db/structure.sql",
+            "columns": 12,
+            "columns_hash": "ab4612eaf8044dd6acab27a69a604496",
+            "partitioned": false
+        },
+        {
+            "id": "table:record_deletions",
+            "name": "record_deletions",
+            "source": "db/structure.sql",
+            "columns": 7,
+            "columns_hash": "54330ae1828d34f9f58115bb569ff5c8",
+            "partitioned": false
+        },
+        {
+            "id": "table:recurring_transaction_rules",
+            "name": "recurring_transaction_rules",
+            "source": "db/structure.sql",
+            "columns": 25,
+            "columns_hash": "52cb808be44be56d338dacc9d72d8b82",
+            "partitioned": false
+        },
+        {
+            "id": "table:recurring_transaction_rules_invoice_custom_sections",
+            "name": "recurring_transaction_rules_invoice_custom_sections",
+            "source": "db/structure.sql",
+            "columns": 6,
+            "columns_hash": "55478f0947af0c6160ad87b410f1b745",
+            "partitioned": false
+        },
+        {
+            "id": "table:refunds",
+            "name": "refunds",
+            "source": "db/structure.sql",
+            "columns": 15,
+            "columns_hash": "5a14da648ba1a119c128425cec16ec7c",
+            "partitioned": false
+        },
+        {
+            "id": "table:roles",
+            "name": "roles",
+            "source": "db/structure.sql",
+            "columns": 10,
+            "columns_hash": "372ee9d76517f661c6a745124a5438cc",
+            "partitioned": false
+        },
+        {
+            "id": "table:schema_migrations",
+            "name": "schema_migrations",
+            "source": "db/structure.sql",
+            "columns": 1,
+            "columns_hash": "2af72f100c356273d46284f6fd1dfc08",
+            "partitioned": false
+        },
+        {
+            "id": "table:streaming_destinations",
+            "name": "streaming_destinations",
+            "source": "db/structure.sql",
+            "columns": 9,
+            "columns_hash": "d062d8b47d73fb72ec5022a1d214bc2e",
+            "partitioned": false
+        },
+        {
+            "id": "table:subscription_activation_rules",
+            "name": "subscription_activation_rules",
+            "source": "db/structure.sql",
+            "columns": 9,
+            "columns_hash": "1fbacea481f597bab8b1325d2eb75954",
+            "partitioned": false
+        },
+        {
+            "id": "table:subscription_fixed_charge_units_overrides",
+            "name": "subscription_fixed_charge_units_overrides",
+            "source": "db/structure.sql",
+            "columns": 8,
+            "columns_hash": "e7d6e594dab0a7fddcc1f9a17acadaa9",
+            "partitioned": false
+        },
+        {
+            "id": "table:subscriptions",
+            "name": "subscriptions",
+            "source": "db/structure.sql",
+            "columns": 33,
+            "columns_hash": "03054cad0a62fd6a6d9b230cd33d5e02",
+            "partitioned": false
+        },
+        {
+            "id": "table:subscriptions_invoice_custom_sections",
+            "name": "subscriptions_invoice_custom_sections",
+            "source": "db/structure.sql",
+            "columns": 6,
+            "columns_hash": "2dd8dde4f59cfbdeabbfd3fa17eee5a5",
+            "partitioned": false
+        },
+        {
+            "id": "table:taxes",
+            "name": "taxes",
+            "source": "db/structure.sql",
+            "columns": 11,
+            "columns_hash": "2d28fd059af8707baf30b19ab73cb986",
+            "partitioned": false
+        },
+        {
+            "id": "table:template_public_enriched_events",
+            "name": "template_public_enriched_events",
+            "source": "db/structure.sql",
+            "columns": 16,
+            "columns_hash": "57da98c12b9b390a52df6950963351b7",
+            "partitioned": false
+        },
+        {
+            "id": "table:usage_attribution_types",
+            "name": "usage_attribution_types",
+            "source": "db/structure.sql",
+            "columns": 11,
+            "columns_hash": "291c0087a86972c2caf026334e3a7344",
+            "partitioned": false
+        },
+        {
+            "id": "table:usage_attribution_values",
+            "name": "usage_attribution_values",
+            "source": "db/structure.sql",
+            "columns": 10,
+            "columns_hash": "382603b19e7140fae49394f567813575",
+            "partitioned": false
+        },
+        {
+            "id": "table:usage_monitoring_alert_thresholds",
+            "name": "usage_monitoring_alert_thresholds",
+            "source": "db/structure.sql",
+            "columns": 9,
+            "columns_hash": "544ff90c64cf8a28dee0d706b47d5199",
+            "partitioned": false
+        },
+        {
+            "id": "table:usage_monitoring_alerts",
+            "name": "usage_monitoring_alerts",
+            "source": "db/structure.sql",
+            "columns": 14,
+            "columns_hash": "50cb91546c57983cd8c2c1efba9ce178",
+            "partitioned": false
+        },
+        {
+            "id": "table:usage_monitoring_subscription_activities",
+            "name": "usage_monitoring_subscription_activities",
+            "source": "db/structure.sql",
+            "columns": 6,
+            "columns_hash": "97334cba1d7c3c91c8a9c51b47874064",
+            "partitioned": false
+        },
+        {
+            "id": "table:usage_monitoring_triggered_alerts",
+            "name": "usage_monitoring_triggered_alerts",
+            "source": "db/structure.sql",
+            "columns": 14,
+            "columns_hash": "5e7bb21d947d3f811136dc745ec580b8",
+            "partitioned": false
+        },
+        {
+            "id": "table:usage_thresholds",
+            "name": "usage_thresholds",
+            "source": "db/structure.sql",
+            "columns": 10,
+            "columns_hash": "226e10037ceb02d0fa6355e7227c9b04",
+            "partitioned": false
+        },
+        {
+            "id": "table:user_devices",
+            "name": "user_devices",
+            "source": "db/structure.sql",
+            "columns": 10,
+            "columns_hash": "ccced314261eb61116cd16045c9473c7",
+            "partitioned": false
+        },
+        {
+            "id": "table:users",
+            "name": "users",
+            "source": "db/structure.sql",
+            "columns": 6,
+            "columns_hash": "97366320bffd125b437894423dd97098",
+            "partitioned": false
+        },
+        {
+            "id": "table:versions",
+            "name": "versions",
+            "source": "db/structure.sql",
+            "columns": 9,
+            "columns_hash": "19f316401d518ce1b7aba9668b8e6163",
+            "partitioned": false
+        },
+        {
+            "id": "table:wallet_targets",
+            "name": "wallet_targets",
+            "source": "db/structure.sql",
+            "columns": 6,
+            "columns_hash": "5a57d5ff8bef1838579171004d2e525f",
+            "partitioned": false
+        },
+        {
+            "id": "table:wallet_transaction_consumptions",
+            "name": "wallet_transaction_consumptions",
+            "source": "db/structure.sql",
+            "columns": 7,
+            "columns_hash": "a9b9d4b1ef377388c8acf7fd76e59d5e",
+            "partitioned": false
+        },
+        {
+            "id": "table:wallet_transactions",
+            "name": "wallet_transactions",
+            "source": "db/structure.sql",
+            "columns": 27,
+            "columns_hash": "fd602ce84259d489be15442794d4166e",
+            "partitioned": false
+        },
+        {
+            "id": "table:wallet_transactions_invoice_custom_sections",
+            "name": "wallet_transactions_invoice_custom_sections",
+            "source": "db/structure.sql",
+            "columns": 6,
+            "columns_hash": "b209284babf4e589528b22a994a9952b",
+            "partitioned": false
+        },
+        {
+            "id": "table:wallets",
+            "name": "wallets",
+            "source": "db/structure.sql",
+            "columns": 38,
+            "columns_hash": "869d0dc7ca99d10f3118cf9e1fb78f25",
+            "partitioned": false
+        },
+        {
+            "id": "table:wallets_invoice_custom_sections",
+            "name": "wallets_invoice_custom_sections",
+            "source": "db/structure.sql",
+            "columns": 6,
+            "columns_hash": "d30c0f5b5d5a148d517db91faf06b553",
+            "partitioned": false
+        },
+        {
+            "id": "table:webhook_endpoints",
+            "name": "webhook_endpoints",
+            "source": "db/structure.sql",
+            "columns": 8,
+            "columns_hash": "63c9b22b4e823d83ca4a1b2eb1fe3025",
+            "partitioned": false
+        },
+        {
+            "id": "table:webhooks",
+            "name": "webhooks",
+            "source": "db/structure.sql",
+            "columns": 17,
+            "columns_hash": "859c607b288022a34cf96e537035ae66",
+            "partitioned": false
+        }
+    ]
+}

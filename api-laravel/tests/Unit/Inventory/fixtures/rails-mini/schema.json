@@ -1,0 +1,24 @@
+{
+  "data": {
+    "__schema": {
+      "queryType": {"name": "Query"},
+      "mutationType": {"name": "Mutation"},
+      "subscriptionType": null,
+      "types": [
+        {
+          "name": "Query",
+          "fields": [
+            {"name": "organization", "args": [], "type": {"kind": "OBJECT", "name": "Organization", "ofType": null}, "isDeprecated": false, "deprecationReason": null},
+            {"name": "currentUser", "args": [{"name": "id", "type": {"kind": "SCALAR", "name": "ID", "ofType": null}}], "type": {"kind": "NON_NULL", "name": null, "ofType": {"kind": "OBJECT", "name": "User"}}, "isDeprecated": false, "deprecationReason": null}
+          ]
+        },
+        {
+          "name": "Mutation",
+          "fields": [
+            {"name": "loginUser", "args": [], "type": {"kind": "OBJECT", "name": "Session", "ofType": null}, "isDeprecated": true, "deprecationReason": "use OAuth"}
+          ]
+        }
+      ]
+    }
+  }
+}

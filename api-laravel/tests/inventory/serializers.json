@@ -1,0 +1,777 @@
+{
+    "generator": "gen_serializers",
+    "source": "app/serializers/**/*.rb",
+    "row_count": 154,
+    "rows": [
+        {
+            "id": "ser:ActiveJob.MeteredItemSerializer",
+            "name": "ActiveJob::MeteredItemSerializer",
+            "source": "app/serializers/active_job/metered_item_serializer.rb"
+        },
+        {
+            "id": "ser:Admin.OrganizationSerializer",
+            "name": "Admin::OrganizationSerializer",
+            "source": "app/serializers/admin/organization_serializer.rb"
+        },
+        {
+            "id": "ser:CollectionSerializer",
+            "name": "CollectionSerializer",
+            "source": "app/serializers/collection_serializer.rb"
+        },
+        {
+            "id": "ser:EInvoices.BaseSerializer",
+            "name": "EInvoices::BaseSerializer",
+            "source": "app/serializers/e_invoices/base_serializer.rb"
+        },
+        {
+            "id": "ser:EInvoices.Cii.ApplicableTradeTax",
+            "name": "EInvoices::Cii::ApplicableTradeTax",
+            "source": "app/serializers/e_invoices/cii/applicable_trade_tax.rb"
+        },
+        {
+            "id": "ser:EInvoices.Cii.BaseSerializer",
+            "name": "EInvoices::Cii::BaseSerializer",
+            "source": "app/serializers/e_invoices/cii/base_serializer.rb"
+        },
+        {
+            "id": "ser:EInvoices.Cii.CrossIndustryInvoice",
+            "name": "EInvoices::Cii::CrossIndustryInvoice",
+            "source": "app/serializers/e_invoices/cii/cross_industry_invoice.rb"
+        },
+        {
+            "id": "ser:EInvoices.Cii.Header",
+            "name": "EInvoices::Cii::Header",
+            "source": "app/serializers/e_invoices/cii/header.rb"
+        },
+        {
+            "id": "ser:EInvoices.Cii.InvoiceReference",
+            "name": "EInvoices::Cii::InvoiceReference",
+            "source": "app/serializers/e_invoices/cii/invoice_reference.rb"
+        },
+        {
+            "id": "ser:EInvoices.Cii.LineItem",
+            "name": "EInvoices::Cii::LineItem",
+            "source": "app/serializers/e_invoices/cii/line_item.rb"
+        },
+        {
+            "id": "ser:EInvoices.Cii.MonetarySummation",
+            "name": "EInvoices::Cii::MonetarySummation",
+            "source": "app/serializers/e_invoices/cii/monetary_summation.rb"
+        },
+        {
+            "id": "ser:EInvoices.Cii.PaymentTerms",
+            "name": "EInvoices::Cii::PaymentTerms",
+            "source": "app/serializers/e_invoices/cii/payment_terms.rb"
+        },
+        {
+            "id": "ser:EInvoices.Cii.TradeAgreement",
+            "name": "EInvoices::Cii::TradeAgreement",
+            "source": "app/serializers/e_invoices/cii/trade_agreement.rb"
+        },
+        {
+            "id": "ser:EInvoices.Cii.TradeAllowanceCharge",
+            "name": "EInvoices::Cii::TradeAllowanceCharge",
+            "source": "app/serializers/e_invoices/cii/trade_allowance_charge.rb"
+        },
+        {
+            "id": "ser:EInvoices.Cii.TradeDelivery",
+            "name": "EInvoices::Cii::TradeDelivery",
+            "source": "app/serializers/e_invoices/cii/trade_delivery.rb"
+        },
+        {
+            "id": "ser:EInvoices.Cii.TradeSettlement",
+            "name": "EInvoices::Cii::TradeSettlement",
+            "source": "app/serializers/e_invoices/cii/trade_settlement.rb"
+        },
+        {
+            "id": "ser:EInvoices.Cii.TradeSettlementPayment",
+            "name": "EInvoices::Cii::TradeSettlementPayment",
+            "source": "app/serializers/e_invoices/cii/trade_settlement_payment.rb"
+        },
+        {
+            "id": "ser:EInvoices.CreditNotes.Cii.Builder",
+            "name": "EInvoices::CreditNotes::Cii::Builder",
+            "source": "app/serializers/e_invoices/credit_notes/cii/builder.rb"
+        },
+        {
+            "id": "ser:EInvoices.CreditNotes.Common",
+            "name": "EInvoices::CreditNotes::Common",
+            "source": "app/serializers/e_invoices/credit_notes/common.rb"
+        },
+        {
+            "id": "ser:EInvoices.CreditNotes.Ubl.Builder",
+            "name": "EInvoices::CreditNotes::Ubl::Builder",
+            "source": "app/serializers/e_invoices/credit_notes/ubl/builder.rb"
+        },
+        {
+            "id": "ser:EInvoices.Invoices.Cii.Builder",
+            "name": "EInvoices::Invoices::Cii::Builder",
+            "source": "app/serializers/e_invoices/invoices/cii/builder.rb"
+        },
+        {
+            "id": "ser:EInvoices.Invoices.Common",
+            "name": "EInvoices::Invoices::Common",
+            "source": "app/serializers/e_invoices/invoices/common.rb"
+        },
+        {
+            "id": "ser:EInvoices.Invoices.Ubl.Builder",
+            "name": "EInvoices::Invoices::Ubl::Builder",
+            "source": "app/serializers/e_invoices/invoices/ubl/builder.rb"
+        },
+        {
+            "id": "ser:EInvoices.Payments.Cii.Builder",
+            "name": "EInvoices::Payments::Cii::Builder",
+            "source": "app/serializers/e_invoices/payments/cii/builder.rb"
+        },
+        {
+            "id": "ser:EInvoices.Payments.Common",
+            "name": "EInvoices::Payments::Common",
+            "source": "app/serializers/e_invoices/payments/common.rb"
+        },
+        {
+            "id": "ser:EInvoices.Payments.Ubl.Builder",
+            "name": "EInvoices::Payments::Ubl::Builder",
+            "source": "app/serializers/e_invoices/payments/ubl/builder.rb"
+        },
+        {
+            "id": "ser:EInvoices.Ubl.AllowanceCharge",
+            "name": "EInvoices::Ubl::AllowanceCharge",
+            "source": "app/serializers/e_invoices/ubl/allowance_charge.rb"
+        },
+        {
+            "id": "ser:EInvoices.Ubl.BaseSerializer",
+            "name": "EInvoices::Ubl::BaseSerializer",
+            "source": "app/serializers/e_invoices/ubl/base_serializer.rb"
+        },
+        {
+            "id": "ser:EInvoices.Ubl.BillingReference",
+            "name": "EInvoices::Ubl::BillingReference",
+            "source": "app/serializers/e_invoices/ubl/billing_reference.rb"
+        },
+        {
+            "id": "ser:EInvoices.Ubl.CustomerParty",
+            "name": "EInvoices::Ubl::CustomerParty",
+            "source": "app/serializers/e_invoices/ubl/customer_party.rb"
+        },
+        {
+            "id": "ser:EInvoices.Ubl.Delivery",
+            "name": "EInvoices::Ubl::Delivery",
+            "source": "app/serializers/e_invoices/ubl/delivery.rb"
+        },
+        {
+            "id": "ser:EInvoices.Ubl.DocumentResponse",
+            "name": "EInvoices::Ubl::DocumentResponse",
+            "source": "app/serializers/e_invoices/ubl/document_response.rb"
+        },
+        {
+            "id": "ser:EInvoices.Ubl.Header",
+            "name": "EInvoices::Ubl::Header",
+            "source": "app/serializers/e_invoices/ubl/header.rb"
+        },
+        {
+            "id": "ser:EInvoices.Ubl.LineItem",
+            "name": "EInvoices::Ubl::LineItem",
+            "source": "app/serializers/e_invoices/ubl/line_item.rb"
+        },
+        {
+            "id": "ser:EInvoices.Ubl.MonetaryTotal",
+            "name": "EInvoices::Ubl::MonetaryTotal",
+            "source": "app/serializers/e_invoices/ubl/monetary_total.rb"
+        },
+        {
+            "id": "ser:EInvoices.Ubl.OrderReference",
+            "name": "EInvoices::Ubl::OrderReference",
+            "source": "app/serializers/e_invoices/ubl/order_reference.rb"
+        },
+        {
+            "id": "ser:EInvoices.Ubl.PaymentMeans",
+            "name": "EInvoices::Ubl::PaymentMeans",
+            "source": "app/serializers/e_invoices/ubl/payment_means.rb"
+        },
+        {
+            "id": "ser:EInvoices.Ubl.PaymentTerms",
+            "name": "EInvoices::Ubl::PaymentTerms",
+            "source": "app/serializers/e_invoices/ubl/payment_terms.rb"
+        },
+        {
+            "id": "ser:EInvoices.Ubl.ReceiverParty",
+            "name": "EInvoices::Ubl::ReceiverParty",
+            "source": "app/serializers/e_invoices/ubl/receiver_party.rb"
+        },
+        {
+            "id": "ser:EInvoices.Ubl.SenderParty",
+            "name": "EInvoices::Ubl::SenderParty",
+            "source": "app/serializers/e_invoices/ubl/sender_party.rb"
+        },
+        {
+            "id": "ser:EInvoices.Ubl.SupplierParty",
+            "name": "EInvoices::Ubl::SupplierParty",
+            "source": "app/serializers/e_invoices/ubl/supplier_party.rb"
+        },
+        {
+            "id": "ser:EInvoices.Ubl.TaxSubtotal",
+            "name": "EInvoices::Ubl::TaxSubtotal",
+            "source": "app/serializers/e_invoices/ubl/tax_subtotal.rb"
+        },
+        {
+            "id": "ser:ErrorSerializer",
+            "name": "ErrorSerializer",
+            "source": "app/serializers/error_serializer.rb"
+        },
+        {
+            "id": "ser:EventDestinations.CustomerUsageSerializer",
+            "name": "EventDestinations::CustomerUsageSerializer",
+            "source": "app/serializers/event_destinations/customer_usage_serializer.rb"
+        },
+        {
+            "id": "ser:ModelSerializer",
+            "name": "ModelSerializer",
+            "source": "app/serializers/model_serializer.rb"
+        },
+        {
+            "id": "ser:V1.ActivityLogSerializer",
+            "name": "V1::ActivityLogSerializer",
+            "source": "app/serializers/v1/activity_log_serializer.rb"
+        },
+        {
+            "id": "ser:V1.AddOnSerializer",
+            "name": "V1::AddOnSerializer",
+            "source": "app/serializers/v1/add_on_serializer.rb"
+        },
+        {
+            "id": "ser:V1.Analytics.GrossRevenueSerializer",
+            "name": "V1::Analytics::GrossRevenueSerializer",
+            "source": "app/serializers/v1/analytics/gross_revenue_serializer.rb"
+        },
+        {
+            "id": "ser:V1.Analytics.InvoiceCollectionSerializer",
+            "name": "V1::Analytics::InvoiceCollectionSerializer",
+            "source": "app/serializers/v1/analytics/invoice_collection_serializer.rb"
+        },
+        {
+            "id": "ser:V1.Analytics.InvoicedUsageSerializer",
+            "name": "V1::Analytics::InvoicedUsageSerializer",
+            "source": "app/serializers/v1/analytics/invoiced_usage_serializer.rb"
+        },
+        {
+            "id": "ser:V1.Analytics.MrrSerializer",
+            "name": "V1::Analytics::MrrSerializer",
+            "source": "app/serializers/v1/analytics/mrr_serializer.rb"
+        },
+        {
+            "id": "ser:V1.Analytics.OverdueBalanceSerializer",
+            "name": "V1::Analytics::OverdueBalanceSerializer",
+            "source": "app/serializers/v1/analytics/overdue_balance_serializer.rb"
+        },
+        {
+            "id": "ser:V1.ApiLogSerializer",
+            "name": "V1::ApiLogSerializer",
+            "source": "app/serializers/v1/api_log_serializer.rb"
+        },
+        {
+            "id": "ser:V1.ApplicableUsageThresholdSerializer",
+            "name": "V1::ApplicableUsageThresholdSerializer",
+            "source": "app/serializers/v1/applicable_usage_threshold_serializer.rb"
+        },
+        {
+            "id": "ser:V1.AppliedCouponSerializer",
+            "name": "V1::AppliedCouponSerializer",
+            "source": "app/serializers/v1/applied_coupon_serializer.rb"
+        },
+        {
+            "id": "ser:V1.AppliedInvoiceCustomSectionSerializer",
+            "name": "V1::AppliedInvoiceCustomSectionSerializer",
+            "source": "app/serializers/v1/applied_invoice_custom_section_serializer.rb"
+        },
+        {
+            "id": "ser:V1.AppliedUsageThresholdSerializer",
+            "name": "V1::AppliedUsageThresholdSerializer",
+            "source": "app/serializers/v1/applied_usage_threshold_serializer.rb"
+        },
+        {
+            "id": "ser:V1.BillableMetricExpressionResultSerializer",
+            "name": "V1::BillableMetricExpressionResultSerializer",
+            "source": "app/serializers/v1/billable_metric_expression_result_serializer.rb"
+        },
+        {
+            "id": "ser:V1.BillableMetricFilterSerializer",
+            "name": "V1::BillableMetricFilterSerializer",
+            "source": "app/serializers/v1/billable_metric_filter_serializer.rb"
+        },
+        {
+            "id": "ser:V1.BillableMetricSerializer",
+            "name": "V1::BillableMetricSerializer",
+            "source": "app/serializers/v1/billable_metric_serializer.rb"
+        },
+        {
+            "id": "ser:V1.BillingEntitySerializer",
+            "name": "V1::BillingEntitySerializer",
+            "source": "app/serializers/v1/billing_entity_serializer.rb"
+        },
+        {
+            "id": "ser:V1.ChargeFilterSerializer",
+            "name": "V1::ChargeFilterSerializer",
+            "source": "app/serializers/v1/charge_filter_serializer.rb"
+        },
+        {
+            "id": "ser:V1.ChargeSerializer",
+            "name": "V1::ChargeSerializer",
+            "source": "app/serializers/v1/charge_serializer.rb"
+        },
+        {
+            "id": "ser:V1.CommitmentSerializer",
+            "name": "V1::CommitmentSerializer",
+            "source": "app/serializers/v1/commitment_serializer.rb"
+        },
+        {
+            "id": "ser:V1.CouponSerializer",
+            "name": "V1::CouponSerializer",
+            "source": "app/serializers/v1/coupon_serializer.rb"
+        },
+        {
+            "id": "ser:V1.CreditNoteItemSerializer",
+            "name": "V1::CreditNoteItemSerializer",
+            "source": "app/serializers/v1/credit_note_item_serializer.rb"
+        },
+        {
+            "id": "ser:V1.CreditNoteSerializer",
+            "name": "V1::CreditNoteSerializer",
+            "source": "app/serializers/v1/credit_note_serializer.rb"
+        },
+        {
+            "id": "ser:V1.CreditNotes.AppliedTaxSerializer",
+            "name": "V1::CreditNotes::AppliedTaxSerializer",
+            "source": "app/serializers/v1/credit_notes/applied_tax_serializer.rb"
+        },
+        {
+            "id": "ser:V1.CreditNotes.EstimateSerializer",
+            "name": "V1::CreditNotes::EstimateSerializer",
+            "source": "app/serializers/v1/credit_notes/estimate_serializer.rb"
+        },
+        {
+            "id": "ser:V1.CreditNotes.PaymentProviderRefundErrorSerializer",
+            "name": "V1::CreditNotes::PaymentProviderRefundErrorSerializer",
+            "source": "app/serializers/v1/credit_notes/payment_provider_refund_error_serializer.rb"
+        },
+        {
+            "id": "ser:V1.CreditSerializer",
+            "name": "V1::CreditSerializer",
+            "source": "app/serializers/v1/credit_serializer.rb"
+        },
+        {
+            "id": "ser:V1.CustomerSerializer",
+            "name": "V1::CustomerSerializer",
+            "source": "app/serializers/v1/customer_serializer.rb"
+        },
+        {
+            "id": "ser:V1.Customers.ChargeUsageSerializer",
+            "name": "V1::Customers::ChargeUsageSerializer",
+            "source": "app/serializers/v1/customers/charge_usage_serializer.rb"
+        },
+        {
+            "id": "ser:V1.Customers.MetadataSerializer",
+            "name": "V1::Customers::MetadataSerializer",
+            "source": "app/serializers/v1/customers/metadata_serializer.rb"
+        },
+        {
+            "id": "ser:V1.Customers.PastUsageSerializer",
+            "name": "V1::Customers::PastUsageSerializer",
+            "source": "app/serializers/v1/customers/past_usage_serializer.rb"
+        },
+        {
+            "id": "ser:V1.Customers.PresentationBreakdownBuilder",
+            "name": "V1::Customers::PresentationBreakdownBuilder",
+            "source": "app/serializers/v1/customers/presentation_breakdown_builder.rb"
+        },
+        {
+            "id": "ser:V1.Customers.ProjectedChargeUsageSerializer",
+            "name": "V1::Customers::ProjectedChargeUsageSerializer",
+            "source": "app/serializers/v1/customers/projected_charge_usage_serializer.rb"
+        },
+        {
+            "id": "ser:V1.Customers.ProjectedUsageSerializer",
+            "name": "V1::Customers::ProjectedUsageSerializer",
+            "source": "app/serializers/v1/customers/projected_usage_serializer.rb"
+        },
+        {
+            "id": "ser:V1.Customers.UsageSerializer",
+            "name": "V1::Customers::UsageSerializer",
+            "source": "app/serializers/v1/customers/usage_serializer.rb"
+        },
+        {
+            "id": "ser:V1.DunningCampaignFinishedSerializer",
+            "name": "V1::DunningCampaignFinishedSerializer",
+            "source": "app/serializers/v1/dunning_campaign_finished_serializer.rb"
+        },
+        {
+            "id": "ser:V1.Entitlement.FeatureSerializer",
+            "name": "V1::Entitlement::FeatureSerializer",
+            "source": "app/serializers/v1/entitlement/feature_serializer.rb"
+        },
+        {
+            "id": "ser:V1.Entitlement.PlanEntitlementSerializer",
+            "name": "V1::Entitlement::PlanEntitlementSerializer",
+            "source": "app/serializers/v1/entitlement/plan_entitlement_serializer.rb"
+        },
+        {
+            "id": "ser:V1.Entitlement.SubscriptionEntitlementSerializer",
+            "name": "V1::Entitlement::SubscriptionEntitlementSerializer",
+            "source": "app/serializers/v1/entitlement/subscription_entitlement_serializer.rb"
+        },
+        {
+            "id": "ser:V1.ErrorDetailSerializer",
+            "name": "V1::ErrorDetailSerializer",
+            "source": "app/serializers/v1/error_detail_serializer.rb"
+        },
+        {
+            "id": "ser:V1.Errors.ErrorSerializerFactory",
+            "name": "V1::Errors::ErrorSerializerFactory",
+            "source": "app/serializers/v1/errors/error_serializer_factory.rb"
+        },
+        {
+            "id": "ser:V1.Errors.StripeErrorSerializer",
+            "name": "V1::Errors::StripeErrorSerializer",
+            "source": "app/serializers/v1/errors/stripe_error_serializer.rb"
+        },
+        {
+            "id": "ser:V1.EventEnrichedSerializer",
+            "name": "V1::EventEnrichedSerializer",
+            "source": "app/serializers/v1/event_enriched_serializer.rb"
+        },
+        {
+            "id": "ser:V1.EventErrorSerializer",
+            "name": "V1::EventErrorSerializer",
+            "source": "app/serializers/v1/event_error_serializer.rb"
+        },
+        {
+            "id": "ser:V1.EventSerializer",
+            "name": "V1::EventSerializer",
+            "source": "app/serializers/v1/event_serializer.rb"
+        },
+        {
+            "id": "ser:V1.EventsValidationErrorsSerializer",
+            "name": "V1::EventsValidationErrorsSerializer",
+            "source": "app/serializers/v1/events_validation_errors_serializer.rb"
+        },
+        {
+            "id": "ser:V1.FeeSerializer",
+            "name": "V1::FeeSerializer",
+            "source": "app/serializers/v1/fee_serializer.rb"
+        },
+        {
+            "id": "ser:V1.Fees.AppliedTaxSerializer",
+            "name": "V1::Fees::AppliedTaxSerializer",
+            "source": "app/serializers/v1/fees/applied_tax_serializer.rb"
+        },
+        {
+            "id": "ser:V1.FixedChargeSerializer",
+            "name": "V1::FixedChargeSerializer",
+            "source": "app/serializers/v1/fixed_charge_serializer.rb"
+        },
+        {
+            "id": "ser:V1.IntegrationCustomerSerializer",
+            "name": "V1::IntegrationCustomerSerializer",
+            "source": "app/serializers/v1/integration_customer_serializer.rb"
+        },
+        {
+            "id": "ser:V1.Integrations.CustomerErrorSerializer",
+            "name": "V1::Integrations::CustomerErrorSerializer",
+            "source": "app/serializers/v1/integrations/customer_error_serializer.rb"
+        },
+        {
+            "id": "ser:V1.Integrations.ProviderErrorSerializer",
+            "name": "V1::Integrations::ProviderErrorSerializer",
+            "source": "app/serializers/v1/integrations/provider_error_serializer.rb"
+        },
+        {
+            "id": "ser:V1.Integrations.Taxes.CustomerErrorSerializer",
+            "name": "V1::Integrations::Taxes::CustomerErrorSerializer",
+            "source": "app/serializers/v1/integrations/taxes/customer_error_serializer.rb"
+        },
+        {
+            "id": "ser:V1.Integrations.Taxes.FeeErrorSerializer",
+            "name": "V1::Integrations::Taxes::FeeErrorSerializer",
+            "source": "app/serializers/v1/integrations/taxes/fee_error_serializer.rb"
+        },
+        {
+            "id": "ser:V1.InvoiceCustomSectionSerializer",
+            "name": "V1::InvoiceCustomSectionSerializer",
+            "source": "app/serializers/v1/invoice_custom_section_serializer.rb"
+        },
+        {
+            "id": "ser:V1.InvoiceSerializer",
+            "name": "V1::InvoiceSerializer",
+            "source": "app/serializers/v1/invoice_serializer.rb"
+        },
+        {
+            "id": "ser:V1.Invoices.AppliedInvoiceCustomSectionSerializer",
+            "name": "V1::Invoices::AppliedInvoiceCustomSectionSerializer",
+            "source": "app/serializers/v1/invoices/applied_invoice_custom_section_serializer.rb"
+        },
+        {
+            "id": "ser:V1.Invoices.AppliedTaxSerializer",
+            "name": "V1::Invoices::AppliedTaxSerializer",
+            "source": "app/serializers/v1/invoices/applied_tax_serializer.rb"
+        },
+        {
+            "id": "ser:V1.Invoices.BillingPeriodSerializer",
+            "name": "V1::Invoices::BillingPeriodSerializer",
+            "source": "app/serializers/v1/invoices/billing_period_serializer.rb"
+        },
+        {
+            "id": "ser:V1.Invoices.MetadataSerializer",
+            "name": "V1::Invoices::MetadataSerializer",
+            "source": "app/serializers/v1/invoices/metadata_serializer.rb"
+        },
+        {
+            "id": "ser:V1.Invoices.PaymentDisputeLostSerializer",
+            "name": "V1::Invoices::PaymentDisputeLostSerializer",
+            "source": "app/serializers/v1/invoices/payment_dispute_lost_serializer.rb"
+        },
+        {
+            "id": "ser:V1.LifetimeUsageSerializer",
+            "name": "V1::LifetimeUsageSerializer",
+            "source": "app/serializers/v1/lifetime_usage_serializer.rb"
+        },
+        {
+            "id": "ser:V1.MembershipSerializer",
+            "name": "V1::MembershipSerializer",
+            "source": "app/serializers/v1/membership_serializer.rb"
+        },
+        {
+            "id": "ser:V1.MetadataSerializer",
+            "name": "V1::MetadataSerializer",
+            "source": "app/serializers/v1/metadata_serializer.rb"
+        },
+        {
+            "id": "ser:V1.OrderFormSerializer",
+            "name": "V1::OrderFormSerializer",
+            "source": "app/serializers/v1/order_form_serializer.rb"
+        },
+        {
+            "id": "ser:V1.OrderSerializer",
+            "name": "V1::OrderSerializer",
+            "source": "app/serializers/v1/order_serializer.rb"
+        },
+        {
+            "id": "ser:V1.OrganizationSerializer",
+            "name": "V1::OrganizationSerializer",
+            "source": "app/serializers/v1/organization_serializer.rb"
+        },
+        {
+            "id": "ser:V1.PaymentMethodSerializer",
+            "name": "V1::PaymentMethodSerializer",
+            "source": "app/serializers/v1/payment_method_serializer.rb"
+        },
+        {
+            "id": "ser:V1.PaymentProviders.CustomerCheckoutSerializer",
+            "name": "V1::PaymentProviders::CustomerCheckoutSerializer",
+            "source": "app/serializers/v1/payment_providers/customer_checkout_serializer.rb"
+        },
+        {
+            "id": "ser:V1.PaymentProviders.CustomerErrorSerializer",
+            "name": "V1::PaymentProviders::CustomerErrorSerializer",
+            "source": "app/serializers/v1/payment_providers/customer_error_serializer.rb"
+        },
+        {
+            "id": "ser:V1.PaymentProviders.ErrorSerializer",
+            "name": "V1::PaymentProviders::ErrorSerializer",
+            "source": "app/serializers/v1/payment_providers/error_serializer.rb"
+        },
+        {
+            "id": "ser:V1.PaymentProviders.InvoicePaymentErrorSerializer",
+            "name": "V1::PaymentProviders::InvoicePaymentErrorSerializer",
+            "source": "app/serializers/v1/payment_providers/invoice_payment_error_serializer.rb"
+        },
+        {
+            "id": "ser:V1.PaymentProviders.InvoicePaymentSerializer",
+            "name": "V1::PaymentProviders::InvoicePaymentSerializer",
+            "source": "app/serializers/v1/payment_providers/invoice_payment_serializer.rb"
+        },
+        {
+            "id": "ser:V1.PaymentProviders.PaymentRequestPaymentErrorSerializer",
+            "name": "V1::PaymentProviders::PaymentRequestPaymentErrorSerializer",
+            "source": "app/serializers/v1/payment_providers/payment_request_payment_error_serializer.rb"
+        },
+        {
+            "id": "ser:V1.PaymentProviders.WalletTransactionPaymentErrorSerializer",
+            "name": "V1::PaymentProviders::WalletTransactionPaymentErrorSerializer",
+            "source": "app/serializers/v1/payment_providers/wallet_transaction_payment_error_serializer.rb"
+        },
+        {
+            "id": "ser:V1.PaymentProviders.WalletTransactionPaymentSerializer",
+            "name": "V1::PaymentProviders::WalletTransactionPaymentSerializer",
+            "source": "app/serializers/v1/payment_providers/wallet_transaction_payment_serializer.rb"
+        },
+        {
+            "id": "ser:V1.PaymentReceiptSerializer",
+            "name": "V1::PaymentReceiptSerializer",
+            "source": "app/serializers/v1/payment_receipt_serializer.rb"
+        },
+        {
+            "id": "ser:V1.PaymentRequestSerializer",
+            "name": "V1::PaymentRequestSerializer",
+            "source": "app/serializers/v1/payment_request_serializer.rb"
+        },
+        {
+            "id": "ser:V1.PaymentSerializer",
+            "name": "V1::PaymentSerializer",
+            "source": "app/serializers/v1/payment_serializer.rb"
+        },
+        {
+            "id": "ser:V1.PlanSerializer",
+            "name": "V1::PlanSerializer",
+            "source": "app/serializers/v1/plan_serializer.rb"
+        },
+        {
+            "id": "ser:V1.PresentationBreakdownSerializer",
+            "name": "V1::PresentationBreakdownSerializer",
+            "source": "app/serializers/v1/presentation_breakdown_serializer.rb"
+        },
+        {
+            "id": "ser:V1.PricingUnitUsageSerializer",
+            "name": "V1::PricingUnitUsageSerializer",
+            "source": "app/serializers/v1/pricing_unit_usage_serializer.rb"
+        },
+        {
+            "id": "ser:V1.QuoteSerializer",
+            "name": "V1::QuoteSerializer",
+            "source": "app/serializers/v1/quote_serializer.rb"
+        },
+        {
+            "id": "ser:V1.QuoteVersionSerializer",
+            "name": "V1::QuoteVersionSerializer",
+            "source": "app/serializers/v1/quote_version_serializer.rb"
+        },
+        {
+            "id": "ser:V1.QuoteWithVersionSerializer",
+            "name": "V1::QuoteWithVersionSerializer",
+            "source": "app/serializers/v1/quote_with_version_serializer.rb"
+        },
+        {
+            "id": "ser:V1.SecurityLogSerializer",
+            "name": "V1::SecurityLogSerializer",
+            "source": "app/serializers/v1/security_log_serializer.rb"
+        },
+        {
+            "id": "ser:V1.SubscriptionSerializer",
+            "name": "V1::SubscriptionSerializer",
+            "source": "app/serializers/v1/subscription_serializer.rb"
+        },
+        {
+            "id": "ser:V1.Subscriptions.ActivationRuleSerializer",
+            "name": "V1::Subscriptions::ActivationRuleSerializer",
+            "source": "app/serializers/v1/subscriptions/activation_rule_serializer.rb"
+        },
+        {
+            "id": "ser:V1.TaxSerializer",
+            "name": "V1::TaxSerializer",
+            "source": "app/serializers/v1/tax_serializer.rb"
+        },
+        {
+            "id": "ser:V1.TaxWithBillingEntitiesSerializer",
+            "name": "V1::TaxWithBillingEntitiesSerializer",
+            "source": "app/serializers/v1/tax_with_billing_entities_serializer.rb"
+        },
+        {
+            "id": "ser:V1.UsageAttributionTypeSerializer",
+            "name": "V1::UsageAttributionTypeSerializer",
+            "source": "app/serializers/v1/usage_attribution_type_serializer.rb"
+        },
+        {
+            "id": "ser:V1.UsageMonitoring.AlertSerializer",
+            "name": "V1::UsageMonitoring::AlertSerializer",
+            "source": "app/serializers/v1/usage_monitoring/alert_serializer.rb"
+        },
+        {
+            "id": "ser:V1.UsageMonitoring.TriggeredAlertSerializer",
+            "name": "V1::UsageMonitoring::TriggeredAlertSerializer",
+            "source": "app/serializers/v1/usage_monitoring/triggered_alert_serializer.rb"
+        },
+        {
+            "id": "ser:V1.UsageThresholdSerializer",
+            "name": "V1::UsageThresholdSerializer",
+            "source": "app/serializers/v1/usage_threshold_serializer.rb"
+        },
+        {
+            "id": "ser:V1.WalletSerializer",
+            "name": "V1::WalletSerializer",
+            "source": "app/serializers/v1/wallet_serializer.rb"
+        },
+        {
+            "id": "ser:V1.WalletTransactionConsumptionSerializer",
+            "name": "V1::WalletTransactionConsumptionSerializer",
+            "source": "app/serializers/v1/wallet_transaction_consumption_serializer.rb"
+        },
+        {
+            "id": "ser:V1.WalletTransactionSerializer",
+            "name": "V1::WalletTransactionSerializer",
+            "source": "app/serializers/v1/wallet_transaction_serializer.rb"
+        },
+        {
+            "id": "ser:V1.Wallets.RecurringTransactionRuleSerializer",
+            "name": "V1::Wallets::RecurringTransactionRuleSerializer",
+            "source": "app/serializers/v1/wallets/recurring_transaction_rule_serializer.rb"
+        },
+        {
+            "id": "ser:V1.WebhookEndpointSerializer",
+            "name": "V1::WebhookEndpointSerializer",
+            "source": "app/serializers/v1/webhook_endpoint_serializer.rb"
+        },
+        {
+            "id": "ser:V2.CatalogPlanSerializer",
+            "name": "V2::CatalogPlanSerializer",
+            "source": "app/serializers/v2/catalog_plan_serializer.rb"
+        },
+        {
+            "id": "ser:V2.ContractAppliedRateCardSerializer",
+            "name": "V2::ContractAppliedRateCardSerializer",
+            "source": "app/serializers/v2/contract_applied_rate_card_serializer.rb"
+        },
+        {
+            "id": "ser:V2.ContractSerializer",
+            "name": "V2::ContractSerializer",
+            "source": "app/serializers/v2/contract_serializer.rb"
+        },
+        {
+            "id": "ser:V2.PlanRateCardSerializer",
+            "name": "V2::PlanRateCardSerializer",
+            "source": "app/serializers/v2/plan_rate_card_serializer.rb"
+        },
+        {
+            "id": "ser:V2.ProductCategorySerializer",
+            "name": "V2::ProductCategorySerializer",
+            "source": "app/serializers/v2/product_category_serializer.rb"
+        },
+        {
+            "id": "ser:V2.ProductFilterSerializer",
+            "name": "V2::ProductFilterSerializer",
+            "source": "app/serializers/v2/product_filter_serializer.rb"
+        },
+        {
+            "id": "ser:V2.ProductSerializer",
+            "name": "V2::ProductSerializer",
+            "source": "app/serializers/v2/product_serializer.rb"
+        },
+        {
+            "id": "ser:V2.RateCardRateSerializer",
+            "name": "V2::RateCardRateSerializer",
+            "source": "app/serializers/v2/rate_card_rate_serializer.rb"
+        },
+        {
+            "id": "ser:V2.RateCardSerializer",
+            "name": "V2::RateCardSerializer",
+            "source": "app/serializers/v2/rate_card_serializer.rb"
+        },
+        {
+            "id": "ser:V2.RateOverrideSerializer",
+            "name": "V2::RateOverrideSerializer",
+            "source": "app/serializers/v2/rate_override_serializer.rb"
+        },
+        {
+            "id": "ser:V2.RatePhaseSerializer",
+            "name": "V2::RatePhaseSerializer",
+            "source": "app/serializers/v2/rate_phase_serializer.rb"
+        }
+    ]
+}

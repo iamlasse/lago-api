@@ -1,0 +1,92 @@
+# Partial, un-frozen schema (graphql/schema.graphql)
+#
+# The frozen contract lives verbatim in graphql/frozen-schema.graphql (never
+# edited). Until the full SDL can be served by Lighthouse (see
+# graphql/FULL_SCHEMA_NOTES.md for the exact blocker list), this partial
+# schema serves the operations that are actually ported. Type definitions are
+# copied from the frozen schema; deviations (renamed attribute resolvers,
+# trimmed fields) are tagged with `# PARTIAL:` comments.
+
+"A date string with format `Y-m-d`, e.g. `2011-05-23`."
+scalar ISO8601Date
+
+"A datetime string with format `Y-m-d H:i:s`, e.g. `2018-05-23 13:43:32`."
+scalar ISO8601DateTime
+
+scalar BigInt
+
+scalar ChargeFilterValues
+
+scalar HttpStatus
+
+scalar JSON
+
+scalar ObfuscatedString
+
+type Query {
+  currentUser: User! @lagoAuth @field(resolver: "App\\GraphQL\\Queries\\CurrentUser")
+  currentVersion: CurrentVersion! @field(resolver: "App\\GraphQL\\Queries\\CurrentVersion")
+}
+
+type Mutation {
+  loginUser(input: LoginUserInput! @spread): LoginUser @field(resolver: "App\\GraphQL\\Mutations\\LoginUser")
+}
+
+# PARTIAL: field resolvers added (@rename / @field); type + field set matches
+# the frozen `User` type verbatim.
+type User {
+  createdAt: ISO8601DateTime! @rename(attribute: "created_at")
+  csAdmin: Boolean! @rename(attribute: "cs_admin")
+  email: String
+  id: ID!
+  memberships: [Membership!]! @field(resolver: "App\\GraphQL\\Types\\UserType@memberships")
+  organizations: [Organization!]! @field(resolver: "App\\GraphQL\\Types\\UserType@organizations")
+  premium: Boolean! @field(resolver: "App\\GraphQL\\Types\\UserType@premium")
+  updatedAt: ISO8601DateTime! @rename(attribute: "updated_at")
+}
+
+# PARTIAL: trimmed to the fields this slice can faithfully resolve — the frozen
+# type also has `permissions: Permissions!` and `roles: [String!]!`, which need
+# the Permission/roles port.
+type Membership {
+  createdAt: ISO8601DateTime! @rename(attribute: "created_at")
+  id: ID!
+  organization: Organization!
+  revokedAt: ISO8601DateTime @rename(attribute: "revoked_at")
+  status: MembershipStatus! @field(resolver: "App\\GraphQL\\Types\\MembershipType@status")
+  updatedAt: ISO8601DateTime! @rename(attribute: "updated_at")
+  user: User!
+}
+
+# PARTIAL: trimmed to id/name/slug — the frozen type also exposes
+# billingConfiguration, canCreateBillingEntity, defaultCurrency, logoUrl,
+# timezone and accessibleByCurrentSession.
+type Organization {
+  id: ID!
+  name: String!
+  slug: String!
+}
+
+type CurrentVersion {
+  githubUrl: String!
+  number: String!
+}
+
+type LoginUser {
+  token: String!
+  user: User!
+}
+
+input LoginUserInput {
+  """
+  A unique identifier for the client performing the mutation.
+  """
+  clientMutationId: String
+  email: String!
+  password: String!
+}
+
+enum MembershipStatus {
+  active
+  revoked
+}

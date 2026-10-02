@@ -1,0 +1,2704 @@
+{
+    "generator": "gen_jobs",
+    "source": "app/jobs/**/*.rb",
+    "row_count": 269,
+    "rows": [
+        {
+            "id": "job:Admin.SlackNotificationJob",
+            "name": "Admin::SlackNotificationJob",
+            "source": "app/jobs/admin/slack_notification_job.rb",
+            "queue": "default",
+            "unique": [],
+            "retry_on": [
+                "retry_on Admin::SlackNotificationService::DeliveryError, wait: :polynomially_longer, attempts: 5"
+            ]
+        },
+        {
+            "id": "job:AiConversations.StreamJob",
+            "name": "AiConversations::StreamJob",
+            "source": "app/jobs/ai_conversations/stream_job.rb",
+            "queue": "(dynamic)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:ApplicationJob",
+            "name": "ApplicationJob",
+            "source": "app/jobs/application_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": [
+                "sidekiq_options retry: 0",
+                "retry_on RetriableError, wait: :polynomially_longer, attempts: 20"
+            ]
+        },
+        {
+            "id": "job:AppliedCoupons.RecreditJob",
+            "name": "AppliedCoupons::RecreditJob",
+            "source": "app/jobs/applied_coupons/recredit_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:BillNonInvoiceableFeesJob",
+            "name": "BillNonInvoiceableFeesJob",
+            "source": "app/jobs/bill_non_invoiceable_fees_job.rb",
+            "queue": "(dynamic)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log, lock_ttl: 4.hours"
+            ],
+            "retry_on": [
+                "retry_on Sequenced::SequenceError, ActiveJob::DeserializationError, wait: :polynomially_longer, attempts: 15, jitter: 0.75"
+            ]
+        },
+        {
+            "id": "job:BillPaidCreditJob",
+            "name": "BillPaidCreditJob",
+            "source": "app/jobs/bill_paid_credit_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": [
+                "retry_on Sequenced::SequenceError, wait: :polynomially_longer, attempts: 15, jitter: 0.75"
+            ]
+        },
+        {
+            "id": "job:BillSubscriptionJob",
+            "name": "BillSubscriptionJob",
+            "source": "app/jobs/bill_subscription_job.rb",
+            "queue": "(dynamic)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log, lock_ttl: 12.hours"
+            ],
+            "retry_on": [
+                "retry_on BaseLockService::FailedToAcquireLock, ActiveRecord::StaleObjectError, attempts: MAX_LOCK_RETRY_ATTEMPTS, wait: random_lock_retry_delay",
+                "retry_on Sequenced::SequenceError, ActiveJob::DeserializationError, wait: :polynomially_longer, attempts: 15, jitter: 0.75"
+            ]
+        },
+        {
+            "id": "job:BillableMetricFilters.DestroyAllJob",
+            "name": "BillableMetricFilters::DestroyAllJob",
+            "source": "app/jobs/billable_metric_filters/destroy_all_job.rb",
+            "queue": "low_priority",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:BillableMetricFilters.RefreshDraftInvoicesJob",
+            "name": "BillableMetricFilters::RefreshDraftInvoicesJob",
+            "source": "app/jobs/billable_metric_filters/refresh_draft_invoices_job.rb",
+            "queue": "default",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:BillableMetrics.DeleteEventsJob",
+            "name": "BillableMetrics::DeleteEventsJob",
+            "source": "app/jobs/billable_metrics/delete_events_job.rb",
+            "queue": "default",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:BillingEntities.Taxes.RefreshDraftInvoicesJob",
+            "name": "BillingEntities::Taxes::RefreshDraftInvoicesJob",
+            "source": "app/jobs/billing_entities/taxes/refresh_draft_invoices_job.rb",
+            "queue": "default",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:BillingSegments.ProcessJob",
+            "name": "BillingSegments::ProcessJob",
+            "source": "app/jobs/billing_segments/process_job.rb",
+            "queue": "(dynamic)",
+            "unique": [
+                "unique :until_executing, on_conflict: :log, lock_ttl: 30.minutes"
+            ],
+            "retry_on": [
+                "retry_on BaseLockService::FailedToAcquireLock, attempts: MAX_LOCK_RETRY_ATTEMPTS, wait: random_lock_retry_delay",
+                "retry_on Sequenced::SequenceError, wait: :polynomially_longer, attempts: 15, jitter: 0.75"
+            ]
+        },
+        {
+            "id": "job:BillingSegments.ScheduleJob",
+            "name": "BillingSegments::ScheduleJob",
+            "source": "app/jobs/billing_segments/schedule_job.rb",
+            "queue": "(dynamic)",
+            "unique": [
+                "unique :until_executing, on_conflict: :log, lock_ttl: 30.minutes"
+            ],
+            "retry_on": [
+                "retry_on BaseLockService::FailedToAcquireLock, attempts: MAX_LOCK_RETRY_ATTEMPTS, wait: random_lock_retry_delay"
+            ]
+        },
+        {
+            "id": "job:ChargeFilters.CascadeJob",
+            "name": "ChargeFilters::CascadeJob",
+            "source": "app/jobs/charge_filters/cascade_job.rb",
+            "queue": "default",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:Charges.CreateChildrenBatchJob",
+            "name": "Charges::CreateChildrenBatchJob",
+            "source": "app/jobs/charges/create_children_batch_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:Charges.CreateChildrenJob",
+            "name": "Charges::CreateChildrenJob",
+            "source": "app/jobs/charges/create_children_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:Charges.DestroyChildrenJob",
+            "name": "Charges::DestroyChildrenJob",
+            "source": "app/jobs/charges/destroy_children_job.rb",
+            "queue": "default",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:Charges.UpdateChildrenBatchJob",
+            "name": "Charges::UpdateChildrenBatchJob",
+            "source": "app/jobs/charges/update_children_batch_job.rb",
+            "queue": "low_priority",
+            "unique": [],
+            "retry_on": [
+                "retry_on WithAdvisoryLock::FailedToAcquireLock, wait: :polynomially_longer, attempts: 5"
+            ]
+        },
+        {
+            "id": "job:Charges.UpdateChildrenJob",
+            "name": "Charges::UpdateChildrenJob",
+            "source": "app/jobs/charges/update_children_job.rb",
+            "queue": "default",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:Clock.ActivateSubscriptionsJob",
+            "name": "Clock::ActivateSubscriptionsJob",
+            "source": "app/jobs/clock/activate_subscriptions_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Clock.ApiKeys.TrackUsageJob",
+            "name": "Clock::ApiKeys::TrackUsageJob",
+            "source": "app/jobs/clock/api_keys/track_usage_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:Clock.CancelAbandonedPaymentsJob",
+            "name": "Clock::CancelAbandonedPaymentsJob",
+            "source": "app/jobs/clock/cancel_abandoned_payments_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Clock.ComputeAllDailyUsagesJob",
+            "name": "Clock::ComputeAllDailyUsagesJob",
+            "source": "app/jobs/clock/compute_all_daily_usages_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Clock.ConsumeSubscriptionRefreshedQueueJob",
+            "name": "Clock::ConsumeSubscriptionRefreshedQueueJob",
+            "source": "app/jobs/clock/consume_subscription_refreshed_queue_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Clock.CreateBillingSegmentsJob",
+            "name": "Clock::CreateBillingSegmentsJob",
+            "source": "app/jobs/clock/create_billing_segments_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log, lock_ttl: 30.minutes"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Clock.CreateIntervalWalletTransactionsJob",
+            "name": "Clock::CreateIntervalWalletTransactionsJob",
+            "source": "app/jobs/clock/create_interval_wallet_transactions_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log, lock_ttl: 4.hours"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Clock.EventsValidationJob",
+            "name": "Clock::EventsValidationJob",
+            "source": "app/jobs/clock/events_validation_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Clock.ExecuteScheduledOrdersJob",
+            "name": "Clock::ExecuteScheduledOrdersJob",
+            "source": "app/jobs/clock/execute_scheduled_orders_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Clock.ExpireIncompleteSubscriptionsJob",
+            "name": "Clock::ExpireIncompleteSubscriptionsJob",
+            "source": "app/jobs/clock/expire_incomplete_subscriptions_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log, lock_ttl: 4.hours"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Clock.ExpireOrderFormsJob",
+            "name": "Clock::ExpireOrderFormsJob",
+            "source": "app/jobs/clock/expire_order_forms_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Clock.FinalizeInvoicesJob",
+            "name": "Clock::FinalizeInvoicesJob",
+            "source": "app/jobs/clock/finalize_invoices_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Clock.FreeTrialSubscriptionsBillerJob",
+            "name": "Clock::FreeTrialSubscriptionsBillerJob",
+            "source": "app/jobs/clock/free_trial_subscriptions_biller_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log, lock_ttl: 4.hours"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Clock.InboundWebhooksCleanupJob",
+            "name": "Clock::InboundWebhooksCleanupJob",
+            "source": "app/jobs/clock/inbound_webhooks_cleanup_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Clock.InboundWebhooksRetryJob",
+            "name": "Clock::InboundWebhooksRetryJob",
+            "source": "app/jobs/clock/inbound_webhooks_retry_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log, lock_ttl: 4.hours"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Clock.MarkInvoicesAsPaymentOverdueJob",
+            "name": "Clock::MarkInvoicesAsPaymentOverdueJob",
+            "source": "app/jobs/clock/mark_invoices_as_payment_overdue_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Clock.ProcessAllSubscriptionActivitiesJob",
+            "name": "Clock::ProcessAllSubscriptionActivitiesJob",
+            "source": "app/jobs/clock/process_all_subscription_activities_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Clock.ProcessBillingSegmentsJob",
+            "name": "Clock::ProcessBillingSegmentsJob",
+            "source": "app/jobs/clock/process_billing_segments_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log, lock_ttl: 30.minutes"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Clock.ProcessDedicatedOrgsSubscriptionActivitiesJob",
+            "name": "Clock::ProcessDedicatedOrgsSubscriptionActivitiesJob",
+            "source": "app/jobs/clock/process_dedicated_orgs_subscription_activities_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Clock.ProcessDunningCampaignsJob",
+            "name": "Clock::ProcessDunningCampaignsJob",
+            "source": "app/jobs/clock/process_dunning_campaigns_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Clock.RecordDeletionsCleanupJob",
+            "name": "Clock::RecordDeletionsCleanupJob",
+            "source": "app/jobs/clock/record_deletions_cleanup_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Clock.RefreshDedicatedOrgWalletsOngoingBalanceJob",
+            "name": "Clock::RefreshDedicatedOrgWalletsOngoingBalanceJob",
+            "source": "app/jobs/clock/refresh_dedicated_org_wallets_ongoing_balance_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Clock.RefreshDraftInvoicesJob",
+            "name": "Clock::RefreshDraftInvoicesJob",
+            "source": "app/jobs/clock/refresh_draft_invoices_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Clock.RefreshLifetimeUsagesJob",
+            "name": "Clock::RefreshLifetimeUsagesJob",
+            "source": "app/jobs/clock/refresh_lifetime_usages_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Clock.RefreshWalletsOngoingBalanceJob",
+            "name": "Clock::RefreshWalletsOngoingBalanceJob",
+            "source": "app/jobs/clock/refresh_wallets_ongoing_balance_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Clock.RetryFailedInvoicesJob",
+            "name": "Clock::RetryFailedInvoicesJob",
+            "source": "app/jobs/clock/retry_failed_invoices_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log, lock_ttl: 4.hours"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Clock.RetryGeneratingSubscriptionInvoicesJob",
+            "name": "Clock::RetryGeneratingSubscriptionInvoicesJob",
+            "source": "app/jobs/clock/retry_generating_subscription_invoices_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log, lock_ttl: 4.hours"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Clock.SubscriptionsBillerJob",
+            "name": "Clock::SubscriptionsBillerJob",
+            "source": "app/jobs/clock/subscriptions_biller_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log, lock_ttl: 4.hours"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Clock.SubscriptionsToBeTerminatedJob",
+            "name": "Clock::SubscriptionsToBeTerminatedJob",
+            "source": "app/jobs/clock/subscriptions_to_be_terminated_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log, lock_ttl: 4.hours"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Clock.TerminateCouponsJob",
+            "name": "Clock::TerminateCouponsJob",
+            "source": "app/jobs/clock/terminate_coupons_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log, lock_ttl: 4.hours"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Clock.TerminateEndedSubscriptionsJob",
+            "name": "Clock::TerminateEndedSubscriptionsJob",
+            "source": "app/jobs/clock/terminate_ended_subscriptions_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log, lock_ttl: 4.hours"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Clock.TerminateRecurringTransactionRulesJob",
+            "name": "Clock::TerminateRecurringTransactionRulesJob",
+            "source": "app/jobs/clock/terminate_recurring_transaction_rules_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log, lock_ttl: 4.hours"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Clock.TerminateWalletsJob",
+            "name": "Clock::TerminateWalletsJob",
+            "source": "app/jobs/clock/terminate_wallets_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log, lock_ttl: 4.hours"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Clock.WebhooksCleanupJob",
+            "name": "Clock::WebhooksCleanupJob",
+            "source": "app/jobs/clock/webhooks_cleanup_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:ClockJob",
+            "name": "ClockJob",
+            "source": "app/jobs/clock_job.rb",
+            "queue": "(dynamic)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:Concerns.ConcurrencyThrottlable",
+            "name": "Concerns::ConcurrencyThrottlable",
+            "source": "app/jobs/concerns/concurrency_throttlable.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:Concerns.SentryCronConcern",
+            "name": "Concerns::SentryCronConcern",
+            "source": "app/jobs/concerns/sentry_cron_concern.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:CreditNotes.GenerateDocumentsJob",
+            "name": "CreditNotes::GenerateDocumentsJob",
+            "source": "app/jobs/credit_notes/generate_documents_job.rb",
+            "queue": "(dynamic)",
+            "unique": [],
+            "retry_on": [
+                "retry_on LagoHttpClient::HttpError,"
+            ]
+        },
+        {
+            "id": "job:CreditNotes.GeneratePdfJob",
+            "name": "CreditNotes::GeneratePdfJob",
+            "source": "app/jobs/credit_notes/generate_pdf_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:CreditNotes.GenerateXmlJob",
+            "name": "CreditNotes::GenerateXmlJob",
+            "source": "app/jobs/credit_notes/generate_xml_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:CreditNotes.ProviderTaxes.ReportJob",
+            "name": "CreditNotes::ProviderTaxes::ReportJob",
+            "source": "app/jobs/credit_notes/provider_taxes/report_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:CreditNotes.RecreditJob",
+            "name": "CreditNotes::RecreditJob",
+            "source": "app/jobs/credit_notes/recredit_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:CreditNotes.Refunds.AdyenCreateJob",
+            "name": "CreditNotes::Refunds::AdyenCreateJob",
+            "source": "app/jobs/credit_notes/refunds/adyen_create_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:CreditNotes.Refunds.GocardlessCreateJob",
+            "name": "CreditNotes::Refunds::GocardlessCreateJob",
+            "source": "app/jobs/credit_notes/refunds/gocardless_create_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:CreditNotes.Refunds.StripeCreateJob",
+            "name": "CreditNotes::Refunds::StripeCreateJob",
+            "source": "app/jobs/credit_notes/refunds/stripe_create_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:Customers.RefreshInvoicesSearchTermsJob",
+            "name": "Customers::RefreshInvoicesSearchTermsJob",
+            "source": "app/jobs/customers/refresh_invoices_search_terms_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executing, on_conflict: :log"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Customers.RefreshWalletJob",
+            "name": "Customers::RefreshWalletJob",
+            "source": "app/jobs/customers/refresh_wallet_job.rb",
+            "queue": "(dynamic)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log, lock_ttl: 2.hours"
+            ],
+            "retry_on": [
+                "retry_on ActiveRecord::StaleObjectError, wait: :polynomially_longer, attempts: 6",
+                "retry_on(",
+                "retry_on(*Integrations::Aggregator::BaseService.retryable_errors, wait: :polynomially_longer, attempts: 6)"
+            ]
+        },
+        {
+            "id": "job:Customers.RetryViesCheckJob",
+            "name": "Customers::RetryViesCheckJob",
+            "source": "app/jobs/customers/retry_vies_check_job.rb",
+            "queue": "default",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:Customers.TerminateRelationsJob",
+            "name": "Customers::TerminateRelationsJob",
+            "source": "app/jobs/customers/terminate_relations_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:Customers.ViesCheckJob",
+            "name": "Customers::ViesCheckJob",
+            "source": "app/jobs/customers/vies_check_job.rb",
+            "queue": "default",
+            "unique": [
+                "unique :until_and_while_executing, on_conflict: :log"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DailyUsages.ComputeJob",
+            "name": "DailyUsages::ComputeJob",
+            "source": "app/jobs/daily_usages/compute_job.rb",
+            "queue": "(dynamic)",
+            "unique": [
+                "unique :until_and_while_executing,"
+            ],
+            "retry_on": [
+                "retry_on ActiveRecord::ActiveRecordError, wait: :polynomially_longer, attempts: 6"
+            ]
+        },
+        {
+            "id": "job:DailyUsages.FillFromInvoiceJob",
+            "name": "DailyUsages::FillFromInvoiceJob",
+            "source": "app/jobs/daily_usages/fill_from_invoice_job.rb",
+            "queue": "(dynamic)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:DailyUsages.FillHistoryJob",
+            "name": "DailyUsages::FillHistoryJob",
+            "source": "app/jobs/daily_usages/fill_history_job.rb",
+            "queue": "(dynamic)",
+            "unique": [],
+            "retry_on": [
+                "retry_on DailyUsages::RetryableError, wait: :polynomially_longer, attempts: 6"
+            ]
+        },
+        {
+            "id": "job:DataExports.CombinePartsJob",
+            "name": "DataExports::CombinePartsJob",
+            "source": "app/jobs/data_exports/combine_parts_job.rb",
+            "queue": "default",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DataExports.ExportResourcesJob",
+            "name": "DataExports::ExportResourcesJob",
+            "source": "app/jobs/data_exports/export_resources_job.rb",
+            "queue": "default",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:DataExports.ProcessPartJob",
+            "name": "DataExports::ProcessPartJob",
+            "source": "app/jobs/data_exports/process_part_job.rb",
+            "queue": "default",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.BackfillAdyenPaymentMethodsJob",
+            "name": "DatabaseMigrations::BackfillAdyenPaymentMethodsJob",
+            "source": "app/jobs/database_migrations/backfill_adyen_payment_methods_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.BackfillChargeFilterCodesJob",
+            "name": "DatabaseMigrations::BackfillChargeFilterCodesJob",
+            "source": "app/jobs/database_migrations/backfill_charge_filter_codes_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed, on_conflict: :log, lock_ttl: 6.hours"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.BackfillChargesCodeJob",
+            "name": "DatabaseMigrations::BackfillChargesCodeJob",
+            "source": "app/jobs/database_migrations/backfill_charges_code_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.BackfillChildChargeFilterCodesJob",
+            "name": "DatabaseMigrations::BackfillChildChargeFilterCodesJob",
+            "source": "app/jobs/database_migrations/backfill_child_charge_filter_codes_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed, on_conflict: :log, lock_ttl: 6.hours"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.BackfillFixedChargesCodeJob",
+            "name": "DatabaseMigrations::BackfillFixedChargesCodeJob",
+            "source": "app/jobs/database_migrations/backfill_fixed_charges_code_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.BackfillGocardlessPaymentMethodsJob",
+            "name": "DatabaseMigrations::BackfillGocardlessPaymentMethodsJob",
+            "source": "app/jobs/database_migrations/backfill_gocardless_payment_methods_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.BackfillInvoicesSearchTermsJob",
+            "name": "DatabaseMigrations::BackfillInvoicesSearchTermsJob",
+            "source": "app/jobs/database_migrations/backfill_invoices_search_terms_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed, on_conflict: :log, lock_ttl: 30.minutes"
+            ],
+            "retry_on": [
+                "sidekiq_options retry: 5"
+            ]
+        },
+        {
+            "id": "job:DatabaseMigrations.BackfillLastReceivedEventOnJob",
+            "name": "DatabaseMigrations::BackfillLastReceivedEventOnJob",
+            "source": "app/jobs/database_migrations/backfill_last_received_event_on_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.BackfillMoneyhashPaymentMethodsJob",
+            "name": "DatabaseMigrations::BackfillMoneyhashPaymentMethodsJob",
+            "source": "app/jobs/database_migrations/backfill_moneyhash_payment_methods_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.BackfillPrepaidCreditBreakdownJob",
+            "name": "DatabaseMigrations::BackfillPrepaidCreditBreakdownJob",
+            "source": "app/jobs/database_migrations/backfill_prepaid_credit_breakdown_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.BackfillStripePaymentMethodCardDetailsJob",
+            "name": "DatabaseMigrations::BackfillStripePaymentMethodCardDetailsJob",
+            "source": "app/jobs/database_migrations/backfill_stripe_payment_method_card_details_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.BackfillStripePaymentMethodsJob",
+            "name": "DatabaseMigrations::BackfillStripePaymentMethodsJob",
+            "source": "app/jobs/database_migrations/backfill_stripe_payment_methods_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.BackfillWalletTransactionsBillingEntityJob",
+            "name": "DatabaseMigrations::BackfillWalletTransactionsBillingEntityJob",
+            "source": "app/jobs/database_migrations/backfill_wallet_transactions_billing_entity_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.FixInvoicesOrganizationSequentialIdJob",
+            "name": "DatabaseMigrations::FixInvoicesOrganizationSequentialIdJob",
+            "source": "app/jobs/database_migrations/fix_invoices_organization_sequential_id_job.rb",
+            "queue": "default",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateAddOnsTaxesWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateAddOnsTaxesWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_add_ons_taxes_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateAdjustedFeesWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateAdjustedFeesWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_adjusted_fees_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateAppliedCouponsWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateAppliedCouponsWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_applied_coupons_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateAppliedInvoiceCustomSectionsWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateAppliedInvoiceCustomSectionsWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_applied_invoice_custom_sections_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateAppliedUsageThresholdsWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateAppliedUsageThresholdsWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_applied_usage_thresholds_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateBillableMetricFiltersWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateBillableMetricFiltersWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_billable_metric_filters_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateBillingEntitiesTaxesWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateBillingEntitiesTaxesWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_billing_entities_taxes_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateChargeFilterValuesWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateChargeFilterValuesWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_charge_filter_values_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateChargeFiltersWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateChargeFiltersWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_charge_filters_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateChargesTaxesWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateChargesTaxesWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_charges_taxes_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateChargesWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateChargesWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_charges_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateCommitmentsTaxesWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateCommitmentsTaxesWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_commitments_taxes_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateCommitmentsWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateCommitmentsWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_commitments_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateCouponTargetsWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateCouponTargetsWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_coupon_targets_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateCreditNoteItemsWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateCreditNoteItemsWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_credit_note_items_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateCreditNotesTaxesWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateCreditNotesTaxesWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_credit_notes_taxes_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateCreditNotesWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateCreditNotesWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_credit_notes_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateCreditsWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateCreditsWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_credits_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateCustomerMetadataWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateCustomerMetadataWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_customer_metadata_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateCustomersTaxesWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateCustomersTaxesWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_customers_taxes_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateDataExportPartsWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateDataExportPartsWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_data_export_parts_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateDunningCampaignThresholdsWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateDunningCampaignThresholdsWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_dunning_campaign_thresholds_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateFeesTaxesWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateFeesTaxesWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_fees_taxes_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateFeesWithBillingEntityIdJob",
+            "name": "DatabaseMigrations::PopulateFeesWithBillingEntityIdJob",
+            "source": "app/jobs/database_migrations/populate_fees_with_billing_entity_id_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateFeesWithOrganizationFromInvoiceJob",
+            "name": "DatabaseMigrations::PopulateFeesWithOrganizationFromInvoiceJob",
+            "source": "app/jobs/database_migrations/populate_fees_with_organization_from_invoice_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateFeesWithOrganizationFromSubscriptionJob",
+            "name": "DatabaseMigrations::PopulateFeesWithOrganizationFromSubscriptionJob",
+            "source": "app/jobs/database_migrations/populate_fees_with_organization_from_subscription_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateIdempotencyRecordsWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateIdempotencyRecordsWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_idempotency_records_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateIntegrationCollectionMappingsWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateIntegrationCollectionMappingsWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_integration_collection_mappings_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateIntegrationCustomersWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateIntegrationCustomersWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_integration_customers_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateIntegrationItemsWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateIntegrationItemsWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_integration_items_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateIntegrationMappingsWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateIntegrationMappingsWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_integration_mappings_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateIntegrationResourcesWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateIntegrationResourcesWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_integration_resources_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateInvoiceMetadataWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateInvoiceMetadataWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_invoice_metadata_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateInvoiceSubscriptionsWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateInvoiceSubscriptionsWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_invoice_subscriptions_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateInvoicesBillingEntitySequentialIdJob",
+            "name": "DatabaseMigrations::PopulateInvoicesBillingEntitySequentialIdJob",
+            "source": "app/jobs/database_migrations/populate_invoices_billing_entity_sequential_id_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateInvoicesPaymentRequestsWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateInvoicesPaymentRequestsWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_invoices_payment_requests_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateInvoicesTaxesWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateInvoicesTaxesWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_invoices_taxes_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulatePaymentProviderCustomersWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulatePaymentProviderCustomersWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_payment_provider_customers_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulatePaymentsWithCustomerId",
+            "name": "DatabaseMigrations::PopulatePaymentsWithCustomerId",
+            "source": "app/jobs/database_migrations/populate_payments_with_customer_id.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulatePaymentsWithOrganizationFromInvoiceJob",
+            "name": "DatabaseMigrations::PopulatePaymentsWithOrganizationFromInvoiceJob",
+            "source": "app/jobs/database_migrations/populate_payments_with_organization_from_invoice_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulatePaymentsWithOrganizationFromPaymentRequestJob",
+            "name": "DatabaseMigrations::PopulatePaymentsWithOrganizationFromPaymentRequestJob",
+            "source": "app/jobs/database_migrations/populate_payments_with_organization_from_payment_request_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulatePlansTaxesWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulatePlansTaxesWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_plans_taxes_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateRecurringTransactionRulesWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateRecurringTransactionRulesWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_recurring_transaction_rules_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateRefundsWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateRefundsWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_refunds_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateSubscriptionsWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateSubscriptionsWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_subscriptions_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateUsageThresholdsWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateUsageThresholdsWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_usage_thresholds_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateWalletTransactionsWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateWalletTransactionsWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_wallet_transactions_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateWalletsWithCodeJob",
+            "name": "DatabaseMigrations::PopulateWalletsWithCodeJob",
+            "source": "app/jobs/database_migrations/populate_wallets_with_code_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateWalletsWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateWalletsWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_wallets_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DatabaseMigrations.PopulateWebhooksWithOrganizationJob",
+            "name": "DatabaseMigrations::PopulateWebhooksWithOrganizationJob",
+            "source": "app/jobs/database_migrations/populate_webhooks_with_organization_job.rb",
+            "queue": "low_priority",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DeliverEventJob",
+            "name": "DeliverEventJob",
+            "source": "app/jobs/deliver_event_job.rb",
+            "queue": "streaming",
+            "unique": [
+                "unique :until_and_while_executing, on_conflict: ON_CONFLICT, lock_ttl: 10.minutes"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:DunningCampaigns.BulkProcessJob",
+            "name": "DunningCampaigns::BulkProcessJob",
+            "source": "app/jobs/dunning_campaigns/bulk_process_job.rb",
+            "queue": "default",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:DunningCampaigns.ProcessAttemptJob",
+            "name": "DunningCampaigns::ProcessAttemptJob",
+            "source": "app/jobs/dunning_campaigns/process_attempt_job.rb",
+            "queue": "default",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:DunningCampaigns.ProcessCustomerJob",
+            "name": "DunningCampaigns::ProcessCustomerJob",
+            "source": "app/jobs/dunning_campaigns/process_customer_job.rb",
+            "queue": "default",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Events.CreateBatchJob",
+            "name": "Events::CreateBatchJob",
+            "source": "app/jobs/events/create_batch_job.rb",
+            "queue": "default",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:Events.PayInAdvanceJob",
+            "name": "Events::PayInAdvanceJob",
+            "source": "app/jobs/events/pay_in_advance_job.rb",
+            "queue": "(dynamic)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Events.PostProcessJob",
+            "name": "Events::PostProcessJob",
+            "source": "app/jobs/events/post_process_job.rb",
+            "queue": "(dynamic)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:Events.PostValidationJob",
+            "name": "Events::PostValidationJob",
+            "source": "app/jobs/events/post_validation_job.rb",
+            "queue": "(dynamic)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:Events.Stores.Clickhouse.PreEnrichmentCheckJob",
+            "name": "Events::Stores::Clickhouse::PreEnrichmentCheckJob",
+            "source": "app/jobs/events/stores/clickhouse/pre_enrichment_check_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:Fees.CreatePayInAdvanceJob",
+            "name": "Fees::CreatePayInAdvanceJob",
+            "source": "app/jobs/fees/create_pay_in_advance_job.rb",
+            "queue": "default",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": [
+                "retry_on BaseService::ThrottlingError, wait: :polynomially_longer, attempts: 25",
+                "retry_on Events::Stores::Clickhouse::MemoryLimitError,"
+            ]
+        },
+        {
+            "id": "job:FixedCharges.CascadeChildPlanUpdateJob",
+            "name": "FixedCharges::CascadeChildPlanUpdateJob",
+            "source": "app/jobs/fixed_charges/cascade_child_plan_update_job.rb",
+            "queue": "default",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:FixedCharges.CascadePlanUpdateJob",
+            "name": "FixedCharges::CascadePlanUpdateJob",
+            "source": "app/jobs/fixed_charges/cascade_plan_update_job.rb",
+            "queue": "default",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:FixedCharges.CreateChildrenBatchJob",
+            "name": "FixedCharges::CreateChildrenBatchJob",
+            "source": "app/jobs/fixed_charges/create_children_batch_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:FixedCharges.CreateChildrenJob",
+            "name": "FixedCharges::CreateChildrenJob",
+            "source": "app/jobs/fixed_charges/create_children_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:FixedCharges.DestroyChildrenJob",
+            "name": "FixedCharges::DestroyChildrenJob",
+            "source": "app/jobs/fixed_charges/destroy_children_job.rb",
+            "queue": "default",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:FixedCharges.UpdateChildrenBatchJob",
+            "name": "FixedCharges::UpdateChildrenBatchJob",
+            "source": "app/jobs/fixed_charges/update_children_batch_job.rb",
+            "queue": "low_priority",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:FixedCharges.UpdateChildrenJob",
+            "name": "FixedCharges::UpdateChildrenJob",
+            "source": "app/jobs/fixed_charges/update_children_job.rb",
+            "queue": "default",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:InboundWebhooks.ProcessJob",
+            "name": "InboundWebhooks::ProcessJob",
+            "source": "app/jobs/inbound_webhooks/process_job.rb",
+            "queue": "default",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:IntegrationCustomers.CreateJob",
+            "name": "IntegrationCustomers::CreateJob",
+            "source": "app/jobs/integration_customers/create_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log, lock_ttl: 12.hours"
+            ],
+            "retry_on": [
+                "retry_on LagoHttpClient::HttpError, wait: :polynomially_longer, attempts: 3",
+                "retry_on BaseService::ThrottlingError, wait: :polynomially_longer, attempts: 25"
+            ]
+        },
+        {
+            "id": "job:IntegrationCustomers.UpdateJob",
+            "name": "IntegrationCustomers::UpdateJob",
+            "source": "app/jobs/integration_customers/update_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": [
+                "retry_on LagoHttpClient::HttpError, wait: :polynomially_longer, attempts: 3",
+                "retry_on BaseService::ThrottlingError, wait: :polynomially_longer, attempts: 25"
+            ]
+        },
+        {
+            "id": "job:Integrations.Aggregator.CreditNotes.CreateJob",
+            "name": "Integrations::Aggregator::CreditNotes::CreateJob",
+            "source": "app/jobs/integrations/aggregator/credit_notes/create_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": [
+                "retry_on LagoHttpClient::HttpError, wait: :polynomially_longer, attempts: 3",
+                "retry_on RequestLimitError, wait: :polynomially_longer, attempts: 100",
+                "retry_on BaseService::ThrottlingError, wait: :polynomially_longer, attempts: 25"
+            ]
+        },
+        {
+            "id": "job:Integrations.Aggregator.FetchItemsJob",
+            "name": "Integrations::Aggregator::FetchItemsJob",
+            "source": "app/jobs/integrations/aggregator/fetch_items_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": [
+                "retry_on LagoHttpClient::HttpError, wait: :polynomially_longer, attempts: 3",
+                "retry_on RequestLimitError, wait: :polynomially_longer, attempts: 100"
+            ]
+        },
+        {
+            "id": "job:Integrations.Aggregator.Invoices.CreateJob",
+            "name": "Integrations::Aggregator::Invoices::CreateJob",
+            "source": "app/jobs/integrations/aggregator/invoices/create_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": [
+                "retry_on LagoHttpClient::HttpError, wait: :polynomially_longer, attempts: 3",
+                "retry_on RequestLimitError, wait: :polynomially_longer, attempts: 100",
+                "retry_on BaseService::ThrottlingError, wait: :polynomially_longer, attempts: 25"
+            ]
+        },
+        {
+            "id": "job:Integrations.Aggregator.Invoices.Hubspot.CreateCustomerAssociationJob",
+            "name": "Integrations::Aggregator::Invoices::Hubspot::CreateCustomerAssociationJob",
+            "source": "app/jobs/integrations/aggregator/invoices/hubspot/create_customer_association_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": [
+                "retry_on LagoHttpClient::HttpError, wait: :polynomially_longer, attempts: 10",
+                "retry_on RequestLimitError, wait: :polynomially_longer, attempts: 100",
+                "retry_on BaseService::ThrottlingError, wait: :polynomially_longer, attempts: 25"
+            ]
+        },
+        {
+            "id": "job:Integrations.Aggregator.Invoices.Hubspot.CreateJob",
+            "name": "Integrations::Aggregator::Invoices::Hubspot::CreateJob",
+            "source": "app/jobs/integrations/aggregator/invoices/hubspot/create_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": [
+                "retry_on LagoHttpClient::HttpError, wait: :polynomially_longer, attempts: 10",
+                "retry_on Integrations::Aggregator::BasePayload::Failure, wait: :polynomially_longer, attempts: 10",
+                "retry_on RequestLimitError, wait: :polynomially_longer, attempts: 100",
+                "retry_on BaseService::ThrottlingError, wait: :polynomially_longer, attempts: 25"
+            ]
+        },
+        {
+            "id": "job:Integrations.Aggregator.Invoices.Hubspot.UpdateJob",
+            "name": "Integrations::Aggregator::Invoices::Hubspot::UpdateJob",
+            "source": "app/jobs/integrations/aggregator/invoices/hubspot/update_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": [
+                "retry_on LagoHttpClient::HttpError, wait: :polynomially_longer, attempts: 10",
+                "retry_on Integrations::Aggregator::BasePayload::Failure, wait: :polynomially_longer, attempts: 10",
+                "retry_on RequestLimitError, wait: :polynomially_longer, attempts: 100",
+                "retry_on BaseService::ThrottlingError, wait: :polynomially_longer, attempts: 25"
+            ]
+        },
+        {
+            "id": "job:Integrations.Aggregator.Payments.CreateJob",
+            "name": "Integrations::Aggregator::Payments::CreateJob",
+            "source": "app/jobs/integrations/aggregator/payments/create_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": [
+                "retry_on LagoHttpClient::HttpError, wait: :polynomially_longer, attempts: 5",
+                "retry_on Integrations::Aggregator::BasePayload::Failure, wait: :polynomially_longer, attempts: 10",
+                "retry_on RequestLimitError, wait: :polynomially_longer, attempts: 100",
+                "retry_on BaseService::ThrottlingError, wait: :polynomially_longer, attempts: 25",
+                "retry_on Net::ReadTimeout, wait: :polynomially_longer, attempts: 25"
+            ]
+        },
+        {
+            "id": "job:Integrations.Aggregator.PerformSyncJob",
+            "name": "Integrations::Aggregator::PerformSyncJob",
+            "source": "app/jobs/integrations/aggregator/perform_sync_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": [
+                "retry_on LagoHttpClient::HttpError, wait: :polynomially_longer, attempts: 3",
+                "retry_on RequestLimitError, wait: :polynomially_longer, attempts: 100"
+            ]
+        },
+        {
+            "id": "job:Integrations.Aggregator.SendRestletEndpointJob",
+            "name": "Integrations::Aggregator::SendRestletEndpointJob",
+            "source": "app/jobs/integrations/aggregator/send_restlet_endpoint_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": [
+                "retry_on LagoHttpClient::HttpError, wait: :polynomially_longer, attempts: 3",
+                "retry_on RequestLimitError, wait: :polynomially_longer, attempts: 100"
+            ]
+        },
+        {
+            "id": "job:Integrations.Aggregator.Subscriptions.Hubspot.CreateCustomerAssociationJob",
+            "name": "Integrations::Aggregator::Subscriptions::Hubspot::CreateCustomerAssociationJob",
+            "source": "app/jobs/integrations/aggregator/subscriptions/hubspot/create_customer_association_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": [
+                "retry_on LagoHttpClient::HttpError, wait: :polynomially_longer, attempts: 10",
+                "retry_on RequestLimitError, wait: :polynomially_longer, attempts: 100",
+                "retry_on BaseService::ThrottlingError, wait: :polynomially_longer, attempts: 25"
+            ]
+        },
+        {
+            "id": "job:Integrations.Aggregator.Subscriptions.Hubspot.CreateJob",
+            "name": "Integrations::Aggregator::Subscriptions::Hubspot::CreateJob",
+            "source": "app/jobs/integrations/aggregator/subscriptions/hubspot/create_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": [
+                "retry_on LagoHttpClient::HttpError, wait: :polynomially_longer, attempts: 10",
+                "retry_on Integrations::Aggregator::BasePayload::Failure, wait: :polynomially_longer, attempts: 10",
+                "retry_on RequestLimitError, wait: :polynomially_longer, attempts: 100",
+                "retry_on BaseService::ThrottlingError, wait: :polynomially_longer, attempts: 25"
+            ]
+        },
+        {
+            "id": "job:Integrations.Aggregator.Subscriptions.Hubspot.UpdateJob",
+            "name": "Integrations::Aggregator::Subscriptions::Hubspot::UpdateJob",
+            "source": "app/jobs/integrations/aggregator/subscriptions/hubspot/update_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": [
+                "retry_on LagoHttpClient::HttpError, wait: :polynomially_longer, attempts: 10",
+                "retry_on Integrations::Aggregator::BasePayload::Failure, wait: :polynomially_longer, attempts: 10",
+                "retry_on RequestLimitError, wait: :polynomially_longer, attempts: 100",
+                "retry_on BaseService::ThrottlingError, wait: :polynomially_longer, attempts: 25"
+            ]
+        },
+        {
+            "id": "job:Integrations.Aggregator.SyncCustomObjectsAndPropertiesJob",
+            "name": "Integrations::Aggregator::SyncCustomObjectsAndPropertiesJob",
+            "source": "app/jobs/integrations/aggregator/sync_custom_objects_and_properties_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": [
+                "retry_on BaseService::ThrottlingError, wait: :polynomially_longer, attempts: 25"
+            ]
+        },
+        {
+            "id": "job:Integrations.Aggregator.Taxes.Invoices.CreateJob",
+            "name": "Integrations::Aggregator::Taxes::Invoices::CreateJob",
+            "source": "app/jobs/integrations/aggregator/taxes/invoices/create_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": [
+                "retry_on BaseService::ThrottlingError, wait: :polynomially_longer, attempts: 25",
+                "retry_on(*Integrations::Aggregator::BaseService.retryable_errors, wait: :polynomially_longer, attempts: 6)"
+            ]
+        },
+        {
+            "id": "job:Integrations.Avalara.FetchCompanyIdJob",
+            "name": "Integrations::Avalara::FetchCompanyIdJob",
+            "source": "app/jobs/integrations/avalara/fetch_company_id_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": [
+                "retry_on LagoHttpClient::HttpError, wait: :polynomially_longer, attempts: 3",
+                "retry_on BaseService::ThrottlingError, wait: :polynomially_longer, attempts: 25"
+            ]
+        },
+        {
+            "id": "job:Integrations.Hubspot.Companies.DeployPropertiesJob",
+            "name": "Integrations::Hubspot::Companies::DeployPropertiesJob",
+            "source": "app/jobs/integrations/hubspot/companies/deploy_properties_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": [
+                "retry_on LagoHttpClient::HttpError, wait: :polynomially_longer, attempts: 3",
+                "retry_on Integrations::Aggregator::RequestLimitError, wait: :polynomially_longer, attempts: 100",
+                "retry_on BaseService::ThrottlingError, wait: :polynomially_longer, attempts: 25"
+            ]
+        },
+        {
+            "id": "job:Integrations.Hubspot.Contacts.DeployPropertiesJob",
+            "name": "Integrations::Hubspot::Contacts::DeployPropertiesJob",
+            "source": "app/jobs/integrations/hubspot/contacts/deploy_properties_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": [
+                "retry_on LagoHttpClient::HttpError, wait: :polynomially_longer, attempts: 3",
+                "retry_on Integrations::Aggregator::RequestLimitError, wait: :polynomially_longer, attempts: 100",
+                "retry_on BaseService::ThrottlingError, wait: :polynomially_longer, attempts: 25"
+            ]
+        },
+        {
+            "id": "job:Integrations.Hubspot.Invoices.DeployObjectJob",
+            "name": "Integrations::Hubspot::Invoices::DeployObjectJob",
+            "source": "app/jobs/integrations/hubspot/invoices/deploy_object_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": [
+                "retry_on LagoHttpClient::HttpError, wait: :polynomially_longer, attempts: 3",
+                "retry_on Integrations::Aggregator::RequestLimitError, wait: :polynomially_longer, attempts: 100",
+                "retry_on BaseService::ThrottlingError, wait: :polynomially_longer, attempts: 25"
+            ]
+        },
+        {
+            "id": "job:Integrations.Hubspot.SavePortalIdJob",
+            "name": "Integrations::Hubspot::SavePortalIdJob",
+            "source": "app/jobs/integrations/hubspot/save_portal_id_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": [
+                "retry_on LagoHttpClient::HttpError, wait: :polynomially_longer, attempts: 3",
+                "retry_on Integrations::Aggregator::RequestLimitError, wait: :polynomially_longer, attempts: 100",
+                "retry_on BaseService::ThrottlingError, wait: :polynomially_longer, attempts: 25"
+            ]
+        },
+        {
+            "id": "job:Integrations.Hubspot.Subscriptions.DeployObjectJob",
+            "name": "Integrations::Hubspot::Subscriptions::DeployObjectJob",
+            "source": "app/jobs/integrations/hubspot/subscriptions/deploy_object_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": [
+                "retry_on LagoHttpClient::HttpError, wait: :polynomially_longer, attempts: 3",
+                "retry_on Integrations::Aggregator::RequestLimitError, wait: :polynomially_longer, attempts: 100",
+                "retry_on BaseService::ThrottlingError, wait: :polynomially_longer, attempts: 25"
+            ]
+        },
+        {
+            "id": "job:Invoices.CreateAllPayInAdvanceFixedChargesJob",
+            "name": "Invoices::CreateAllPayInAdvanceFixedChargesJob",
+            "source": "app/jobs/invoices/create_all_pay_in_advance_fixed_charges_job.rb",
+            "queue": "(dynamic)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Invoices.CreatePayInAdvanceChargeJob",
+            "name": "Invoices::CreatePayInAdvanceChargeJob",
+            "source": "app/jobs/invoices/create_pay_in_advance_charge_job.rb",
+            "queue": "(dynamic)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": [
+                "retry_on Sequenced::SequenceError, wait: :polynomially_longer, attempts: 15, jitter: 0.75",
+                "retry_on BaseService::ThrottlingError, wait: :polynomially_longer, attempts: 25",
+                "retry_on BaseLockService::FailedToAcquireLock, ActiveRecord::StaleObjectError, attempts: MAX_LOCK_RETRY_ATTEMPTS, wait: random_lock_retry_delay",
+                "retry_on ActiveRecord::LockWaitTimeout, PG::LockNotAvailable, queue: :low_priority, wait: :polynomially_longer, attempts: 15"
+            ]
+        },
+        {
+            "id": "job:Invoices.CreatePayInAdvanceFixedChargesJob",
+            "name": "Invoices::CreatePayInAdvanceFixedChargesJob",
+            "source": "app/jobs/invoices/create_pay_in_advance_fixed_charges_job.rb",
+            "queue": "(dynamic)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": [
+                "retry_on Sequenced::SequenceError, wait: :polynomially_longer, attempts: 15, jitter: 0.75",
+                "retry_on BaseService::ThrottlingError, wait: :polynomially_longer, attempts: 25",
+                "retry_on BaseLockService::FailedToAcquireLock, ActiveRecord::StaleObjectError, attempts: MAX_LOCK_RETRY_ATTEMPTS, wait: random_lock_retry_delay"
+            ]
+        },
+        {
+            "id": "job:Invoices.FinalizeAllJob",
+            "name": "Invoices::FinalizeAllJob",
+            "source": "app/jobs/invoices/finalize_all_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:Invoices.FinalizeJob",
+            "name": "Invoices::FinalizeJob",
+            "source": "app/jobs/invoices/finalize_job.rb",
+            "queue": "(dynamic)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log, lock_ttl: 12.hours"
+            ],
+            "retry_on": [
+                "retry_on BaseLockService::FailedToAcquireLock, ActiveRecord::StaleObjectError, attempts: MAX_LOCK_RETRY_ATTEMPTS, wait: random_lock_retry_delay",
+                "retry_on Sequenced::SequenceError, wait: :polynomially_longer, attempts: 15, jitter: 0.75"
+            ]
+        },
+        {
+            "id": "job:Invoices.FinalizePendingViesInvoiceJob",
+            "name": "Invoices::FinalizePendingViesInvoiceJob",
+            "source": "app/jobs/invoices/finalize_pending_vies_invoice_job.rb",
+            "queue": "(dynamic)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log, lock_ttl: 12.hours"
+            ],
+            "retry_on": [
+                "retry_on BaseLockService::FailedToAcquireLock, ActiveRecord::StaleObjectError, attempts: MAX_LOCK_RETRY_ATTEMPTS, wait: random_lock_retry_delay"
+            ]
+        },
+        {
+            "id": "job:Invoices.GenerateDocumentsJob",
+            "name": "Invoices::GenerateDocumentsJob",
+            "source": "app/jobs/invoices/generate_documents_job.rb",
+            "queue": "(dynamic)",
+            "unique": [],
+            "retry_on": [
+                "retry_on LagoHttpClient::HttpError,"
+            ]
+        },
+        {
+            "id": "job:Invoices.GeneratePdfAndNotifyJob",
+            "name": "Invoices::GeneratePdfAndNotifyJob",
+            "source": "app/jobs/invoices/generate_pdf_and_notify_job.rb",
+            "queue": "(dynamic)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:Invoices.GeneratePdfJob",
+            "name": "Invoices::GeneratePdfJob",
+            "source": "app/jobs/invoices/generate_pdf_job.rb",
+            "queue": "(dynamic)",
+            "unique": [],
+            "retry_on": [
+                "retry_on LagoHttpClient::HttpError, wait: :polynomially_longer, attempts: 6"
+            ]
+        },
+        {
+            "id": "job:Invoices.GenerateXmlJob",
+            "name": "Invoices::GenerateXmlJob",
+            "source": "app/jobs/invoices/generate_xml_job.rb",
+            "queue": "(dynamic)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:Invoices.NotifyJob",
+            "name": "Invoices::NotifyJob",
+            "source": "app/jobs/invoices/notify_job.rb",
+            "queue": "(dynamic)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:Invoices.Payments.AdyenCreateJob",
+            "name": "Invoices::Payments::AdyenCreateJob",
+            "source": "app/jobs/invoices/payments/adyen_create_job.rb",
+            "queue": "(dynamic)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": [
+                "retry_on Faraday::ConnectionFailed, wait: :polynomially_longer, attempts: 6"
+            ]
+        },
+        {
+            "id": "job:Invoices.Payments.CancelAbandonedJob",
+            "name": "Invoices::Payments::CancelAbandonedJob",
+            "source": "app/jobs/invoices/payments/cancel_abandoned_job.rb",
+            "queue": "(dynamic)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": [
+                "retry_on ::Stripe::RateLimitError, wait: :polynomially_longer, attempts: 6",
+                "retry_on ::Stripe::APIConnectionError, wait: :polynomially_longer, attempts: 6"
+            ]
+        },
+        {
+            "id": "job:Invoices.Payments.CreateJob",
+            "name": "Invoices::Payments::CreateJob",
+            "source": "app/jobs/invoices/payments/create_job.rb",
+            "queue": "(dynamic)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": [
+                "retry_on Invoices::Payments::ConnectionError, wait: :polynomially_longer, attempts: 6",
+                "retry_on Invoices::Payments::RateLimitError, wait: :polynomially_longer, attempts: 6"
+            ]
+        },
+        {
+            "id": "job:Invoices.Payments.GocardlessCreateJob",
+            "name": "Invoices::Payments::GocardlessCreateJob",
+            "source": "app/jobs/invoices/payments/gocardless_create_job.rb",
+            "queue": "(dynamic)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Invoices.Payments.MarkOverdueJob",
+            "name": "Invoices::Payments::MarkOverdueJob",
+            "source": "app/jobs/invoices/payments/mark_overdue_job.rb",
+            "queue": "(dynamic)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Invoices.Payments.RetryAllJob",
+            "name": "Invoices::Payments::RetryAllJob",
+            "source": "app/jobs/invoices/payments/retry_all_job.rb",
+            "queue": "(dynamic)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:Invoices.Payments.StripeCreateJob",
+            "name": "Invoices::Payments::StripeCreateJob",
+            "source": "app/jobs/invoices/payments/stripe_create_job.rb",
+            "queue": "(dynamic)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": [
+                "retry_on ::Stripe::RateLimitError, wait: :polynomially_longer, attempts: 6",
+                "retry_on ::Stripe::APIConnectionError, wait: :polynomially_longer, attempts: 6",
+                "retry_on Invoices::Payments::ConnectionError, wait: :polynomially_longer, attempts: 6",
+                "retry_on Invoices::Payments::RateLimitError, wait: :polynomially_longer, attempts: 6"
+            ]
+        },
+        {
+            "id": "job:Invoices.PrepaidCreditJob",
+            "name": "Invoices::PrepaidCreditJob",
+            "source": "app/jobs/invoices/prepaid_credit_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": [
+                "retry_on ActiveRecord::StaleObjectError, wait: :polynomially_longer, attempts: 6"
+            ]
+        },
+        {
+            "id": "job:Invoices.ProviderTaxes.PullTaxesAndApplyJob",
+            "name": "Invoices::ProviderTaxes::PullTaxesAndApplyJob",
+            "source": "app/jobs/invoices/provider_taxes/pull_taxes_and_apply_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log, lock_ttl: 12.hours"
+            ],
+            "retry_on": [
+                "retry_on BaseService::ThrottlingError, wait: :polynomially_longer, attempts: 25",
+                "retry_on LagoHttpClient::HttpError, wait: :polynomially_longer, attempts: 6",
+                "retry_on OpenSSL::SSL::SSLError, wait: :polynomially_longer, attempts: 6",
+                "retry_on Net::ReadTimeout, wait: :polynomially_longer, attempts: 6",
+                "retry_on Net::OpenTimeout, wait: :polynomially_longer, attempts: 6",
+                "retry_on(*Integrations::Aggregator::BaseService.retryable_errors, wait: :polynomially_longer, attempts: 6)",
+                "retry_on BaseLockService::FailedToAcquireLock, ActiveRecord::StaleObjectError, wait: :polynomially_longer, attempts: MAX_LOCK_RETRY_ATTEMPTS",
+                "retry_on Sequenced::SequenceError, wait: :polynomially_longer, attempts: 15, jitter: 0.75"
+            ]
+        },
+        {
+            "id": "job:Invoices.ProviderTaxes.VoidJob",
+            "name": "Invoices::ProviderTaxes::VoidJob",
+            "source": "app/jobs/invoices/provider_taxes/void_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": [
+                "retry_on(*Integrations::Aggregator::BaseService.retryable_errors, wait: :polynomially_longer, attempts: 6)"
+            ]
+        },
+        {
+            "id": "job:Invoices.RefreshDraftJob",
+            "name": "Invoices::RefreshDraftJob",
+            "source": "app/jobs/invoices/refresh_draft_job.rb",
+            "queue": "(dynamic)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log, lock_ttl: 12.hours"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Invoices.RetryAllJob",
+            "name": "Invoices::RetryAllJob",
+            "source": "app/jobs/invoices/retry_all_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:Invoices.UpdateAllInvoiceGracePeriodFromBillingEntityJob",
+            "name": "Invoices::UpdateAllInvoiceGracePeriodFromBillingEntityJob",
+            "source": "app/jobs/invoices/update_all_invoice_grace_period_from_billing_entity_job.rb",
+            "queue": "(dynamic)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:Invoices.UpdateAllInvoiceIssuingDateFromBillingEntityJob",
+            "name": "Invoices::UpdateAllInvoiceIssuingDateFromBillingEntityJob",
+            "source": "app/jobs/invoices/update_all_invoice_issuing_date_from_billing_entity_job.rb",
+            "queue": "(dynamic)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:Invoices.UpdateFeesPaymentStatusJob",
+            "name": "Invoices::UpdateFeesPaymentStatusJob",
+            "source": "app/jobs/invoices/update_fees_payment_status_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:Invoices.UpdateGracePeriodFromBillingEntityJob",
+            "name": "Invoices::UpdateGracePeriodFromBillingEntityJob",
+            "source": "app/jobs/invoices/update_grace_period_from_billing_entity_job.rb",
+            "queue": "(dynamic)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:Invoices.UpdateIssuingDateFromBillingEntityJob",
+            "name": "Invoices::UpdateIssuingDateFromBillingEntityJob",
+            "source": "app/jobs/invoices/update_issuing_date_from_billing_entity_job.rb",
+            "queue": "(dynamic)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:LifetimeUsages.FlagRefreshFromPlanUpdateJob",
+            "name": "LifetimeUsages::FlagRefreshFromPlanUpdateJob",
+            "source": "app/jobs/lifetime_usages/flag_refresh_from_plan_update_job.rb",
+            "queue": "default",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:LifetimeUsages.RecalculateAndCheckJob",
+            "name": "LifetimeUsages::RecalculateAndCheckJob",
+            "source": "app/jobs/lifetime_usages/recalculate_and_check_job.rb",
+            "queue": "(dynamic)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log, lock_ttl: 12.hours"
+            ],
+            "retry_on": [
+                "retry_on BaseLockService::FailedToAcquireLock, ActiveRecord::StaleObjectError, attempts: MAX_LOCK_RETRY_ATTEMPTS, wait: random_lock_retry_delay"
+            ]
+        },
+        {
+            "id": "job:OrderForms.ExpireOrderFormJob",
+            "name": "OrderForms::ExpireOrderFormJob",
+            "source": "app/jobs/order_forms/expire_order_form_job.rb",
+            "queue": "default",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": [
+                "retry_on BaseLockService::FailedToAcquireLock, attempts: MAX_LOCK_RETRY_ATTEMPTS, wait: random_lock_retry_delay"
+            ]
+        },
+        {
+            "id": "job:Orders.ExecuteOrderJob",
+            "name": "Orders::ExecuteOrderJob",
+            "source": "app/jobs/orders/execute_order_job.rb",
+            "queue": "default",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": [
+                "retry_on BaseLockService::FailedToAcquireLock, attempts: MAX_LOCK_RETRY_ATTEMPTS, wait: random_lock_retry_delay"
+            ]
+        },
+        {
+            "id": "job:PaymentIntents.ExpireJob",
+            "name": "PaymentIntents::ExpireJob",
+            "source": "app/jobs/payment_intents/expire_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": [
+                "retry_on ::Stripe::RateLimitError, ::Stripe::APIConnectionError, wait: :polynomially_longer, attempts: 5"
+            ]
+        },
+        {
+            "id": "job:PaymentProviderCustomers.AdyenCheckoutUrlJob",
+            "name": "PaymentProviderCustomers::AdyenCheckoutUrlJob",
+            "source": "app/jobs/payment_provider_customers/adyen_checkout_url_job.rb",
+            "queue": "providers",
+            "unique": [],
+            "retry_on": [
+                "retry_on Adyen::AdyenError, wait: :polynomially_longer, attempts: 6",
+                "retry_on ActiveJob::DeserializationError"
+            ]
+        },
+        {
+            "id": "job:PaymentProviderCustomers.AdyenCreateJob",
+            "name": "PaymentProviderCustomers::AdyenCreateJob",
+            "source": "app/jobs/payment_provider_customers/adyen_create_job.rb",
+            "queue": "providers",
+            "unique": [],
+            "retry_on": [
+                "retry_on Adyen::AdyenError, wait: :polynomially_longer, attempts: 6",
+                "retry_on ActiveJob::DeserializationError"
+            ]
+        },
+        {
+            "id": "job:PaymentProviderCustomers.GocardlessCheckoutUrlJob",
+            "name": "PaymentProviderCustomers::GocardlessCheckoutUrlJob",
+            "source": "app/jobs/payment_provider_customers/gocardless_checkout_url_job.rb",
+            "queue": "providers",
+            "unique": [],
+            "retry_on": [
+                "retry_on GoCardlessPro::GoCardlessError, wait: :polynomially_longer, attempts: 6",
+                "retry_on GoCardlessPro::ApiError, wait: :polynomially_longer, attempts: 6",
+                "retry_on GoCardlessPro::RateLimitError, wait: :polynomially_longer, attempts: 6",
+                "retry_on ActiveJob::DeserializationError"
+            ]
+        },
+        {
+            "id": "job:PaymentProviderCustomers.GocardlessCreateJob",
+            "name": "PaymentProviderCustomers::GocardlessCreateJob",
+            "source": "app/jobs/payment_provider_customers/gocardless_create_job.rb",
+            "queue": "providers",
+            "unique": [],
+            "retry_on": [
+                "retry_on GoCardlessPro::GoCardlessError, wait: :polynomially_longer, attempts: 6",
+                "retry_on GoCardlessPro::ApiError, wait: :polynomially_longer, attempts: 6",
+                "retry_on GoCardlessPro::RateLimitError, wait: :polynomially_longer, attempts: 6",
+                "retry_on ActiveJob::DeserializationError"
+            ]
+        },
+        {
+            "id": "job:PaymentProviderCustomers.MoneyhashCheckoutUrlJob",
+            "name": "PaymentProviderCustomers::MoneyhashCheckoutUrlJob",
+            "source": "app/jobs/payment_provider_customers/moneyhash_checkout_url_job.rb",
+            "queue": "providers",
+            "unique": [],
+            "retry_on": [
+                "retry_on ActiveJob::DeserializationError"
+            ]
+        },
+        {
+            "id": "job:PaymentProviderCustomers.MoneyhashCreateJob",
+            "name": "PaymentProviderCustomers::MoneyhashCreateJob",
+            "source": "app/jobs/payment_provider_customers/moneyhash_create_job.rb",
+            "queue": "providers",
+            "unique": [],
+            "retry_on": [
+                "retry_on ActiveJob::DeserializationError"
+            ]
+        },
+        {
+            "id": "job:PaymentProviderCustomers.StripeCheckoutUrlJob",
+            "name": "PaymentProviderCustomers::StripeCheckoutUrlJob",
+            "source": "app/jobs/payment_provider_customers/stripe_checkout_url_job.rb",
+            "queue": "providers",
+            "unique": [],
+            "retry_on": [
+                "retry_on ::Stripe::APIConnectionError, wait: :polynomially_longer, attempts: 6",
+                "retry_on ::Stripe::APIError, wait: :polynomially_longer, attempts: 6",
+                "retry_on ::Stripe::RateLimitError, wait: :polynomially_longer, attempts: 6",
+                "retry_on ActiveJob::DeserializationError"
+            ]
+        },
+        {
+            "id": "job:PaymentProviderCustomers.StripeCreateJob",
+            "name": "PaymentProviderCustomers::StripeCreateJob",
+            "source": "app/jobs/payment_provider_customers/stripe_create_job.rb",
+            "queue": "providers",
+            "unique": [],
+            "retry_on": [
+                "retry_on ::Stripe::APIConnectionError, wait: :polynomially_longer, attempts: 6",
+                "retry_on ::Stripe::APIError, wait: :polynomially_longer, attempts: 6",
+                "retry_on ::Stripe::RateLimitError, wait: :polynomially_longer, attempts: 6",
+                "retry_on ActiveJob::DeserializationError"
+            ]
+        },
+        {
+            "id": "job:PaymentProviderCustomers.StripeSyncFundingInstructionsJob",
+            "name": "PaymentProviderCustomers::StripeSyncFundingInstructionsJob",
+            "source": "app/jobs/payment_provider_customers/stripe_sync_funding_instructions_job.rb",
+            "queue": "providers",
+            "unique": [],
+            "retry_on": [
+                "retry_on ::Stripe::APIConnectionError, wait: :polynomially_longer, attempts: 6",
+                "retry_on ::Stripe::APIError, wait: :polynomially_longer, attempts: 6",
+                "retry_on ::Stripe::RateLimitError, wait: :polynomially_longer, attempts: 6",
+                "retry_on ActiveJob::DeserializationError"
+            ]
+        },
+        {
+            "id": "job:PaymentProviders.Adyen.HandleEventJob",
+            "name": "PaymentProviders::Adyen::HandleEventJob",
+            "source": "app/jobs/payment_providers/adyen/handle_event_job.rb",
+            "queue": "(dynamic)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:PaymentProviders.CancelPaymentAuthorizationJob",
+            "name": "PaymentProviders::CancelPaymentAuthorizationJob",
+            "source": "app/jobs/payment_providers/cancel_payment_authorization_job.rb",
+            "queue": "(dynamic)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:PaymentProviders.CancelPaymentJob",
+            "name": "PaymentProviders::CancelPaymentJob",
+            "source": "app/jobs/payment_providers/cancel_payment_job.rb",
+            "queue": "(dynamic)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:PaymentProviders.Cashfree.HandleEventJob",
+            "name": "PaymentProviders::Cashfree::HandleEventJob",
+            "source": "app/jobs/payment_providers/cashfree/handle_event_job.rb",
+            "queue": "(dynamic)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:PaymentProviders.Flutterwave.HandleEventJob",
+            "name": "PaymentProviders::Flutterwave::HandleEventJob",
+            "source": "app/jobs/payment_providers/flutterwave/handle_event_job.rb",
+            "queue": "(dynamic)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:PaymentProviders.Gocardless.HandleEventJob",
+            "name": "PaymentProviders::Gocardless::HandleEventJob",
+            "source": "app/jobs/payment_providers/gocardless/handle_event_job.rb",
+            "queue": "(dynamic)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:PaymentProviders.Moneyhash.HandleEventJob",
+            "name": "PaymentProviders::Moneyhash::HandleEventJob",
+            "source": "app/jobs/payment_providers/moneyhash/handle_event_job.rb",
+            "queue": "(dynamic)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:PaymentProviders.Stripe.Customers.FetchDefaultPaymentMethodJob",
+            "name": "PaymentProviders::Stripe::Customers::FetchDefaultPaymentMethodJob",
+            "source": "app/jobs/payment_providers/stripe/customers/fetch_default_payment_method_job.rb",
+            "queue": "default",
+            "unique": [],
+            "retry_on": [
+                "retry_on ::Stripe::RateLimitError, wait: :polynomially_longer, attempts: 5",
+                "retry_on BaseService::LockAcquisitionFailure, ActiveRecord::Deadlocked, attempts: MAX_LOCK_RETRY_ATTEMPTS, wait: random_lock_retry_delay"
+            ]
+        },
+        {
+            "id": "job:PaymentProviders.Stripe.ExpirePaymentIntentsJob",
+            "name": "PaymentProviders::Stripe::ExpirePaymentIntentsJob",
+            "source": "app/jobs/payment_providers/stripe/expire_payment_intents_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:PaymentProviders.Stripe.HandleEventJob",
+            "name": "PaymentProviders::Stripe::HandleEventJob",
+            "source": "app/jobs/payment_providers/stripe/handle_event_job.rb",
+            "queue": "(dynamic)",
+            "unique": [],
+            "retry_on": [
+                "retry_on BaseService::NotFoundFailure",
+                "retry_on ::Stripe::RateLimitError, wait: :polynomially_longer, attempts: 6, jitter: 0.75",
+                "retry_on ::Stripe::APIConnectionError, wait: :polynomially_longer, attempts: 6, jitter: 0.75",
+                "retry_on BaseService::LockAcquisitionFailure, ActiveRecord::Deadlocked, attempts: MAX_LOCK_RETRY_ATTEMPTS, wait: random_lock_retry_delay"
+            ]
+        },
+        {
+            "id": "job:PaymentProviders.Stripe.RefreshWebhookJob",
+            "name": "PaymentProviders::Stripe::RefreshWebhookJob",
+            "source": "app/jobs/payment_providers/stripe/refresh_webhook_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:PaymentProviders.Stripe.RegisterWebhookJob",
+            "name": "PaymentProviders::Stripe::RegisterWebhookJob",
+            "source": "app/jobs/payment_providers/stripe/register_webhook_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:PaymentProviders.UpdatePaymentReferenceJob",
+            "name": "PaymentProviders::UpdatePaymentReferenceJob",
+            "source": "app/jobs/payment_providers/update_payment_reference_job.rb",
+            "queue": "(dynamic)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:PaymentReceipts.CreateJob",
+            "name": "PaymentReceipts::CreateJob",
+            "source": "app/jobs/payment_receipts/create_job.rb",
+            "queue": "low_priority",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:PaymentReceipts.GenerateDocumentsJob",
+            "name": "PaymentReceipts::GenerateDocumentsJob",
+            "source": "app/jobs/payment_receipts/generate_documents_job.rb",
+            "queue": "(dynamic)",
+            "unique": [],
+            "retry_on": [
+                "retry_on LagoHttpClient::HttpError,"
+            ]
+        },
+        {
+            "id": "job:PaymentReceipts.GeneratePdfAndNotifyJob",
+            "name": "PaymentReceipts::GeneratePdfAndNotifyJob",
+            "source": "app/jobs/payment_receipts/generate_pdf_and_notify_job.rb",
+            "queue": "(dynamic)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:PaymentReceipts.GeneratePdfJob",
+            "name": "PaymentReceipts::GeneratePdfJob",
+            "source": "app/jobs/payment_receipts/generate_pdf_job.rb",
+            "queue": "(dynamic)",
+            "unique": [],
+            "retry_on": [
+                "retry_on LagoHttpClient::HttpError, wait: :polynomially_longer, attempts: 6"
+            ]
+        },
+        {
+            "id": "job:PaymentReceipts.GenerateXmlJob",
+            "name": "PaymentReceipts::GenerateXmlJob",
+            "source": "app/jobs/payment_receipts/generate_xml_job.rb",
+            "queue": "(dynamic)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:PaymentReceipts.NotifyJob",
+            "name": "PaymentReceipts::NotifyJob",
+            "source": "app/jobs/payment_receipts/notify_job.rb",
+            "queue": "(dynamic)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:PaymentRequests.Payments.AdyenCreateJob",
+            "name": "PaymentRequests::Payments::AdyenCreateJob",
+            "source": "app/jobs/payment_requests/payments/adyen_create_job.rb",
+            "queue": "(dynamic)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": [
+                "retry_on Faraday::ConnectionFailed, wait: :polynomially_longer, attempts: 6"
+            ]
+        },
+        {
+            "id": "job:PaymentRequests.Payments.CreateJob",
+            "name": "PaymentRequests::Payments::CreateJob",
+            "source": "app/jobs/payment_requests/payments/create_job.rb",
+            "queue": "(dynamic)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": [
+                "retry_on Faraday::ConnectionFailed, wait: :polynomially_longer, attempts: 6",
+                "retry_on ::Stripe::RateLimitError, wait: :polynomially_longer, attempts: 6",
+                "retry_on ::Stripe::APIConnectionError, wait: :polynomially_longer, attempts: 6"
+            ]
+        },
+        {
+            "id": "job:PaymentRequests.Payments.GocardlessCreateJob",
+            "name": "PaymentRequests::Payments::GocardlessCreateJob",
+            "source": "app/jobs/payment_requests/payments/gocardless_create_job.rb",
+            "queue": "(dynamic)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:PaymentRequests.Payments.MoneyhashCreateJob",
+            "name": "PaymentRequests::Payments::MoneyhashCreateJob",
+            "source": "app/jobs/payment_requests/payments/moneyhash_create_job.rb",
+            "queue": "(dynamic)",
+            "unique": [
+                "unique :until_executed"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:PaymentRequests.Payments.StripeCreateJob",
+            "name": "PaymentRequests::Payments::StripeCreateJob",
+            "source": "app/jobs/payment_requests/payments/stripe_create_job.rb",
+            "queue": "(dynamic)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": [
+                "retry_on ::Stripe::RateLimitError, wait: :polynomially_longer, attempts: 6",
+                "retry_on ::Stripe::APIConnectionError, wait: :polynomially_longer, attempts: 6"
+            ]
+        },
+        {
+            "id": "job:Payments.ManualCreateJob",
+            "name": "Payments::ManualCreateJob",
+            "source": "app/jobs/payments/manual_create_job.rb",
+            "queue": "(dynamic)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:Payments.SetPaymentMethodAndCreateReceiptJob",
+            "name": "Payments::SetPaymentMethodAndCreateReceiptJob",
+            "source": "app/jobs/payments/set_payment_method_and_create_receipt_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": [
+                "retry_on ::Stripe::RateLimitError, wait: :polynomially_longer, attempts: 5"
+            ]
+        },
+        {
+            "id": "job:Plans.DestroyJob",
+            "name": "Plans::DestroyJob",
+            "source": "app/jobs/plans/destroy_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Plans.UpdateAmountJob",
+            "name": "Plans::UpdateAmountJob",
+            "source": "app/jobs/plans/update_amount_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:SegmentIdentifyJob",
+            "name": "SegmentIdentifyJob",
+            "source": "app/jobs/segment_identify_job.rb",
+            "queue": "default",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:SegmentTrackJob",
+            "name": "SegmentTrackJob",
+            "source": "app/jobs/segment_track_job.rb",
+            "queue": "default",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:SendEmailJob",
+            "name": "SendEmailJob",
+            "source": "app/jobs/send_email_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": [
+                "retry_on ActiveJob::DeserializationError, wait: :polynomially_longer, attempts: 6",
+                "retry_on LagoHttpClient::HttpError, wait: :polynomially_longer, attempts: 6",
+                "retry_on Net::ReadTimeout, wait: :polynomially_longer, attempts: 6",
+                "retry_on Net::OpenTimeout, wait: :polynomially_longer, attempts: 6",
+                "retry_on EOFError, wait: :polynomially_longer, attempts: 6",
+                "retry_on Net::SMTPServerBusy, wait: :polynomially_longer, attempts: 25",
+                "retry_on PaymentReceipts::FilesNotReadyError, wait: :polynomially_longer, attempts: 8"
+            ]
+        },
+        {
+            "id": "job:SendHttpWebhookJob",
+            "name": "SendHttpWebhookJob",
+            "source": "app/jobs/send_http_webhook_job.rb",
+            "queue": "(dynamic)",
+            "unique": [],
+            "retry_on": [
+                "retry_on ActiveJob::DeserializationError, wait: :polynomially_longer, attempts: 3 do |job, error|",
+                "retry_on \"Aws::S3::Errors::SlowDown\", wait: :polynomially_longer, attempts: 6"
+            ]
+        },
+        {
+            "id": "job:SendWebhookJob",
+            "name": "SendWebhookJob",
+            "source": "app/jobs/send_webhook_job.rb",
+            "queue": "(dynamic)",
+            "unique": [],
+            "retry_on": [
+                "retry_on ActiveJob::DeserializationError, wait: :polynomially_longer, attempts: 6",
+                "retry_on \"Aws::S3::Errors::SlowDown\", wait: :polynomially_longer, attempts: 6"
+            ]
+        },
+        {
+            "id": "job:Subscriptions.ActivationRules.BillCurrentPeriodJob",
+            "name": "Subscriptions::ActivationRules::BillCurrentPeriodJob",
+            "source": "app/jobs/subscriptions/activation_rules/bill_current_period_job.rb",
+            "queue": "(dynamic)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": [
+                "retry_on Sequenced::SequenceError, wait: :polynomially_longer, attempts: 15, jitter: 0.75",
+                "retry_on BaseService::ThrottlingError, wait: :polynomially_longer, attempts: 25",
+                "retry_on BaseLockService::FailedToAcquireLock, ActiveRecord::StaleObjectError, attempts: MAX_LOCK_RETRY_ATTEMPTS, wait: random_lock_retry_delay"
+            ]
+        },
+        {
+            "id": "job:Subscriptions.ActivationRules.ExpireIncompleteJob",
+            "name": "Subscriptions::ActivationRules::ExpireIncompleteJob",
+            "source": "app/jobs/subscriptions/activation_rules/expire_incomplete_job.rb",
+            "queue": "(dynamic)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Subscriptions.ActivationRules.Payment.ResolveJob",
+            "name": "Subscriptions::ActivationRules::Payment::ResolveJob",
+            "source": "app/jobs/subscriptions/activation_rules/payment/resolve_job.rb",
+            "queue": "(dynamic)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:Subscriptions.FlagRefreshedJob",
+            "name": "Subscriptions::FlagRefreshedJob",
+            "source": "app/jobs/subscriptions/flag_refreshed_job.rb",
+            "queue": "(dynamic)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:Subscriptions.OrganizationBillingJob",
+            "name": "Subscriptions::OrganizationBillingJob",
+            "source": "app/jobs/subscriptions/organization_billing_job.rb",
+            "queue": "(dynamic)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log, lock_ttl: 12.hours"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Subscriptions.TerminateEndedSubscriptionJob",
+            "name": "Subscriptions::TerminateEndedSubscriptionJob",
+            "source": "app/jobs/subscriptions/terminate_ended_subscription_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Subscriptions.TerminateJob",
+            "name": "Subscriptions::TerminateJob",
+            "source": "app/jobs/subscriptions/terminate_job.rb",
+            "queue": "(dynamic)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:Taxes.UpdateAllEuTaxesJob",
+            "name": "Taxes::UpdateAllEuTaxesJob",
+            "source": "app/jobs/taxes/update_all_eu_taxes_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:Taxes.UpdateOrganizationEuTaxesJob",
+            "name": "Taxes::UpdateOrganizationEuTaxesJob",
+            "source": "app/jobs/taxes/update_organization_eu_taxes_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:UsageMonitoring.ProcessLifetimeUsageAlertJob",
+            "name": "UsageMonitoring::ProcessLifetimeUsageAlertJob",
+            "source": "app/jobs/usage_monitoring/process_lifetime_usage_alert_job.rb",
+            "queue": "(dynamic)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:UsageMonitoring.ProcessOrganizationSubscriptionActivitiesJob",
+            "name": "UsageMonitoring::ProcessOrganizationSubscriptionActivitiesJob",
+            "source": "app/jobs/usage_monitoring/process_organization_subscription_activities_job.rb",
+            "queue": "(dynamic)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:UsageMonitoring.ProcessSubscriptionActivityJob",
+            "name": "UsageMonitoring::ProcessSubscriptionActivityJob",
+            "source": "app/jobs/usage_monitoring/process_subscription_activity_job.rb",
+            "queue": "(dynamic)",
+            "unique": [],
+            "retry_on": []
+        },
+        {
+            "id": "job:UsageMonitoring.ProcessWalletAlertsJob",
+            "name": "UsageMonitoring::ProcessWalletAlertsJob",
+            "source": "app/jobs/usage_monitoring/process_wallet_alerts_job.rb",
+            "queue": "(dynamic)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:WalletTransactions.CreateJob",
+            "name": "WalletTransactions::CreateJob",
+            "source": "app/jobs/wallet_transactions/create_job.rb",
+            "queue": "(none)",
+            "unique": [
+                "unique :until_executed, on_conflict: :log"
+            ],
+            "retry_on": []
+        },
+        {
+            "id": "job:WalletTransactions.RecreditJob",
+            "name": "WalletTransactions::RecreditJob",
+            "source": "app/jobs/wallet_transactions/recredit_job.rb",
+            "queue": "(none)",
+            "unique": [],
+            "retry_on": []
+        }
+    ]
+}
