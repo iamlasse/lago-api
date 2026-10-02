@@ -214,8 +214,12 @@ class Invoice extends BaseModel
 
     public function paymentStatusEnum(): ?InvoicePaymentStatus
     {
-        return $this->payment_status === null
-            ? null
+        if ($this->payment_status === null) {
+            return null;
+        }
+
+        return $this->payment_status instanceof InvoicePaymentStatus
+            ? $this->payment_status
             : InvoicePaymentStatus::tryFrom((int) $this->payment_status);
     }
 
@@ -258,7 +262,7 @@ class Invoice extends BaseModel
      */
     public function statusChangedToFinalized(): bool
     {
-        if ((int) $this->status !== InvoiceStatus::Finalized->value) {
+        if ($this->statusEnum() !== InvoiceStatus::Finalized) {
             return false;
         }
 
@@ -268,8 +272,12 @@ class Invoice extends BaseModel
             return false;
         }
 
+        $originalEnum = $original instanceof InvoiceStatus
+            ? $original
+            : InvoiceStatus::tryFrom((int) $original);
+
         return in_array(
-            InvoiceStatus::tryFrom((int) $original),
+            $originalEnum,
             [InvoiceStatus::Draft, InvoiceStatus::Generating, InvoiceStatus::Open, InvoiceStatus::Failed, InvoiceStatus::Pending],
             true,
         );
@@ -339,7 +347,11 @@ class Invoice extends BaseModel
         }
 
         $billingEntity = $this->billingEntity;
-        $perCustomer = $billingEntity->document_numbering === \App\Enums\EntityDocumentNumbering::PerCustomer->label();
+        $numbering = $billingEntity->document_numbering;
+        $numberingValue = $numbering instanceof \App\Enums\EntityDocumentNumbering
+            ? $numbering->value
+            : (is_string($numbering) ? $numbering : null);
+        $perCustomer = $numberingValue === \App\Enums\EntityDocumentNumbering::PerCustomer->value;
 
         if ($perCustomer || $this->self_billed) {
             // NOTE: Example of expected customer slug format is ORG_PREFIX-005
@@ -377,6 +389,7 @@ class Invoice extends BaseModel
 
     // -- Rails before_save hooks ----------------------------------------------
 
+    #[\Illuminate\Database\Eloquent\Attributes\Boot]
     protected static function bootInvoice(): void
     {
         static::saving(function (self $invoice): void {

@@ -57,7 +57,7 @@ class AppliedCouponsService extends \App\Services\BaseService
                     return;
                 }
 
-                $result->credits[] = $creditResult->credit;
+                $result->credits = array_merge($result->credits ?? [], [$creditResult->credit]);
             }
         });
 

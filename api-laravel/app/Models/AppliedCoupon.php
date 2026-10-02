@@ -46,12 +46,12 @@ class AppliedCoupon extends BaseModel
 
     public function statusEnum(): ?AppliedCouponStatus
     {
-        return $this->status === null ? null : AppliedCouponStatus::tryFrom((int) $this->status);
+        return $this->status instanceof AppliedCouponStatus ? $this->status : ($this->status === null ? null : AppliedCouponStatus::tryFrom((int) $this->status));
     }
 
     public function frequencyEnum(): ?CouponFrequency
     {
-        return $this->frequency === null ? null : CouponFrequency::tryFrom((int) $this->frequency);
+        return $this->frequency instanceof CouponFrequency ? $this->frequency : ($this->frequency === null ? null : CouponFrequency::tryFrom((int) $this->frequency));
     }
 
     public function isActive(): bool
@@ -114,7 +114,7 @@ class AppliedCoupon extends BaseModel
     #[Scope]
     protected function active(Builder $query): Builder
     {
-        return $query->where('status', AppliedCouponStatus::Active->value);
+        return $query->where('applied_coupons.status', AppliedCouponStatus::Active->value);
     }
 
     protected function casts(): array

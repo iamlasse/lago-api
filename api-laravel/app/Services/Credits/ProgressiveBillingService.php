@@ -76,7 +76,7 @@ class ProgressiveBillingService extends \App\Services\BaseService
                 $this->invoice->progressive_billing_credit_amount_cents =
                     (int) $this->invoice->progressive_billing_credit_amount_cents + $credit->amount_cents;
 
-                $result->credits[] = $credit;
+                $result->credits = array_merge($result->credits ?? [], [$credit]);
             }
         }
 

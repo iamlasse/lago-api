@@ -75,7 +75,7 @@ class ApplyTaxesService extends \App\Services\BaseService
             $appliedPreciseTaxesAmountCents = MoneyMath::add($appliedPreciseTaxesAmountCents, $taxPreciseAmountCents);
             $appliedTaxesRate += (float) $tax->rate;
 
-            $result->applied_taxes[] = $appliedTax;
+            $result->applied_taxes = array_merge($result->applied_taxes, [$appliedTax]);
         }
 
         $this->fee->taxes_amount_cents = MoneyMath::round((string) $appliedTaxesAmountCents);

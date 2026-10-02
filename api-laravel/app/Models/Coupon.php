@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 use App\Enums\CouponType;
 use App\Enums\CouponStatus;
@@ -53,12 +54,12 @@ class Coupon extends BaseModel
 
     public function typeEnum(): ?CouponType
     {
-        return $this->coupon_type === null ? null : CouponType::tryFrom((int) $this->coupon_type);
+        return $this->coupon_type instanceof CouponType ? $this->coupon_type : ($this->coupon_type === null ? null : CouponType::tryFrom((int) $this->coupon_type));
     }
 
     public function frequencyEnum(): ?CouponFrequency
     {
-        return $this->frequency === null ? null : CouponFrequency::tryFrom((int) $this->frequency);
+        return $this->frequency instanceof CouponFrequency ? $this->frequency : ($this->frequency === null ? null : CouponFrequency::tryFrom((int) $this->frequency));
     }
 
     /** Rails: `percentage?` — coupon_type == :percentage. */

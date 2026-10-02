@@ -30,15 +30,15 @@ class AppliedCouponFactory extends Factory
             },
             'status' => AppliedCouponStatus::Active,
             'frequency' => function (array $attributes): int {
-                return Coupon::query()->find($attributes['coupon_id'])->frequency ?? CouponFrequency::Once;
+                return Coupon::query()->find($attributes['coupon_id'])?->frequency?->value ?? CouponFrequency::Once->value;
             },
             'frequency_duration' => function (array $attributes): int {
-                return Coupon::query()->find($attributes['coupon_id'])->frequency_duration ?? 1;
+                return (int) (Coupon::query()->find($attributes['coupon_id'])->frequency_duration ?? 1);
             },
             'frequency_duration_remaining' => function (array $attributes): int {
                 $coupon = Coupon::query()->find($attributes['coupon_id']);
 
-                return $coupon?->frequency_duration ?? 1;
+                return (int) ($coupon?->frequency_duration ?? 1);
             },
             'amount_cents' => 1000,
             'amount_currency' => 'EUR',

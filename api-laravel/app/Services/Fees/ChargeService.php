@@ -67,12 +67,15 @@ class ChargeService extends \App\Services\BaseService
         }
 
         DB::transaction(function () use ($result): void {
-            foreach ($result->fees as $index => $fee) {
-                if (! $this->shouldPersistFee($fee, $result->fees)) {
-                    unset($result->fees[$index]);
+            $fees = $result->fees ?? [];
+            $kept = [];
 
+            foreach ($fees as $fee) {
+                if (! $this->shouldPersistFee($fee, $fees)) {
                     continue;
                 }
+
+                $kept[] = $fee;
 
                 if ($this->options()->invoicePreview()) {
                     continue;
@@ -85,7 +88,7 @@ class ChargeService extends \App\Services\BaseService
                 // grouped_by keys) ported with the filters pipeline (M2).
             }
 
-            $result->fees = array_values($result->fees);
+            $result->fees = $kept;
         });
 
         return $result;
@@ -117,7 +120,7 @@ class ChargeService extends \App\Services\BaseService
 
         foreach ($fees as $fee) {
             if ($fee !== null) {
-                $result->fees[] = $fee;
+                $result->fees = array_merge($result->fees ?? [], [$fee]);
             }
         }
     }
@@ -321,7 +324,7 @@ class ChargeService extends \App\Services\BaseService
         );
 
         if ($trueUpResult->true_up_fee !== null) {
-            $result->fees[] = $trueUpResult->true_up_fee;
+            $result->fees = array_merge($result->fees ?? [], [$trueUpResult->true_up_fee]);
         }
     }
 

@@ -55,7 +55,7 @@ class ApplyTaxesService extends \App\Services\BaseService
             $appliedTaxesAmountCents += $taxAmountCents;
             $taxesRate += $this->proRatedTaxesRate($tax);
 
-            $result->applied_taxes[] = $appliedTax;
+            $result->applied_taxes = array_merge($result->applied_taxes, [$appliedTax]);
         }
 
         $this->invoice->taxes_amount_cents = MoneyMath::round((string) $appliedTaxesAmountCents);

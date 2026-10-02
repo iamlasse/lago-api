@@ -7,6 +7,7 @@ use App\Http\Middleware\SetBetaHeader;
 use App\Exceptions\Api\NotFoundException;
 use App\Http\Controllers\Api\V1\CustomersController;
 use App\Http\Controllers\Api\V1\PlansController;
+use App\Http\Controllers\Api\V1\SubscriptionsController;
 use App\Http\Controllers\Api\V1\OrganizationsController;
 use App\Http\Controllers\Api\V1\Plans\ChargesController;
 use App\Http\Controllers\Api\V1\Plans\FixedChargesController;
@@ -78,6 +79,26 @@ $sharedApi = function (): void {
         Route::put('plans/{code}', [PlansController::class, 'update'])->where('code', '.+');
         Route::patch('plans/{code}', [PlansController::class, 'update'])->where('code', '.+');
         Route::delete('plans/{code}', [PlansController::class, 'destroy'])->where('code', '.+');
+
+        // -- subscriptions ----------------------------------------------------
+        // DELETE on a subscription never destroys the row: it terminates it
+        // (Subscriptions\TerminateService).
+        //
+        // Not registered yet (dependencies do not exist): the nested
+        // subresources lifetime_usage, alerts, entitlements, charges and
+        // fixed_charges (no ported controllers/services), and the
+        // /customers/:external_id/subscriptions index.
+        Route::get('subscriptions', [SubscriptionsController::class, 'index']);
+        Route::post('subscriptions', [SubscriptionsController::class, 'create']);
+
+        Route::get('subscriptions/{external_id}', [SubscriptionsController::class, 'show'])
+            ->where('external_id', '.+');
+        Route::put('subscriptions/{external_id}', [SubscriptionsController::class, 'update'])
+            ->where('external_id', '.+');
+        Route::patch('subscriptions/{external_id}', [SubscriptionsController::class, 'update'])
+            ->where('external_id', '.+');
+        Route::delete('subscriptions/{external_id}', [SubscriptionsController::class, 'terminate'])
+            ->where('external_id', '.+');
 
 
         // customers and subscriptions are looked up by external_id, which

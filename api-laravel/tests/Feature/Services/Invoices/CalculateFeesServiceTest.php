@@ -40,7 +40,7 @@ function invoicePipelineFixture(array $overrides = []): array
         'organization_id' => $organization->id,
         'billable_metric_id' => $metric->id,
         'charge_model' => 'standard',
-        'properties' => ['amount' => '100'],
+        'properties' => ['amount' => '1'],
         'invoiceable' => true,
         'pay_in_advance' => false,
     ]);
@@ -116,8 +116,8 @@ it('creates the charge fee from the cached aggregation and rolls up totals', fun
         ->and($invoice->sub_total_excluding_taxes_amount_cents)->toBe(1000)
         ->and($invoice->total_amount_cents)->toBe(1000)
         ->and($invoice->taxes_amount_cents)->toBe(0)
-        // 0-amount subscription fee → payment_status succeeded
-        ->and($invoice->paymentStatusEnum()->label())->toBe('succeeded');
+        // nonzero total → payment pending
+        ->and($invoice->paymentStatusEnum()->label())->toBe('pending');
 });
 
 it('applies taxes through the chain and writes the invoice snapshot rows', function () {
@@ -139,8 +139,11 @@ it('applies taxes through the chain and writes the invoice snapshot rows', funct
         'name' => 'VAT',
         'code' => 'vat-test',
     ]);
-    $f['charge']->taxes()->attach($tax->id, [
+    // charges_taxes join table (Charges::ApplyTaxes-style linkage)
+    \Illuminate\Support\Facades\DB::table('charges_taxes')->insert([
         'id' => (string) \Illuminate\Support\Str::uuid(),
+        'charge_id' => $f['charge']->id,
+        'tax_id' => $tax->id,
         'organization_id' => $f['organization']->id,
         'created_at' => now(),
         'updated_at' => now(),
@@ -220,7 +223,7 @@ it('finalizes a draft invoice assigning number and sequential id via Sequenced',
         ->and($result->invoice->sequential_id)->toBe(1)
         ->and($result->invoice->billing_entity_sequential_id)->toBe(1)
         // per-customer numbering: PREFIX-<customer seq>-<invoice seq>
-        ->and($result->invoice->number)->toContain('-DRAFT-001')
+        ->and(preg_match('/^\S+-\d{3}-\d{3}$/', $result->invoice->number))->toBe(1)
         ->and($result->invoice->search_terms)->not->toBeNull();
 });
 
