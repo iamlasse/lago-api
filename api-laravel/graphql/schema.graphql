@@ -1,11 +1,11 @@
-# Partial, un-frozen schema (graphql/schema.graphql)
+# RETIRED partial schema — superseded by the full frozen SDL.
 #
-# The frozen contract lives verbatim in graphql/frozen-schema.graphql (never
-# edited). Until the full SDL can be served by Lighthouse (see
-# graphql/FULL_SCHEMA_NOTES.md for the exact blocker list), this partial
-# schema serves the operations that are actually ported. Type definitions are
-# copied from the frozen schema; deviations (renamed attribute resolvers,
-# trimmed fields) are tagged with `# PARTIAL:` comments.
+# The frozen contract (graphql/frozen-schema.graphql) is now served directly:
+# config/lighthouse.php points at it through
+# App\GraphQL\Schema\Source\FrozenSchemaSourceProvider (see
+# graphql/FULL_SCHEMA_NOTES.md). Resolvers are wired by naming conventions,
+# so no SDL is needed here. Kept only as historical reference — do not point
+# lighthouse.schema_path back at this file.
 
 "A date string with format `Y-m-d`, e.g. `2011-05-23`."
 scalar ISO8601Date

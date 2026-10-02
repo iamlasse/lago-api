@@ -78,6 +78,31 @@ it('exposes the loginUser mutation and currentUser query on the schema', functio
         ->and($mutationFields)->toContain('loginUser');
 });
 
+it('resolves not-yet-implemented root fields to null (stub semantics)', function () {
+    // activityLog has no ported resolver: the LagoResolverProvider null
+    // fallback builds the full frozen SDL without it (nullable root field →
+    // plain null, no error).
+    $response = gqlPost('query { activityLog(activityId: "x") { __typename } }');
+
+    $response->assertOk();
+
+    expect($response->json('data.activityLog'))->toBeNull()
+        ->and($response->json('errors'))->toBeNull();
+});
+
+it('surfaces the null violation for non-nullable unimplemented root fields', function () {
+    // overdueBalances: OverdueBalanceCollection! — unimplemented, non-null →
+    // the standard GraphQL null violation until its resolver lands.
+    $response = gqlPost('query { overdueBalances { collection { __typename } } }');
+
+    $response->assertOk();
+
+    // graphql-php raises an InvariantViolation; with debug off (Rails never
+    // exposes traces) it surfaces as the generic internal server error.
+    expect($response->json('data'))->toBeNull()
+        ->and($response->json('errors.0.message'))->toBe('Internal server error');
+});
+
 it('rejects queries deeper than 15 levels', function () {
     // user → memberships → organization → … nesting beyond max_depth 15
     $level = 'id';

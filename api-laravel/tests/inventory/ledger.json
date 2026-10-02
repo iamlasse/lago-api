@@ -1676,12 +1676,14 @@
             "source": "schema.json",
             "laravel": "App\\GraphQL\\Mutation\\LoginUser",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/LoginUserTest.php"
+            ],
+            "notes": "Port of Rails' spec/graphql/mutations/login_user_spec.rb."
         },
         {
             "id": "gql:mutation:loseInvoiceDispute",
@@ -3284,24 +3286,28 @@
             "source": "schema.json",
             "laravel": "App\\GraphQL\\Query\\CurrentUser",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/AuthPlumbingTest.php"
+            ],
+            "notes": "Written-first tests (resolver exercised via GraphQL request tests)."
         },
         {
             "id": "gql:query:currentVersion",
             "source": "schema.json",
             "laravel": "App\\GraphQL\\Query\\CurrentVersion",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/AuthPlumbingTest.php"
+            ],
+            "notes": "Written-first tests (resolver exercised via GraphQL request tests)."
         },
         {
             "id": "gql:query:customer",
@@ -11852,24 +11858,28 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\ApplicationController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/HealthTest.php"
+            ],
+            "notes": "Port of Rails' spec/requests/application_controller_spec.rb (GET /health)."
         },
         {
             "id": "rest:GET:/ready",
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\ApplicationController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/HealthTest.php"
+            ],
+            "notes": "Written-first tests (Rails route has no dedicated spec)."
         },
         {
             "id": "rest:PATCH:/admin/invoices/:id",
@@ -15404,12 +15414,14 @@
             "source": "app/serializers/collection_serializer.rb",
             "laravel": "App\\Serializers\\Base\\CollectionSerializer",
             "status": {
-                "code": "in_progress",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": "Laravel class exists (M0 skeleton) — needs its tests before code:done."
+            "tests": [
+                "tests/Unit/Serializers/ModelSerializerTest.php"
+            ],
+            "notes": "Written-first tests (no dedicated Rails spec)."
         },
         {
             "id": "ser:EInvoices.BaseSerializer",
@@ -15908,12 +15920,14 @@
             "source": "app/serializers/model_serializer.rb",
             "laravel": "App\\Serializers\\Base\\ModelSerializer",
             "status": {
-                "code": "in_progress",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": "Laravel class exists (M0 skeleton) — needs its tests before code:done."
+            "tests": [
+                "tests/Unit/Serializers/ModelSerializerTest.php"
+            ],
+            "notes": "Port of Rails' spec/serializers/model_serializer_spec.rb."
         },
         {
             "id": "ser:V1.ActivityLogSerializer",
@@ -16232,12 +16246,14 @@
             "source": "app/serializers/v1/customer_serializer.rb",
             "laravel": "App\\Serializers\\V1\\CustomerSerializer",
             "status": {
-                "code": "in_progress",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": "Laravel class exists (M0 skeleton) — needs its tests before code:done."
+            "tests": [
+                "tests/Unit/Serializers/V1/CustomerSerializerTest.php"
+            ],
+            "notes": "Written-first tests."
         },
         {
             "id": "ser:V1.Customers.ChargeUsageSerializer",
@@ -16256,12 +16272,14 @@
             "source": "app/serializers/v1/customers/metadata_serializer.rb",
             "laravel": "App\\Serializers\\V1\\Customers\\MetadataSerializer",
             "status": {
-                "code": "in_progress",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": "Laravel class exists (M0 skeleton) — needs its tests before code:done."
+            "tests": [
+                "tests/Unit/Serializers/V1/MetadataAndTaxSerializerTest.php"
+            ],
+            "notes": "Written-first tests."
         },
         {
             "id": "ser:V1.Customers.PastUsageSerializer",
@@ -16700,12 +16718,14 @@
             "source": "app/serializers/v1/organization_serializer.rb",
             "laravel": "App\\Serializers\\V1\\OrganizationSerializer",
             "status": {
-                "code": "in_progress",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": "Laravel class exists (M0 skeleton) — needs its tests before code:done."
+            "tests": [
+                "tests/Unit/Serializers/V1/OrganizationSerializerTest.php"
+            ],
+            "notes": "Written-first tests."
         },
         {
             "id": "ser:V1.PaymentMethodSerializer",
@@ -16964,12 +16984,14 @@
             "source": "app/serializers/v1/tax_serializer.rb",
             "laravel": "App\\Serializers\\V1\\TaxSerializer",
             "status": {
-                "code": "in_progress",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": "Laravel class exists (M0 skeleton) — needs its tests before code:done."
+            "tests": [
+                "tests/Unit/Serializers/V1/MetadataAndTaxSerializerTest.php"
+            ],
+            "notes": "Written-first tests."
         },
         {
             "id": "ser:V1.TaxWithBillingEntitiesSerializer",
@@ -17492,12 +17514,14 @@
             "source": "app/services/api_keys/cache_service.rb",
             "laravel": "App\\Services\\ApiKeys\\CacheService",
             "status": {
-                "code": "in_progress",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": "Laravel class exists (M0 skeleton) — needs its tests before code:done."
+            "tests": [
+                "tests/Feature/Services/ApiKeysCacheServiceTest.php"
+            ],
+            "notes": "Written-first tests (no dedicated Rails spec)."
         },
         {
             "id": "svc:ApiKeys.CreateService",
@@ -18272,12 +18296,14 @@
             "source": "app/services/billing_entities/resolve_service.rb",
             "laravel": "App\\Services\\BillingEntities\\ResolveService",
             "status": {
-                "code": "in_progress",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": "Laravel class exists (M0 skeleton) — needs its tests before code:done."
+            "tests": [
+                "tests/Unit/Services/BillingEntities/ResolveServiceTest.php"
+            ],
+            "notes": "Written-first tests."
         },
         {
             "id": "svc:BillingEntities.Taxes.ApplyTaxesService",
@@ -19832,12 +19858,14 @@
             "source": "app/services/customers/apply_taxes_service.rb",
             "laravel": "App\\Services\\Customers\\ApplyTaxesService",
             "status": {
-                "code": "in_progress",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": "Laravel class exists (M0 skeleton) — needs its tests before code:done."
+            "tests": [
+                "tests/Unit/Services/Customers/ApplyTaxesServiceTest.php"
+            ],
+            "notes": "Written-first tests."
         },
         {
             "id": "svc:Customers.Concerns.EuTaxCodeResolver",
@@ -19856,12 +19884,14 @@
             "source": "app/services/customers/create_service.rb",
             "laravel": "App\\Services\\Customers\\CreateService",
             "status": {
-                "code": "in_progress",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": "Laravel class exists (M0 skeleton) — needs its tests before code:done."
+            "tests": [
+                "tests/Unit/Services/Customers/CreateServiceTest.php"
+            ],
+            "notes": "Written-first tests."
         },
         {
             "id": "svc:Customers.DestroyService",
@@ -19880,12 +19910,14 @@
             "source": "app/services/customers/eu_auto_taxes_service.rb",
             "laravel": "App\\Services\\Customers\\EuAutoTaxesService",
             "status": {
-                "code": "in_progress",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": "Laravel class exists (M0 skeleton) — needs its tests before code:done."
+            "tests": [
+                "tests/Unit/Services/Customers/EuAutoTaxesServiceTest.php"
+            ],
+            "notes": "Written-first tests."
         },
         {
             "id": "svc:Customers.GenerateCheckoutUrlService",
@@ -19928,12 +19960,14 @@
             "source": "app/services/customers/metadata/update_service.rb",
             "laravel": "App\\Services\\Customers\\Metadata\\UpdateService",
             "status": {
-                "code": "in_progress",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": "Laravel class exists (M0 skeleton) — needs its tests before code:done."
+            "tests": [
+                "tests/Unit/Services/Customers/Metadata/UpdateServiceTest.php"
+            ],
+            "notes": "Written-first tests."
         },
         {
             "id": "svc:Customers.PaymentProviderFinder",
@@ -20024,24 +20058,28 @@
             "source": "app/services/customers/update_service.rb",
             "laravel": "App\\Services\\Customers\\UpdateService",
             "status": {
-                "code": "in_progress",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": "Laravel class exists (M0 skeleton) — needs its tests before code:done."
+            "tests": [
+                "tests/Unit/Services/Customers/UpdateServiceTest.php"
+            ],
+            "notes": "Written-first tests."
         },
         {
             "id": "svc:Customers.UpsertFromApiService",
             "source": "app/services/customers/upsert_from_api_service.rb",
             "laravel": "App\\Services\\Customers\\UpsertFromApiService",
             "status": {
-                "code": "in_progress",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": "Laravel class exists (M0 skeleton) — needs its tests before code:done."
+            "tests": [
+                "tests/Unit/Services/Customers/UpsertFromApiServiceTest.php"
+            ],
+            "notes": "Written-first tests."
         },
         {
             "id": "svc:Customers.ViesCheckService",
@@ -24920,12 +24958,14 @@
             "source": "app/services/organizations/update_service.rb",
             "laravel": "App\\Services\\Organizations\\UpdateService",
             "status": {
-                "code": "in_progress",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": "Laravel class exists (M0 skeleton) — needs its tests before code:done."
+            "tests": [
+                "tests/Unit/Services/Organizations/UpdateServiceTest.php"
+            ],
+            "notes": "Written-first tests."
         },
         {
             "id": "svc:PasswordResets.CreateService",

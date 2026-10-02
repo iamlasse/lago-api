@@ -29,6 +29,13 @@ return Application::configure(basePath: dirname(__DIR__))
             'lago.auth' => AuthenticateApiKey::class,
             'lago.beta' => SetBetaHeader::class,
         ]);
+
+        // Rails parity on the REST surface: Rails params are raw — strings
+        // are neither trimmed nor collapsed to null ("" stays "", "\u0000"
+        // reaches the model, which strips it). Skip both transforms for
+        // api/*; web/GraphQL keep the Laravel defaults.
+        $middleware->trimStrings([fn (Request $request) => $request->is('api/*')]);
+        $middleware->convertEmptyStringsToNull([fn (Request $request) => $request->is('api/*')]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

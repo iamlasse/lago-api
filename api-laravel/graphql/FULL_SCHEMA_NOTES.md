@@ -1,89 +1,141 @@
-# Serving the full frozen schema — blocker notes
+# Serving the full frozen schema — status
 
 Goal: `POST /graphql` serves the entire frozen contract
 (`graphql/frozen-schema.graphql`, byte-identical copy of Rails'
 `schema.graphql`, md5 `b3769f7346aee6fc2284d24c9741bee0` — never edited).
 
-## Current state
+## Current state: the full SDL IS served
 
-Lighthouse serves a **partial schema** (`graphql/schema.graphql`) containing:
+`POST /graphql` now serves the whole frozen SDL through Lighthouse. All
+former blockers are closed by `App\GraphQL\Providers\LagoSchemaServiceProvider`
+(registered in `bootstrap/providers.php`):
 
-- the 7 custom scalars: `BigInt` (string serialization),
-  `ISO8601DateTime` / `ISO8601Date` (UTC `…Z`), `JSON` (pass-through),
-  `ObfuscatedString` (`••••••••…xyz` masking, port of
-  `Types::ObfuscatedStringType`), `ChargeFilterValues` (pass-through),
-  `HttpStatus` (validated 100..599 integer) — `app/GraphQL/Scalars/*`
-- `Query.currentUser` (guard: `@lagoAuth`) and `Query.currentVersion`
-- `Mutation.loginUser` with `LoginUserInput` / `LoginUser`
-- the minimum referenced types, copied field-for-field from the frozen SDL:
-  `User` (verbatim field set), `Membership` (trimmed, see below),
-  `Organization` (trimmed, see below), `CurrentVersion`, `MembershipStatus`
+1. **Explicit `schema { … }` block** — SOLVED. Lighthouse throws on
+   `SchemaDefinitionNode`, so
+   `App\GraphQL\Schema\Source\FrozenSchemaSourceProvider` (bound over
+   Lighthouse's `SchemaStitcher`) serves the frozen file after a purely
+   structural preprocessing: drop the `schema { … }` block, strip the two
+   informational `@specifiedBy(url: …)` applications (Lighthouse has no
+   handler and a shim would collide with graphql-php's built-in directive),
+   and drop `type GraphqlSubscription { … }` (see 5).
+2. **`@specifiedBy`** — SOLVED (stripped, see above).
+3. **Every root field needs a resolver** — SOLVED.
+   `App\GraphQL\Providers\LagoResolverProvider` (bound over Lighthouse's
+   `ProvidesResolver`) returns a `null` resolver for any root field without a
+   resolver class instead of failing the schema build (the agreed stub:
+   nullable root fields resolve to plain null; non-null ones surface the
+   standard GraphQL null violation as `Internal server error` with debug
+   off). Fields with a resolver class resolve normally; the frozen SDL has no
+   directives, so resolvers are found by Lighthouse's naming conventions:
+   - root fields: `App\GraphQL\Queries\<StudlyField>` / `App\GraphQL\Mutations\<StudlyField>`
+     (e.g. `organization` → `Queries\Organization`, `loginUser` → `Mutations\LoginUser`);
+   - type fields: a class named after the TYPE in `App\GraphQL\Types\` with a
+     method named after the FIELD (the direct analogue of Rails' `Types::*`
+     object types — e.g. `Types\CurrentOrganization::apiKey`,
+     `Types\User::premium`, which subclasses the pre-existing
+     `UserType`/`MembershipType`).
+   - nested fields without a type-class method fall back to a
+     graphql-ruby-style attribute lookup (exact camelCase name, then
+     snake_case) — necessary because the frozen SDL carries no `@rename`.
+4. **Interfaces & unions** — SOLVED (stubbed). Lighthouse resolves
+   `interface AppliedTax`, `interface InvoiceItem` and the 5 unions via
+   `App\GraphQL\Interfaces\{AppliedTax,InvoiceItem}` and
+   `App\GraphQL\Unions\{ActivityLogResourceObject,Integration,
+   IntegrationCustomer,Payable,PaymentProvider}`; they all extend
+   `AbstractLagoTypeResolver`, whose `__invoke` throws an `ExecutionError`
+   with extensions `{status: 500, code: "not_implemented"}`. Nothing
+   produces these values yet, so the throw is effectively unreachable; when a
+   resolver starts returning interface/union values, replace the stub with a
+   real `resolveType`.
+5. **Subscriptions** — PARTIALLY: no subscription root is served. Lighthouse
+   names its subscription root `Subscription` by implicit naming, which
+   collides with the schema's own `Subscription` OBJECT type (the billing
+   subscription) — renaming the root would shadow it. `FrozenSchemaSourceProvider`
+   therefore drops `type GraphqlSubscription` and `LagoSchemaBuilder`
+   (`App\GraphQL\Schema\LagoSchemaBuilder`, bound over Lighthouse's
+   `SchemaBuilder`) skips the subscription-root registration entirely; the
+   no-op `ProvidesSubscriptionResolver` binding stays as the hook for the
+   future subscriptions slice. This is the ONLY observable difference from
+   Rails' introspection.
 
-## Blockers to serving `frozen-schema.graphql` verbatim
+### Acceptance gate
 
-Serving was attempted (swap `lighthouse.schema_path` to the frozen file,
-`php artisan lighthouse:validate-schema`). Each attempt fails at a different
-layer; none of the fixes can be made without editing the frozen file or
-registering service providers (out of this slice's scope).
+`tests/Feature/GraphQL/IntrospectionDiffTest.php` diffs the LIVE schema
+against `tests/fixtures/GraphQL/rails-schema-surface.json` (distilled from
+the Rails repo's `schema.json`: 747 type names, 145 query root fields, 241
+mutation root fields, 1 subscription field):
 
-1. **Explicit `schema { … }` block** (frozen-schema.graphql:1-5):
-   Lighthouse's `DocumentAST` throws `Unknown definition type:
-   GraphQL\Language\AST\SchemaDefinitionNode`. Lighthouse only infers the
-   root types from implicit naming (`Query`, `Mutation`, `Subscription`).
-   Required preprocessing: drop the 5-line block (harmless — `query: Query`
-   and `mutation: Mutation` match implicit names) **but** the subscription
-   root is `subscription: GraphqlSubscription`, which Lighthouse would no
-   longer recognize (it requires the type to be literally `Subscription`),
-   so a rename would be needed too.
+- type names: 746/747 match (only `GraphqlSubscription` whitelisted — see 5);
+- query root fields: 145/145 match; mutation root fields: 241/241 match;
+- implemented-operation regression guard (currentUser, organization,
+  customer(s), apiKey(s), loginUser, updateOrganization, customer mutations,
+  apiKey mutations) must never disappear.
 
-2. **`@specifiedBy(url: …)`** on `ISO8601Date` / `ISO8601DateTime`
-   (frozen-schema.graphql:7547, 7552): Lighthouse has no handler for the
-   directive ("No directive found for `specifiedBy`"), and a shim directive
-   class is impossible because Lighthouse merges document directive
-   definitions with graphql-php's built-in `specifiedBy` without dedup
-   (`SchemaBuilder` line 92: `array_merge(GraphQL::getStandardDirectives(),
-   $directives)` → "Directive @specifiedBy defined multiple times").
-   Required preprocessing: strip the two applications (informational only).
+## Resolvers implemented so far
 
-3. **Every root field needs a resolver** — the hard blocker. Lighthouse's
-   `ResolverProvider` throws at schema-build time for any `Query`/`Mutation`
-   field without a resolver directive or class ("Could not locate a field
-   resolver for the query field \"activityLog\""). The frozen SDL declares
-   ~200 query root fields and ~150 mutations; Rails resolves them through
-   `Resolvers::*` / `Mutations::*` classes that are ported incrementally.
-   Lighthouse has no "resolve to null / not-yet-implemented" fallback.
-   The clean fix: bind a custom `Nuwave\Lighthouse\Support\Contracts\ProvidesResolver`
-   that returns a `null` resolver (or a `not_implemented` error field) when no
-   resolver class exists yet — needs a service provider registration
-   (`bootstrap/providers.php`), which is outside this slice's ownership.
+- Queries: `currentUser`, `currentVersion`, `organization` (full
+  `CurrentOrganization` computed-field set: apiKey, hmacKey, webhookUrl,
+  emailSettings (wire `invoice_finalized`), eventsStore, featureFlags
+  (filtered through `App\Support\FeatureFlag`), premiumIntegrations,
+  authenticationMethods, authenticatedMethod, accessibleByCurrentSession,
+  canCreateBillingEntity, billingConfiguration, timezone), `customer`,
+  `customers` (filters + search + kaminari pagination via the
+  `Customers\Query` port), `apiKey`, `apiKeys` (SanitizedApiKey masking
+  `••••••••` + last 3, kaminari metadata).
+- Mutations: `loginUser` (input-wrapped), `updateOrganization`,
+  `createCustomer`, `updateCustomer`, `destroyCustomer` (soft delete +
+  `{id, clientMutationId}` payload), `createApiKey`, `updateApiKey`,
+  `rotateApiKey`, `destroyApiKey` (backed by the new
+  `App\Services\ApiKeys\{Create,Update,Rotate,Destroy}Service` ports and the
+  `Customers\DestroyService` port; premium/license gating follows Rails).
+- Type classes: `Organization` / `CurrentOrganization` (subclass), `Customer`,
+  `BillingEntity`, `SanitizedApiKey`, `User` (subclass of `UserType`),
+  `Membership` (subclass of `MembershipType`).
+- `App\GraphQL\Support\{Args,Page,TimezoneWire}`: snake_casing of wire args
+  (graphql-ruby parity), the `collection` + `metadata` collection shape with
+  kaminari defaults (page 1, limit 25), and the TimezoneEnum `TZ_*` wire
+  mapping (generated from the frozen SDL; Rails' `Types::TimezoneEnum`
+  behaviour).
 
-4. **Interfaces & unions**: `interface AppliedTax` and `interface InvoiceItem`
-   (2 interfaces), plus 5 unions (`ActivityLogResourceObject`, `Integration`,
-   `IntegrationCustomer`, `Payable`, `PaymentProvider`) require Lighthouse
-   `App\GraphQL\Interfaces\*` / `App\GraphQL\Unions\*` resolver classes to
-   resolve concrete types at execution. Not yet ported.
+## What remains (drives the rest of task 11)
 
-5. **Subscriptions**: the frozen schema's root type is `GraphqlSubscription`;
-   Lighthouse requires the `Nuwave\Lighthouse\SubscriptionServiceProvider` to
-   be registered (Rails uses ActionCable — the Laravel equivalent is a
-   separate slice).
+1. **Root-field resolvers** — ~130 queries / ~230 mutations still resolve to
+   null stubs; each slice lands its own `Queries\*` / `Mutations\*` classes
+   (naming convention does the wiring — no SDL edits needed).
+2. **Non-null computed type fields** — fields whose Rails implementation
+   depends on unported features (e.g. `Customer.creditNotesBalances!`,
+   `hasActiveWallet!`, `integrationCustomers!`, `Membership.permissions!`,
+   `Membership.roles!`) resolve to null through the fallback and surface a
+   null violation WHEN SELECTED. Each feature slice should add a type-class
+   method (or accept the stub) as it lands. `Membership.permissions`/`roles`
+   still need the Permission/roles port.
+3. **Permission-gated fields** — Rails gates `apiKey`, `hmacKey`,
+   `webhookUrl`, `billingConfiguration`, `emailSettings`, `taxes` and every
+   resolver behind `REQUIRED_PERMISSION` (`CanRequirePermissions`). The
+   permission port is pending; the resolvers currently enforce only
+   AuthenticableApiUser + RequiredOrganization. When permissions land, add
+   the checks in the resolvers (context carries `LagoContext::PERMISSIONS`).
+4. **Interfaces/unions resolveType** — replace the `not_implemented` stubs
+   with real resolution when the first resolver returns those values.
+5. **Subscriptions** — ActionCable equivalent (broadcaster + the
+   `aiConversationStreamed` field); un-drop the root in
+   `FrozenSchemaSourceProvider` and remove the whitelist entry in the
+   introspection diff when it lands.
+6. **Customers filter contract** — Rails validates `customers` filters
+   through `Queries::CustomersQueryFiltersContract` before querying; the
+   GraphQL schema constrains most shapes, but the contract port is still
+   open (`App\Services\Customers\Query::TODO`).
+7. **Premium integrations on `createApiKey`/`rotateApiKey`** — mailers and
+   ClickHouse security logs are TODO(port) inside the services.
 
-6. **Trimmed types in the partial schema** (rejoin once ports land):
-   - `Membership.permissions: Permissions!` and `Membership.roles: [String!]!`
-     need the `Permission` port (`config/permissions.yml` driven) and the
-     roles tables/models.
-   - `Organization`: only `id`, `name`, `slug` are exposed; the frozen type
-     also has `accessibleByCurrentSession`, `billingConfiguration`,
-     `canCreateBillingEntity`, `defaultCurrency`, `logoUrl`, `timezone`.
-   - `User.premium` resolves `false` (Rails `License.premium?`; license port
-     pending).
-   - Scalars keep `@specifiedBy`-less declarations (see blocker 2).
+## Regression notes for future slices
 
-## Resolution path
-
-After M1 tasks land enough resolvers, revisit with: a small service provider
-that (a) registers the subscription provider or a stub, (b) binds a
-null-fallback `ProvidesResolver`, (c) preprocesses the frozen SDL in a
-documented, verified step (drop schema block, strip `@specifiedBy`) inside a
-`@see`-verified script rather than editing the frozen file. Introspection-diff
-against `schema.json` then becomes the acceptance gate.
+- `bootstrap/cache/lighthouse-schema.php` caches the PREPROCESSED document
+  AST. Delete it (or `artisan cache:clear`) after changing schema-side
+  preprocessing; tests enable the cache (`APP_ENV=testing`).
+- The old partial `graphql/schema.graphql` is retired — do not point
+  `lighthouse.schema_path` back at it.
+- Organization fixtures in tests must create the default billing entity
+  explicitly (Rails does it in `Organizations::CreateService`; the
+  frozen-schema port has no such hook) — service calls that touch
+  `defaultBillingEntity` fail with `billing_entity not_found` otherwise.

@@ -60,7 +60,9 @@ class UpsertFromApiService extends BaseService
         );
 
         $customer = $organization->customers()->withTrashed()->firstOrNew(
-            ['external_id' => $params['external_id']],
+            // Rails: params[:external_id] — nil when the key is absent (the
+            // model validation reports value_is_mandatory).
+            ['external_id' => $params['external_id'] ?? null],
         );
 
         $newCustomer = ! $customer->exists;

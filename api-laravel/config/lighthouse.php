@@ -89,9 +89,28 @@ return [
     | Path to your .graphql schema file.
     | Additional schema files may be imported from within that file.
     |
+    | NOTE: Lighthouse consumes the FROZEN contract through
+    | App\GraphQL\Schema\Source\FrozenSchemaSourceProvider (bound in
+    | LagoSchemaServiceProvider), which applies the documented structural
+    | preprocessing (drop `schema { … }`, strip `@specifiedBy`, rename the
+    | subscription root). The path below is kept in sync so tooling such as
+    | `lighthouse:validate-schema` reads the same source of truth.
+    |
     */
 
-    'schema_path' => base_path('graphql/schema.graphql'),
+    'schema_path' => base_path('graphql/frozen-schema.graphql'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Frozen contract
+    |--------------------------------------------------------------------------
+    |
+    | The verbatim Rails schema dump — the SDL that must be served (never
+    | edited; md5 b3769f7346aee6fc2284d24c9741bee0).
+    |
+    */
+
+    'frozen_schema_path' => base_path('graphql/frozen-schema.graphql'),
 
     /*
     |--------------------------------------------------------------------------

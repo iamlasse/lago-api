@@ -124,6 +124,13 @@ class Customer extends BaseModel
     /** Rails' I18n.available_locales (LanguageCodeValidator data). */
     public const AVAILABLE_LOCALES = ['en', 'fr', 'nb', 'de', 'it', 'es', 'sv', 'pt-BR', 'zh-TW'];
 
+    /** Rails: the remaining `sanitize_null_bytes` fields (strip only). */
+    public const NULL_BYTE_SANITIZED = [
+        ...self::ADDRESS_FIELDS,
+        'name', 'firstname', 'lastname', 'legal_name', 'legal_number',
+        'phone', 'url', 'logo_url', 'tax_identification_number',
+    ];
+
     /**
      * Rails' ActiveRecord carries the schema's column defaults in every new
      * instance; Eloquent does not, so the NOT NULL DEFAULT columns are
@@ -396,6 +403,29 @@ class Customer extends BaseModel
         return $errors;
     }
 
+    // -- Attribute behavior ---------------------------------------------------
+
+    /**
+     * Port of NullByteSanitizable (app/models/concerns/null_byte_sanitizable.rb):
+     * strips PostgreSQL-incompatible NULL bytes from string attributes on
+     * assignment so a null byte becomes clean stored data instead of a 500.
+     * Address fields keep the historical blank -> nil behavior; identity/
+     * free-text fields are only stripped so existing empty-string values are
+     * preserved.
+     */
+    public function setAttribute($key, $value)
+    {
+        if (is_string($value) && in_array($key, self::NULL_BYTE_SANITIZED, true)) {
+            $value = str_replace("\0", '', $value);
+
+            if (in_array($key, self::ADDRESS_FIELDS, true) && $value === '') {
+                $value = null;
+            }
+        }
+
+        return parent::setAttribute($key, $value);
+    }
+
     // -- Lifecycle ------------------------------------------------------------
 
     protected static function booted(): void
@@ -438,8 +468,6 @@ class Customer extends BaseModel
 
         $this->slug = $prefix.'-'.sprintf('%03d', (int) $this->sequential_id);
     }
-
-    // -- Attribute behavior ---------------------------------------------------
 
     protected function email(): Attribute
     {

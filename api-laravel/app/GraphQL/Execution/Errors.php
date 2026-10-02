@@ -5,7 +5,14 @@ declare(strict_types=1);
 namespace App\GraphQL\Execution;
 
 use Str;
+use App\Services\Failures\FailedResult;
 use App\GraphQL\Exceptions\ExecutionError;
+use App\Services\Failures\NotFoundFailure;
+use App\Services\Failures\ForbiddenFailure;
+use App\Services\Failures\ThirdPartyFailure;
+use App\Services\Failures\ValidationFailure;
+use App\Services\Failures\LockAcquisitionFailure;
+use App\Services\Failures\MethodNotAllowedFailure;
 
 /**
  * Port of Rails' ExecutionErrorResponder concern
@@ -85,6 +92,31 @@ final class Errors
             code: 'third_party_error',
             details: ['error' => $messages],
         );
+    }
+
+    /**
+     * Port of ExecutionErrorResponder#result_error — maps a failed service
+     * result onto the wire error, case by case over the failure classes.
+     */
+    public static function resultError(FailedResult $failure): ExecutionError
+    {
+        return match (true) {
+            $failure instanceof NotFoundFailure => self::notFoundError($failure->resource),
+            $failure instanceof MethodNotAllowedFailure => self::notAllowedError((string) $failure->code),
+            $failure instanceof ValidationFailure => self::validationError($failure->messages),
+            $failure instanceof ForbiddenFailure => self::forbiddenError((string) $failure->code),
+            $failure instanceof ThirdPartyFailure => self::thirdPartyFailure([$failure->errorMessage]),
+            $failure instanceof LockAcquisitionFailure => self::executionError(
+                error: 'Unprocessable Entity',
+                status: 422,
+                code: (string) $failure->code,
+            ),
+            default => self::executionError(
+                error: 'Internal error',
+                status: 500,
+                code: (string) $failure->code,
+            ),
+        };
     }
 
     /**

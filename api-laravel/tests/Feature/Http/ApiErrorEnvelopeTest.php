@@ -48,7 +48,7 @@ it('renders a 400 bad request envelope for missing required params', function ()
         'permissions' => [],
     ]);
 
-    $response = $this->postJson('/api/v1/placeholder', [], [
+    $response = $this->postJson('/api/v1/customers', [], [
         'Authorization' => 'Bearer '.$apiKey->value,
     ]);
 
@@ -56,7 +56,7 @@ it('renders a 400 bad request envelope for missing required params', function ()
     $response->assertBadRequest()
         ->assertExactJson([
             'status' => 400,
-            'error' => 'BadRequest: param is missing or the value is empty or invalid: input',
+            'error' => 'BadRequest: param is missing or the value is empty or invalid: customer',
         ]);
 });
 

@@ -30,8 +30,13 @@ class LoginUser
      */
     public function __invoke(mixed $root, array $args, GraphQLContext $context): array
     {
-        $email = (string) ($args['email'] ?? '');
-        $password = (string) ($args['password'] ?? '');
+        // The frozen SDL wraps the arguments in the `input:` object
+        // (`loginUser(input: LoginUserInput!)`), unwrapped like Rails'
+        // `resolve(input:, **)`.
+        $input = is_array($args['input'] ?? null) ? $args['input'] : $args;
+
+        $email = (string) ($input['email'] ?? '');
+        $password = (string) ($input['password'] ?? '');
 
         // NOTE: Null byte injection. Prevent 500 errors.
         if (str_contains($email, "\u{0000}") || str_contains($password, "\u{0000}")) {
