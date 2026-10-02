@@ -13,7 +13,9 @@ use App\Serializers\V1\CustomerSerializer;
 use App\Services\Customers\DestroyService;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\Concerns\Pagination;
+use App\Serializers\Base\CollectionSerializer;
 use App\Services\Customers\UpsertFromApiService;
+use App\Exceptions\Api\ParameterMissingException;
 
 /**
  * Port of Rails' Api::V1::CustomersController (app/controllers/api/v1/
@@ -84,7 +86,7 @@ class CustomersController extends ApiController
 
         if ($result->success()) {
             return $this->renderSerializerJson(
-                (new \App\Serializers\Base\CollectionSerializer(
+                (new CollectionSerializer(
                     $result->customers,
                     CustomerSerializer::class,
                     [
@@ -158,7 +160,7 @@ class CustomersController extends ApiController
         $customer = $this->requireParam($request, 'customer');
 
         if (! is_array($customer)) {
-            throw new \App\Exceptions\Api\ParameterMissingException('customer');
+            throw new ParameterMissingException('customer');
         }
 
         return $this->permitParams($customer, [

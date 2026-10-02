@@ -40,7 +40,7 @@ it('requires a field_name for aggregations that aggregate on a property', functi
     $organization = billableMetricOrganization();
 
     $sum = BillableMetric::factory()->for($organization)->sum()->make(['field_name' => null]);
-    $count = BillableMetric::factory()->for($organization)->make(['field_name' => null]);
+    $count = BillableMetric::factory()->for($organization)->countAgg()->make(['field_name' => null]);
     $custom = BillableMetric::factory()->for($organization)->custom()->make(['field_name' => null]);
 
     expect($sum->validateAttributes())->toHaveKey('field_name', ['value_is_mandatory'])
@@ -57,7 +57,11 @@ it('requires a custom_aggregator for custom_agg', function (): void {
 });
 
 it('rejects an invalid aggregation type and leaves it unassigned', function (): void {
-    $metric = BillableMetric::factory()->for(billableMetricOrganization())->make([
+    // Rails' spec builds a bare record (no factory defaults) for this one —
+    // an invalid assignment keeps any previously assigned value.
+    $metric = new BillableMetric([
+        'name' => 'New Metric',
+        'code' => 'new_metric',
         'aggregation_type' => 'invalid_agg',
     ]);
 
@@ -122,7 +126,7 @@ it('rejects recurring with aggregation types that do not support it', function (
 
     $max = BillableMetric::factory()->for($organization)->max()->make(['recurring' => true]);
     $latest = BillableMetric::factory()->for($organization)->latest()->make(['recurring' => true]);
-    $count = BillableMetric::factory()->for($organization)->make(['recurring' => true]);
+    $count = BillableMetric::factory()->for($organization)->countAgg()->make(['recurring' => true]);
     $sum = BillableMetric::factory()->for($organization)->sum()->make(['recurring' => true]);
 
     $incompatible = ['recurring' => ['not_compatible_with_aggregation_type']];

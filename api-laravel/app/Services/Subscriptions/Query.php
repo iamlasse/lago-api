@@ -67,7 +67,7 @@ class Query extends BaseService
 
         $statuses = $this->filteredStatuses();
         if ($statuses !== null) {
-            $subscriptions = $subscriptions->whereIn('status', $statuses);
+            $subscriptions = $subscriptions->whereIn('subscriptions.status', $statuses);
         }
 
         $subscriptions = $this->applyConsistentOrdering($subscriptions);
@@ -102,7 +102,7 @@ class Query extends BaseService
             return $scope;
         }
 
-        return $scope->whereIn('id', $this->matchingIdsBySearch($searchTerm));
+        return $scope->whereIn('subscriptions.id', $this->matchingIdsBySearch($searchTerm));
     }
 
     /**
@@ -262,7 +262,7 @@ class Query extends BaseService
             return null;
         }
 
-        return $scope->where('external_id', $externalId);
+        return $scope->where('subscriptions.external_id', $externalId);
     }
 
     private function withExternalCustomer(Builder $scope): ?Builder
@@ -274,7 +274,7 @@ class Query extends BaseService
         }
 
         return $scope->whereIn(
-            'customer_id',
+            'subscriptions.customer_id',
             Customer::query()->where('external_id', $externalCustomerId)->select('id'),
         );
     }

@@ -29,9 +29,11 @@ use Nuwave\Lighthouse\Support\Contracts\ProvidesSubscriptionResolver;
  * - LagoResolverProvider: null-fallback resolvers for the not-yet-ported root
  *   fields instead of a schema-build failure, plus graphql-ruby-style field
  *   resolution (snake_case attribute lookup + type-class field methods).
- * - A no-op subscription resolver provider: Lighthouse's default throws
- *   unless its SubscriptionServiceProvider (pusher/echo infra) is registered;
- *   Rails runs subscriptions over ActionCable, which is a separate slice.
+ * - A delegating subscription resolver provider: Lighthouse's default throws
+ *   unless its SubscriptionServiceProvider (pusher/echo infra) is registered.
+ *   Rails runs subscriptions over ActionCable, which is a separate slice —
+ *   meanwhile the provider hands the billing `Subscription` type's fields
+ *   (the only fields that reach it) to the regular resolver provider.
  * - Strips Lighthouse's injected-but-unreferenced plumbing types
  *   (@orderBy/@softDeletes helpers) so the served type surface matches the
  *   frozen contract exactly.
@@ -61,16 +63,21 @@ class LagoSchemaServiceProvider extends ServiceProvider
         $this->app->bind(SchemaSourceProvider::class, FrozenSchemaSourceProvider::class);
         $this->app->bind(ProvidesResolver::class, LagoResolverProvider::class);
         $this->app->singleton(SchemaBuilder::class, LagoSchemaBuilder::class);
-        $this->app->bind(function (): ProvidesSubscriptionResolver {
+        // Lighthouse routes EVERY field of a type named "Subscription" (the
+        // subscription-root name) through ProvidesSubscriptionResolver — the
+        // billing Subscription object type included. The real GraphQL
+        // subscription root is dropped from the served schema (see
+        // LagoSchemaBuilder), so the only fields reaching this provider are
+        // the billing type's: delegate to the regular resolver provider
+        // instead of the previous no-op null binding.
+        $this->app->bind(ProvidesSubscriptionResolver::class, function (): ProvidesSubscriptionResolver {
             return new class implements ProvidesSubscriptionResolver
             {
                 public function provideSubscriptionResolver(FieldValue $fieldValue): Closure
                 {
-                    // Rails' subscriptions run over ActionCable; the Laravel
-                    // equivalent (Lighthouse subscriptions + broadcaster) is a
-                    // separate ledger row. Until then the fields resolve to
-                    // null like every other unimplemented root field.
-                    return static fn (): null => null;
+                    $container = \Illuminate\Container\Container::getInstance();
+
+                    return $container->make(ProvidesResolver::class)->provideResolver($fieldValue);
                 }
             };
         });

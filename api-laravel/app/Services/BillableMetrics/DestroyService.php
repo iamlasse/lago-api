@@ -77,18 +77,23 @@ class DestroyService extends BaseService
     /**
      * Rails: `Invoice.draft.joins(plans: [:billable_metrics])
      *   .where(billable_metrics: {id: metric.id}).distinct.pluck(:id)` — the
-     * draft invoices of the plans that carry a (kept) charge for this metric.
+     * draft invoices of the plans that carry a (kept) charge for this metric
+     * (invoices reach plans through their subscriptions).
      *
      * @return list<string>
      */
     protected function draftInvoiceIds(BillableMetric $metric): array
     {
+        $invoiceIds = DB::table('invoice_subscriptions')
+            ->join('subscriptions', 'subscriptions.id', '=', 'invoice_subscriptions.subscription_id')
+            ->join('charges', 'charges.plan_id', '=', 'subscriptions.plan_id')
+            ->where('charges.billable_metric_id', $metric->id)
+            ->whereNull('charges.deleted_at')
+            ->select('invoice_subscriptions.invoice_id');
+
         return Invoice::query()
             ->where('status', 0) // Rails: Invoice.draft (draft: 0)
-            ->whereIn('plan_id', Charge::query()
-                ->where('billable_metric_id', $metric->id)
-                ->select('plan_id'))
-            ->distinct()
+            ->whereIn('id', $invoiceIds)
             ->pluck('id')
             ->all();
     }

@@ -38,7 +38,7 @@ it('serializes the billable metric', function (): void {
         ->and($result['billable_metric']['rounding_precision'])->toBe(2)
         ->and($result['billable_metric']['weighted_interval'])->toBe('seconds')
         ->and($result['billable_metric']['recurring'])->toBeFalse()
-        ->and($result['billable_metric']['expression'])->toBe('')
+        ->and($result['billable_metric']['expression'])->toBeNull()
         ->and($result['billable_metric']['filters'])->toBe([]);
 });
 

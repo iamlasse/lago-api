@@ -39,9 +39,6 @@ class LagoResolverProvider extends LighthouseResolverProvider
 {
     public function provideResolver(FieldValue $fieldValue): Closure
     {
-        if (getenv('GQL_DEBUG_RESOLVER')) {
-            var_dump('provideResolver field='.$fieldValue->getFieldName().' parent='.$fieldValue->getParentName());
-        }
         $resolverClass = $this->findResolverClass($fieldValue, '__invoke');
 
         if ($resolverClass !== null) {
@@ -51,7 +48,14 @@ class LagoResolverProvider extends LighthouseResolverProvider
             return Closure::fromCallable([$resolver, '__invoke']);
         }
 
-        if (RootType::isRootType($fieldValue->getParentName())) {
+        // Only the Query/Mutation roots fall back to the null stub. The
+        // check deliberately does NOT use RootType::isRootType(): its
+        // SUBSCRIPTION name is "Subscription", which is also the billing
+        // OBJECT type of the frozen contract — its fields must fall through
+        // to the type-class methods and attribute lookup below.
+        $parentName = $fieldValue->getParentName();
+
+        if ($parentName === RootType::QUERY || $parentName === RootType::MUTATION) {
             // Not implemented yet: resolve to null (stub), mirroring the
             // incremental port documented in graphql/FULL_SCHEMA_NOTES.md.
             return static fn (): null => null;
@@ -79,9 +83,6 @@ class LagoResolverProvider extends LighthouseResolverProvider
         }
 
         return static function (mixed $root, array $args, mixed $context, \GraphQL\Type\Definition\ResolveInfo $resolveInfo): mixed {
-            if (getenv('GQL_DEBUG_RESOLVER') && $resolveInfo->fieldName === 'status') {
-                var_dump('FALLBACK status root='.get_debug_type($root).' parent='.$resolveInfo->parentType->name());
-            }
             $field = $resolveInfo->fieldName;
             $snakeField = Str::snake($field);
 

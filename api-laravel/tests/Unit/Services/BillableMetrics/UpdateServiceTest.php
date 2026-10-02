@@ -73,7 +73,7 @@ it('returns a validation error when the name is blank', function (): void {
 
 it('returns a forbidden failure when switching to the custom aggregation without the feature', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
-    $metric = BillableMetric::factory()->for($organization)->create();
+    $metric = BillableMetric::factory()->for($organization)->countAgg()->create();
 
     $result = UpdateService::call(billableMetric: $metric, params: ['aggregation_type' => 'custom_agg']);
 
@@ -84,7 +84,7 @@ it('returns a forbidden failure when switching to the custom aggregation without
 
 it('updates only the name and the description when attached to a plan', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
-    $metric = BillableMetric::factory()->for($organization)->create();
+    $metric = BillableMetric::factory()->for($organization)->countAgg()->create();
 
     $planId = (string) Str::uuid();
     DB::table('plans')->insert([
@@ -115,7 +115,7 @@ it('updates only the name and the description when attached to a plan', function
         ->and($result->billable_metric->fresh()->aggregation_type->label())->toBe('count_agg')
         ->and($result->billable_metric->fresh()->field_name)->toBeNull()
         ->and($result->billable_metric->fresh()->rounding_precision)->toBeNull()
-        ->and($result->billable_metric->fresh()->expression)->toBe('');
+        ->and($result->billable_metric->fresh()->expression)->toBeNull();
 });
 
 // TODO(port): the webhook (SendWebhookJob "billable_metric.updated"), activity

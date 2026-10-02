@@ -37,6 +37,21 @@ former blockers are closed by `App\GraphQL\Providers\LagoSchemaServiceProvider`
    - nested fields without a type-class method fall back to a
      graphql-ruby-style attribute lookup (exact camelCase name, then
      snake_case) — necessary because the frozen SDL carries no `@rename`.
+
+   ⚠ The "Subscription" NAME COLLISION (bit the subscriptions slice): Lighthouse
+   treats every field whose parent type is literally named `Subscription` as a
+   subscription-ROOT field — `FieldFactory::defaultResolver` routes them to
+   `ProvidesSubscriptionResolver`, and `RootType::isRootType('Subscription')`
+   is true. Two coordinated fixes (both in place):
+   - `LagoSchemaServiceProvider` binds `ProvidesSubscriptionResolver` to a
+     delegating shim that hands the field to the regular
+     `LagoResolverProvider` (the real GraphQL subscription root is dropped
+     from the served schema, so only the billing type's fields ever reach
+     it);
+   - `LagoResolverProvider` narrows its null-stub branch to the explicit
+     `Query`/`Mutation` root names instead of `RootType::isRootType()`, so
+     the billing type's fields fall through to the type-class methods and
+     the attribute fallback.
 4. **Interfaces & unions** — SOLVED (stubbed). Lighthouse resolves
    `interface AppliedTax`, `interface InvoiceItem` and the 5 unions via
    `App\GraphQL\Interfaces\{AppliedTax,InvoiceItem}` and
@@ -81,16 +96,35 @@ mutation root fields, 1 subscription field):
   canCreateBillingEntity, billingConfiguration, timezone), `customer`,
   `customers` (filters + search + kaminari pagination via the
   `Customers\Query` port), `apiKey`, `apiKeys` (SanitizedApiKey masking
-  `••••••••` + last 3, kaminari metadata).
+  `••••••••` + last 3, kaminari metadata),
+  `subscription` (by `id` or `externalId`, the Rails external-id lookup
+  ordering `terminated_at DESC NULLS FIRST, started_at DESC`),
+  `subscriptions` (planCode/status/externalId/externalCustomerId/overriden/
+  currency/billingEntityIds filters, search term,
+  `exclude_next_subscriptions: true` semantics, kaminari pagination via the
+  `Subscriptions\Query` port — `collection` + `metadata` shape).
 - Mutations: `loginUser` (input-wrapped), `updateOrganization`,
   `createCustomer`, `updateCustomer`, `destroyCustomer` (soft delete +
   `{id, clientMutationId}` payload), `createApiKey`, `updateApiKey`,
   `rotateApiKey`, `destroyApiKey` (backed by the new
   `App\Services\ApiKeys\{Create,Update,Rotate,Destroy}Service` ports and the
-  `Customers\DestroyService` port; premium/license gating follows Rails).
+  `Customers\DestroyService` port; premium/license gating follows Rails),
+  `createSubscription` (external id falls back to a UUID; missing
+  customer/plan → the Rails `not_found` envelope), `updateSubscription`,
+  `terminateSubscription` (`on_termination_*` behaviors forwarded Rails'
+  `args.compact` style) — backed by the ported
+  `Subscriptions\{Create,Update,Terminate}Service`.
 - Type classes: `Organization` / `CurrentOrganization` (subclass), `Customer`,
   `BillingEntity`, `SanitizedApiKey`, `User` (subclass of `UserType`),
-  `Membership` (subclass of `MembershipType`).
+  `Membership` (subclass of `MembershipType`),
+  `Subscription` (status/billingTime enum names, nextPlan/previousPlan/
+  nextName/nextSubscriptionType/nextSubscriptionAt/nextSubscription,
+  downgradePlanDate, periodEndDate + currentBillingPeriod* via the
+  `Subscriptions\DatesService`, usageThresholds `[]`, charges). Unported
+  features keep the null fallback: activationRules/connections
+  (non-null → null violation WHEN SELECTED), fixedCharges unit overrides,
+  lifetimeUsage, paymentMethod, selectedInvoiceCustomSections,
+  activityLogs, fees.
 - `App\GraphQL\Support\{Args,Page,TimezoneWire}`: snake_casing of wire args
   (graphql-ruby parity), the `collection` + `metadata` collection shape with
   kaminari defaults (page 1, limit 25), and the TimezoneEnum `TZ_*` wire
@@ -129,6 +163,24 @@ mutation root fields, 1 subscription field):
    ClickHouse security logs are TODO(port) inside the services.
 
 ## Regression notes for future slices
+
+- `App\Models\Subscription::downgradePlanDate()` gates on the wrong
+  subscription (`! $this->pending()` where Rails has
+  `return unless next_subscription.pending?`), so an ACTIVE subscription
+  with a pending downgrade resolves null from the model. The GraphQL
+  `Types\Subscription::downgradePlanDate` reimplements the Rails logic to
+  keep the wire correct — reconcile the model (models are owned by the
+  models slice) and collapse the duplicate when fixed.
+- Field names that collide with 0-arg/argful MODEL methods resolve through
+  the Laravel "relation method" path (`terminatedAt(?timestamp)` on the
+  model, for example, explodes as an accessor). Add a
+  `App\GraphQL\Types\Subscription` method for such fields
+  (`terminatedAt`, `nextSubscription` are done) — the type-class method wins
+  over the attribute fallback.
+- Unqualified column names in `Subscriptions\Query` break the moment a join
+  exists (Postgres `ambiguous column`): the exclude-next-subscriptions LEFT
+  JOIN and the plan/customer JOINs mean every subscription column in a WHERE
+  must be `subscriptions.`-qualified.
 
 - `bootstrap/cache/lighthouse-schema.php` caches the PREPROCESSED document
   AST. Delete it (or `artisan cache:clear`) after changing schema-side

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\GraphQL\Types;
 
 use App\Enums\BillingTime;
+use Carbon\CarbonImmutable;
 use App\Models\Plan as PlanModel;
 use App\Services\Subscriptions\DatesService;
 use App\Models\Subscription as SubscriptionModel;
@@ -45,6 +46,28 @@ class Subscription
         return $root->previousSubscription?->plan;
     }
 
+    /**
+     * Rails: next_subscription — Subscription#next_subscription (the latest
+     * created, non-canceled next subscription). The type method is required:
+     * the model's nextSubscription() method would otherwise be picked up by
+     * the attribute fallback as a Laravel "relation" method and invoked with
+     * relation semantics.
+     */
+    public function nextSubscription(SubscriptionModel $root): ?SubscriptionModel
+    {
+        return $root->nextSubscription();
+    }
+
+    /**
+     * The terminated_at column. The type method is required: the model's
+     * terminatedAt() (the Terminatable#terminated_at? port) takes a
+     * timestamp argument and cannot serve as the attribute accessor.
+     */
+    public function terminatedAt(SubscriptionModel $root): mixed
+    {
+        return $root->terminated_at;
+    }
+
     /** Rails: next_name — next_subscription&.name. */
     public function nextName(SubscriptionModel $root): ?string
     {
@@ -73,10 +96,41 @@ class Subscription
         return $next?->started_at ?? $next?->subscription_at;
     }
 
-    /** Rails: downgrade_plan_date (Subscription#downgrade_plan_date). */
+    /**
+     * Rails: downgrade_plan_date (Subscription#downgrade_plan_date) — the
+     * started day when the next subscription is an active downgrade,
+     * otherwise (next subscription pending) the day after the current
+     * period's end.
+     *
+     * NOTE: implemented here instead of delegating to the model method —
+     * App\Models\Subscription::downgradePlanDate() gates on the wrong
+     * subscription (`! $this->pending()` instead of Rails'
+     * `return unless next_subscription.pending?`), so an active subscription
+     * with a pending downgrade would resolve null. Revisit when the model
+     * port is reconciled.
+     */
     public function downgradePlanDate(SubscriptionModel $root): mixed
     {
-        return $root->downgradePlanDate();
+        $nextSubscription = $root->nextSubscription();
+
+        if ($nextSubscription === null) {
+            return null;
+        }
+
+        if ($nextSubscription->active() && $root->downgraded()) {
+            $startedAt = $nextSubscription->started_at;
+
+            return $startedAt === null ? null : CarbonImmutable::instance($startedAt)->startOfDay();
+        }
+
+        if (! $nextSubscription->pending()) {
+            return null;
+        }
+
+        return DatesService::newInstance($root, CarbonImmutable::now())
+            ->nextEndOfPeriod()
+            ->addDay()
+            ->startOfDay();
     }
 
     /** Rails: period_end_date — DatesService#next_end_of_period. */

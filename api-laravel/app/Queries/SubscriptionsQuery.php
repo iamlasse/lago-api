@@ -202,9 +202,11 @@ class SubscriptionsQuery extends BaseService
             return null;
         }
 
+        $placeholders = implode(',', array_fill(0, count($billingEntityIds), '?'));
+
         return $scope->whereRaw(
-            '(subscriptions.billing_entity_id in (?) or subscriptions.customer_id in (select id from customers where billing_entity_id in (?)))',
-            [$billingEntityIds, $billingEntityIds],
+            "(subscriptions.billing_entity_id in ({$placeholders}) or subscriptions.customer_id in (select id from customers where billing_entity_id in ({$placeholders})))",
+            array_merge($billingEntityIds, $billingEntityIds),
         );
     }
 

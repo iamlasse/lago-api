@@ -6,6 +6,7 @@ namespace App\Jobs\Subscriptions;
 
 use App\Models\Organization;
 use Illuminate\Bus\Queueable;
+use App\Jobs\Middleware\UniqueJob;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -33,7 +34,7 @@ class OrganizationBillingJob implements ShouldQueue
 
     public function middleware(): array
     {
-        return [new \App\Jobs\Middleware\UniqueJob];
+        return [new UniqueJob];
     }
 
     public function handle(): void

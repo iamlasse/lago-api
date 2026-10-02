@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
 
+use Firebase\JWT\JWT;
 use RuntimeException;
 use OpenSSLAsymmetricKey;
 use Illuminate\Http\Request;
@@ -11,6 +12,7 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\ApiController;
 use App\Services\Organizations\UpdateService;
 use App\Serializers\V1\OrganizationSerializer;
+use App\Exceptions\Api\ParameterMissingException;
 
 /**
  * Port of Rails' Api::V1::OrganizationsController (app/controllers/api/v1/
@@ -58,7 +60,7 @@ class OrganizationsController extends ApiController
      */
     public function grpcToken(): JsonResponse
     {
-        $token = \Firebase\JWT\JWT::encode(
+        $token = JWT::encode(
             [
                 'organization_id' => $this->currentOrganization()->id,
                 'aud' => 'lago-grpc',
@@ -86,7 +88,7 @@ class OrganizationsController extends ApiController
         $organization = $this->requireParam($request, 'organization');
 
         if (! is_array($organization)) {
-            throw new \App\Exceptions\Api\ParameterMissingException('organization');
+            throw new ParameterMissingException('organization');
         }
 
         return $this->permitParams($organization, [

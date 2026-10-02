@@ -6,6 +6,7 @@ namespace App\Models\Concerns;
 
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\Exceptions\SequenceException;
@@ -24,6 +25,8 @@ use Illuminate\Database\Eloquent\Attributes\Scope;
  * The hash is computed in Postgres (hashtext), never in PHP, so lock keys are
  * identical to the ones Rails takes. Exceeding lock_timeout raises a
  * retryable SequenceException (SQLSTATE 55P03), like Rails' SequenceError.
+ *
+ * @mixin Model
  */
 trait Sequenced
 {
@@ -37,7 +40,7 @@ trait Sequenced
     }
 
     #[Scope]
-    protected function withSequentialId($query)
+    protected function withSequentialId(Builder $query): Builder
     {
         return $query->whereNotNull('sequential_id');
     }

@@ -23,6 +23,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  *    controllers/queries MUST apply (review-enforced, matching Rails);
  *  - `withoutTenancy()` clarity helper for system jobs, which run with no
  *    request context and must query explicitly.
+ *
+ *  @mixin Model
  */
 trait BelongsToOrganization
 {

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\Invoice;
+use App\Models\Customer;
 use Illuminate\Support\Str;
 use App\Models\Organization;
 use App\Models\BillableMetric;
@@ -52,9 +53,29 @@ function draftInvoiceForPlan(object $organization, string $planId): string
         'id' => $invoiceId,
         'organization_id' => $organization->id,
         'billing_entity_id' => $organization->defaultBillingEntity->id,
-        'plan_id' => $planId,
         'status' => 0, // draft
         'issuing_date' => now()->toDateString(),
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    // Rails: invoices reach plans through their subscriptions.
+    $subscriptionId = (string) Str::uuid();
+    DB::table('subscriptions')->insert([
+        'id' => $subscriptionId,
+        'organization_id' => $organization->id,
+        'plan_id' => $planId,
+        'customer_id' => Customer::factory()->for($organization)->create()->id,
+        'external_id' => (string) Str::uuid(),
+        'status' => 1, // active
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+    DB::table('invoice_subscriptions')->insert([
+        'id' => (string) Str::uuid(),
+        'invoice_id' => $invoiceId,
+        'subscription_id' => $subscriptionId,
+        'organization_id' => $organization->id,
         'created_at' => now(),
         'updated_at' => now(),
     ]);

@@ -11,15 +11,19 @@ use Illuminate\Http\Request;
 use App\Enums\SubscriptionStatus;
 use Illuminate\Http\JsonResponse;
 use App\Queries\SubscriptionsQuery;
+use App\Services\Failures\FailedResult;
 use App\Exceptions\Api\NotFoundException;
+use Illuminate\Database\Eloquent\Builder;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\Concerns\Pagination;
 use App\Services\Subscriptions\CreateService;
 use App\Services\Subscriptions\UpdateService;
+use App\Serializers\Base\CollectionSerializer;
 use App\Serializers\V1\SubscriptionSerializer;
 use App\Services\BillingEntities\ResolveService;
 use App\Services\Subscriptions\TerminateService;
 use App\Exceptions\Api\ParameterMissingException;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Port of Rails' Api::V1::SubscriptionsController (app/controllers/api/v1/
@@ -133,11 +137,18 @@ class SubscriptionsController extends ApiController
 
         $subscription = $this->subscriptionsMatchingStatus($query, $request)->first();
 
-        $result = TerminateService::call(
-            subscription: $subscription,
-            onTerminationCreditNote: $this->scalarParam($request, 'on_termination_credit_note'),
-            onTerminationInvoice: $this->scalarParam($request, 'on_termination_invoice'),
-        );
+        try {
+            $result = TerminateService::call(
+                subscription: $subscription,
+                onTerminationCreditNote: $this->scalarParam($request, 'on_termination_credit_note'),
+                onTerminationInvoice: $this->scalarParam($request, 'on_termination_invoice'),
+            );
+        } catch (FailedResult $failure) {
+            // Rails: a nested `call!` raising FailedResult (e.g. the
+            // on_termination update failing validation) is rendered by the
+            // controller-level rescue_from — same envelope.
+            $this->renderErrorResponse($failure->result);
+        }
 
         if ($result->success()) {
             // TODO(port): api_logs + audit (ApiLoggable/Trackable — non-GET
@@ -271,7 +282,7 @@ class SubscriptionsController extends ApiController
 
         if ($result->success()) {
             return $this->renderSerializerJson(
-                (new \App\Serializers\Base\CollectionSerializer(
+                (new CollectionSerializer(
                     $result->subscriptions,
                     SubscriptionSerializer::class,
                     [
@@ -292,16 +303,16 @@ class SubscriptionsController extends ApiController
      * subscription of an external_id family is targeted (default active).
      */
     private function subscriptionsMatchingStatus(
-        \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Relations\HasMany $query,
+        HasMany $query,
         Request $request,
-    ): \Illuminate\Database\Eloquent\Builder {
+    ): Builder {
         $matching = match ($request->input('status')) {
             'pending' => $query->pending(),
             'incomplete' => $query->incomplete(),
             default => $query->active(),
         };
 
-        return $matching instanceof \Illuminate\Database\Eloquent\Relations\HasMany
+        return $matching instanceof HasMany
             ? $matching->getQuery()
             : $matching;
     }

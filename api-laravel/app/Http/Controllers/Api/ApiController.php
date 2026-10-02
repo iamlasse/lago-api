@@ -7,15 +7,21 @@ namespace App\Http\Controllers\Api;
 use LogicException;
 use App\Models\ApiKey;
 use App\Models\Organization;
+use App\Services\BaseResult;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Exceptions\Api\NotFoundException;
 use App\Exceptions\Api\ForbiddenException;
+use App\Services\Failures\NotFoundFailure;
 use App\Exceptions\Api\ValidationException;
+use App\Services\Failures\ForbiddenFailure;
+use App\Services\Failures\ValidationFailure;
 use App\Exceptions\Api\UnauthorizedException;
+use App\Services\Failures\UnauthorizedFailure;
 use App\Exceptions\Api\MethodNotAllowedException;
 use App\Exceptions\Api\ParameterMissingException;
+use App\Services\Failures\MethodNotAllowedFailure;
 
 /**
  * Port of the Api::BaseController controller state. Authentication,
@@ -166,7 +172,7 @@ abstract class ApiController extends Controller
      * failure onto the matching error envelope by raising the exception the
      * global handler renders. Unknown failures re-raise like Rails.
      */
-    protected function renderErrorResponse(\App\Services\BaseResult $result): never
+    protected function renderErrorResponse(BaseResult $result): never
     {
         $error = $result->getError();
 
@@ -174,23 +180,23 @@ abstract class ApiController extends Controller
             throw new LogicException('renderErrorResponse called with a successful result');
         }
 
-        if ($error instanceof \App\Services\Failures\NotFoundFailure) {
+        if ($error instanceof NotFoundFailure) {
             throw new NotFoundException($error->resource);
         }
 
-        if ($error instanceof \App\Services\Failures\MethodNotAllowedFailure) {
+        if ($error instanceof MethodNotAllowedFailure) {
             throw new MethodNotAllowedException($error->code);
         }
 
-        if ($error instanceof \App\Services\Failures\ValidationFailure) {
+        if ($error instanceof ValidationFailure) {
             throw new ValidationException($error->messages);
         }
 
-        if ($error instanceof \App\Services\Failures\ForbiddenFailure) {
+        if ($error instanceof ForbiddenFailure) {
             throw new ForbiddenException($error->code);
         }
 
-        if ($error instanceof \App\Services\Failures\UnauthorizedFailure) {
+        if ($error instanceof UnauthorizedFailure) {
             throw new UnauthorizedException($error->getMessage());
         }
 

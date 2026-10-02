@@ -74,4 +74,69 @@ class BillableMetricFactory extends Factory
             'recurring' => true,
         ]);
     }
+
+    // -- Rails spec/factories/billable_metrics.rb sub-factories ---------------
+
+    /** Rails: the :billable_metric default — count_agg, no field_name. */
+    public function countAgg(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'aggregation_type' => 0,
+            'field_name' => null,
+        ]);
+    }
+
+    /** Rails: factory :sum_billable_metric. */
+    public function sum(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'aggregation_type' => self::SUM_AGG,
+            'field_name' => 'item_id',
+        ]);
+    }
+
+    /** Rails: factory :max_billable_metric. */
+    public function max(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'aggregation_type' => 2,
+            'field_name' => 'item_id',
+        ]);
+    }
+
+    /** Rails: factory :unique_count_billable_metric. */
+    public function uniqueCount(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'aggregation_type' => 3,
+            'field_name' => 'item_id',
+        ]);
+    }
+
+    /** Rails: factory :latest_billable_metric. */
+    public function latest(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'aggregation_type' => self::LATEST_AGG,
+            'field_name' => 'item_id',
+        ]);
+    }
+
+    /** Rails: factory :custom_billable_metric. */
+    public function custom(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'aggregation_type' => self::CUSTOM_AGG,
+            'field_name' => null,
+            'custom_aggregator' => 'def aggregate(event, agg, aggregation_properties); agg; end',
+        ]);
+    }
+
+    /** Rails: trait :discarded. */
+    public function discarded(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'deleted_at' => now(),
+        ]);
+    }
 }

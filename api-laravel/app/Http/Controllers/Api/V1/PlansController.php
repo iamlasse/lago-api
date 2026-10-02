@@ -15,6 +15,7 @@ use App\Exceptions\Api\NotFoundException;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\Concerns\Pagination;
 use App\Services\Plans\PrepareDestroyService;
+use App\Serializers\Base\CollectionSerializer;
 use App\Exceptions\Api\ParameterMissingException;
 
 /**
@@ -126,7 +127,7 @@ class PlansController extends ApiController
 
         if ($result->success()) {
             return $this->renderSerializerJson(
-                (new \App\Serializers\Base\CollectionSerializer(
+                (new CollectionSerializer(
                     $result->plans,
                     PlanSerializer::class,
                     [

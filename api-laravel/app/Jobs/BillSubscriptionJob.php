@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Jobs;
 
+use Middleware\UniqueJob;
 use App\Models\Subscription;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Services\Invoices\SubscriptionService;
 
@@ -17,7 +19,7 @@ use App\Services\Invoices\SubscriptionService;
  */
 class BillSubscriptionJob implements ShouldQueue
 {
-    use \Illuminate\Foundation\Queue\Queueable;
+    use Queueable;
 
     /** Rails: MAX_LOCK_RETRY_ATTEMPTS. */
     public const MAX_LOCK_RETRY_ATTEMPTS = 4;
@@ -41,7 +43,7 @@ class BillSubscriptionJob implements ShouldQueue
 
     public function middleware(): array
     {
-        return [new Middleware\UniqueJob];
+        return [new UniqueJob];
     }
 
     /** Port of `unique :until_executed, lock_ttl: 12.hours`. */

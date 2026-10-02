@@ -235,7 +235,7 @@ query($subscriptionId: ID, $externalId: ID) {
         endingAt
         progressiveBillingDisabled
         billingTime
-        usageThresholds
+        usageThresholds { amountCents }
         plan { id code }
         nextSubscriptionType
         nextSubscriptionAt
@@ -318,9 +318,12 @@ it('returns the not_found envelope for an unknown subscription', function (): vo
 })->group('ledger:gql:query:subscription');
 
 it('computes the downgrade plan date and next subscription type on a pending downgrade', function (): void {
-    CarbonImmutable::setTestNow(CarbonImmutable::parse('2026-04-25 12:00:00', 'UTC'));
-
+    // Fixtures (JWT included) are created before the frozen clock: the auth
+    // token's exp must stay valid against the real time.
     [$organization, $user] = gqlSubscriptionsSetup();
+    $headers = gqlAuthHeaders($user, $organization->id);
+
+    CarbonImmutable::setTestNow(CarbonImmutable::parse('2026-04-25 12:00:00', 'UTC'));
 
     $customer = Customer::factory()->create(['organization_id' => $organization->id]);
     $plan = Plan::factory()->create(['organization_id' => $organization->id, 'amount_cents' => 500_00]);
@@ -347,7 +350,7 @@ it('computes the downgrade plan date and next subscription type on a pending dow
     $response = gqlPost(
         SUBSCRIPTION_QUERY,
         ['subscriptionId' => $subscription->id],
-        gqlAuthHeaders($user, $organization->id),
+        $headers,
     );
 
     $payload = $response->json('data.subscription');
@@ -360,7 +363,7 @@ it('computes the downgrade plan date and next subscription type on a pending dow
     $pendingResponse = gqlPost(
         SUBSCRIPTION_QUERY,
         ['subscriptionId' => $pending->id],
-        gqlAuthHeaders($user, $organization->id),
+        $headers,
     );
 
     $pendingPayload = $pendingResponse->json('data.subscription');
@@ -371,19 +374,3 @@ it('computes the downgrade plan date and next subscription type on a pending dow
         ->and($pendingPayload['previousSubscription']['downgradePlanDate'])->toMatch('/^2026-05-22/')
         ->and($pendingPayload['downgradePlanDate'])->toBeNull();
 })->group('ledger:gql:query:subscription');
-
-it('DEBUG2', function () {
-    [$organization, $user] = gqlSubscriptionsSetup();
-    config(['app.debug' => true, 'lighthouse.debug' => 4]);
-    $response = gqlPost('query { subscriptions(limit: 5) { collection { id } metadata { totalCount } } }', [], gqlAuthHeaders($user, $organization->id));
-    dump($response->json());
-    $sub = App\Models\Subscription::factory()->create([
-        'organization_id' => $organization->id,
-        'customer_id' => App\Models\Customer::factory()->create(['organization_id' => $organization->id])->id,
-        'plan_id' => App\Models\Plan::factory()->create(['organization_id' => $organization->id])->id,
-        'external_id' => 'dbg-1',
-    ]);
-    $response2 = gqlPost('query { subscriptions(limit: 5) { collection { status } } }', [], gqlAuthHeaders($user, $organization->id));
-    dump('list: '.json_encode($response2->json()));
-    expect(true)->toBeTrue();
-});

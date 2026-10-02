@@ -210,7 +210,13 @@ it('returns not_found for an unknown customer and plan', function () {
 })->group('ledger:gql:mutation:createSubscription');
 
 it('returns unauthorized on createSubscription without a token', function () {
-    $response = gqlPost(CREATE_SUBSCRIPTION_MUTATION, ['input' => []]);
+    // GraphQL input validation runs before the resolvers — send a
+    // well-formed input so the unauthorized error is the one surfacing.
+    $response = gqlPost(CREATE_SUBSCRIPTION_MUTATION, ['input' => [
+        'customerId' => '00000000-0000-0000-0000-000000000000',
+        'planId' => '00000000-0000-0000-0000-000000000000',
+        'billingTime' => 'calendar',
+    ]]);
 
     expect($response->json('errors.0.message'))->toBe('unauthorized');
 })->group('ledger:gql:mutation:createSubscription');
@@ -251,19 +257,13 @@ it('updates a subscription', function () {
 it('moves a pending subscription_at on update', function () {
     [$organization, $user] = gqlSubscriptionsSetup();
 
-    $previous = Subscription::factory()->create([
+    // Rails only processes a subscription_at change on a subscription
+    // starting in the future (pending, no previous subscription).
+    $pending = Subscription::factory()->pending()->create([
         'organization_id' => $organization->id,
         'customer_id' => gqlSubscriptionCustomer($organization)->id,
         'plan_id' => gqlSubscriptionPlan($organization)->id,
         'external_id' => 'ext-move',
-    ]);
-
-    $pending = Subscription::factory()->pending()->create([
-        'organization_id' => $organization->id,
-        'customer_id' => $previous->customer_id,
-        'plan_id' => $previous->plan_id,
-        'external_id' => 'ext-move',
-        'previous_subscription_id' => $previous->id,
         'subscription_at' => now()->addDays(3),
     ]);
 
@@ -390,7 +390,34 @@ it('cancels a pending subscription on terminate', function () {
 
     $payload = $response->json('data.terminateSubscription');
 
+    // Rails' pending branch only mark_as_canceled! — a cancellation reason is
+    // set for incomplete subscriptions only.
     expect($payload['id'])->toBe($pending->id)
+        ->and($payload['status'])->toBe('canceled')
+        ->and($payload['canceledAt'])->toBeString()
+        ->and($payload['cancellationReason'])->toBeNull()
+        ->and($pending->fresh()->canceled_at)->not->toBeNull();
+})->group('ledger:gql:mutation:terminateSubscription');
+
+it('cancels an incomplete subscription with a manual cancellation reason', function () {
+    [$organization, $user] = gqlSubscriptionsSetup();
+
+    $incomplete = Subscription::factory()->incomplete()->create([
+        'organization_id' => $organization->id,
+        'customer_id' => gqlSubscriptionCustomer($organization)->id,
+        'plan_id' => gqlSubscriptionPlan($organization)->id,
+        'external_id' => 'ext-incomplete-term',
+    ]);
+
+    $response = gqlPost(
+        TERMINATE_SUBSCRIPTION_MUTATION,
+        ['input' => ['id' => $incomplete->id]],
+        gqlAuthHeaders($user, $organization->id),
+    );
+
+    $payload = $response->json('data.terminateSubscription');
+
+    expect($payload['id'])->toBe($incomplete->id)
         ->and($payload['status'])->toBe('canceled')
         ->and($payload['canceledAt'])->toBeString()
         ->and($payload['cancellationReason'])->toBe('manual');

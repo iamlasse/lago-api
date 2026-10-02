@@ -12,9 +12,9 @@ uses()->group(
 
 use App\Models\Plan;
 use App\Models\Customer;
+use Illuminate\Support\Str;
 use App\Models\Organization;
 use App\Models\Subscription;
-use Illuminate\Support\Str;
 
 /**
  * Port of Rails' spec/requests/api/v1/subscriptions_controller_spec.rb

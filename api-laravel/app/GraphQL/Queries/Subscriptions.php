@@ -21,7 +21,9 @@ use App\Services\Subscriptions\Query as SubscriptionsQuery;
  *
  * Rails always passes `exclude_next_subscriptions: true` (the FE pulls
  * next_subscription through the object type, so a listed subscription's
- * successor must not appear again in the list).
+ * successor must not appear again in the list). The `status` list stays in
+ * the filters — the query validates it Rails-style (`valid_status?`) and
+ * skips the filter when any status is unknown.
  */
 class Subscriptions
 {
@@ -33,10 +35,11 @@ class Subscriptions
         $organization = LagoContext::currentOrganization($context);
 
         $filters = Args::snakeKeys($args);
-        unset($filters['page'], $filters['limit'], $filters['searchTerm'], $filters['status']);
+        unset($filters['page'], $filters['limit'], $filters['searchTerm']);
 
-        // The status list is consumed separately by the query (valid_status?).
-        $filters['status'] = $args['status'] ?? null;
+        // Rails: exclude_next_subscriptions: true — the FE pulls
+        // next_subscription through the object type, so a listed
+        // subscription's successor must not appear again.
         $filters['exclude_next_subscriptions'] = true;
 
         $result = SubscriptionsQuery::call(

@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace App\Models\Concerns;
 
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 /**
  * Every Lago table uses `id uuid DEFAULT gen_random_uuid()` (v4 random UUIDs).
  * HasUuids orders UUIDs; Rails uses SecureRandom.uuid (v4) — keep v4 so
  * fixtures and contract goldens match byte-for-byte.
+ *
+ * @mixin Model
  */
 trait HasUuid
 {
