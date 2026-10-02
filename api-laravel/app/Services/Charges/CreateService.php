@@ -46,10 +46,18 @@ class CreateService extends BaseService
         $plan = $this->plan;
         $params = $this->params;
 
-        $billableMetric = BillableMetric::query()
-            ->where('organization_id', $plan->organization_id)
-            ->where('id', $params['billable_metric_id'] ?? null)
-            ->first();
+        // Rails' uuid attribute type casts non-uuid strings to nil before the
+        // query (find_by on "invalid_id" matches nothing); Postgres would
+        // raise here, so a non-uuid id skips the query and yields the
+        // not-found failure, like Rails.
+        $billableMetricId = $params['billable_metric_id'] ?? null;
+        $billableMetric = (is_string($billableMetricId)
+            && preg_match('/\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\z/i', $billableMetricId) !== 1)
+            ? null
+            : BillableMetric::query()
+                ->where('organization_id', $plan->organization_id)
+                ->where('id', $billableMetricId)
+                ->first();
 
         if ($billableMetric === null) {
             return $result->notFoundFailure('billable_metric');

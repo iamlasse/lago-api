@@ -60,6 +60,8 @@ return [
         'attempts' => (int) env('LAGO_WEBHOOK_ATTEMPTS', 3),
         // lib/lago_http_client/lago_http_client/address_guard.rb
         'allow_private_urls' => (bool) env('LAGO_WEBHOOK_ALLOW_PRIVATE_URLS', false),
+        // config/initializers/rsa_keys.rb — RS256 key for JWT webhook signatures
+        'rsa_private_key_path' => env('LAGO_RSA_PRIVATE_KEY_PATH', base_path('config/keys/private.pem')),
     ],
 
     // Lago::RedisConfigBuilder cache connection

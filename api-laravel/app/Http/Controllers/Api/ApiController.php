@@ -97,6 +97,8 @@ abstract class ApiController extends Controller
      * Port of ActionController::Parameters#permit — filters a nested input
      * hash against a schema:
      *  - a string filter (`'name'`) keeps only scalar-or-null values;
+     *  - the '*' filter (`'properties' => '*'`) keeps an arbitrary hash
+     *    verbatim (Rails' `properties: {}` — hash with unconstrained keys);
      *  - an empty array filter (`'email_settings' => []`) keeps arrays of
      *    scalars;
      *  - an array-of-arrays filter (`'metadata' => [[...]]`) keeps arrays of
@@ -129,6 +131,10 @@ abstract class ApiController extends Controller
 
             if ($filter === '__scalar__') {
                 if ($value === null || is_scalar($value)) {
+                    $out[$schemaKey] = $value;
+                }
+            } elseif ($filter === '*') {
+                if (is_array($value)) {
                     $out[$schemaKey] = $value;
                 }
             } elseif ($filter === []) {

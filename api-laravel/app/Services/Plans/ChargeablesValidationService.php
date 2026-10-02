@@ -17,6 +17,9 @@ use App\Models\BillableMetric;
  */
 class ChargeablesValidationService extends \App\Services\BaseService
 {
+    /** Rails: BaseQuery::UUID_REGEX — the uuid attribute cast's valid shape. */
+    private const UUID_REGEX = '/\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\z/i';
+
     public function __construct(
         private readonly Organization $organization,
         private readonly ?array $charges = null,
@@ -60,9 +63,19 @@ class ChargeablesValidationService extends \App\Services\BaseService
             return;
         }
 
-        $count = BillableMetric::query()
+        // Rails' uuid attribute type casts non-uuid strings to nil before the
+        // query (so "unknown" simply matches nothing); here an invalid uuid
+        // would make Postgres raise, so only valid uuids reach the query —
+        // the count comparison below still uses the full id list and yields
+        // the not-found failure for invalid ids.
+        $queryableIds = array_values(array_filter(
+            $metricIds,
+            fn ($id): bool => is_string($id) && preg_match(self::UUID_REGEX, $id) === 1,
+        ));
+
+        $count = $queryableIds === [] ? 0 : BillableMetric::query()
             ->where('organization_id', $this->organization->id)
-            ->whereIn('id', $metricIds)
+            ->whereIn('id', $queryableIds)
             ->count();
 
         if ($count !== count($metricIds)) {
@@ -82,9 +95,15 @@ class ChargeablesValidationService extends \App\Services\BaseService
         ))));
 
         if ($addOnIds !== []) {
-            $count = AddOn::query()
+            // Same uuid-cast guard as validateBillableMetrics.
+            $queryableIds = array_values(array_filter(
+                $addOnIds,
+                fn ($id): bool => is_string($id) && preg_match(self::UUID_REGEX, $id) === 1,
+            ));
+
+            $count = $queryableIds === [] ? 0 : AddOn::query()
                 ->where('organization_id', $this->organization->id)
-                ->whereIn('id', $addOnIds)
+                ->whereIn('id', $queryableIds)
                 ->count();
 
             if ($count !== count($addOnIds)) {

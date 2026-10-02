@@ -6,7 +6,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\SetBetaHeader;
 use App\Exceptions\Api\NotFoundException;
 use App\Http\Controllers\Api\V1\CustomersController;
+use App\Http\Controllers\Api\V1\PlansController;
 use App\Http\Controllers\Api\V1\OrganizationsController;
+use App\Http\Controllers\Api\V1\Plans\ChargesController;
+use App\Http\Controllers\Api\V1\Plans\FixedChargesController;
+use App\Http\Controllers\Api\V1\Plans\Charges\FiltersController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,6 +42,43 @@ $sharedApi = function (): void {
 
         Route::get('customers', [CustomersController::class, 'index']);
         Route::post('customers', [CustomersController::class, 'create']);
+
+        // -- plans ------------------------------------------------------------
+        // Nested plan subresources are registered BEFORE the member :code
+        // routes below (registration order is match priority, like Rails'
+        // draw order inside resources :plans). Plan and charge codes may
+        // contain dots, so the member routes carry the `.+` constraint
+        // (mirrors Rails' `param: :code, code: /.*/`).
+        //
+        // Not registered yet (dependencies do not exist): entitlements and
+        // metadata subresources (no ported services), charge filter
+        // create/update/destroy (ChargeFilters::Create/Update/DestroyService
+        // not ported — only index/show need no service).
+        Route::get('plans', [PlansController::class, 'index']);
+        Route::post('plans', [PlansController::class, 'create']);
+
+        Route::get('plans/{plan_code}/charges', [ChargesController::class, 'index']);
+        Route::post('plans/{plan_code}/charges', [ChargesController::class, 'create']);
+        Route::get('plans/{plan_code}/charges/{code}', [ChargesController::class, 'show']);
+        Route::put('plans/{plan_code}/charges/{code}', [ChargesController::class, 'update']);
+        Route::patch('plans/{plan_code}/charges/{code}', [ChargesController::class, 'update']);
+        Route::delete('plans/{plan_code}/charges/{code}', [ChargesController::class, 'destroy']);
+
+        Route::get('plans/{plan_code}/charges/{charge_code}/filters', [FiltersController::class, 'index']);
+        Route::get('plans/{plan_code}/charges/{charge_code}/filters/{id}', [FiltersController::class, 'show']);
+
+        Route::get('plans/{plan_code}/fixed_charges', [FixedChargesController::class, 'index']);
+        Route::post('plans/{plan_code}/fixed_charges', [FixedChargesController::class, 'create']);
+        Route::get('plans/{plan_code}/fixed_charges/{code}', [FixedChargesController::class, 'show']);
+        Route::put('plans/{plan_code}/fixed_charges/{code}', [FixedChargesController::class, 'update']);
+        Route::patch('plans/{plan_code}/fixed_charges/{code}', [FixedChargesController::class, 'update']);
+        Route::delete('plans/{plan_code}/fixed_charges/{code}', [FixedChargesController::class, 'destroy']);
+
+        Route::get('plans/{code}', [PlansController::class, 'show'])->where('code', '.+');
+        Route::put('plans/{code}', [PlansController::class, 'update'])->where('code', '.+');
+        Route::patch('plans/{code}', [PlansController::class, 'update'])->where('code', '.+');
+        Route::delete('plans/{code}', [PlansController::class, 'destroy'])->where('code', '.+');
+
 
         // customers and subscriptions are looked up by external_id, which
         // may contain dots. Rails constrains those params with /[^\/]+/ (a

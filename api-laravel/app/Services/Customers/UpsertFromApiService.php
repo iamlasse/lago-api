@@ -9,6 +9,7 @@ use App\Models\Customer;
 use App\Models\Organization;
 use App\Services\BaseResult;
 use App\Services\BaseService;
+use App\Jobs\SendWebhookJob;
 use App\Models\CustomerMetadata;
 use Illuminate\Support\Facades\DB;
 use App\Enums\FinalizeZeroAmountInvoice;
@@ -34,8 +35,6 @@ use function array_key_exists;
  * - TODO(port): IntegrationCustomers::CreateOrUpdateBatchService.
  * - TODO(port): RefreshInvoicesSearchTermsJob + error_details tax cleanup.
  * - TODO(port): ManageInvoiceCustomSectionsService.
- * - TODO(port): SendWebhookJob "customer.created"/"customer.updated" +
- *   activity log — webhook emission hook point below.
  */
 class UpsertFromApiService extends BaseService
 {
@@ -204,8 +203,13 @@ class UpsertFromApiService extends BaseService
             )->raiseIfError();
 
             // TODO(port): IntegrationCustomers::CreateOrUpdateBatchService.
-            // TODO(port): SendWebhookJob "customer.created" (new) /
-            // "customer.updated" (existing) — webhook emission hook point.
+            // Rails: SendWebhookJob.perform_later("customer.created" (new) /
+            // "customer.updated" (existing)) — right after the transaction
+            // block. TODO(port): activity log entry.
+            SendWebhookJob::performLater(
+                $newCustomer ? 'customer.created' : 'customer.updated',
+                $customer,
+            );
 
             $result->customer = $customer;
 

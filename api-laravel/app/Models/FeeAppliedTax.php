@@ -25,6 +25,16 @@ use App\Models\Casts\BcNumeric;
 #[\Illuminate\Database\Eloquent\Attributes\Table(name: 'fees_taxes')]
 class FeeAppliedTax extends BaseModel
 {
+    public function fee()
+    {
+        return $this->belongsTo(Fee::class);
+    }
+
+    public function tax()
+    {
+        return $this->belongsTo(Tax::class);
+    }
+
     protected function casts(): array
     {
         return [

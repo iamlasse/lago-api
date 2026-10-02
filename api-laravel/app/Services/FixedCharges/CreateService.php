@@ -109,9 +109,20 @@ class CreateService extends BaseService
     private function addOn(Plan $plan, array $params): AddOn
     {
         if (($params['add_on_id'] ?? null) !== null && $params['add_on_id'] !== '') {
+            // Rails' uuid attribute type casts non-uuid strings to nil before
+            // the query (find on "invalid_id" raises RecordNotFound); Postgres
+            // would raise here, so a non-uuid id goes straight to the
+            // ModelNotFound -> add_on not-found failure, like Rails.
+            $addOnId = $params['add_on_id'];
+
+            if (! is_string($addOnId)
+                || preg_match('/\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\z/i', $addOnId) !== 1) {
+                throw new \Illuminate\Database\Eloquent\ModelNotFoundException();
+            }
+
             return AddOn::query()
                 ->where('organization_id', $plan->organization_id)
-                ->findOrFail($params['add_on_id']);
+                ->findOrFail($addOnId);
         }
 
         if (($params['add_on_code'] ?? null) !== null && $params['add_on_code'] !== '') {

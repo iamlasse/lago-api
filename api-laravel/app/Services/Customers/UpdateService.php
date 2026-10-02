@@ -8,6 +8,7 @@ use Throwable;
 use App\Models\Customer;
 use App\Services\BaseResult;
 use App\Services\BaseService;
+use App\Jobs\SendWebhookJob;
 use Illuminate\Support\Facades\DB;
 use App\Enums\FinalizeZeroAmountInvoice;
 
@@ -23,8 +24,6 @@ use function array_key_exists;
  * - TODO(port): dunning campaign assignment (auto_dunning premium).
  * - TODO(port): ManageInvoiceCustomSectionsService.
  * - TODO(port): RefreshInvoicesSearchTermsJob + error_details tax cleanup.
- * - TODO(port): SendWebhookJob "customer.updated" — webhook emission hook
- *   point below.
  */
 class UpdateService extends BaseService
 {
@@ -202,8 +201,9 @@ class UpdateService extends BaseService
             // TODO(port): payment provider customers batch / legacy provider
             // customer handling.
             // TODO(port): IntegrationCustomers::CreateOrUpdateBatchService.
-            // TODO(port): SendWebhookJob "customer.updated" — webhook
-            // emission hook point.
+            // Rails: SendWebhookJob.perform_later("customer.updated", customer)
+            // — right after the transaction block.
+            SendWebhookJob::performLater('customer.updated', $customer);
 
             $result->customer = $customer;
 
