@@ -1,0 +1,10 @@
+{
+  "data": {
+    "loginUser": {
+      "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxYTRhMGQ2ZS0wMDAwLTQwMDAtODAwMC0wMDAwMDAwMDAwMDIiLCJleHAiOjE3NDg3OTAwMDAsImxvZ2luX21ldGhvZCI6ImVtYWlsX3Bhc3N3b3JkIn0.Atqf9xlqnb9hDQVsjExC9Y3_uAGoGPjoaMErvZqg3BA",
+      "user": {
+        "email": "capture@example.invalid"
+      }
+    }
+  }
+}

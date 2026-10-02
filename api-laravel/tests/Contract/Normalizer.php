@@ -24,6 +24,12 @@ use InvalidArgumentException;
  *   do not widen this list without a contract-level reason.
  * - Volatile headers (X-Request-Id, Date) are dropped from header comparison;
  *   required headers are asserted separately by the harness.
+ * - Minted JWTs (`token` fields): the credential itself is per-run state —
+ *   the two runtimes emit different base64url headers (the jwt gem emits
+ *   {"alg":"HS256"}, firebase/php-jwt adds "typ":"JWT"). The CONTRACT is the
+ *   claim set, so a 3-segment token value is canonicalized to its decoded
+ *   claims and those must match exactly (sub, exp, login_method, …). Claims
+ *   are equal because both sides mint at the same frozen instant.
  */
 class Normalizer
 {
@@ -32,6 +38,12 @@ class Normalizer
      * Lowercased.
      */
     public const VOLATILE_HEADERS = ['x-request-id', 'date'];
+
+    /**
+     * JSON keys whose values are minted JWT credentials, compared by decoded
+     * claims rather than bytes.
+     */
+    public const TOKEN_FIELDS = ['token'];
 
     /**
      * JSON keys whose numeric values are compared as rates (float tolerance).
@@ -103,6 +115,30 @@ class Normalizer
     }
 
     /**
+     * Canonicalizes a minted JWT to its decoded claim set (so two runtimes'
+     * tokens compare equal when the contract — the claims — matches), or
+     * returns null when the value is not a well-formed token.
+     *
+     * @return array<string, mixed>|null
+     */
+    public static function canonicalJwtClaims(mixed $value): ?array
+    {
+        if (! is_string($value) || preg_match('/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/', $value) !== 1) {
+            return null;
+        }
+
+        $payload = base64_decode(strtr(explode('.', $value)[1], '-_', '+/'), true);
+
+        if ($payload === false) {
+            return null;
+        }
+
+        $claims = json_decode($payload, true);
+
+        return is_array($claims) ? $claims : null;
+    }
+
+    /**
      * Recursively normalizes a decoded JSON document.
      */
     public static function normalizeValue(mixed $value, ?string $key = null): mixed
@@ -130,6 +166,14 @@ class Normalizer
 
             if ($rate !== null) {
                 return $rate;
+            }
+        }
+
+        if ($key !== null && in_array(mb_strtolower($key), self::TOKEN_FIELDS, true)) {
+            $claims = self::canonicalJwtClaims($value);
+
+            if ($claims !== null) {
+                return $claims;
             }
         }
 

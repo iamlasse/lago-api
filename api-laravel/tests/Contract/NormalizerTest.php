@@ -130,4 +130,43 @@ class NormalizerTest extends TestCase
         $this->assertStringContainsString('gql:mutation:createCustomer', $message);
         $this->assertStringContainsString('$.a', $message);
     }
+
+    /**
+     * Minted tokens are per-run credentials (the two runtimes emit different
+     * JWT headers), so they compare by decoded claims, not bytes.
+     */
+    public function test_minted_jwt_tokens_compare_by_claims(): void
+    {
+        // Same payload, different header bytes: jwt gem vs firebase/php-jwt.
+        $railsStyle = 'eyJhbGciOiJIUzI1NiJ9.'.base64url_encode('{"sub":"u1","exp":100,"login_method":"email_password"}').'.sig';
+        $phpStyle = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.'.base64url_encode('{"sub":"u1","exp":100,"login_method":"email_password"}').'.other_sig';
+
+        $this->assertSame([], Normalizer::compareJson(
+            '{"token":"'.$railsStyle.'"}',
+            '{"token":"'.$phpStyle.'"}'
+        ));
+
+        // A different claim set is still a contract diff.
+        $diffs = Normalizer::compareJson(
+            '{"token":"'.$railsStyle.'"}',
+            '{"token":"eyJhbGciOiJIUzI1NiJ9.'.base64url_encode('{"sub":"u2","exp":100,"login_method":"email_password"}').'.sig"}'
+        );
+
+        $this->assertCount(1, $diffs);
+        $this->assertSame('$.token.sub', $diffs[0]['path']);
+
+        // Non-token values under `token` stay strict, non-JWT strings included.
+        $diffs = Normalizer::compareJson(
+            '{"token":"not-a-jwt"}',
+            '{"token":"also-not-a-jwt"}'
+        );
+
+        $this->assertCount(1, $diffs);
+    }
+}
+
+/** Hoist helper: test-local base64url encode (URL-safe, unpadded). */
+function base64url_encode(string $value): string
+{
+    return mb_rtrim(strtr(base64_encode($value), '+/', '-_'), '=');
 }

@@ -1,0 +1,13 @@
+{
+  "data": {
+    "currentUser": {
+      "email": "capture@example.invalid",
+      "organizations": [
+        {
+          "id": "1a4a0d6e-0000-4000-8000-000000000001",
+          "name": "Contract Capture Org"
+        }
+      ]
+    }
+  }
+}

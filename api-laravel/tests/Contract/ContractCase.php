@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Contract;
 
+use Firebase\JWT\JWT;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use PHPUnit\Framework\AssertionFailedError;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
@@ -61,6 +63,7 @@ abstract class ContractCase extends BaseTestCase
     protected function tearDown(): void
     {
         CarbonImmutable::setTestNow();
+        JWT::$timestamp = null;
 
         parent::tearDown();
     }
@@ -79,7 +82,10 @@ abstract class ContractCase extends BaseTestCase
 
     /**
      * Freezes Laravel's clock at the captured instant so relative billing
-     * math sees the same "now" Rails saw.
+     * math sees the same "now" Rails saw — and so firebase/php-jwt validates
+     * `exp` against the frozen instant. (At capture time Rails' travel_to
+     * stubbed Time.now inside the jwt gem too; against the wall clock every
+     * captured token is expired.)
      */
     protected function rewindTime(): void
     {
@@ -89,7 +95,10 @@ abstract class ContractCase extends BaseTestCase
             static::fail('manifest.json must carry the captured instant as "captured_at".');
         }
 
-        CarbonImmutable::setTestNow(new CarbonImmutable($capturedAt, 'UTC'));
+        $frozen = new CarbonImmutable($capturedAt, 'UTC');
+
+        CarbonImmutable::setTestNow($frozen);
+        JWT::$timestamp = $frozen->getTimestamp();
     }
 
     /**
@@ -146,15 +155,34 @@ abstract class ContractCase extends BaseTestCase
 
     /**
      * Replays every request in the manifest, asserting each against its
-     * numbered golden.
+     * numbered golden. All mismatches are collected so one run reports the
+     * full contract diff instead of stopping at the first failing request.
      *
      * @param  array<int, string>  $ledgerRowIds  request index (1-based) => ledger row id, surfaced on failure
      */
     protected function runScenario(array $ledgerRowIds = []): void
     {
+        $failures = [];
+
         foreach ($this->manifest['requests'] ?? [] as $index => $request) {
             $response = $this->replay($request);
-            $this->assertMatchesGolden($response, $index + 1, $ledgerRowIds[$index + 1] ?? null);
+
+            try {
+                $this->assertMatchesGolden($response, $index + 1, $ledgerRowIds[$index + 1] ?? null);
+            } catch (AssertionFailedError $error) {
+                $failures[] = sprintf(
+                    "request #%d %s %s\n%s",
+                    $index + 1,
+                    mb_strtoupper($request['method'] ?? 'GET'),
+                    $request['path'] ?? '/',
+                    $error->getMessage()
+                );
+            }
+        }
+
+        if ($failures !== []) {
+            static::fail(count($failures).' of '.count($this->manifest['requests'] ?? [])." replayed request(s) diverge from the goldens:\n\n"
+                .implode("\n\n", $failures));
         }
     }
 

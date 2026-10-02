@@ -1,0 +1,67 @@
+{
+  "captured_at": "2025-06-01T12:00:00Z",
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/v1/organizations",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000aa"
+      },
+      "body": null,
+      "required_headers": {}
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/organizations",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000aa",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "organization": {
+          "legal_name": "Contract Capture Legal",
+          "email_settings": [
+            "invoice.finalized"
+          ],
+          "document_number_prefix": "ORG-CAP",
+          "webhook_url": "https://example.invalid/webhooks",
+          "billing_configuration": {
+            "invoice_footer": "capture footer",
+            "invoice_grace_period": 3,
+            "document_locale": "en"
+          }
+        }
+      },
+      "required_headers": {}
+    },
+    {
+      "method": "POST",
+      "path": "/graphql",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "query": "mutation($input: LoginUserInput!) { loginUser(input: $input) { token user { email } } }",
+        "variables": {
+          "input": {
+            "email": "capture@example.invalid",
+            "password": "capture-password"
+          }
+        }
+      },
+      "required_headers": {}
+    },
+    {
+      "method": "POST",
+      "path": "/graphql",
+      "headers": {
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxYTRhMGQ2ZS0wMDAwLTQwMDAtODAwMC0wMDAwMDAwMDAwMDIiLCJleHAiOjE3NDg3OTAwMDB9.iVxkLZ1puVJ4TpCmVD-OqUpEy28VIKDtOcub2JMxXk0",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "query": "{ currentUser { email organizations { id name } } }"
+      },
+      "required_headers": {}
+    }
+  ]
+}
