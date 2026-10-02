@@ -29,7 +29,7 @@ function chargeMetric($plan, int $aggregationType = BillableMetricFactory::SUM_A
     ]);
 }
 
-it('creates a standard charge', function () {
+it('creates a standard charge', function (): void {
     $plan = chargePlan();
     $metric = chargeMetric($plan);
 
@@ -48,7 +48,7 @@ it('creates a standard charge', function () {
         ->and($result->charge->invoiceable)->toBeTrue();
 })->group('ledger:svc:Charges.CreateService');
 
-it('builds default properties when none are provided', function () {
+it('builds default properties when none are provided', function (): void {
     $plan = chargePlan();
     $metric = chargeMetric($plan);
 
@@ -66,7 +66,7 @@ it('builds default properties when none are provided', function () {
         ]);
 });
 
-it('fails with an unknown billable metric', function () {
+it('fails with an unknown billable metric', function (): void {
     $plan = chargePlan();
 
     $result = CreateService::call(plan: $plan, params: [
@@ -81,7 +81,7 @@ it('fails with an unknown billable metric', function () {
         ->and($result->getError()->resource)->toBe('billable_metric');
 });
 
-it('fails when the charge code already exists on the plan', function () {
+it('fails when the charge code already exists on the plan', function (): void {
     $plan = chargePlan();
     $metric = chargeMetric($plan);
 
@@ -107,7 +107,7 @@ it('fails when the charge code already exists on the plan', function () {
 
 // -- charge-model validation matrix (through the service) --------------------
 
-it('rejects graduated_percentage without a premium license', function () {
+it('rejects graduated_percentage without a premium license', function (): void {
     $plan = chargePlan();
     $metric = chargeMetric($plan, BillableMetricFactory::LATEST_AGG);
 
@@ -127,7 +127,7 @@ it('rejects graduated_percentage without a premium license', function () {
         ->toBe(['graduated_percentage_requires_premium_license']);
 });
 
-it('rejects dynamic with a non-sum aggregation metric', function () {
+it('rejects dynamic with a non-sum aggregation metric', function (): void {
     $plan = chargePlan();
     $metric = chargeMetric($plan, BillableMetricFactory::LATEST_AGG);
 
@@ -142,7 +142,7 @@ it('rejects dynamic with a non-sum aggregation metric', function () {
         ->toBe(['invalid_aggregation_type_or_charge_model']);
 });
 
-it('rejects custom with a non-custom aggregation metric', function () {
+it('rejects custom with a non-custom aggregation metric', function (): void {
     $plan = chargePlan();
     $metric = chargeMetric($plan);
 
@@ -157,7 +157,7 @@ it('rejects custom with a non-custom aggregation metric', function () {
         ->toBe(['invalid_aggregation_type_or_charge_model']);
 });
 
-it('rejects pay_in_advance on volume charges', function () {
+it('rejects pay_in_advance on volume charges', function (): void {
     $plan = chargePlan();
     $metric = chargeMetric($plan);
 
@@ -178,7 +178,7 @@ it('rejects pay_in_advance on volume charges', function () {
         ->toBe(['invalid_aggregation_type_or_charge_model']);
 });
 
-it('rejects pay_in_advance on a non-payable-in-advance aggregation', function () {
+it('rejects pay_in_advance on a non-payable-in-advance aggregation', function (): void {
     $plan = chargePlan();
     // latest_agg is not in AGGREGATION_TYPES_PAYABLE_IN_ADVANCE.
     $metric = chargeMetric($plan, BillableMetricFactory::LATEST_AGG);
@@ -196,7 +196,7 @@ it('rejects pay_in_advance on a non-payable-in-advance aggregation', function ()
         ->toBe(['invalid_aggregation_type_or_charge_model']);
 });
 
-it('ignores min_amount_cents without a premium license', function () {
+it('ignores min_amount_cents without a premium license', function (): void {
     // Rails gates min_amount_cents behind License.premium? — the schema
     // default (0) stands without a license.
     $plan = chargePlan();
@@ -215,7 +215,7 @@ it('ignores min_amount_cents without a premium license', function () {
         ->and($result->charge->min_amount_cents)->toBe(0);
 });
 
-it('ignores invoiceable false without a premium license', function () {
+it('ignores invoiceable false without a premium license', function (): void {
     // Rails gates invoiceable/regroup/min_amount_cents behind License.premium?
     // — without a license the input is ignored and the schema default stands.
     $plan = chargePlan();
@@ -233,7 +233,7 @@ it('ignores invoiceable false without a premium license', function () {
         ->and($result->charge->invoiceable)->toBeTrue();
 });
 
-it('ignores regroup_paid_fees without a premium license', function () {
+it('ignores regroup_paid_fees without a premium license', function (): void {
     $plan = chargePlan();
     $metric = chargeMetric($plan);
 
@@ -249,7 +249,7 @@ it('ignores regroup_paid_fees without a premium license', function () {
         ->and($result->charge->regroup_paid_fees)->toBeNull();
 });
 
-it('accepts prorated on a recurring, pay-in-advance standard charge', function () {
+it('accepts prorated on a recurring, pay-in-advance standard charge', function (): void {
     $plan = chargePlan();
     $metric = chargeMetric($plan, BillableMetricFactory::SUM_AGG, recurring: true);
 
@@ -266,7 +266,7 @@ it('accepts prorated on a recurring, pay-in-advance standard charge', function (
         ->and($result->charge->prorated)->toBeTrue();
 });
 
-it('rejects prorated on a metered charge', function () {
+it('rejects prorated on a metered charge', function (): void {
     $plan = chargePlan();
     $metric = chargeMetric($plan, BillableMetricFactory::SUM_AGG, recurring: false);
 
@@ -285,7 +285,7 @@ it('rejects prorated on a metered charge', function () {
 
 // -- nested filters -----------------------------------------------------------
 
-it('creates nested charge filters', function () {
+it('creates nested charge filters', function (): void {
     $plan = chargePlan();
     $metric = chargeMetric($plan);
 
@@ -316,7 +316,7 @@ it('creates nested charge filters', function () {
         ->and($filters[0]->values()->count())->toBe(1);
 });
 
-it('fails a nested charge filter with empty values', function () {
+it('fails a nested charge filter with empty values', function (): void {
     $plan = chargePlan();
     $metric = chargeMetric($plan);
 

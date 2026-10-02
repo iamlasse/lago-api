@@ -10,11 +10,11 @@ use App\Services\Subscriptions\TerminateService;
 /**
  * Port of spec/services/subscriptions/terminate_service_spec.rb (core scenarios).
  */
-beforeEach(function () {
+beforeEach(function (): void {
     CarbonImmutable::setTestNow(CarbonImmutable::parse('2024-05-15 10:00:00', 'UTC'));
 });
 
-afterEach(function () {
+afterEach(function (): void {
     CarbonImmutable::setTestNow();
 });
 
@@ -34,7 +34,7 @@ function terminableSubscription(array $overrides = []): Subscription
     ], $overrides));
 }
 
-it('terminates an active subscription', function () {
+it('terminates an active subscription', function (): void {
     $subscription = terminableSubscription();
 
     $result = TerminateService::call(subscription: $subscription);
@@ -44,7 +44,7 @@ it('terminates an active subscription', function () {
         ->and($result->subscription->terminated_at->format('Y-m-d H:i:s'))->toBe('2024-05-15 10:00:00');
 })->group('ledger:svc:Subscriptions.TerminateService');
 
-it('honors a passed on_termination_invoice of skip for pay-in-advance plans', function () {
+it('honors a passed on_termination_invoice of skip for pay-in-advance plans', function (): void {
     $subscription = terminableSubscription([
         'plan_id' => Plan::factory()->create(['interval' => 'monthly', 'pay_in_advance' => true])->id,
     ]);
@@ -60,7 +60,7 @@ it('honors a passed on_termination_invoice of skip for pay-in-advance plans', fu
         ->and($subscription->fresh()->on_termination_credit_note)->toBe('skip');
 });
 
-it('cancels a pending subscription on terminate', function () {
+it('cancels a pending subscription on terminate', function (): void {
     $previous = terminableSubscription(['external_id' => 'sub_pending_term']);
     $pending = Subscription::factory()->pending()->create([
         'external_id' => 'sub_pending_term',
@@ -78,7 +78,7 @@ it('cancels a pending subscription on terminate', function () {
         ->and($result->subscription->canceled_at)->not->toBeNull();
 });
 
-it('fails when the subscription is already canceled', function () {
+it('fails when the subscription is already canceled', function (): void {
     $subscription = terminableSubscription();
     $subscription->markAsCanceled();
     $subscription->save();
@@ -89,7 +89,7 @@ it('fails when the subscription is already canceled', function () {
         ->and($result->getError()->messages)->toBe(['base' => ['subscription_canceled']]);
 });
 
-it('fails when the next subscription is incomplete and it is not an upgrade', function () {
+it('fails when the next subscription is incomplete and it is not an upgrade', function (): void {
     $subscription = terminableSubscription();
     Subscription::factory()->incomplete()->create([
         'external_id' => 'sub_term',
@@ -105,7 +105,7 @@ it('fails when the next subscription is incomplete and it is not an upgrade', fu
         ->and($result->getError()->messages)->toBe(['base' => ['next_subscription_incomplete']]);
 });
 
-it('does not fail on an incomplete next subscription during an upgrade', function () {
+it('does not fail on an incomplete next subscription during an upgrade', function (): void {
     $subscription = terminableSubscription();
     Subscription::factory()->incomplete()->create([
         'external_id' => 'sub_term',
@@ -121,7 +121,7 @@ it('does not fail on an incomplete next subscription during an upgrade', functio
         ->and($result->subscription->terminated())->toBeTrue();
 });
 
-it('cancels a scheduled pending downgrade when the current subscription is terminated', function () {
+it('cancels a scheduled pending downgrade when the current subscription is terminated', function (): void {
     $subscription = terminableSubscription();
     $pending = Subscription::factory()->pending()->create([
         'external_id' => 'sub_term',
@@ -138,7 +138,7 @@ it('cancels a scheduled pending downgrade when the current subscription is termi
         ->and($pending->fresh()->canceled())->toBeTrue();
 });
 
-it('keeps the scheduled downgrade when the termination is part of an upgrade', function () {
+it('keeps the scheduled downgrade when the termination is part of an upgrade', function (): void {
     $subscription = terminableSubscription();
     $pending = Subscription::factory()->pending()->create([
         'external_id' => 'sub_term',
@@ -155,7 +155,7 @@ it('keeps the scheduled downgrade when the termination is part of an upgrade', f
         ->and($pending->fresh()->pending())->toBeTrue();
 });
 
-it('does nothing for an already terminated subscription', function () {
+it('does nothing for an already terminated subscription', function (): void {
     $subscription = terminableSubscription();
     $subscription->markAsTerminated('2024-05-01 00:00:00');
     $subscription->save();
@@ -166,14 +166,14 @@ it('does nothing for an already terminated subscription', function () {
         ->and($result->subscription->terminated_at->format('Y-m-d H:i:s'))->toBe('2024-05-01 00:00:00');
 });
 
-it('fails when the subscription is missing', function () {
+it('fails when the subscription is missing', function (): void {
     $result = TerminateService::call(subscription: null);
 
     expect($result->failure())->toBeTrue()
         ->and($result->getError())->toBeInstanceOf(App\Services\Failures\NotFoundFailure::class);
 });
 
-it('activates the pending next subscription via terminate_and_start_next', function () {
+it('activates the pending next subscription via terminate_and_start_next', function (): void {
     // NOTE: Rails uses this entrypoint from the billing scheduler: the current
     // subscription stays active until its period end, then the pending
     // downgrade activates on the billing day.

@@ -12,11 +12,11 @@ use App\Services\Subscriptions\PlanDowngradeService;
  * Ports of spec/services/subscriptions/plan_upgrade_service_spec.rb and
  * plan_downgrade_service_spec.rb (core scenarios).
  */
-beforeEach(function () {
+beforeEach(function (): void {
     CarbonImmutable::setTestNow(CarbonImmutable::parse('2024-05-15 10:00:00', 'UTC'));
 });
 
-afterEach(function () {
+afterEach(function (): void {
     CarbonImmutable::setTestNow();
 });
 
@@ -42,7 +42,7 @@ function upgradeScenario(int $currentAmount, int $newAmount): array
     return [$customer, $current, $newPlan];
 }
 
-it('upgrades by creating and activating a new subscription chained to the current one', function () {
+it('upgrades by creating and activating a new subscription chained to the current one', function (): void {
     [$customer, $current, $newPlan] = upgradeScenario(2900, 9900);
 
     $result = PlanUpgradeService::call(
@@ -67,7 +67,7 @@ it('upgrades by creating and activating a new subscription chained to the curren
         ->and($current->fresh()->terminated())->toBeTrue();
 });
 
-it('updates the plan in place when the current subscription is still pending in the future', function () {
+it('updates the plan in place when the current subscription is still pending in the future', function (): void {
     $customer = App\Models\Customer::factory()->create();
     $currentPlan = Plan::factory()->create(['interval' => 'monthly', 'amount_cents' => 2900]);
     $newPlan = Plan::factory()->create(['interval' => 'monthly', 'amount_cents' => 9900]);
@@ -89,7 +89,7 @@ it('updates the plan in place when the current subscription is still pending in 
         ->and($current->fresh()->name)->toBe('Old name');
 });
 
-it('updates the pending subscription name when provided on upgrade', function () {
+it('updates the pending subscription name when provided on upgrade', function (): void {
     [$customer, $current, $newPlan] = upgradeScenario(2900, 9900);
     // Make the current subscription pending-in-the-future.
     $current->status = 'pending';
@@ -109,7 +109,7 @@ it('updates the pending subscription name when provided on upgrade', function ()
         ->and($current->fresh()->plan_id)->toBe($newPlan->id);
 });
 
-it('cancels an existing pending scheduled change before creating the upgrade', function () {
+it('cancels an existing pending scheduled change before creating the upgrade', function (): void {
     [$customer, $current, $newPlan] = upgradeScenario(2900, 9900);
 
     $scheduled = Subscription::factory()->pending()->create([
@@ -129,7 +129,7 @@ it('cancels an existing pending scheduled change before creating the upgrade', f
 
 // -- PlanDowngradeService ---------------------------------------------------------
 
-it('downgrades by scheduling a pending next subscription while the current stays active', function () {
+it('downgrades by scheduling a pending next subscription while the current stays active', function (): void {
     [$customer, $current, $newPlan] = upgradeScenario(9900, 2900);
 
     $result = PlanDowngradeService::call(
@@ -155,7 +155,7 @@ it('downgrades by scheduling a pending next subscription while the current stays
         ->and($current->fresh()->active())->toBeTrue();
 });
 
-it('updates the plan in place when downgrading a still-pending future subscription', function () {
+it('updates the plan in place when downgrading a still-pending future subscription', function (): void {
     $customer = App\Models\Customer::factory()->create();
     $currentPlan = Plan::factory()->create(['interval' => 'monthly', 'amount_cents' => 9900]);
     $newPlan = Plan::factory()->create(['interval' => 'monthly', 'amount_cents' => 2900]);
@@ -182,7 +182,7 @@ it('updates the plan in place when downgrading a still-pending future subscripti
         ->and($current->fresh()->name)->toBe('New');
 });
 
-it('cancels an existing pending downgrade when downgrading again', function () {
+it('cancels an existing pending downgrade when downgrading again', function (): void {
     [$customer, $current, $newPlan] = upgradeScenario(9900, 2900);
 
     $scheduled = Subscription::factory()->pending()->create([

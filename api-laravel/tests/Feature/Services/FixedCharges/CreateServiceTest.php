@@ -21,7 +21,7 @@ function fixedChargePlan(): Plan
     return Plan::factory()->create();
 }
 
-it('creates a fixed charge by add_on_id', function () {
+it('creates a fixed charge by add_on_id', function (): void {
     $plan = fixedChargePlan();
     $addOn = AddOn::factory()->create(['organization_id' => $plan->organization_id]);
 
@@ -42,7 +42,7 @@ it('creates a fixed charge by add_on_id', function () {
         ->and($result->fixed_charge->properties)->toBe(['amount' => '150']);
 })->group('ledger:svc:FixedCharges.CreateService');
 
-it('creates a fixed charge by add_on_code and fails on an unknown one', function () {
+it('creates a fixed charge by add_on_code and fails on an unknown one', function (): void {
     $plan = fixedChargePlan();
     $addOn = AddOn::factory()->create(['organization_id' => $plan->organization_id, 'code' => 'known-add-on']);
 
@@ -68,7 +68,7 @@ it('creates a fixed charge by add_on_code and fails on an unknown one', function
         ->and($missing->getError()->resource)->toBe('add_on');
 });
 
-it('builds default properties for a fixed charge', function () {
+it('builds default properties for a fixed charge', function (): void {
     $plan = fixedChargePlan();
     $addOn = AddOn::factory()->create(['organization_id' => $plan->organization_id]);
 
@@ -85,7 +85,7 @@ it('builds default properties for a fixed charge', function () {
         ->and($result->fixed_charge->units)->toBe('0.0000000000');
 });
 
-it('rejects a fixed charge with an invalid charge model or pay_in_advance mismatch', function () {
+it('rejects a fixed charge with an invalid charge model or pay_in_advance mismatch', function (): void {
     $plan = fixedChargePlan();
     $addOn = AddOn::factory()->create(['organization_id' => $plan->organization_id]);
 
@@ -119,7 +119,7 @@ it('rejects a fixed charge with an invalid charge model or pay_in_advance mismat
         ->and($payInAdvanceVolume->getError()->messages['pay_in_advance'])->toBe(['invalid_charge_model']);
 });
 
-it('generates unique codes with a numeric suffix', function () {
+it('generates unique codes with a numeric suffix', function (): void {
     $plan = fixedChargePlan();
     $addOn = AddOn::factory()->create(['organization_id' => $plan->organization_id, 'code' => 'addon']);
 
@@ -137,7 +137,7 @@ it('generates unique codes with a numeric suffix', function () {
     expect(GenerateCodeService::call(plan: $plan, addOn: $addOn)->code)->toBe('addon_2');
 })->group('ledger:svc:FixedCharges.GenerateCodeService');
 
-it('updates a fixed charge and cannot edit structural fields while attached to a subscription', function () {
+it('updates a fixed charge and cannot edit structural fields while attached to a subscription', function (): void {
     $plan = fixedChargePlan();
     $addOn = AddOn::factory()->create(['organization_id' => $plan->organization_id]);
 
@@ -168,7 +168,7 @@ it('updates a fixed charge and cannot edit structural fields while attached to a
         ->and($result->fixed_charge->invoice_display_name)->toBe('Display');
 })->group('ledger:svc:FixedCharges.UpdateService');
 
-it('rejects updating a fixed charge to a graduated pay-in-advance prorated combination', function () {
+it('rejects updating a fixed charge to a graduated pay-in-advance prorated combination', function (): void {
     $plan = fixedChargePlan();
     $addOn = AddOn::factory()->create(['organization_id' => $plan->organization_id]);
 
@@ -208,7 +208,7 @@ it('rejects updating a fixed charge to a graduated pay-in-advance prorated combi
     expect($fixedCharge->validateAttributes()['prorated'] ?? null)->toBe(['invalid_charge_model']);
 });
 
-it('destroys a fixed charge and reports an already-destroyed one', function () {
+it('destroys a fixed charge and reports an already-destroyed one', function (): void {
     $plan = fixedChargePlan();
     $addOn = AddOn::factory()->create(['organization_id' => $plan->organization_id]);
 

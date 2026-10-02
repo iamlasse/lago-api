@@ -56,7 +56,7 @@ it('returns a list of charges', function (): void {
 
     test()->getJson('/api/v1/plans/'.$plan->code.'/charges', chargesBearer([$organization, $apiKey]))
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($charge) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($charge): void {
             $json->count('charges', 1)
                 ->where('charges.0.lago_id', (string) $charge->id)
                 ->where('charges.0.code', $charge->code)
@@ -74,7 +74,7 @@ it('returns charge pagination metadata', function (): void {
 
     test()->getJson('/api/v1/plans/'.$plan->code.'/charges?per_page=2&page=1', chargesBearer([$organization, $apiKey]))
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json): void {
             $json->count('charges', 2)->etc()
                 ->where('meta.current_page', 1)
                 ->where('meta.total_pages', 2);
@@ -104,7 +104,7 @@ it('only returns parent charges', function (): void {
 
     test()->getJson('/api/v1/plans/'.$plan->code.'/charges', chargesBearer([$organization, $apiKey]))
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($charge) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($charge): void {
             $json->count('charges', 1)
                 ->where('charges.0.lago_id', (string) $charge->id)
                 ->etc();
@@ -123,7 +123,7 @@ it('returns the charge', function (): void {
 
     test()->getJson('/api/v1/plans/'.$plan->code.'/charges/'.$charge->code, chargesBearer([$organization, $apiKey]))
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($charge, $metric) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($charge, $metric): void {
             $json->where('charge.lago_id', (string) $charge->id)
                 ->where('charge.code', $charge->code)
                 ->where('charge.charge_model', 'standard')
@@ -167,7 +167,7 @@ it('creates a new charge', function (): void {
 
     test()->postJson('/api/v1/plans/'.$plan->code.'/charges', ['charge' => $createParams], chargesBearer([$organization, $apiKey]))
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($metric) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($metric): void {
             $json->where('charge.code', 'new_charge_code')
                 ->where('charge.charge_model', 'standard')
                 ->where('charge.invoice_display_name', 'Test Charge')
@@ -224,7 +224,7 @@ it('creates a charge with filters', function (): void {
 
     test()->postJson('/api/v1/plans/'.$plan->code.'/charges', ['charge' => $createParams], chargesBearer([$organization, $apiKey]))
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json): void {
             $json->where('charge.filters.0.invoice_display_name', 'Filter 1')
                 ->where('charge.filters.0.properties.amount', '50')
                 ->etc();
@@ -247,7 +247,7 @@ it('creates a charge with taxes', function (): void {
 
     test()->postJson('/api/v1/plans/'.$plan->code.'/charges', ['charge' => $createParams], chargesBearer([$organization, $apiKey]))
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($tax) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($tax): void {
             $json->count('charge.taxes', 1)
                 ->where('charge.taxes.0.code', $tax->code)
                 ->etc();
@@ -315,7 +315,7 @@ it('updates the charge', function (): void {
         'properties' => ['amount' => '200'],
     ]], chargesBearer([$organization, $apiKey]))
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json): void {
             $json->where('charge.invoice_display_name', 'Updated Charge Name')
                 ->where('charge.properties.amount', '200')
                 ->etc();
@@ -392,7 +392,7 @@ it('returns the charge filters', function (): void {
 
     test()->getJson('/api/v1/plans/'.$plan->code.'/charges/'.$charge->code.'/filters', chargesBearer([$organization, $apiKey]))
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($filter) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($filter): void {
             $json->count('filters', 1)
                 ->where('filters.0.lago_id', (string) $filter->id)
                 ->where('filters.0.invoice_display_name', 'Region filter')
@@ -410,7 +410,7 @@ it('returns filter pagination metadata', function (): void {
 
     test()->getJson('/api/v1/plans/'.$plan->code.'/charges/'.$charge->code.'/filters?per_page=1', chargesBearer([$organization, $apiKey]))
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json): void {
             $json->count('filters', 1)->etc()
                 ->where('meta.current_page', 1)
                 ->where('meta.total_pages', 2)

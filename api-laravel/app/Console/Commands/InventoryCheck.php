@@ -26,6 +26,12 @@ use function inv_write_artifact;
  *
  * Exit 0 only when everything holds — this is what CI runs.
  */
+#[\Illuminate\Console\Attributes\Description('Verify inventory artifacts are fresh, the ledger is complete, and milestone scopes meet the gate')]
+#[\Illuminate\Console\Attributes\Signature('inventory:check
+                            {--update : Rewrite drifted artifacts instead of failing}
+                            {--milestone= : Gate a milestone scope file (e.g. m1 -> scope_m1.txt)}
+                            {--dir= : Override the committed inventory directory}
+                            {--rails-path= : Override the Rails checkout path}')]
 class InventoryCheck extends Command
 {
     private const ARTIFACTS = [
@@ -38,14 +44,6 @@ class InventoryCheck extends Command
     ];
 
     private const MAX_REPORTED = 25;
-
-    protected $signature = 'inventory:check
-                            {--update : Rewrite drifted artifacts instead of failing}
-                            {--milestone= : Gate a milestone scope file (e.g. m1 -> scope_m1.txt)}
-                            {--dir= : Override the committed inventory directory}
-                            {--rails-path= : Override the Rails checkout path}';
-
-    protected $description = 'Verify inventory artifacts are fresh, the ledger is complete, and milestone scopes meet the gate';
 
     /** @var array<string, list<string>> */
     private array $failures = [];

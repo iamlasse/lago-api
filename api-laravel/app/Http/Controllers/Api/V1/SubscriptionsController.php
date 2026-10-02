@@ -4,22 +4,22 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Enums\SubscriptionStatus;
-use App\Models\Customer;
 use App\Models\Plan;
+use App\Models\Customer;
 use App\Models\Subscription;
-use App\Queries\SubscriptionsQuery;
 use Illuminate\Http\Request;
+use App\Enums\SubscriptionStatus;
 use Illuminate\Http\JsonResponse;
+use App\Queries\SubscriptionsQuery;
+use App\Exceptions\Api\NotFoundException;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\Concerns\Pagination;
-use App\Serializers\V1\SubscriptionSerializer;
 use App\Services\Subscriptions\CreateService;
 use App\Services\Subscriptions\UpdateService;
-use App\Services\Subscriptions\TerminateService;
-use App\Exceptions\Api\NotFoundException;
-use App\Exceptions\Api\ParameterMissingException;
+use App\Serializers\V1\SubscriptionSerializer;
 use App\Services\BillingEntities\ResolveService;
+use App\Services\Subscriptions\TerminateService;
+use App\Exceptions\Api\ParameterMissingException;
 
 /**
  * Port of Rails' Api::V1::SubscriptionsController (app/controllers/api/v1/
@@ -292,14 +292,18 @@ class SubscriptionsController extends ApiController
      * subscription of an external_id family is targeted (default active).
      */
     private function subscriptionsMatchingStatus(
-        \Illuminate\Database\Eloquent\Builder $query,
+        \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Relations\HasMany $query,
         Request $request,
     ): \Illuminate\Database\Eloquent\Builder {
-        return match ($request->input('status')) {
+        $matching = match ($request->input('status')) {
             'pending' => $query->pending(),
             'incomplete' => $query->incomplete(),
             default => $query->active(),
         };
+
+        return $matching instanceof \Illuminate\Database\Eloquent\Relations\HasMany
+            ? $matching->getQuery()
+            : $matching;
     }
 
     /**

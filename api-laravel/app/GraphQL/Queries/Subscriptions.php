@@ -8,10 +8,10 @@ use App\GraphQL\Support\Args;
 use App\GraphQL\Support\Page;
 use App\GraphQL\Execution\Errors;
 use App\GraphQL\Support\LagoContext;
-use App\Services\Subscriptions\Query as SubscriptionsQuery;
 use App\GraphQL\Guards\AuthenticableApiUser;
 use App\GraphQL\Guards\RequiredOrganization;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
+use App\Services\Subscriptions\Query as SubscriptionsQuery;
 
 /**
  * Port of Rails' Resolvers::SubscriptionsResolver

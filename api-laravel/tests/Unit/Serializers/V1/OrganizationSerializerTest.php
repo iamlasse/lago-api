@@ -7,11 +7,11 @@ use App\Support\CurrentContext;
 use Database\Factories\TaxFactory;
 use App\Serializers\V1\OrganizationSerializer;
 
-beforeEach(function () {
+beforeEach(function (): void {
     CurrentContext::reset();
 });
 
-it('serializes the organization with literal snake_case keys', function () {
+it('serializes the organization with literal snake_case keys', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
     $webhookUrls = $organization->webhookEndpoints->pluck('webhook_url')->all();
 
@@ -47,7 +47,7 @@ it('serializes the organization with literal snake_case keys', function () {
         ->and($result['taxes'][0]['lago_id'])->toBe($tax->id);
 })->group('ledger:ser:V1.OrganizationSerializer');
 
-it('delegates default_currency and timezone to the default billing entity', function () {
+it('delegates default_currency and timezone to the default billing entity', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
     $billingEntity = $organization->defaultBillingEntity;
     $billingEntity->update(['default_currency' => 'EUR', 'timezone' => 'Europe/Paris']);
@@ -59,7 +59,7 @@ it('delegates default_currency and timezone to the default billing entity', func
         ->and($result['timezone'])->toBe('Europe/Paris');
 });
 
-it('omits the taxes key when not included', function () {
+it('omits the taxes key when not included', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
 
     $serializer = new OrganizationSerializer($organization, ['root_name' => 'organization']);

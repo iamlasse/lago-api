@@ -8,7 +8,7 @@ use App\Support\CurrentContext;
 use App\Services\Taxes\CreateService;
 use App\Services\Failures\ValidationFailure;
 
-beforeEach(function () {
+beforeEach(function (): void {
     CurrentContext::reset();
 });
 
@@ -23,7 +23,7 @@ function createTaxParams(array $overrides = []): array
     ];
 }
 
-it('creates a tax', function () {
+it('creates a tax', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
 
     $result = CreateService::call(organization: $organization, params: createTaxParams());
@@ -37,7 +37,7 @@ it('creates a tax', function () {
         ->and($result->tax->applied_to_organization)->toBeFalse();
 })->group('ledger:svc:Taxes.CreateService');
 
-it('does not flag the tax as applied to the organization by default', function () {
+it('does not flag the tax as applied to the organization by default', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
 
     $result = CreateService::call(organization: $organization, params: createTaxParams());
@@ -45,7 +45,7 @@ it('does not flag the tax as applied to the organization by default', function (
     expect($result->tax->fresh()->applied_to_organization)->toBeFalse();
 });
 
-it('creates a tax applied to the organization', function () {
+it('creates a tax applied to the organization', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
 
     $result = CreateService::call(
@@ -57,7 +57,7 @@ it('creates a tax applied to the organization', function () {
         ->and($result->tax->fresh()->applied_to_organization)->toBeTrue();
 });
 
-it('returns a validation error when the code already exists', function () {
+it('returns a validation error when the code already exists', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
 
     Tax::factory()->for($organization)->create(['code' => 'tax_code']);
@@ -69,7 +69,7 @@ it('returns a validation error when the code already exists', function () {
         ->and($result->getError()->messages['code'])->toBe(['value_already_exist']);
 });
 
-it('returns a validation error when the rate is missing', function () {
+it('returns a validation error when the rate is missing', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
 
     $result = CreateService::call(organization: $organization, params: createTaxParams(['rate' => null]));

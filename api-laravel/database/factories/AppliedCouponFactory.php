@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Enums\AppliedCouponStatus;
-use App\Enums\CouponFrequency;
-use App\Models\AppliedCoupon;
-use App\Models\Customer;
 use App\Models\Coupon;
+use App\Models\Customer;
+use App\Models\AppliedCoupon;
+use App\Enums\CouponFrequency;
+use App\Enums\AppliedCouponStatus;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

@@ -9,7 +9,7 @@ use App\Jobs\SendHttpWebhookJob;
 use Illuminate\Support\Facades\Queue;
 use App\Services\Webhooks\RetryService;
 
-beforeEach(function () {
+beforeEach(function (): void {
     Queue::fake();
 
     $this->endpoint = WebhookEndpoint::factory()->create();
@@ -20,20 +20,20 @@ beforeEach(function () {
         ->create();
 });
 
-it('enqueues an http webhook job', function () {
+it('enqueues an http webhook job', function (): void {
     RetryService::call(webhook: $this->webhook);
 
     Queue::assertPushed(SendHttpWebhookJob::class, fn ($job) => $job->webhook->is($this->webhook));
 });
 
-it('assigns the webhook to the result', function () {
+it('assigns the webhook to the result', function (): void {
     $result = RetryService::call(webhook: $this->webhook);
 
     expect($result->success())->toBeTrue()
         ->and($result->webhook->is($this->webhook))->toBeTrue();
 });
 
-it('fails when the webhook is not found', function () {
+it('fails when the webhook is not found', function (): void {
     $result = RetryService::call(webhook: null);
 
     expect($result->success())->toBeFalse()
@@ -41,7 +41,7 @@ it('fails when the webhook is not found', function () {
         ->and($result->getError()->resource)->toBe('webhook');
 });
 
-it('fails when the webhook already succeeded', function () {
+it('fails when the webhook already succeeded', function (): void {
     $this->webhook->update(['status' => 1]); // :succeeded
 
     $result = RetryService::call(webhook: $this->webhook);

@@ -6,6 +6,9 @@ namespace App\Models;
 
 use Carbon\CarbonInterface;
 use App\Enums\MembershipStatus;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -13,13 +16,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * Frozen-schema model for `memberships`. Refined with the Rails Membership
  * model's relations, status enum and domain methods.
  */
-#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+#[Fillable([
     'organization_id',
     'user_id',
     'status',
     'revoked_at',
 ])]
-#[\Illuminate\Database\Eloquent\Attributes\Table(name: 'memberships')]
+#[Table(name: 'memberships')]
 class Membership extends BaseModel
 {
     use HasFactory;
@@ -52,7 +55,7 @@ class Membership extends BaseModel
     }
 
     /** Rails: `scope :active` equivalent as a relation helper. */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    #[Scope]
     protected function active($query)
     {
         return $query->where('status', MembershipStatus::Active->value);

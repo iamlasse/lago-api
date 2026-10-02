@@ -14,7 +14,7 @@ use App\Services\Webhooks\Customers\UpdatedService;
  * Port of spec/services/webhooks/customers/{created,updated}_service_spec.rb
  * (the "creates webhook" shared example).
  */
-beforeEach(function () {
+beforeEach(function (): void {
     Queue::fake();
 
     $this->organization = Organization::factory()->withoutWebhookEndpoint()->create();
@@ -22,7 +22,7 @@ beforeEach(function () {
     $this->endpoint = WebhookEndpoint::factory()->forOrganization($this->organization)->create();
 });
 
-it('creates a customer.created webhook with the serialized customer', function () {
+it('creates a customer.created webhook with the serialized customer', function (): void {
     CreatedService::call(object: $this->customer);
 
     $webhook = Webhook::query()->latest('created_at')->first();
@@ -40,7 +40,7 @@ it('creates a customer.created webhook with the serialized customer', function (
     Queue::assertPushed(App\Jobs\SendHttpWebhookJob::class, 1);
 });
 
-it('creates a customer.updated webhook with the serialized customer', function () {
+it('creates a customer.updated webhook with the serialized customer', function (): void {
     UpdatedService::call(object: $this->customer);
 
     $webhook = Webhook::query()->latest('created_at')->first();

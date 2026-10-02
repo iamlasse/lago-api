@@ -36,7 +36,7 @@ function gqlCreateCustomerViaMutation(object $user, object $organization, array 
     );
 }
 
-it('creates a customer', function () {
+it('creates a customer', function (): void {
     [$organization, $user] = gqlCustomersSetup();
 
     $response = gqlCreateCustomerViaMutation($user, $organization, [
@@ -68,7 +68,7 @@ it('creates a customer', function () {
         ->and($customer->billing_entity_id)->toBe($organization->defaultBillingEntity?->id);
 })->group('ledger:gql:mutation:createCustomer');
 
-it('returns the validation error envelope for an invalid email', function () {
+it('returns the validation error envelope for an invalid email', function (): void {
     [$organization, $user] = gqlCustomersSetup();
 
     $response = gqlCreateCustomerViaMutation($user, $organization, [
@@ -85,7 +85,7 @@ it('returns the validation error envelope for an invalid email', function () {
         ]);
 })->group('ledger:gql:mutation:createCustomer');
 
-it('updates an existing customer', function () {
+it('updates an existing customer', function (): void {
     [$organization, $user] = gqlCustomersSetup();
 
     $customer = gqlMakeCustomer($organization, ['name' => 'Before', 'city' => 'Lyon']);
@@ -115,7 +115,7 @@ it('updates an existing customer', function () {
     expect($customer->refresh()->name)->toBe('After');
 })->group('ledger:gql:mutation:updateCustomer');
 
-it('returns not_found when updating a customer of another organization', function () {
+it('returns not_found when updating a customer of another organization', function (): void {
     [$organization, $user] = gqlCustomersSetup();
 
     $foreign = gqlMakeCustomer(gqlCreateOrganization('Other Corp'), ['name' => 'Foreign']);
@@ -131,7 +131,7 @@ it('returns not_found when updating a customer of another organization', functio
     expect($foreign->refresh()->name)->toBe('Foreign');
 })->group('ledger:gql:mutation:updateCustomer');
 
-it('destroys a customer (soft delete) and returns the payload id', function () {
+it('destroys a customer (soft delete) and returns the payload id', function (): void {
     [$organization, $user] = gqlCustomersSetup();
 
     $customer = gqlMakeCustomer($organization);
@@ -151,7 +151,7 @@ it('destroys a customer (soft delete) and returns the payload id', function () {
         ->and($organization->customers()->withTrashed()->count())->toBe(1);
 })->group('ledger:gql:mutation:destroyCustomer');
 
-it('returns not_found when destroying an unknown customer', function () {
+it('returns not_found when destroying an unknown customer', function (): void {
     [$organization, $user] = gqlCustomersSetup();
 
     $response = gqlPost(

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -11,14 +13,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * Frozen-schema model for `customer_metadata` (Rails Metadata::CustomerMetadata).
  * Refined with relations, the COUNT_PER_CUSTOMER constant and validations.
  */
-#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+#[Fillable([
     'customer_id',
     'key',
     'value',
     'display_in_invoice',
     'organization_id',
 ])]
-#[\Illuminate\Database\Eloquent\Attributes\Table(name: 'customer_metadata')]
+#[Table(name: 'customer_metadata')]
 class CustomerMetadata extends BaseModel
 {
     use HasFactory;

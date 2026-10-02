@@ -5,12 +5,8 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\Models\Webhook;
-use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use App\Services\Webhooks\SendHttpService;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
 
 /**
  * Port of Rails' SendHttpWebhookJob (app/jobs/send_http_webhook_job.rb) —
@@ -24,10 +20,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
  */
 class SendHttpWebhookJob implements ShouldQueue
 {
-    use Dispatchable;
-    use InteractsWithQueue;
-    use Queueable;
-    use SerializesModels;
+    use \Illuminate\Foundation\Queue\Queueable;
 
     public function __construct(
         public readonly Webhook $webhook,

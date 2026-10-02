@@ -6,6 +6,8 @@ namespace App\Models;
 
 use Carbon\CarbonInterface;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -13,7 +15,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * Frozen-schema model for `api_keys`. Refined with the Rails ApiKey model's
  * permission defaults, value generation and relations.
  */
-#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+#[Fillable([
     'organization_id',
     'value',
     'expires_at',
@@ -21,7 +23,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
     'name',
     'permissions',
 ])]
-#[\Illuminate\Database\Eloquent\Attributes\Table(name: 'api_keys')]
+#[Table(name: 'api_keys')]
 class ApiKey extends BaseModel
 {
     use HasFactory;

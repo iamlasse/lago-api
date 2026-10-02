@@ -6,7 +6,9 @@ namespace App\Models;
 
 use App\Models\Casts\PostgresArray;
 use App\Enums\WebhookEndpointSignatureAlgo;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -18,14 +20,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * 10-endpoint limit, event_types whitelist) live with the CRUD controller
  * service — a later slice.
  */
-#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+#[Fillable([
     'organization_id',
     'webhook_url',
     'signature_algo',
     'event_types',
     'name',
 ])]
-#[\Illuminate\Database\Eloquent\Attributes\Table(name: 'webhook_endpoints')]
+#[Table(name: 'webhook_endpoints')]
 class WebhookEndpoint extends BaseModel
 {
     use HasFactory;

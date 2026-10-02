@@ -28,7 +28,7 @@ function planCreateArgs(): array
     ];
 }
 
-it('creates a plan', function () {
+it('creates a plan', function (): void {
     $args = planCreateArgs();
     $args['organization_id'] = App\Models\Organization::factory()->create()->id;
 
@@ -44,7 +44,7 @@ it('creates a plan', function () {
         ->and($result->plan->pending_deletion)->toBeFalse();
 })->group('ledger:svc:Plans.CreateService');
 
-it('creates nested charges', function () {
+it('creates nested charges', function (): void {
     $organization = App\Models\Organization::factory()->create();
     $metric = BillableMetric::factory()->create(['organization_id' => $organization->id]);
 
@@ -72,7 +72,7 @@ it('creates nested charges', function () {
         ->and($charges[0]->properties['graduated_ranges'])->toHaveCount(2);
 });
 
-it('auto-generates charge codes when not provided', function () {
+it('auto-generates charge codes when not provided', function (): void {
     $organization = App\Models\Organization::factory()->create();
     $metric = BillableMetric::factory()->create([
         'organization_id' => $organization->id,
@@ -93,7 +93,7 @@ it('auto-generates charge codes when not provided', function () {
         ->and($result->plan->charges()->first()->code)->toBe('api-calls');
 });
 
-it('creates fixed charges with auto-generated codes', function () {
+it('creates fixed charges with auto-generated codes', function (): void {
     $organization = App\Models\Organization::factory()->create();
     $addOn = App\Models\AddOn::factory()->create(['organization_id' => $organization->id]);
 
@@ -117,7 +117,7 @@ it('creates fixed charges with auto-generated codes', function () {
         ->and($fixedCharges[0]->add_on_id)->toBe($addOn->id);
 });
 
-it('persists bill_charges_monthly only for yearly and semiannual plans', function () {
+it('persists bill_charges_monthly only for yearly and semiannual plans', function (): void {
     $organization = App\Models\Organization::factory()->create();
 
     $yearlyArgs = planCreateArgs();
@@ -141,7 +141,7 @@ it('persists bill_charges_monthly only for yearly and semiannual plans', functio
         ->and($monthlyResult->plan->bill_charges_monthly)->toBeNull();
 });
 
-it('fails with a duplicate code among parents', function () {
+it('fails with a duplicate code among parents', function (): void {
     $organization = App\Models\Organization::factory()->create();
 
     Plan::factory()->create(['organization_id' => $organization->id, 'code' => 'dupe']);
@@ -160,7 +160,7 @@ it('fails with a duplicate code among parents', function () {
         ->and($error->messages['code'])->toContain('value_already_exist');
 });
 
-it('creates a plan with the same code used by a deleted plan', function () {
+it('creates a plan with the same code used by a deleted plan', function (): void {
     $organization = App\Models\Organization::factory()->create();
 
     Plan::factory()->create(['organization_id' => $organization->id, 'code' => 'recycled'])->delete();
@@ -174,7 +174,7 @@ it('creates a plan with the same code used by a deleted plan', function () {
     expect($result->success())->toBeTrue();
 });
 
-it('fails with an invalid interval', function () {
+it('fails with an invalid interval', function (): void {
     $args = planCreateArgs();
     $args['organization_id'] = App\Models\Organization::factory()->create()->id;
     $args['interval'] = 'biweekly';
@@ -185,7 +185,7 @@ it('fails with an invalid interval', function () {
         ->and($result->getError()->messages['interval'])->toContain('value_is_invalid');
 });
 
-it('fails when a blank interval is given', function () {
+it('fails when a blank interval is given', function (): void {
     // A blank interval keeps the historical "value_is_invalid" error, not
     // "value_is_mandatory" (plan.rb:56-58).
     $args = planCreateArgs();
@@ -198,7 +198,7 @@ it('fails when a blank interval is given', function () {
         ->and($result->getError()->messages['interval'])->toContain('value_is_invalid');
 });
 
-it('fails when the nested charges reference unknown billable metrics', function () {
+it('fails when the nested charges reference unknown billable metrics', function (): void {
     $args = planCreateArgs();
     $args['organization_id'] = App\Models\Organization::factory()->create()->id;
     $args['charges'] = [[
@@ -213,7 +213,7 @@ it('fails when the nested charges reference unknown billable metrics', function 
         ->and($result->getError())->toBeInstanceOf(NotFoundFailure::class);
 });
 
-it('fails when the nested charge properties are invalid', function () {
+it('fails when the nested charge properties are invalid', function (): void {
     $organization = App\Models\Organization::factory()->create();
     $metric = BillableMetric::factory()->create(['organization_id' => $organization->id]);
 
@@ -231,7 +231,7 @@ it('fails when the nested charge properties are invalid', function () {
         ->and($result->getError()->messages['properties'])->toContain('invalid_amount');
 });
 
-it('does not create the plan when a nested charge fails', function () {
+it('does not create the plan when a nested charge fails', function (): void {
     $organization = App\Models\Organization::factory()->create();
     $metric = BillableMetric::factory()->create(['organization_id' => $organization->id]);
 

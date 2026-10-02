@@ -35,7 +35,7 @@ function gqlMakeCustomer(Organization $organization, array $attributes = []): Cu
     ]);
 }
 
-it('returns a paginated list of customers with kaminari metadata', function () {
+it('returns a paginated list of customers with kaminari metadata', function (): void {
     [$organization, $user] = gqlCustomersSetup();
 
     // 30 customers: two pages at the default limit of 25 (kaminari's
@@ -65,7 +65,7 @@ it('returns a paginated list of customers with kaminari metadata', function () {
         ]);
 })->group('ledger:gql:query:customers');
 
-it('honors page and limit arguments', function () {
+it('honors page and limit arguments', function (): void {
     [$organization, $user] = gqlCustomersSetup();
 
     gqlMakeCustomer($organization, ['name' => 'A']);
@@ -90,7 +90,7 @@ it('honors page and limit arguments', function () {
         ]);
 })->group('ledger:gql:query:customers');
 
-it('searches across the searchable fields', function () {
+it('searches across the searchable fields', function (): void {
     [$organization, $user] = gqlCustomersSetup();
 
     gqlMakeCustomer($organization, ['name' => 'Acme Industries']);
@@ -113,7 +113,7 @@ it('searches across the searchable fields', function () {
         ->and($response->json('data.customers.collection.0.name'))->toBe('Acme Industries');
 })->group('ledger:gql:query:customers');
 
-it('filters by external id, disabling the search term', function () {
+it('filters by external id, disabling the search term', function (): void {
     [$organization, $user] = gqlCustomersSetup();
 
     $customer = gqlMakeCustomer($organization, ['external_id' => 'ext-77', 'name' => 'Target']);
@@ -132,7 +132,7 @@ it('filters by external id, disabling the search term', function () {
         ->and($response->json('data.customers.collection.0.id'))->toBe($customer->id);
 })->group('ledger:gql:query:customers');
 
-it('filters by customer type, tax identification number presence and deletion state', function () {
+it('filters by customer type, tax identification number presence and deletion state', function (): void {
     [$organization, $user] = gqlCustomersSetup();
 
     $company = gqlMakeCustomer($organization, ['customer_type' => 'company', 'tax_identification_number' => 'FR123456']);
@@ -164,14 +164,14 @@ it('filters by customer type, tax identification number presence and deletion st
         );
 })->group('ledger:gql:query:customers');
 
-it('returns unauthorized on customers without a token', function () {
+it('returns unauthorized on customers without a token', function (): void {
     $response = gqlPost('query { customers { metadata { totalCount } } }');
 
     expect($response->json('errors.0.message'))->toBe('unauthorized')
         ->and($response->json('errors.0.extensions.status'))->toBe('unauthorized');
 })->group('ledger:gql:query:customers');
 
-it('returns a single customer by id and by external id', function () {
+it('returns a single customer by id and by external id', function (): void {
     [$organization, $user] = gqlCustomersSetup();
 
     $customer = gqlMakeCustomer($organization, ['external_id' => 'ext-1', 'currency' => 'EUR']);
@@ -195,7 +195,7 @@ it('returns a single customer by id and by external id', function () {
     expect($byExternalId->json('data.customer.id'))->toBe($customer->id);
 })->group('ledger:gql:query:customer');
 
-it('computes the display name like Rails', function () {
+it('computes the display name like Rails', function (): void {
     [$organization, $user] = gqlCustomersSetup();
 
     $legal = gqlMakeCustomer($organization, ['legal_name' => 'Legal Corp', 'name' => 'Nickname', 'firstname' => null, 'lastname' => null]);
@@ -211,7 +211,7 @@ it('computes the display name like Rails', function () {
         ->and($response->json('data.c2.displayName'))->toBe('Ada Lovelace');
 })->group('ledger:gql:query:customer');
 
-it('errors when neither id nor external id is given', function () {
+it('errors when neither id nor external id is given', function (): void {
     [$organization, $user] = gqlCustomersSetup();
 
     $response = gqlPost('query { customer { id } }', [], gqlAuthHeaders($user, $organization->id));
@@ -219,7 +219,7 @@ it('errors when neither id nor external id is given', function () {
     expect($response->json('errors.0.message'))->toBe('You must provide either `id` or `external_id`.');
 })->group('ledger:gql:query:customer');
 
-it('returns the not_found envelope for an unknown customer', function () {
+it('returns the not_found envelope for an unknown customer', function (): void {
     [$organization, $user] = gqlCustomersSetup();
 
     $response = gqlPost(

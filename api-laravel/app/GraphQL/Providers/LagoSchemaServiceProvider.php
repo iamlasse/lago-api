@@ -61,7 +61,7 @@ class LagoSchemaServiceProvider extends ServiceProvider
         $this->app->bind(SchemaSourceProvider::class, FrozenSchemaSourceProvider::class);
         $this->app->bind(ProvidesResolver::class, LagoResolverProvider::class);
         $this->app->singleton(SchemaBuilder::class, LagoSchemaBuilder::class);
-        $this->app->bind(ProvidesSubscriptionResolver::class, function (): ProvidesSubscriptionResolver {
+        $this->app->bind(function (): ProvidesSubscriptionResolver {
             return new class implements ProvidesSubscriptionResolver
             {
                 public function provideSubscriptionResolver(FieldValue $fieldValue): Closure

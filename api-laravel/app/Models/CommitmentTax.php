@@ -4,18 +4,20 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Frozen-schema model for `commitments_taxes` (Rails' Commitment::AppliedTax).
  * Minimal port for the Commitments::ApplyTaxesService port.
  */
-#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+#[Fillable([
     'commitment_id',
     'tax_id',
     'organization_id',
 ])]
-#[\Illuminate\Database\Eloquent\Attributes\Table(name: 'commitments_taxes')]
+#[Table(name: 'commitments_taxes')]
 class CommitmentTax extends BaseModel
 {
     public function tax(): BelongsTo

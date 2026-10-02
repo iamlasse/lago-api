@@ -26,7 +26,7 @@ query IntrospectionQuery {
 }
 GQL;
 
-it('serves introspection including the ported operations', function () {
+it('serves introspection including the ported operations', function (): void {
     $response = gqlPost(INTROSPECTION_QUERY);
 
     $response->assertOk();
@@ -52,7 +52,7 @@ it('serves introspection including the ported operations', function () {
         ->and($typeNames)->toContain('HttpStatus');
 });
 
-it('exposes the loginUser mutation and currentUser query on the schema', function () {
+it('exposes the loginUser mutation and currentUser query on the schema', function (): void {
     $response = gqlPost(<<<'GQL'
     query {
         __schema {
@@ -78,7 +78,7 @@ it('exposes the loginUser mutation and currentUser query on the schema', functio
         ->and($mutationFields)->toContain('loginUser');
 });
 
-it('resolves not-yet-implemented root fields to null (stub semantics)', function () {
+it('resolves not-yet-implemented root fields to null (stub semantics)', function (): void {
     // activityLog has no ported resolver: the LagoResolverProvider null
     // fallback builds the full frozen SDL without it (nullable root field →
     // plain null, no error).
@@ -90,7 +90,7 @@ it('resolves not-yet-implemented root fields to null (stub semantics)', function
         ->and($response->json('errors'))->toBeNull();
 });
 
-it('surfaces the null violation for non-nullable unimplemented root fields', function () {
+it('surfaces the null violation for non-nullable unimplemented root fields', function (): void {
     // overdueBalances: OverdueBalanceCollection! — unimplemented, non-null →
     // the standard GraphQL null violation until its resolver lands.
     $response = gqlPost('query { overdueBalances { collection { __typename } } }');
@@ -103,7 +103,7 @@ it('surfaces the null violation for non-nullable unimplemented root fields', fun
         ->and($response->json('errors.0.message'))->toBe('Internal server error');
 });
 
-it('rejects queries deeper than 15 levels', function () {
+it('rejects queries deeper than 15 levels', function (): void {
     // user → memberships → organization → … nesting beyond max_depth 15
     $level = 'id';
     foreach (range(1, 10) as $ignored) {
@@ -118,7 +118,7 @@ it('rejects queries deeper than 15 levels', function () {
         ->and(json_encode($errors))->toContain('depth');
 });
 
-it('rejects queries exceeding the complexity budget of 350', function () {
+it('rejects queries exceeding the complexity budget of 350', function (): void {
     // Each aliased branch costs ~11 complexity points (graphql-php counts 1 +
     // children per field); 40 aliases ≈ 440 > 350, depth stays 11 < 15.
     $branch = 'memberships { user { memberships { user { memberships { user { memberships { user { memberships { user { id } } } } } } } } } }';
@@ -132,7 +132,7 @@ it('rejects queries exceeding the complexity budget of 350', function () {
         ->and(json_encode($errors))->toContain('complex');
 });
 
-it('rejects queries longer than 15,000 characters with query_is_too_large', function () {
+it('rejects queries longer than 15,000 characters with query_is_too_large', function (): void {
     $hugeQuery = str_repeat('#', 15_001);
 
     $response = gqlPost($hugeQuery);

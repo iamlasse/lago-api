@@ -7,7 +7,7 @@ use App\Support\Utils\Version;
 /**
  * Port of spec/lib/lago_utils/version_spec.rb (Rails).
  */
-it('returns the default and the base github url when the version file is missing', function () {
+it('returns the default and the base github url when the version file is missing', function (): void {
     // api-laravel ships without a LAGO_VERSION file (Rails passes Rails.env).
     expect(file_exists(VersionFilePath()))->toBeFalse();
 
@@ -19,7 +19,7 @@ it('returns the default and the base github url when the version file is missing
         ->and($version->shaOrNumber())->toBe('testing-default');
 });
 
-it('returns the tag as the number when the file holds a version tag', function () {
+it('returns the tag as the number when the file holds a version tag', function (): void {
     writeVersionFile("v1.20.0\n");
 
     try {
@@ -34,7 +34,7 @@ it('returns the tag as the number when the file holds a version tag', function (
     }
 });
 
-it('returns the release date as the number when the file holds a git sha', function () {
+it('returns the release date as the number when the file holds a git sha', function (): void {
     writeVersionFile("0f425aee1b9e7c927eb9559055fd1d11708bc7b5\n");
 
     try {

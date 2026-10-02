@@ -10,7 +10,7 @@ use App\Models\WebhookEndpoint;
 use App\Jobs\SendHttpWebhookJob;
 use Illuminate\Support\Facades\Queue;
 
-beforeEach(function () {
+beforeEach(function (): void {
     Queue::fake();
 
     $this->organization = Organization::factory()->withoutWebhookEndpoint()->create();
@@ -20,7 +20,7 @@ beforeEach(function () {
 
 // -- performLater (Rails: the perform_later override) -----------------------------
 
-it('does not enqueue when the organization has no webhook endpoints', function () {
+it('does not enqueue when the organization has no webhook endpoints', function (): void {
     $organization = Organization::factory()->withoutWebhookEndpoint()->create();
     $customer = Customer::factory()->for($organization)->create();
 
@@ -29,7 +29,7 @@ it('does not enqueue when the organization has no webhook endpoints', function (
     Queue::assertNothingPushed();
 });
 
-it('enqueues when the organization has webhook endpoints', function () {
+it('enqueues when the organization has webhook endpoints', function (): void {
     SendWebhookJob::performLater('customer.created', $this->customer, ['key' => 'value']);
 
     Queue::assertPushed(SendWebhookJob::class, function (SendWebhookJob $job) {
@@ -40,7 +40,7 @@ it('enqueues when the organization has webhook endpoints', function () {
     });
 });
 
-it('enqueues with a webhook id even when endpoints are checked', function () {
+it('enqueues with a webhook id even when endpoints are checked', function (): void {
     $webhook = Webhook::factory()->for($this->endpoint, 'webhookEndpoint')->create();
 
     SendWebhookJob::performLater('customer.created', $this->customer, [], $webhook->id);
@@ -50,13 +50,13 @@ it('enqueues with a webhook id even when endpoints are checked', function () {
 
 // -- queue_for -------------------------------------------------------------------
 
-it('uses the webhook queue by default', function () {
+it('uses the webhook queue by default', function (): void {
     expect(SendWebhookJob::queueFor('alert.triggered'))->toBe('webhook')
         ->and(SendWebhookJob::queueFor('invoice.created'))->toBe('webhook')
         ->and(SendWebhookJob::queueFor())->toBe('webhook');
 });
 
-it('uses the dedicated worker queues when SIDEKIQ_WEBHOOK is true', function () {
+it('uses the dedicated worker queues when SIDEKIQ_WEBHOOK is true', function (): void {
     $_ENV['SIDEKIQ_WEBHOOK'] = 'true';
     $_SERVER['SIDEKIQ_WEBHOOK'] = 'true';
 
@@ -68,7 +68,7 @@ it('uses the dedicated worker queues when SIDEKIQ_WEBHOOK is true', function () 
     }
 });
 
-it('runs the job on the queue chosen at construction', function () {
+it('runs the job on the queue chosen at construction', function (): void {
     SendWebhookJob::performLater('customer.created', $this->customer);
 
     Queue::assertPushed(SendWebhookJob::class, fn ($job) => $job->queue === 'webhook');
@@ -76,7 +76,7 @@ it('runs the job on the queue chosen at construction', function () {
 
 // -- perform ---------------------------------------------------------------------
 
-it('dispatches the builder service for a registered type', function () {
+it('dispatches the builder service for a registered type', function (): void {
     $job = new SendWebhookJob('customer.created', $this->customer);
     $job->handle();
 
@@ -88,13 +88,13 @@ it('dispatches the builder service for a registered type', function () {
         ->and($webhook->payload['customer']['lago_id'])->toBe($this->customer->id);
 });
 
-it('raises for an unknown webhook type', function () {
+it('raises for an unknown webhook type', function (): void {
     $job = new SendWebhookJob('totally.unknown', $this->customer);
 
     expect(fn () => $job->handle())->toThrow(LogicException::class);
 });
 
-it('routes legacy webhook_id enqueues straight to the http job', function () {
+it('routes legacy webhook_id enqueues straight to the http job', function (): void {
     $webhook = Webhook::factory()->for($this->endpoint, 'webhookEndpoint')->create();
 
     (new SendWebhookJob('customer.created', $this->customer, [], $webhook->id))->handle();
@@ -105,7 +105,7 @@ it('routes legacy webhook_id enqueues straight to the http job', function () {
 
 // -- registry surface --------------------------------------------------------------
 
-it('registers the M1 webhook types', function () {
+it('registers the M1 webhook types', function (): void {
     expect(array_keys(SendWebhookJob::WEBHOOK_SERVICES))->toBe([
         'customer.created',
         'customer.updated',

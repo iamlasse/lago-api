@@ -12,7 +12,7 @@ use App\Services\Failures\ForbiddenFailure;
 use App\Services\Failures\ValidationFailure;
 use App\Services\BillableMetrics\UpdateService;
 
-beforeEach(function () {
+beforeEach(function (): void {
     CurrentContext::reset();
 });
 
@@ -31,7 +31,7 @@ function updateMetricParams(array $overrides = []): array
     ];
 }
 
-it('updates the billable metric', function () {
+it('updates the billable metric', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
     $metric = BillableMetric::factory()->for($organization)->create();
 
@@ -48,7 +48,7 @@ it('updates the billable metric', function () {
         ->and($result->billable_metric->expression)->toBe('1 + 3');
 })->group('ledger:svc:BillableMetrics.UpdateService');
 
-it('fails when the billable metric is not found', function () {
+it('fails when the billable metric is not found', function (): void {
     $result = UpdateService::call(billableMetric: null, params: updateMetricParams());
 
     expect($result->failure())->toBeTrue()
@@ -56,7 +56,7 @@ it('fails when the billable metric is not found', function () {
         ->and($result->getError()->getMessage())->toBe('billable_metric_not_found');
 });
 
-it('returns a validation error when the name is blank', function () {
+it('returns a validation error when the name is blank', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
     $metric = BillableMetric::factory()->for($organization)->create();
 
@@ -71,7 +71,7 @@ it('returns a validation error when the name is blank', function () {
         ->and($result->getError()->messages['name'])->toBe(['value_is_mandatory']);
 });
 
-it('returns a forbidden failure when switching to the custom aggregation without the feature', function () {
+it('returns a forbidden failure when switching to the custom aggregation without the feature', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
     $metric = BillableMetric::factory()->for($organization)->create();
 
@@ -82,7 +82,7 @@ it('returns a forbidden failure when switching to the custom aggregation without
         ->and($metric->fresh()->aggregation_type->label())->toBe('count_agg');
 });
 
-it('updates only the name and the description when attached to a plan', function () {
+it('updates only the name and the description when attached to a plan', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
     $metric = BillableMetric::factory()->for($organization)->create();
 

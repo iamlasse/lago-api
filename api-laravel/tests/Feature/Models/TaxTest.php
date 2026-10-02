@@ -8,7 +8,7 @@ use App\Models\BillingEntity;
 use App\Support\CurrentContext;
 use Database\Factories\TaxFactory;
 
-beforeEach(function () {
+beforeEach(function (): void {
     CurrentContext::reset();
 });
 
@@ -17,13 +17,13 @@ function taxOrganization(): Organization
     return CurrentContext::$organization = Organization::factory()->create();
 }
 
-it('is valid with the factory defaults', function () {
+it('is valid with the factory defaults', function (): void {
     $tax = TaxFactory::new()->for(taxOrganization())->make();
 
     expect($tax->validateAttributes())->toBe([]);
 });
 
-it('requires a name, a rate and a code', function () {
+it('requires a name, a rate and a code', function (): void {
     $tax = TaxFactory::new()->for(taxOrganization())->make([
         'name' => null,
         'rate' => null,
@@ -37,13 +37,13 @@ it('requires a name, a rate and a code', function () {
     ]);
 });
 
-it('accepts a zero rate', function () {
+it('accepts a zero rate', function (): void {
     $tax = TaxFactory::new()->for(taxOrganization())->make(['rate' => 0.0]);
 
     expect($tax->validateAttributes())->toBe([]);
 });
 
-it('validates the uniqueness of the code per organization, ignoring discarded taxes', function () {
+it('validates the uniqueness of the code per organization, ignoring discarded taxes', function (): void {
     $organization = taxOrganization();
     $otherOrganization = Organization::factory()->create();
 
@@ -58,7 +58,7 @@ it('validates the uniqueness of the code per organization, ignoring discarded ta
         ->toBe([]);
 });
 
-it('scopes applied_to_organization', function () {
+it('scopes applied_to_organization', function (): void {
     $organization = taxOrganization();
 
     $flagged = TaxFactory::new()->for($organization)->appliedToOrganization()->create();
@@ -67,7 +67,7 @@ it('scopes applied_to_organization', function () {
     expect($organization->taxes()->appliedToOrganization()->pluck('id')->all())->toBe([$flagged->id]);
 });
 
-it('scopes applied_to_billing_entity', function () {
+it('scopes applied_to_billing_entity', function (): void {
     $organization = taxOrganization();
     $billingEntity = $organization->defaultBillingEntity;
 
@@ -77,7 +77,7 @@ it('scopes applied_to_billing_entity', function () {
     expect($organization->taxes()->appliedToBillingEntity($billingEntity)->pluck('id')->all())->toBe([$applied->id]);
 });
 
-it('lists the billing entities carrying the tax', function () {
+it('lists the billing entities carrying the tax', function (): void {
     $organization = taxOrganization();
     $default = $organization->defaultBillingEntity;
     $other = BillingEntity::factory()->for($organization)->create();
@@ -91,7 +91,7 @@ it('lists the billing entities carrying the tax', function () {
         ->toBe(collect([$default->id, $other->id])->sort()->values()->all());
 });
 
-it('counts the attached customers when not applied to a billing entity', function () {
+it('counts the attached customers when not applied to a billing entity', function (): void {
     $organization = taxOrganization();
     $tax = TaxFactory::new()->for($organization)->create();
 
@@ -105,7 +105,7 @@ it('counts the attached customers when not applied to a billing entity', functio
     expect($tax->customersCount())->toBe(1);
 });
 
-it('counts the customers of the billing entities carrying the tax plus the attached ones', function () {
+it('counts the customers of the billing entities carrying the tax plus the attached ones', function (): void {
     $organization = taxOrganization();
     $default = $organization->defaultBillingEntity;
     $other = BillingEntity::factory()->for($organization)->create();

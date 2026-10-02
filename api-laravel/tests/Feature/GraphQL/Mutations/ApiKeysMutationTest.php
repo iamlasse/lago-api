@@ -32,7 +32,7 @@ function gqlReleasePremiumLicense(): void
     unset($_ENV['LAGO_LICENSE']);
 }
 
-it('refuses to create an api key without a premium license', function () {
+it('refuses to create an api key without a premium license', function (): void {
     [$organization, $user] = gqlApiKeysSetup();
 
     $response = gqlPost(
@@ -50,7 +50,7 @@ it('refuses to create an api key without a premium license', function () {
     expect(ApiKey::query()->where('organization_id', $organization->id)->count())->toBe(0);
 })->group('ledger:gql:mutation:createApiKey');
 
-it('creates an api key with a premium license', function () {
+it('creates an api key with a premium license', function (): void {
     [$organization, $user] = gqlApiKeysSetup();
     gqlActAsPremiumOrganization($organization);
 
@@ -79,7 +79,7 @@ it('creates an api key with a premium license', function () {
     }
 })->group('ledger:gql:mutation:createApiKey');
 
-it('refuses permissions without the api_permissions premium integration', function () {
+it('refuses permissions without the api_permissions premium integration', function (): void {
     [$organization, $user] = gqlApiKeysSetup();
     // Premium license, but the organization lacks the integration.
     $_ENV['LAGO_LICENSE'] = 'test-license';
@@ -100,7 +100,7 @@ it('refuses permissions without the api_permissions premium integration', functi
     }
 })->group('ledger:gql:mutation:createApiKey');
 
-it('updates an api key name and permissions', function () {
+it('updates an api key name and permissions', function (): void {
     [$organization, $user] = gqlApiKeysSetup();
     gqlActAsPremiumOrganization($organization);
 
@@ -125,7 +125,7 @@ it('updates an api key name and permissions', function () {
     }
 })->group('ledger:gql:mutation:updateApiKey');
 
-it('returns not_found when updating an api key of another organization', function () {
+it('returns not_found when updating an api key of another organization', function (): void {
     [$organization, $user] = gqlApiKeysSetup();
     gqlActAsPremiumOrganization($organization);
 
@@ -146,7 +146,7 @@ it('returns not_found when updating an api key of another organization', functio
     }
 })->group('ledger:gql:mutation:updateApiKey');
 
-it('rotates an api key: creates a replacement and expires the original', function () {
+it('rotates an api key: creates a replacement and expires the original', function (): void {
     [$organization, $user] = gqlApiKeysSetup();
 
     $apiKey = gqlMakeApiKey($organization);
@@ -184,7 +184,7 @@ it('rotates an api key: creates a replacement and expires the original', functio
         ->and($list->json('data.apiKeys.collection.0.id'))->toBe($replacement->id);
 })->group('ledger:gql:mutation:rotateApiKey');
 
-it('refuses rotating with a provided expires_at without a premium license', function () {
+it('refuses rotating with a provided expires_at without a premium license', function (): void {
     [$organization, $user] = gqlApiKeysSetup();
 
     $apiKey = gqlMakeApiKey($organization);
@@ -201,7 +201,7 @@ it('refuses rotating with a provided expires_at without a premium license', func
     ]);
 })->group('ledger:gql:mutation:rotateApiKey');
 
-it('destroys an api key by expiring it, keeping the organization logged in', function () {
+it('destroys an api key by expiring it, keeping the organization logged in', function (): void {
     [$organization, $user] = gqlApiKeysSetup();
 
     $apiKey = gqlMakeApiKey($organization);
@@ -220,7 +220,7 @@ it('destroys an api key by expiring it, keeping the organization logged in', fun
         ->and($survivor->refresh()->expires_at)->toBeNull();
 })->group('ledger:gql:mutation:destroyApiKey');
 
-it('refuses to destroy the last non expiring api key', function () {
+it('refuses to destroy the last non expiring api key', function (): void {
     [$organization, $user] = gqlApiKeysSetup();
 
     $apiKey = gqlMakeApiKey($organization);

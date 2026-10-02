@@ -15,7 +15,7 @@ use App\Services\Subscriptions\Dates\SemiannualService;
 /**
  * Port of spec/services/subscriptions/dates_service_spec.rb (base class).
  */
-it('resolves the correct interval service through new_instance', function (string $interval, string $klass) {
+it('resolves the correct interval service through new_instance', function (string $interval, string $klass): void {
     $subscription = datesSubscriptionFor($interval);
     $service = DatesService::newInstance($subscription, Carbon\CarbonImmutable::parse('2022-03-07 04:20:46', 'UTC'));
 
@@ -28,7 +28,7 @@ it('resolves the correct interval service through new_instance', function (strin
     ['semiannual', SemiannualService::class],
 ]);
 
-it('raises NotImplementedError for an unknown interval', function () {
+it('raises NotImplementedError for an unknown interval', function (): void {
     $subscription = datesSubscriptionFor('monthly');
     $plan = clone $subscription->plan;
     $plan->interval = 99; // unsaved — mirrors allow(plan).to receive(:interval) { :foo }
@@ -39,7 +39,7 @@ it('raises NotImplementedError for an unknown interval', function () {
 
 // -- fixed_charge_pay_in_advance_interval (anniversary, subscription_at 02 Feb 2021) --
 
-it('computes the fixed charge pay in advance interval (monthly)', function () {
+it('computes the fixed charge pay in advance interval (monthly)', function (): void {
     $subscription = datesSubscriptionFor('monthly', ['billing_time' => 'anniversary']);
     $timestamp = Carbon\CarbonImmutable::parse('2022-03-07 04:20:46', 'UTC')->getTimestamp();
 
@@ -50,7 +50,7 @@ it('computes the fixed charge pay in advance interval (monthly)', function () {
         ->and($result['fixed_charges_duration'])->toBe(31);
 });
 
-it('computes the fixed charge pay in advance interval (yearly)', function () {
+it('computes the fixed charge pay in advance interval (yearly)', function (): void {
     $subscription = datesSubscriptionFor('yearly', ['billing_time' => 'anniversary']);
     $timestamp = Carbon\CarbonImmutable::parse('2022-03-07 04:20:46', 'UTC')->getTimestamp();
 
@@ -61,7 +61,7 @@ it('computes the fixed charge pay in advance interval (yearly)', function () {
         ->and($result['fixed_charges_duration'])->toBe(365);
 });
 
-it('computes the fixed charge pay in advance interval (semiannual)', function () {
+it('computes the fixed charge pay in advance interval (semiannual)', function (): void {
     $subscription = datesSubscriptionFor('semiannual', ['billing_time' => 'anniversary']);
     $timestamp = Carbon\CarbonImmutable::parse('2022-03-07 04:20:46', 'UTC')->getTimestamp();
 
@@ -72,7 +72,7 @@ it('computes the fixed charge pay in advance interval (semiannual)', function ()
         ->and($result['fixed_charges_duration'])->toBe(181);
 });
 
-it('computes the fixed charge pay in advance interval (quarterly)', function () {
+it('computes the fixed charge pay in advance interval (quarterly)', function (): void {
     $subscription = datesSubscriptionFor('quarterly', ['billing_time' => 'anniversary']);
     $timestamp = Carbon\CarbonImmutable::parse('2022-03-07 04:20:46', 'UTC')->getTimestamp();
 
@@ -83,7 +83,7 @@ it('computes the fixed charge pay in advance interval (quarterly)', function () 
         ->and($result['fixed_charges_duration'])->toBe(89);
 });
 
-it('computes the fixed charge pay in advance interval (weekly)', function () {
+it('computes the fixed charge pay in advance interval (weekly)', function (): void {
     $subscription = datesSubscriptionFor('weekly', ['billing_time' => 'anniversary']);
     $timestamp = Carbon\CarbonImmutable::parse('2022-03-07 04:20:46', 'UTC')->getTimestamp();
 
@@ -97,7 +97,7 @@ it('computes the fixed charge pay in advance interval (weekly)', function () {
 
 // -- terminated_at? (Terminatable concern) ------------------------------------------
 
-it('answers terminated_at? only when the termination covers the timestamp', function () {
+it('answers terminated_at? only when the termination covers the timestamp', function (): void {
     $subscription = datesSubscriptionFor('monthly');
     datesTerminate($subscription, '2022-03-09 12:00:00');
 
@@ -107,7 +107,7 @@ it('answers terminated_at? only when the termination covers the timestamp', func
         ->and($subscription->terminatedAt(1646827200))->toBeTrue(); // 2022-03-09 12:00 UTC
 });
 
-it('returns false from terminated_at? for a non-terminated subscription', function () {
+it('returns false from terminated_at? for a non-terminated subscription', function (): void {
     $subscription = datesSubscriptionFor('monthly');
 
     expect($subscription->terminatedAt(Carbon\CarbonImmutable::now()))->toBeFalse();
@@ -115,7 +115,7 @@ it('returns false from terminated_at? for a non-terminated subscription', functi
 
 // -- model domain helpers ------------------------------------------------------------
 
-it('walks the external_id chain for initial_started_at', function () {
+it('walks the external_id chain for initial_started_at', function (): void {
     $first = datesSubscriptionFor('monthly', ['started_at' => '2023-01-01 00:00:00']);
     $second = datesSubscriptionFor('monthly', [
         'external_id' => $first->external_id,
@@ -127,7 +127,7 @@ it('walks the external_id chain for initial_started_at', function () {
         ->and($first->initialStartedAt()->format('Y-m-d'))->toBe('2023-01-01');
 });
 
-it('identifies next subscription ignoring canceled ones', function () {
+it('identifies next subscription ignoring canceled ones', function (): void {
     $current = datesSubscriptionFor('monthly');
     $pending = Subscription::factory()->pending()->create([
         'external_id' => $current->external_id,
@@ -144,7 +144,7 @@ it('identifies next subscription ignoring canceled ones', function () {
     expect($current->nextSubscription())->toBeNull();
 });
 
-it('marks state transitions with ||= semantics', function () {
+it('marks state transitions with ||= semantics', function (): void {
     $subscription = datesSubscriptionFor('monthly', ['status' => 'pending', 'started_at' => null, 'activated_at' => null]);
     $subscription->markAsActive('2024-05-01 10:00:00');
     $subscription->save();

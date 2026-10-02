@@ -4,19 +4,20 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-
 use App\Enums\CouponFrequency;
 use App\Models\Casts\BcNumeric;
 use App\Enums\AppliedCouponStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Port of Rails' AppliedCoupon (app/models/applied_coupon.rb).
  */
-#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+#[Fillable([
     'coupon_id',
     'customer_id',
     'status',
@@ -29,7 +30,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'frequency_duration_remaining',
     'organization_id',
 ])]
-#[\Illuminate\Database\Eloquent\Attributes\Table(name: 'applied_coupons')]
+#[Table(name: 'applied_coupons')]
 class AppliedCoupon extends BaseModel
 {
     use HasFactory;

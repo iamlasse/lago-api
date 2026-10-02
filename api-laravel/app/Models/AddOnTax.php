@@ -4,18 +4,20 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Frozen-schema model for `add_ons_taxes` (Rails' AddOn::AppliedTax).
  * Minimal port — referenced by the AddOn model only.
  */
-#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+#[Fillable([
     'add_on_id',
     'tax_id',
     'organization_id',
 ])]
-#[\Illuminate\Database\Eloquent\Attributes\Table(name: 'add_ons_taxes')]
+#[Table(name: 'add_ons_taxes')]
 class AddOnTax extends BaseModel
 {
     public function tax(): BelongsTo

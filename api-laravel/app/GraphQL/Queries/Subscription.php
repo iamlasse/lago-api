@@ -8,9 +8,9 @@ use GraphQL\Error\Error;
 use App\Models\Organization;
 use App\GraphQL\Execution\Errors;
 use App\GraphQL\Support\LagoContext;
-use App\Models\Subscription as SubscriptionModel;
 use App\GraphQL\Guards\AuthenticableApiUser;
 use App\GraphQL\Guards\RequiredOrganization;
+use App\Models\Subscription as SubscriptionModel;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
 /**

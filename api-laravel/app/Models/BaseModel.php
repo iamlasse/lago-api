@@ -6,13 +6,14 @@ namespace App\Models;
 
 use App\Models\Concerns\HasUuid;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Attributes\DateFormat;
 
 /**
  * Base for all Lago models. The Postgres schema is frozen (Rails'
  * db/structure.sql): uuid v4 primary keys, `timestamp(6) without time zone`
  * columns holding UTC, soft deletes on `deleted_at`.
  */
-#[\Illuminate\Database\Eloquent\Attributes\DateFormat('Y-m-d H:i:s.u')]
+#[DateFormat('Y-m-d H:i:s.u')]
 abstract class BaseModel extends Model
 {
     use HasUuid;

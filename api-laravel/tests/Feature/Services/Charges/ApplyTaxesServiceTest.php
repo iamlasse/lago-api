@@ -27,7 +27,7 @@ function taxedCharge(): Charge
     ]);
 }
 
-it('applies taxes to a charge by tax code', function () {
+it('applies taxes to a charge by tax code', function (): void {
     $charge = taxedCharge();
     $vat = Tax::factory()->create(['organization_id' => $charge->organization_id, 'code' => 'vat-20']);
 
@@ -38,7 +38,7 @@ it('applies taxes to a charge by tax code', function () {
         ->and(ChargeTax::query()->where('charge_id', $charge->id)->where('tax_id', $vat->id)->exists())->toBeTrue();
 })->group('ledger:svc:Charges.ApplyTaxesService');
 
-it('replaces the applied taxes when the codes change', function () {
+it('replaces the applied taxes when the codes change', function (): void {
     $charge = taxedCharge();
     Tax::factory()->create(['organization_id' => $charge->organization_id, 'code' => 'vat-20']);
     $vat2 = Tax::factory()->create(['organization_id' => $charge->organization_id, 'code' => 'vat-5']);
@@ -53,7 +53,7 @@ it('replaces the applied taxes when the codes change', function () {
         ->and(ChargeTax::query()->where('charge_id', $charge->id)->where('tax_id', '!=', $vat2->id)->count())->toBe(0);
 });
 
-it('fails with an unknown tax code', function () {
+it('fails with an unknown tax code', function (): void {
     $charge = taxedCharge();
 
     $result = ApplyTaxesService::call(charge: $charge, taxCodes: ['unknown-tax']);
@@ -62,7 +62,7 @@ it('fails with an unknown tax code', function () {
         ->and($result->getError()->getMessage())->toBe('tax_not_found');
 });
 
-it('is idempotent for the same tax codes', function () {
+it('is idempotent for the same tax codes', function (): void {
     $charge = taxedCharge();
     Tax::factory()->create(['organization_id' => $charge->organization_id, 'code' => 'vat-20']);
 

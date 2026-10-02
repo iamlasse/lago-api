@@ -11,11 +11,11 @@ use App\Serializers\V1\SubscriptionSerializer;
  * Port of spec/serializers/v1/subscription_serializer_spec.rb — payload shape
  * and value formatting.
  */
-beforeEach(function () {
+beforeEach(function (): void {
     CarbonImmutable::setTestNow(CarbonImmutable::parse('2024-05-15 10:00:00', 'UTC'));
 });
 
-afterEach(function () {
+afterEach(function (): void {
     CarbonImmutable::setTestNow();
 });
 
@@ -45,7 +45,7 @@ function serializableSubscription(array $overrides = []): Subscription
     ], $overrides));
 }
 
-it('serializes the core subscription payload', function () {
+it('serializes the core subscription payload', function (): void {
     $subscription = serializableSubscription();
 
     $payload = (new SubscriptionSerializer($subscription))->serialize();
@@ -75,7 +75,7 @@ it('serializes the core subscription payload', function () {
         ->and($payload['activated_at'])->toBe('2024-04-01T12:34:56Z');
 });
 
-it('serializes the payment method fragment', function () {
+it('serializes the payment method fragment', function (): void {
     $subscription = serializableSubscription();
 
     $payload = (new SubscriptionSerializer($subscription))->serialize();
@@ -86,7 +86,7 @@ it('serializes the payment method fragment', function () {
     ]);
 });
 
-it('serializes the current billing period from the dates service', function () {
+it('serializes the current billing period from the dates service', function (): void {
     $subscription = serializableSubscription();
 
     $payload = (new SubscriptionSerializer($subscription))->serialize();
@@ -98,7 +98,7 @@ it('serializes the current billing period from the dates service', function () {
         ->and($payload['current_billing_period_ending_at'])->toBe('2024-05-31T23:59:59+00:00');
 });
 
-it('serializes previous and next plan codes across an upgrade chain', function () {
+it('serializes previous and next plan codes across an upgrade chain', function (): void {
     $subscription = serializableSubscription();
 
     $oldPlan = Plan::factory()->create(['code' => 'old_plan', 'amount_cents' => 100]);
@@ -118,7 +118,7 @@ it('serializes previous and next plan codes across an upgrade chain', function (
     expect($payload['previous_plan_code'])->toBe('old_plan');
 });
 
-it('emits the includes-driven fragments', function () {
+it('emits the includes-driven fragments', function (): void {
     $subscription = serializableSubscription();
 
     $payload = (new SubscriptionSerializer($subscription, ['includes' => ['customer', 'plan', 'entitlements']]))->serialize();

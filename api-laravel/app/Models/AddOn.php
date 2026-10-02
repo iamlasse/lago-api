@@ -6,7 +6,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Concerns\BelongsToOrganization;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
@@ -15,7 +17,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * FixedCharges services (this slice) need; the AddOns CRUD surface is a
  * later milestone.
  */
-#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+#[Fillable([
     'organization_id',
     'name',
     'code',
@@ -24,7 +26,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
     'amount_currency',
     'invoice_display_name',
 ])]
-#[\Illuminate\Database\Eloquent\Attributes\Table(name: 'add_ons')]
+#[Table(name: 'add_ons')]
 class AddOn extends BaseModel
 {
     use BelongsToOrganization;

@@ -46,7 +46,7 @@ function gqlAuthHeaders(App\Models\User $user, ?string $organizationId = null): 
     return $headers;
 }
 
-it('resolves currentUser from a Bearer JWT', function () {
+it('resolves currentUser from a Bearer JWT', function (): void {
     $organization = gqlCreateOrganization();
     $user = gqlCreateUser();
     gqlCreateMembership($user, $organization);
@@ -68,7 +68,7 @@ it('resolves currentUser from a Bearer JWT', function () {
         ->and($currentUser['memberships'][0]['organization']['id'])->toBe($organization->id);
 })->group('ledger:gql:query:currentUser');
 
-it('only exposes active memberships on currentUser', function () {
+it('only exposes active memberships on currentUser', function (): void {
     $organization = gqlCreateOrganization();
     $user = gqlCreateUser();
     gqlCreateMembership($user, $organization, 0);
@@ -80,7 +80,7 @@ it('only exposes active memberships on currentUser', function () {
         ->and($response->json('data.currentUser.memberships.0.organization.name'))->toBe('Acme Corp');
 })->group('ledger:gql:query:currentUser');
 
-it('returns unauthorized without a token', function () {
+it('returns unauthorized without a token', function (): void {
     $response = gqlPost(CURRENT_USER_QUERY);
 
     $error = $response->json('errors.0');
@@ -92,7 +92,7 @@ it('returns unauthorized without a token', function () {
         ]);
 })->group('ledger:gql:query:currentUser');
 
-it('treats an invalid token as unauthenticated outside local env', function () {
+it('treats an invalid token as unauthenticated outside local env', function (): void {
     $forged = JWT::encode(['sub' => 'nope', 'exp' => time() + 3600], 'other-secret-0123456789abcdef0123456789', 'HS256');
 
     $response = gqlPost(CURRENT_USER_QUERY, [], ['Authorization' => 'Bearer '.$forged]);
@@ -100,7 +100,7 @@ it('treats an invalid token as unauthenticated outside local env', function () {
     expect($response->json('errors.0.extensions.code'))->toBe('unauthorized');
 })->group('ledger:gql:query:currentUser');
 
-it('renders the expired_jwt_token envelope for an expired token', function () {
+it('renders the expired_jwt_token envelope for an expired token', function (): void {
     $organization = gqlCreateOrganization();
     $user = gqlCreateUser();
     gqlCreateMembership($user, $organization);
@@ -124,7 +124,7 @@ it('renders the expired_jwt_token envelope for an expired token', function () {
         ]);
 })->group('ledger:gql:query:currentUser');
 
-it('renews the token in the x-lago-token header when less than 1h remains', function () {
+it('renews the token in the x-lago-token header when less than 1h remains', function (): void {
     $organization = gqlCreateOrganization();
     $user = gqlCreateUser();
     gqlCreateMembership($user, $organization);
@@ -150,7 +150,7 @@ it('renews the token in the x-lago-token header when less than 1h remains', func
         ->and($payload['exp'])->toBeGreaterThanOrEqual(time() + AuthToken::THREE_HOURS - 2);
 })->group('ledger:gql:query:currentUser');
 
-it('does not renew a token with more than 1h remaining', function () {
+it('does not renew a token with more than 1h remaining', function (): void {
     $organization = gqlCreateOrganization();
     $user = gqlCreateUser();
     gqlCreateMembership($user, $organization);
@@ -162,7 +162,7 @@ it('does not renew a token with more than 1h remaining', function () {
     expect($response->headers->get(AuthToken::LAGO_TOKEN_HEADER))->toBeNull();
 })->group('ledger:gql:query:currentUser');
 
-it('retrieves the application version', function () {
+it('retrieves the application version', function (): void {
     $response = gqlPost('query { currentVersion { githubUrl number } }');
 
     $response->assertOk();

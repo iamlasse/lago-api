@@ -18,7 +18,7 @@ function updatablePlan(array $attributes = []): Plan
     return Plan::factory()->create($attributes);
 }
 
-it('updates the editable attributes of a plan', function () {
+it('updates the editable attributes of a plan', function (): void {
     $plan = updatablePlan();
 
     $result = UpdateService::call(plan: $plan, params: [
@@ -41,7 +41,7 @@ it('updates the editable attributes of a plan', function () {
         ->and($result->plan->amount_currency)->toBe('USD');
 })->group('ledger:svc:Plans.UpdateService');
 
-it('only allows the editable attributes when attached to a subscription', function () {
+it('only allows the editable attributes when attached to a subscription', function (): void {
     $plan = updatablePlan();
     $customer = App\Models\Customer::factory()->create(['organization_id' => $plan->organization_id]);
 
@@ -71,14 +71,14 @@ it('only allows the editable attributes when attached to a subscription', functi
         ->and($result->plan->amount_currency)->toBe('EUR');
 });
 
-it('fails when the plan is missing', function () {
+it('fails when the plan is missing', function (): void {
     $result = UpdateService::call(plan: null, params: []);
 
     expect($result->failure())->toBeTrue()
         ->and($result->getError())->toBeInstanceOf(NotFoundFailure::class);
 });
 
-it('creates, updates and destroys charges through the nested payload', function () {
+it('creates, updates and destroys charges through the nested payload', function (): void {
     $plan = updatablePlan();
     $metricA = BillableMetric::factory()->create(['organization_id' => $plan->organization_id, 'code' => 'metric-a']);
     $metricB = BillableMetric::factory()->create(['organization_id' => $plan->organization_id, 'code' => 'metric-b']);
@@ -120,7 +120,7 @@ it('creates, updates and destroys charges through the nested payload', function 
         ->and($charges['removed']->deleted_at)->not->toBeNull();
 });
 
-it('fails when nested charges reference an unknown billable metric', function () {
+it('fails when nested charges reference an unknown billable metric', function (): void {
     $plan = updatablePlan();
 
     $result = UpdateService::call(plan: $plan, params: [
@@ -133,7 +133,7 @@ it('fails when nested charges reference an unknown billable metric', function ()
         ->and($result->getError())->toBeInstanceOf(NotFoundFailure::class);
 });
 
-it('creates and destroys fixed charges through the nested payload', function () {
+it('creates and destroys fixed charges through the nested payload', function (): void {
     $plan = updatablePlan();
     $addOn = App\Models\AddOn::factory()->create(['organization_id' => $plan->organization_id]);
     $otherAddOn = App\Models\AddOn::factory()->create(['organization_id' => $plan->organization_id]);
@@ -167,7 +167,7 @@ it('creates and destroys fixed charges through the nested payload', function () 
     expect($destroyed)->toHaveCount(0);
 });
 
-it('cancels a pending downgrade subscription when the plan amount decreases below it', function () {
+it('cancels a pending downgrade subscription when the plan amount decreases below it', function (): void {
     $plan = updatablePlan(['amount_cents' => 200]);
     $customer = App\Models\Customer::factory()->create(['organization_id' => $plan->organization_id]);
 
@@ -207,7 +207,7 @@ it('cancels a pending downgrade subscription when the plan amount decreases belo
         ->and($pending->canceled_at)->not->toBeNull();
 });
 
-it('flags the organization draft invoices attached to the plan for refresh', function () {
+it('flags the organization draft invoices attached to the plan for refresh', function (): void {
     $plan = updatablePlan();
     $customer = App\Models\Customer::factory()->create(['organization_id' => $plan->organization_id]);
 

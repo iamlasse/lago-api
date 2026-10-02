@@ -26,11 +26,11 @@ function planForValidation(array $attributes = []): Plan
     ]);
 }
 
-it('validates a well-formed plan', function () {
+it('validates a well-formed plan', function (): void {
     expect(planForValidation()->validateAttributes())->toBe([]);
 });
 
-it('requires name, code, amount_cents and pay_in_advance', function () {
+it('requires name, code, amount_cents and pay_in_advance', function (): void {
     $plan = new Plan(['organization_id' => 1]);
 
     $errors = $plan->validateAttributes();
@@ -41,7 +41,7 @@ it('requires name, code, amount_cents and pay_in_advance', function () {
         ->and($errors['interval'])->toBe(['value_is_invalid']);
 });
 
-it('rejects a pay_in_advance that is not a boolean', function () {
+it('rejects a pay_in_advance that is not a boolean', function (): void {
     // Rails: validates :pay_in_advance, inclusion: {in: [true, false]} — nil
     // is invalid (AR would carry the schema default false, but an explicit
     // nil assignment is a validation error).
@@ -52,7 +52,7 @@ it('rejects a pay_in_advance that is not a boolean', function () {
     expect($plan->validateAttributes()['pay_in_advance'] ?? null)->toBe(['value_is_invalid']);
 });
 
-it('validates the amount currency against the ISO list', function () {
+it('validates the amount currency against the ISO list', function (): void {
     $plan = planForValidation(['amount_currency' => 'XXX']);
 
     expect($plan->validateAttributes()['amount_currency'] ?? null)->toBe(['value_is_invalid']);
@@ -62,7 +62,7 @@ it('validates the amount currency against the ISO list', function () {
     expect($valid->validateAttributes())->toBe([]);
 });
 
-it('computes yearly_amount_cents for upgrade/downgrade comparisons', function () {
+it('computes yearly_amount_cents for upgrade/downgrade comparisons', function (): void {
     expect(planForValidation(['interval' => 'yearly', 'amount_cents' => 1200])->yearlyAmountCents())->toBe(1200)
         ->and(planForValidation(['interval' => 'monthly', 'amount_cents' => 100])->yearlyAmountCents())->toBe(1200)
         ->and(planForValidation(['interval' => 'quarterly', 'amount_cents' => 300])->yearlyAmountCents())->toBe(1200)
@@ -70,7 +70,7 @@ it('computes yearly_amount_cents for upgrade/downgrade comparisons', function ()
         ->and(planForValidation(['interval' => 'weekly', 'amount_cents' => 23])->yearlyAmountCents())->toBe(1196);
 });
 
-it('reports child plans and does not validate code uniqueness for them', function () {
+it('reports child plans and does not validate code uniqueness for them', function (): void {
     $parent = Plan::factory()->create(['code' => 'parent-code']);
 
     $child = new Plan([
@@ -89,7 +89,7 @@ it('reports child plans and does not validate code uniqueness for them', functio
         ->and($child->validateAttributes())->toBe([]);
 });
 
-it('knows charge model enum positions', function () {
+it('knows charge model enum positions', function (): void {
     expect(ChargeModel::from(0)->label())->toBe('standard')
         ->and(ChargeModel::from(4)->label())->toBe('volume')
         ->and(ChargeModel::from(5)->label())->toBe('graduated_percentage')
@@ -115,68 +115,68 @@ function unsavedCharge(array $attributes, array $properties): Charge
     ]);
 }
 
-it('validates a well-formed charge', function () {
+it('validates a well-formed charge', function (): void {
     expect(unsavedCharge([], ['amount' => '10'])->validateAttributes())->toBe([]);
 });
 
-it('rejects a negative min_amount_cents', function () {
+it('rejects a negative min_amount_cents', function (): void {
     $charge = unsavedCharge(['min_amount_cents' => -5], ['amount' => '10']);
 
     expect($charge->validateAttributes()['min_amount_cents'] ?? null)->toBe(['value_is_out_of_range']);
 });
 
-it('rejects a positive min_amount_cents on pay_in_advance charges', function () {
+it('rejects a positive min_amount_cents on pay_in_advance charges', function (): void {
     $charge = unsavedCharge(['pay_in_advance' => true, 'min_amount_cents' => 5], ['amount' => '10']);
 
     expect($charge->validateAttributes()['min_amount_cents'] ?? null)->toBe(['not_compatible_with_pay_in_advance']);
 });
 
-it('rejects invoiceable false on pay-in-arrears charges', function () {
+it('rejects invoiceable false on pay-in-arrears charges', function (): void {
     $charge = unsavedCharge(['invoiceable' => false], ['amount' => '10']);
 
     expect($charge->validateAttributes()['invoiceable'] ?? null)->toBe(['must_be_true_unless_pay_in_advance']);
 });
 
-it('rejects regroup_paid_fees on invoiceable charges', function () {
+it('rejects regroup_paid_fees on invoiceable charges', function (): void {
     $charge = unsavedCharge(['regroup_paid_fees' => 0], ['amount' => '10']);
 
     expect($charge->validateAttributes()['regroup_paid_fees'] ?? null)
         ->toBe(['only_compatible_with_pay_in_advance_and_non_invoiceable']);
 });
 
-it('accepts regroup_paid_fees on pay_in_advance non-invoiceable charges', function () {
+it('accepts regroup_paid_fees on pay_in_advance non-invoiceable charges', function (): void {
     $charge = unsavedCharge(['pay_in_advance' => true, 'invoiceable' => false, 'regroup_paid_fees' => 0], ['amount' => '10']);
 
     expect($charge->validateAttributes()['regroup_paid_fees'] ?? null)->toBeNull();
 });
 
-it('rejects a charge with an unknown charge model position', function () {
+it('rejects a charge with an unknown charge model position', function (): void {
     $charge = unsavedCharge([], ['amount' => '10']);
     $charge->charge_model = 99;
 
     expect($charge->validateAttributes()['charge_model'] ?? null)->toBe(['value_is_invalid']);
 });
 
-it('requires a billable metric', function () {
+it('requires a billable metric', function (): void {
     $charge = unsavedCharge([], ['amount' => '10']);
     $charge->billable_metric_id = null;
 
     expect($charge->validateAttributes()['billable_metric'] ?? null)->toBe(['value_is_mandatory']);
 });
 
-it('flattens the property validator errors under properties', function () {
+it('flattens the property validator errors under properties', function (): void {
     $charge = unsavedCharge([], ['amount' => 'foo']);
 
     expect($charge->validateAttributes()['properties'] ?? null)->toBe(['invalid_amount']);
 });
 
-it('accepts a dynamic charge on a sum aggregation metric', function () {
+it('accepts a dynamic charge on a sum aggregation metric', function (): void {
     $charge = unsavedCharge(['charge_model' => 'dynamic'], []);
 
     expect($charge->validateAttributes())->toBe([]);
 });
 
-it('rejects a custom charge on a non-custom aggregation metric', function () {
+it('rejects a custom charge on a non-custom aggregation metric', function (): void {
     $charge = unsavedCharge(['charge_model' => 'custom'], []);
 
     expect($charge->validateAttributes()['charge_model'] ?? null)->toBe(['invalid_aggregation_type_or_charge_model']);

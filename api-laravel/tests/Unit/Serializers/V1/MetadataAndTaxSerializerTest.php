@@ -10,11 +10,11 @@ use Database\Factories\TaxFactory;
 use App\Serializers\V1\TaxSerializer;
 use App\Serializers\V1\Customers\MetadataSerializer;
 
-beforeEach(function () {
+beforeEach(function (): void {
     CurrentContext::reset();
 });
 
-it('serializes metadata', function () {
+it('serializes metadata', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
     $customer = Customer::factory()->for($organization)->create();
     $metadata = CustomerMetadata::factory()->for($customer)->create();
@@ -31,7 +31,7 @@ it('serializes metadata', function () {
     ]);
 })->group('ledger:ser:V1.Customers.MetadataSerializer');
 
-it('serializes taxes with stubbed counts', function () {
+it('serializes taxes with stubbed counts', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
     $tax = TaxFactory::new()->create(['organization_id' => $organization->id]);
 

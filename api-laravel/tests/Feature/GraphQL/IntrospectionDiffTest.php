@@ -29,7 +29,7 @@ use Illuminate\Support\Arr;
  */
 const WHITELISTED_MISSING_TYPES = ['GraphqlSubscription'];
 
-it('serves every type of the frozen schema', function () {
+it('serves every type of the frozen schema', function (): void {
     $surface = railsSchemaSurface();
     $served = servedSchemaSurface();
 
@@ -42,7 +42,7 @@ it('serves every type of the frozen schema', function () {
         ->and($extra)->toBe([], 'Types the served schema has that are not in the frozen schema');
 });
 
-it('serves every root query field of the frozen schema', function () {
+it('serves every root query field of the frozen schema', function (): void {
     $surface = railsSchemaSurface();
     $served = servedSchemaSurface();
 
@@ -52,7 +52,7 @@ it('serves every root query field of the frozen schema', function () {
         ->toBe([], 'Query fields the served schema adds over the frozen schema');
 });
 
-it('serves every root mutation field of the frozen schema', function () {
+it('serves every root mutation field of the frozen schema', function (): void {
     $surface = railsSchemaSurface();
     $served = servedSchemaSurface();
 
@@ -62,7 +62,7 @@ it('serves every root mutation field of the frozen schema', function () {
         ->toBe([], 'Mutation fields the served schema adds over the frozen schema');
 });
 
-it('drops the subscription root with the documented preprocessing', function () {
+it('drops the subscription root with the documented preprocessing', function (): void {
     $served = servedSchemaSurface();
 
     // The single subscription field (`aiConversationStreamed`) comes back
@@ -70,7 +70,7 @@ it('drops the subscription root with the documented preprocessing', function () 
     expect($served['subscriptionType'])->toBeNull();
 });
 
-it('keeps every implemented operation served and named after the frozen schema', function () {
+it('keeps every implemented operation served and named after the frozen schema', function (): void {
     // Regression guard for the operations ported so far — these must never
     // silently disappear from the served schema.
     $served = servedSchemaSurface();

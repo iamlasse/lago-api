@@ -16,7 +16,7 @@ use App\Services\Webhooks\Subscriptions\TerminatedService;
  * Port of the "creates webhook" shared example for the subscription builders
  * (spec/services/webhooks/subscriptions/*_service_spec.rb).
  */
-beforeEach(function () {
+beforeEach(function (): void {
     Queue::fake();
 
     $this->organization = Organization::factory()->withoutWebhookEndpoint()->create();
@@ -24,7 +24,7 @@ beforeEach(function () {
     $this->subscription = Subscription::factory()->for($this->organization)->create();
 });
 
-it('creates a subscription.started webhook', function () {
+it('creates a subscription.started webhook', function (): void {
     StartedService::call(object: $this->subscription);
 
     $webhook = Webhook::query()->latest('created_at')->first();
@@ -40,7 +40,7 @@ it('creates a subscription.started webhook', function () {
     Queue::assertPushed(App\Jobs\SendHttpWebhookJob::class, 1);
 });
 
-it('creates a subscription.updated webhook', function () {
+it('creates a subscription.updated webhook', function (): void {
     UpdatedService::call(object: $this->subscription);
 
     $payload = Webhook::query()->latest('created_at')->first()->payload;
@@ -50,7 +50,7 @@ it('creates a subscription.updated webhook', function () {
         ->and($payload['subscription']['lago_id'])->toBe($this->subscription->id);
 });
 
-it('creates a subscription.terminated webhook', function () {
+it('creates a subscription.terminated webhook', function (): void {
     TerminatedService::call(object: $this->subscription);
 
     $payload = Webhook::query()->latest('created_at')->first()->payload;
@@ -60,7 +60,7 @@ it('creates a subscription.terminated webhook', function () {
         ->and($payload['subscription']['lago_id'])->toBe($this->subscription->id);
 });
 
-it('creates a subscription.canceled webhook', function () {
+it('creates a subscription.canceled webhook', function (): void {
     CanceledService::call(object: $this->subscription);
 
     $payload = Webhook::query()->latest('created_at')->first()->payload;

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
@@ -11,7 +13,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * the frozen `invoices_taxes` snapshot rows written when invoice-level
  * taxes are computed.
  */
-#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+#[Fillable([
     'invoice_id',
     'tax_id',
     'tax_description',
@@ -24,7 +26,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
     'taxable_base_amount_cents',
     'organization_id',
 ])]
-#[\Illuminate\Database\Eloquent\Attributes\Table(name: 'invoices_taxes')]
+#[Table(name: 'invoices_taxes')]
 class InvoiceAppliedTax extends BaseModel
 {
     use HasFactory;

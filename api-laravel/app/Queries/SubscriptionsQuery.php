@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Queries;
 
+use App\Models\Plan;
 use App\Models\Customer;
 use App\Models\Organization;
 use App\Models\Subscription;
-use App\Enums\SubscriptionStatus;
 use App\Services\BaseResult;
 use App\Services\BaseService;
+use App\Enums\SubscriptionStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
@@ -145,8 +146,9 @@ class SubscriptionsQuery extends BaseService
             return null;
         }
 
-        return $scope->join('plans', 'plans.id', '=', 'subscriptions.plan_id')
-            ->where('plans.code', $planCode);
+        return $scope->whereIn('subscriptions.plan_id', Plan::query()
+            ->where('code', $planCode)
+            ->select('id'));
     }
 
     /**
@@ -162,13 +164,15 @@ class SubscriptionsQuery extends BaseService
             return null;
         }
 
-        $scope = $scope->join('plans', 'plans.id', '=', 'subscriptions.plan_id');
-
         if ($this->booleanCast($filter)) {
-            return $scope->whereNotNull('plans.parent_id');
+            return $scope->whereIn('subscriptions.plan_id', Plan::query()
+                ->whereNotNull('parent_id')
+                ->select('id'));
         }
 
-        return $scope->whereNull('plans.parent_id');
+        return $scope->whereIn('subscriptions.plan_id', Plan::query()
+            ->whereNull('parent_id')
+            ->select('id'));
     }
 
     private function withCurrency(Builder $scope): ?Builder
@@ -179,13 +183,16 @@ class SubscriptionsQuery extends BaseService
             return null;
         }
 
-        return $scope->join('plans', 'plans.id', '=', 'subscriptions.plan_id')
-            ->where('plans.amount_currency', $currency);
+        return $scope->whereIn('subscriptions.plan_id', Plan::query()
+            ->where('amount_currency', $currency)
+            ->select('id'));
     }
 
     /**
      * Rails: `with_billing_entity_ids` — the subscription's own stamp wins;
      * rows without one fall back to their customer's billing entity.
+     * (Rails expresses the fallback with a customers JOIN; the same OR is
+     * written as a subquery so repeated filters cannot double-join.)
      */
     private function withBillingEntityIds(Builder $scope): ?Builder
     {
@@ -195,11 +202,10 @@ class SubscriptionsQuery extends BaseService
             return null;
         }
 
-        return $scope->join('customers', 'customers.id', '=', 'subscriptions.customer_id')
-            ->whereRaw(
-                '(subscriptions.billing_entity_id in (?) or (subscriptions.billing_entity_id is null and customers.billing_entity_id in (?)))',
-                [$billingEntityIds, $billingEntityIds],
-            );
+        return $scope->whereRaw(
+            '(subscriptions.billing_entity_id in (?) or subscriptions.customer_id in (select id from customers where billing_entity_id in (?)))',
+            [$billingEntityIds, $billingEntityIds],
+        );
     }
 
     /**

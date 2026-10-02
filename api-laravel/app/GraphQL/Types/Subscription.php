@@ -6,8 +6,8 @@ namespace App\GraphQL\Types;
 
 use App\Enums\BillingTime;
 use App\Models\Plan as PlanModel;
-use App\Models\Subscription as SubscriptionModel;
 use App\Services\Subscriptions\DatesService;
+use App\Models\Subscription as SubscriptionModel;
 
 /**
  * Field resolvers for the frozen SDL's `Subscription` type (port of Rails'

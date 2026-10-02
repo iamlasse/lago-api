@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use App\Models\Fee;
-use App\Models\FeeAppliedTax;
 use App\Models\Tax;
+use App\Models\FeeAppliedTax;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

@@ -19,7 +19,7 @@ use App\Services\Subscriptions\DatesService;
  */
 class CreateInvoiceSubscriptionService extends \App\Services\BaseService
 {
-    private array $cachedBoundaries = [];
+    private ?array $cachedBoundaries = null;
 
     public function __construct(
         private readonly Invoice $invoice,
@@ -46,7 +46,7 @@ class CreateInvoiceSubscriptionService extends \App\Services\BaseService
             $subscriptionBoundaries = $this->subscriptionsBoundaries()[$subscription->id];
             $boundaries = $this->terminationBoundaries($subscription, $subscriptionBoundaries);
 
-            $result->invoice_subscriptions[] = InvoiceSubscription::query()->create([
+            $row = InvoiceSubscription::query()->create([
                 'organization_id' => $subscription->organization_id,
                 'invoice_id' => $this->invoice->id,
                 'subscription_id' => $subscription->id,
@@ -60,6 +60,8 @@ class CreateInvoiceSubscriptionService extends \App\Services\BaseService
                 'recurring' => $this->invoicingReason === 'subscription_periodic',
                 'invoicing_reason' => $this->invoicingReasonForSubscription($subscription),
             ]);
+
+            $result->invoice_subscriptions = array_merge($result->invoice_subscriptions, [$row]);
         }
 
         return $result;
@@ -124,7 +126,7 @@ class CreateInvoiceSubscriptionService extends \App\Services\BaseService
     /** @return array<string, BillingPeriodBoundaries> keyed by subscription id */
     private function subscriptionsBoundaries(): array
     {
-        if (isset($this->cachedBoundaries)) {
+        if ($this->cachedBoundaries !== null) {
             return $this->cachedBoundaries;
         }
 

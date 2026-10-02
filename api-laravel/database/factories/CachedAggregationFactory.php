@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Models\CachedAggregation;
 use App\Models\Charge;
+use App\Models\CachedAggregation;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

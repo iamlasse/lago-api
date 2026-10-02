@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Illuminate\Support\Collection;
-use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Concerns\BelongsToOrganization;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -19,7 +21,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * refined with the Rails Tax model's relations, scopes, domain methods and
  * validations.
  */
-#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+#[Fillable([
     'organization_id',
     'description',
     'code',
@@ -28,7 +30,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
     'applied_to_organization',
     'auto_generated',
 ])]
-#[\Illuminate\Database\Eloquent\Attributes\Table(name: 'taxes')]
+#[Table(name: 'taxes')]
 class Tax extends BaseModel
 {
     use BelongsToOrganization;
@@ -68,28 +70,6 @@ class Tax extends BaseModel
     {
         return $this->belongsToMany(Customer::class, 'customers_taxes', 'tax_id', 'customer_id')
             ->whereNull('customers.deleted_at');
-    }
-
-    // -- Scopes ---------------------------------------------------------------
-
-    /** Rails: `scope :applied_to_organization`. */
-    #[Scope]
-    protected function appliedToOrganization(Builder $query): Builder
-    {
-        return $query->where('applied_to_organization', true);
-    }
-
-    /**
-     * Rails: `scope :applied_to_billing_entity` — taxes attached to the
-     * billing entity through the `billing_entities_taxes` join (no model for
-     * the join table yet — queried directly).
-     */
-    #[Scope]
-    protected function appliedToBillingEntity(Builder $query, BillingEntity $billingEntity): Builder
-    {
-        return $query->whereIn('id', static::billingEntitiesTaxes()
-            ->where('billing_entity_id', $billingEntity->id)
-            ->select('tax_id'));
     }
 
     // -- Domain methods (ports of the Rails instance methods) ------------------
@@ -204,5 +184,27 @@ class Tax extends BaseModel
     protected static function billingEntitiesTaxes(): \Illuminate\Database\Query\Builder
     {
         return \Illuminate\Support\Facades\DB::table('billing_entities_taxes');
+    }
+
+    // -- Scopes ---------------------------------------------------------------
+
+    /** Rails: `scope :applied_to_organization`. */
+    #[Scope]
+    protected function appliedToOrganization(Builder $query): Builder
+    {
+        return $query->where('applied_to_organization', true);
+    }
+
+    /**
+     * Rails: `scope :applied_to_billing_entity` — taxes attached to the
+     * billing entity through the `billing_entities_taxes` join (no model for
+     * the join table yet — queried directly).
+     */
+    #[Scope]
+    protected function appliedToBillingEntity(Builder $query, BillingEntity $billingEntity): Builder
+    {
+        return $query->whereIn('id', static::billingEntitiesTaxes()
+            ->where('billing_entity_id', $billingEntity->id)
+            ->select('tax_id'));
     }
 }

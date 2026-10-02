@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Models\AdjustedFee;
 use App\Models\Invoice;
-use App\Models\Subscription;
+use App\Models\AdjustedFee;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

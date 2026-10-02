@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Attributes\Scope;
-
 use App\Models\Casts\JsonbProperties;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Concerns\BelongsToOrganization;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
@@ -21,7 +22,7 @@ use App\Services\Charges\Validators\ChargeModelPropertiesValidator;
  * NOTE: `charge_model` is a NATIVE Postgres enum storing the strings
  * 'standard' | 'graduated' | 'volume' — not an integer like charges.
  */
-#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+#[Fillable([
     'organization_id',
     'plan_id',
     'add_on_id',
@@ -34,7 +35,7 @@ use App\Services\Charges\Validators\ChargeModelPropertiesValidator;
     'units',
     'code',
 ])]
-#[\Illuminate\Database\Eloquent\Attributes\Table(name: 'fixed_charges')]
+#[Table(name: 'fixed_charges')]
 class FixedCharge extends BaseModel
 {
     use BelongsToOrganization;
@@ -90,15 +91,6 @@ class FixedCharge extends BaseModel
             'id',
             'tax_id',
         );
-    }
-
-    // -- Enum helpers (Rails enum suffix methods) -------------------------------
-
-    /** Rails: `scope :parents, -> { where(parent_id: nil) }`. */
-    #[Scope]
-    protected function parents(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
-    {
-        return $query->whereNull('parent_id');
     }
 
     public function standard(): bool
@@ -220,6 +212,15 @@ class FixedCharge extends BaseModel
         }
 
         return $errors;
+    }
+
+    // -- Enum helpers (Rails enum suffix methods) -------------------------------
+
+    /** Rails: `scope :parents, -> { where(parent_id: nil) }`. */
+    #[Scope]
+    protected function parents(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    {
+        return $query->whereNull('parent_id');
     }
 
     protected function casts(): array

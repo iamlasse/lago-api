@@ -14,67 +14,67 @@ function packageValidator(array $properties): PackageService
     return new PackageService(chargeForValidation($properties, 'package'));
 }
 
-it('is valid with well-formed package properties', function () {
+it('is valid with well-formed package properties', function (): void {
     $validator = packageValidator(['amount' => '100', 'free_units' => 10, 'package_size' => 10]);
 
     expect($validator->valid())->toBeTrue();
 });
 
-it('is invalid without amount', function () {
+it('is invalid without amount', function (): void {
     $validator = packageValidator(['free_units' => 10, 'package_size' => 10]);
 
     expectPropertyError($validator, 'amount', 'invalid_amount');
 });
 
-it('is invalid when the amount is not numeric', function () {
+it('is invalid when the amount is not numeric', function (): void {
     $validator = packageValidator(['amount' => 'foo', 'free_units' => 10, 'package_size' => 10]);
 
     expectPropertyError($validator, 'amount', 'invalid_amount');
 });
 
-it('is invalid with a negative amount', function () {
+it('is invalid with a negative amount', function (): void {
     $validator = packageValidator(['amount' => '-10', 'free_units' => 10, 'package_size' => 10]);
 
     expectPropertyError($validator, 'amount', 'invalid_amount');
 });
 
-it('is invalid without a package size', function () {
+it('is invalid without a package size', function (): void {
     $validator = packageValidator(['amount' => '100', 'free_units' => 10]);
 
     expectPropertyError($validator, 'package_size', 'invalid_package_size');
 });
 
-it('is invalid when the package size is not numeric', function () {
+it('is invalid when the package size is not numeric', function (): void {
     $validator = packageValidator(['amount' => '100', 'free_units' => 10, 'package_size' => 'foo']);
 
     expectPropertyError($validator, 'package_size', 'invalid_package_size');
 });
 
-it('is invalid with a negative package size', function () {
+it('is invalid with a negative package size', function (): void {
     $validator = packageValidator(['amount' => '100', 'free_units' => 10, 'package_size' => -10]);
 
     expectPropertyError($validator, 'package_size', 'invalid_package_size');
 });
 
-it('is invalid with a zero package size', function () {
+it('is invalid with a zero package size', function (): void {
     $validator = packageValidator(['amount' => '100', 'free_units' => 10, 'package_size' => 0]);
 
     expectPropertyError($validator, 'package_size', 'invalid_package_size');
 });
 
-it('is invalid without free units', function () {
+it('is invalid without free units', function (): void {
     $validator = packageValidator(['amount' => '100', 'package_size' => 10]);
 
     expectPropertyError($validator, 'free_units', 'invalid_free_units');
 });
 
-it('is invalid when the free units are not numeric', function () {
+it('is invalid when the free units are not numeric', function (): void {
     $validator = packageValidator(['amount' => '100', 'free_units' => 'foo', 'package_size' => 10]);
 
     expectPropertyError($validator, 'free_units', 'invalid_free_units');
 });
 
-it('is invalid with negative free units', function () {
+it('is invalid with negative free units', function (): void {
     $validator = packageValidator(['amount' => '100', 'free_units' => -10, 'package_size' => 10]);
 
     expectPropertyError($validator, 'free_units', 'invalid_free_units');

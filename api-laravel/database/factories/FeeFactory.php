@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Enums\FeePaymentStatus;
-use App\Enums\FeeType;
 use App\Models\Fee;
+use App\Enums\FeeType;
 use App\Models\Invoice;
 use App\Models\Subscription;
+use App\Enums\FeePaymentStatus;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

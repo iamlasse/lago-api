@@ -11,7 +11,7 @@ use App\Services\Failures\NotFoundFailure;
 use App\Services\Failures\ValidationFailure;
 use App\Services\Customers\UpsertFromApiService;
 
-beforeEach(function () {
+beforeEach(function (): void {
     CurrentContext::reset();
     CurrentContext::$source = 'api';
 });
@@ -33,7 +33,7 @@ function upsertArgs(string $externalId): array
     ];
 }
 
-it('creates a new customer on the default billing entity', function () {
+it('creates a new customer on the default billing entity', function (): void {
     [$organization, $externalId] = upsertContext();
 
     $result = UpsertFromApiService::call(organization: $organization, params: upsertArgs($externalId));
@@ -48,7 +48,7 @@ it('creates a new customer on the default billing entity', function () {
         ->and($customer->currency)->toBe('EUR');
 })->group('ledger:svc:Customers.UpsertFromApiService');
 
-it('updates the existing customer when external_id already exists', function () {
+it('updates the existing customer when external_id already exists', function (): void {
     [$organization, $externalId] = upsertContext();
 
     $existing = Customer::factory()->for($organization)->create([
@@ -67,7 +67,7 @@ it('updates the existing customer when external_id already exists', function () 
         ->and(Customer::query()->where('external_id', $externalId)->count())->toBe(1);
 });
 
-it('only assigns attributes present in the params on update', function () {
+it('only assigns attributes present in the params on update', function (): void {
     [$organization, $externalId] = upsertContext();
 
     $existing = Customer::factory()->for($organization)->create([
@@ -92,7 +92,7 @@ it('only assigns attributes present in the params on update', function () {
         ->and($result->customer->fresh()->legal_name)->toBe('Original Corp');
 });
 
-it('defaults finalize_zero_amount_invoice to inherit when present but nil', function () {
+it('defaults finalize_zero_amount_invoice to inherit when present but nil', function (): void {
     [$organization, $externalId] = upsertContext();
 
     $existing = Customer::factory()->for($organization)->create(['external_id' => $externalId]);
@@ -114,7 +114,7 @@ it('defaults finalize_zero_amount_invoice to inherit when present but nil', func
         ->and($result->customer->fresh()->finalize_zero_amount_invoice->label())->toBe('inherit');
 });
 
-it('rejects an invalid finalize_zero_amount_invoice value', function () {
+it('rejects an invalid finalize_zero_amount_invoice value', function (): void {
     [$organization, $externalId] = upsertContext();
 
     $result = UpsertFromApiService::call(
@@ -126,7 +126,7 @@ it('rejects an invalid finalize_zero_amount_invoice value', function () {
         ->and($result->getError()->messages)->toBe(['finalize_zero_amount_invoice' => ['invalid_value']]);
 });
 
-it('rejects more than five metadata entries', function () {
+it('rejects more than five metadata entries', function (): void {
     [$organization, $externalId] = upsertContext();
 
     $metadata = collect(range(1, 6))->map(fn ($i) => ['key' => "k$i", 'value' => 'v'])->all();
@@ -140,7 +140,7 @@ it('rejects more than five metadata entries', function () {
         ->and($result->getError()->messages)->toBe(['metadata' => ['invalid_count']]);
 });
 
-it('creates metadata for a new customer', function () {
+it('creates metadata for a new customer', function (): void {
     [$organization, $externalId] = upsertContext();
 
     $result = UpsertFromApiService::call(
@@ -153,7 +153,7 @@ it('creates metadata for a new customer', function () {
         ->and($result->customer->metadata()->first()->key)->toBe('k1');
 });
 
-it('upserts metadata on an existing customer and removes removed keys', function () {
+it('upserts metadata on an existing customer and removes removed keys', function (): void {
     [$organization, $externalId] = upsertContext();
 
     $existing = Customer::factory()->for($organization)->create(['external_id' => $externalId]);
@@ -180,7 +180,7 @@ it('upserts metadata on an existing customer and removes removed keys', function
         ->and($result->customer->metadata()->where('key', 'old')->first()->value)->toBe('updated');
 });
 
-it('rejects duplicated integration customer types', function () {
+it('rejects duplicated integration customer types', function (): void {
     [$organization, $externalId] = upsertContext();
 
     $result = UpsertFromApiService::call(
@@ -197,7 +197,7 @@ it('rejects duplicated integration customer types', function () {
         ]);
 });
 
-it('fails when the organization has no active billing entity', function () {
+it('fails when the organization has no active billing entity', function (): void {
     [$organization, $externalId] = upsertContext();
 
     Illuminate\Support\Facades\DB::table('billing_entities')
@@ -211,7 +211,7 @@ it('fails when the organization has no active billing entity', function () {
         ->and($result->getError()->resource)->toBe('billing_entity');
 });
 
-it('resolves the billing entity by code when provided', function () {
+it('resolves the billing entity by code when provided', function (): void {
     [$organization, $externalId] = upsertContext();
     $entity2 = BillingEntity::factory()->for($organization)->create();
 
@@ -224,7 +224,7 @@ it('resolves the billing entity by code when provided', function () {
         ->and($result->customer->billing_entity_id)->toBe($entity2->id);
 });
 
-it('changes the billing entity on update and carries over non eu taxes', function () {
+it('changes the billing entity on update and carries over non eu taxes', function (): void {
     [$organization, $externalId] = upsertContext();
     $entity2 = BillingEntity::factory()->for($organization)->create();
 
@@ -243,7 +243,7 @@ it('changes the billing entity on update and carries over non eu taxes', functio
         ->and($result->customer->taxes()->pluck('code')->all())->toBe(['custom-tax']);
 });
 
-it('fails on a validation error', function () {
+it('fails on a validation error', function (): void {
     [$organization] = upsertContext();
 
     $result = UpsertFromApiService::call(
@@ -256,7 +256,7 @@ it('fails on a validation error', function () {
         ->and($result->getError()->messages['external_id'])->toBe(['value_is_mandatory']);
 });
 
-it('applies eu auto taxes with the requested tax codes', function () {
+it('applies eu auto taxes with the requested tax codes', function (): void {
     [$organization, $externalId] = upsertContext();
     $organization->defaultBillingEntity->update(['eu_tax_management' => true, 'country' => 'DE']);
 
@@ -268,7 +268,7 @@ it('applies eu auto taxes with the requested tax codes', function () {
         ->and($result->customer->taxes()->pluck('code')->all())->toBe(['lago_eu_de_standard']);
 });
 
-it('upcases country and shipping country values', function () {
+it('upcases country and shipping country values', function (): void {
     [$organization, $externalId] = upsertContext();
 
     $result = UpsertFromApiService::call(

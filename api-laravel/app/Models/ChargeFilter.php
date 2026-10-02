@@ -8,7 +8,9 @@ use App\Models\Casts\JsonbProperties;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Concerns\BelongsToOrganization;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
@@ -17,14 +19,14 @@ use App\Services\Charges\Validators\ChargeModelPropertiesValidator;
 /**
  * Frozen-schema model for `charge_filters` (Rails' ChargeFilter).
  */
-#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+#[Fillable([
     'charge_id',
     'properties',
     'invoice_display_name',
     'organization_id',
     'code',
 ])]
-#[\Illuminate\Database\Eloquent\Attributes\Table(name: 'charge_filters')]
+#[Table(name: 'charge_filters')]
 class ChargeFilter extends BaseModel
 {
     use BelongsToOrganization;

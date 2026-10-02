@@ -14,11 +14,11 @@ use Database\Factories\TaxFactory;
 use Illuminate\Support\Facades\DB;
 use Database\Factories\CustomerTaxFactory;
 
-beforeEach(function () {
+beforeEach(function (): void {
     CurrentContext::reset();
 });
 
-it('creates an organization with a default billing entity, api key and webhook endpoint', function () {
+it('creates an organization with a default billing entity, api key and webhook endpoint', function (): void {
     $organization = Organization::factory()->create();
 
     expect($organization->billingEntities()->count())->toBe(1)
@@ -36,7 +36,7 @@ it('creates an organization with a default billing entity, api key and webhook e
         ->and($organization->default_currency)->toBe('USD');
 });
 
-it('creates a customer attached to the organization default billing entity', function () {
+it('creates a customer attached to the organization default billing entity', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
     $customer = Customer::factory()->for($organization)->create();
 
@@ -46,7 +46,7 @@ it('creates a customer attached to the organization default billing entity', fun
         ->and($customer->slug)->toBe($organization->document_number_prefix.'-001');
 });
 
-it('creates supporting records', function () {
+it('creates supporting records', function (): void {
     $user = User::factory()->create();
     $membership = Membership::factory()->for($user)->create();
     $metadata = CustomerMetadata::factory()->create();
@@ -62,10 +62,10 @@ it('creates supporting records', function () {
         ->and(ApiKey::first()->permissions)->not->toBeNull();
 });
 
-it('creates customers inside a nested transaction', function () {
+it('creates customers inside a nested transaction', function (): void {
     CurrentContext::$organization = Organization::factory()->create();
 
-    DB::transaction(function () {
+    DB::transaction(function (): void {
         Customer::factory()->count(2)->create();
     });
 

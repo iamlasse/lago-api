@@ -29,7 +29,7 @@ function gqlMakeApiKey(Organization $organization, array $attributes = []): ApiK
     return ApiKey::factory()->create(['organization_id' => $organization->id, ...$attributes]);
 }
 
-it('lists the organization api keys with sanitized values and kaminari metadata', function () {
+it('lists the organization api keys with sanitized values and kaminari metadata', function (): void {
     [$organization, $user] = gqlApiKeysSetup();
 
     $first = gqlMakeApiKey($organization, ['created_at' => now()->subDay()]);
@@ -59,7 +59,7 @@ it('lists the organization api keys with sanitized values and kaminari metadata'
         ->and($payload['collection'][0]['value'])->toBe('••••••••'.mb_substr($second->value, -3));
 })->group('ledger:gql:query:apiKeys');
 
-it('hides expired api keys like the Rails default_scope :active', function () {
+it('hides expired api keys like the Rails default_scope :active', function (): void {
     [$organization, $user] = gqlApiKeysSetup();
 
     gqlMakeApiKey($organization, ['expires_at' => now()->subHour()]);
@@ -74,7 +74,7 @@ it('hides expired api keys like the Rails default_scope :active', function () {
         ->and($response->json('data.apiKeys.collection'))->toBe([]);
 })->group('ledger:gql:query:apiKeys');
 
-it('returns a single api key and the not_found envelope for unknown ids', function () {
+it('returns a single api key and the not_found envelope for unknown ids', function (): void {
     [$organization, $user] = gqlApiKeysSetup();
 
     $apiKey = gqlMakeApiKey($organization);

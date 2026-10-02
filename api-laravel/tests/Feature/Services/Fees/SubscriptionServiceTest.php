@@ -10,17 +10,17 @@ use App\Services\Fees\SubscriptionService;
  * Port of spec/services/fees/subscription_service_spec.rb (proration cases).
  * amount = billed_days * (plan_amount / period_days), Ruby-rounded.
  */
-it('prorates the first subscription fee over the billed days', function () {
-    $organization = \App\Models\Organization::factory()->create();
-    $customer = \App\Models\Customer::factory()->create(['organization_id' => $organization->id]);
-    $plan = \App\Models\Plan::factory()->create([
+it('prorates the first subscription fee over the billed days', function (): void {
+    $organization = App\Models\Organization::factory()->create();
+    $customer = App\Models\Customer::factory()->create(['organization_id' => $organization->id]);
+    $plan = App\Models\Plan::factory()->create([
         'organization_id' => $organization->id,
         'amount_cents' => 1000,
         'amount_currency' => 'EUR',
         'interval' => 'monthly',
         'pay_in_advance' => false,
     ]);
-    $subscription = \App\Models\Subscription::factory()->create([
+    $subscription = App\Models\Subscription::factory()->create([
         'customer_id' => $customer->id,
         'plan_id' => $plan->id,
         'organization_id' => $organization->id,
@@ -30,22 +30,22 @@ it('prorates the first subscription fee over the billed days', function () {
         'activated_at' => '2024-07-01 00:00:00',
         'subscription_at' => '2024-07-01 00:00:00',
     ]);
-    $invoice = \App\Models\Invoice::factory()->create([
+    $invoice = App\Models\Invoice::factory()->create([
         'organization_id' => $organization->id,
         'customer_id' => $customer->id,
-        'status' => \App\Enums\InvoiceStatus::Generating,
+        'status' => App\Enums\InvoiceStatus::Generating,
         'currency' => 'EUR',
         'created_at' => '2024-07-04 10:00:00',
     ]);
 
     // Boundaries of the first period: from subscription start to the billing date.
     $boundaries = new BillingPeriodBoundaries(
-        fromDatetime: \Carbon\CarbonImmutable::parse('2024-07-01 00:00:00', 'UTC'),
-        toDatetime: \Carbon\CarbonImmutable::parse('2024-07-04 00:00:00', 'UTC'),
-        chargesFromDatetime: \Carbon\CarbonImmutable::parse('2024-07-01 00:00:00', 'UTC'),
-        chargesToDatetime: \Carbon\CarbonImmutable::parse('2024-07-04 00:00:00', 'UTC'),
+        fromDatetime: Carbon\CarbonImmutable::parse('2024-07-01 00:00:00', 'UTC'),
+        toDatetime: Carbon\CarbonImmutable::parse('2024-07-04 00:00:00', 'UTC'),
+        chargesFromDatetime: Carbon\CarbonImmutable::parse('2024-07-01 00:00:00', 'UTC'),
+        chargesToDatetime: Carbon\CarbonImmutable::parse('2024-07-04 00:00:00', 'UTC'),
         chargesDuration: 31,
-        timestamp: \Carbon\CarbonImmutable::parse('2024-07-04 00:00:00', 'UTC'),
+        timestamp: Carbon\CarbonImmutable::parse('2024-07-04 00:00:00', 'UTC'),
     );
 
     $result = SubscriptionService::call(
@@ -61,18 +61,18 @@ it('prorates the first subscription fee over the billed days', function () {
     // Contract: amount = days_to_bill × single_day_price, Ruby-rounded
     // half-away-from-zero. Rails adds 1 second to a day-aligned `to` and
     // ceils — July 1 → July 4 counts 4 days.
-    $dateService = \App\Services\Subscriptions\DatesService::newInstance(
+    $dateService = App\Services\Subscriptions\DatesService::newInstance(
         $subscription,
-        \Carbon\CarbonImmutable::parse('2024-07-04 00:00:00', 'UTC'),
+        Carbon\CarbonImmutable::parse('2024-07-04 00:00:00', 'UTC'),
     );
-    $days = \App\Support\Utils\Datetime::dateDiffWithTimezone(
+    $days = App\Support\Utils\Datetime::dateDiffWithTimezone(
         $boundaries->fromDatetime,
         $boundaries->toDatetime,
         'UTC',
     );
 
     expect($fee->amount_cents)->toBe(
-        \App\Support\MoneyMath::round((string) ($days * $dateService->singleDayPrice())),
+        App\Support\MoneyMath::round((string) ($days * $dateService->singleDayPrice())),
     )
         ->and($days)->toBe(4)
         ->and($fee->typeEnum())->toBe(FeeType::Subscription)
@@ -86,21 +86,21 @@ it('prorates the first subscription fee over the billed days', function () {
     expect((float) $fee->precise_unit_amount)->toBe($fee->amount_cents / 100);
 });
 
-it('returns the existing fee instead of double billing (already_billed?)', function () {
-    $organization = \App\Models\Organization::factory()->create();
-    $customer = \App\Models\Customer::factory()->create(['organization_id' => $organization->id]);
-    $plan = \App\Models\Plan::factory()->create(['organization_id' => $organization->id]);
-    $subscription = \App\Models\Subscription::factory()->create([
+it('returns the existing fee instead of double billing (already_billed?)', function (): void {
+    $organization = App\Models\Organization::factory()->create();
+    $customer = App\Models\Customer::factory()->create(['organization_id' => $organization->id]);
+    $plan = App\Models\Plan::factory()->create(['organization_id' => $organization->id]);
+    $subscription = App\Models\Subscription::factory()->create([
         'customer_id' => $customer->id,
         'plan_id' => $plan->id,
         'organization_id' => $organization->id,
     ]);
-    $invoice = \App\Models\Invoice::factory()->create([
+    $invoice = App\Models\Invoice::factory()->create([
         'organization_id' => $organization->id,
         'customer_id' => $customer->id,
     ]);
 
-    $existing = \App\Models\Fee::factory()->create([
+    $existing = App\Models\Fee::factory()->create([
         'invoice_id' => $invoice->id,
         'subscription_id' => $subscription->id,
         'fee_type' => FeeType::Subscription,
@@ -108,12 +108,12 @@ it('returns the existing fee instead of double billing (already_billed?)', funct
     ]);
 
     $boundaries = new BillingPeriodBoundaries(
-        fromDatetime: \Carbon\CarbonImmutable::parse('2024-07-01 00:00:00', 'UTC'),
-        toDatetime: \Carbon\CarbonImmutable::parse('2024-08-01 00:00:00', 'UTC'),
-        chargesFromDatetime: \Carbon\CarbonImmutable::parse('2024-07-01 00:00:00', 'UTC'),
-        chargesToDatetime: \Carbon\CarbonImmutable::parse('2024-08-01 00:00:00', 'UTC'),
+        fromDatetime: Carbon\CarbonImmutable::parse('2024-07-01 00:00:00', 'UTC'),
+        toDatetime: Carbon\CarbonImmutable::parse('2024-08-01 00:00:00', 'UTC'),
+        chargesFromDatetime: Carbon\CarbonImmutable::parse('2024-07-01 00:00:00', 'UTC'),
+        chargesToDatetime: Carbon\CarbonImmutable::parse('2024-08-01 00:00:00', 'UTC'),
         chargesDuration: 31,
-        timestamp: \Carbon\CarbonImmutable::parse('2024-07-31 00:00:00', 'UTC'),
+        timestamp: Carbon\CarbonImmutable::parse('2024-07-31 00:00:00', 'UTC'),
     );
 
     $result = SubscriptionService::call(

@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Port of Rails' Credit (app/models/credit.rb) — invoice credits from
  * coupons, progressive billing, credit notes and prepaid wallets.
  */
-#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+#[Fillable([
     'invoice_id',
     'applied_coupon_id',
     'amount_cents',
@@ -20,7 +22,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
     'progressive_billing_invoice_id',
     'organization_id',
 ])]
-#[\Illuminate\Database\Eloquent\Attributes\Table(name: 'credits')]
+#[Table(name: 'credits')]
 class Credit extends BaseModel
 {
     use HasFactory;

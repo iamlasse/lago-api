@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 use App\Services\Failures\NotFoundFailure;
 use App\Services\BillableMetrics\DestroyService;
 
-beforeEach(function () {
+beforeEach(function (): void {
     CurrentContext::reset();
 });
 
@@ -62,7 +62,7 @@ function draftInvoiceForPlan(object $organization, string $planId): string
     return $invoiceId;
 }
 
-it('soft deletes the billable metric', function () {
+it('soft deletes the billable metric', function (): void {
     [, $metric] = destroyMetricFixture();
 
     $result = DestroyService::call(metric: $metric);
@@ -72,7 +72,7 @@ it('soft deletes the billable metric', function () {
         ->and($metric->fresh()->trashed())->toBeTrue();
 })->group('ledger:svc:BillableMetrics.DestroyService');
 
-it('soft deletes the related charges', function () {
+it('soft deletes the related charges', function (): void {
     [, $metric, , $chargeId] = destroyMetricFixture();
 
     DestroyService::call(metric: $metric);
@@ -80,7 +80,7 @@ it('soft deletes the related charges', function () {
     expect(DB::table('charges')->where('id', $chargeId)->value('deleted_at'))->not->toBeNull();
 });
 
-it('marks the draft invoices of the attached plans as ready to be refreshed', function () {
+it('marks the draft invoices of the attached plans as ready to be refreshed', function (): void {
     [$organization, $metric, $planId] = destroyMetricFixture();
     $invoiceId = draftInvoiceForPlan($organization, $planId);
 
@@ -89,7 +89,7 @@ it('marks the draft invoices of the attached plans as ready to be refreshed', fu
     expect(Invoice::query()->find($invoiceId)->ready_to_be_refreshed)->toBeTrue();
 });
 
-it('fails when the billable metric is not found', function () {
+it('fails when the billable metric is not found', function (): void {
     $result = DestroyService::call(metric: null);
 
     expect($result->failure())->toBeTrue()

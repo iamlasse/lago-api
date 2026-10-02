@@ -10,7 +10,7 @@ use Database\Factories\TaxFactory;
 use App\Services\Failures\NotFoundFailure;
 use App\Services\Customers\UpdateService as CustomerUpdateService;
 
-beforeEach(function () {
+beforeEach(function (): void {
     CurrentContext::reset();
 });
 
@@ -22,7 +22,7 @@ function customerUpdateContext(): array
     return [$organization, $customer];
 }
 
-it('updates the provided attributes only', function () {
+it('updates the provided attributes only', function (): void {
     [, $customer] = customerUpdateContext();
 
     $result = CustomerUpdateService::call(customer: $customer, args: [
@@ -36,7 +36,7 @@ it('updates the provided attributes only', function () {
         ->and($result->customer->fresh()->legal_name)->toBe($customer->legal_name);
 })->group('ledger:svc:Customers.UpdateService');
 
-it('fails when the customer is missing', function () {
+it('fails when the customer is missing', function (): void {
     $result = CustomerUpdateService::call(customer: null, args: ['name' => 'X']);
 
     expect($result->success())->toBeFalse()
@@ -44,7 +44,7 @@ it('fails when the customer is missing', function () {
         ->and($result->getError()->resource)->toBe('customer');
 });
 
-it('rejects more than five metadata entries', function () {
+it('rejects more than five metadata entries', function (): void {
     [, $customer] = customerUpdateContext();
 
     $result = CustomerUpdateService::call(
@@ -56,7 +56,7 @@ it('rejects more than five metadata entries', function () {
         ->and($result->getError()->messages)->toBe(['metadata' => ['invalid_count']]);
 });
 
-it('upcases country and tax identification changes trigger eu taxes', function () {
+it('upcases country and tax identification changes trigger eu taxes', function (): void {
     [$organization, $customer] = customerUpdateContext();
     $organization->defaultBillingEntity->update(['eu_tax_management' => true, 'country' => 'FR']);
 
@@ -72,7 +72,7 @@ it('upcases country and tax identification changes trigger eu taxes', function (
         ->and($result->customer->taxes()->pluck('code')->all())->toBe(['lago_eu_de_standard']);
 });
 
-it('applies requested tax codes on update', function () {
+it('applies requested tax codes on update', function (): void {
     [$organization, $customer] = customerUpdateContext();
     $tax = TaxFactory::new()->create(['organization_id' => $organization->id, 'code' => 'tax-update']);
 
@@ -82,7 +82,7 @@ it('applies requested tax codes on update', function () {
         ->and($result->customer->taxes()->pluck('code')->all())->toBe([$tax->code]);
 });
 
-it('changes the billing entity by code', function () {
+it('changes the billing entity by code', function (): void {
     [$organization, $customer] = customerUpdateContext();
     $entity2 = BillingEntity::factory()->for($organization)->create();
 
@@ -95,7 +95,7 @@ it('changes the billing entity by code', function () {
         ->and($result->customer->fresh()->billing_entity_id)->toBe($entity2->id);
 });
 
-it('fails on an unknown billing entity code', function () {
+it('fails on an unknown billing entity code', function (): void {
     [, $customer] = customerUpdateContext();
 
     $result = CustomerUpdateService::call(
@@ -107,7 +107,7 @@ it('fails on an unknown billing entity code', function () {
         ->and($result->getError())->toBeInstanceOf(NotFoundFailure::class);
 });
 
-it('cannot change external_id when attached to a subscription', function () {
+it('cannot change external_id when attached to a subscription', function (): void {
     [$organization, $customer] = customerUpdateContext();
 
     $planId = Illuminate\Support\Str::uuid();
@@ -144,7 +144,7 @@ it('cannot change external_id when attached to a subscription', function () {
         ->and($result->customer->fresh()->external_id)->not->toBe($newExternalId);
 });
 
-it('updates metadata through the metadata service', function () {
+it('updates metadata through the metadata service', function (): void {
     [, $customer] = customerUpdateContext();
 
     $result = CustomerUpdateService::call(

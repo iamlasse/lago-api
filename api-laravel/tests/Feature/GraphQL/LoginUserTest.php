@@ -23,7 +23,7 @@ mutation($input: LoginUserInput!) {
 }
 GQL;
 
-it('returns token and user', function () {
+it('returns token and user', function (): void {
     $organization = gqlCreateOrganization();
     $user = gqlCreateUser();
     gqlCreateMembership($user, $organization);
@@ -41,7 +41,7 @@ it('returns token and user', function () {
         ->and($resultData['user']['email'])->toBe($user->email);
 })->group('ledger:gql:mutation:loginUser');
 
-it('issues a Rails-compatible JWT carrying the sub and the login method', function () {
+it('issues a Rails-compatible JWT carrying the sub and the login method', function (): void {
     $organization = gqlCreateOrganization();
     $user = gqlCreateUser();
     gqlCreateMembership($user, $organization);
@@ -57,7 +57,7 @@ it('issues a Rails-compatible JWT carrying the sub and the login method', functi
         ->and($payload['exp'])->toBeGreaterThan(time());
 })->group('ledger:gql:mutation:loginUser');
 
-it('returns an error with bad credentials', function () {
+it('returns an error with bad credentials', function (): void {
     $organization = gqlCreateOrganization();
     $user = gqlCreateUser();
     gqlCreateMembership($user, $organization);
@@ -77,7 +77,7 @@ it('returns an error with bad credentials', function () {
         ->and($error['extensions']['details']['base'])->toContain('incorrect_login_or_password');
 })->group('ledger:gql:mutation:loginUser');
 
-it('returns an error with a revoked membership', function () {
+it('returns an error with a revoked membership', function (): void {
     $organization = gqlCreateOrganization();
     $user = gqlCreateUser();
     gqlCreateMembership($user, $organization, 1); // revoked
@@ -92,7 +92,7 @@ it('returns an error with a revoked membership', function () {
         ->and($error['extensions']['details']['base'])->toContain('incorrect_login_or_password');
 })->group('ledger:gql:mutation:loginUser');
 
-it('returns an error with an unknown email', function () {
+it('returns an error with an unknown email', function (): void {
     $response = gqlPost(LOGIN_USER_MUTATION, [
         'input' => ['email' => 'ghost@example.com', 'password' => 'ILoveLago'],
     ]);
@@ -100,7 +100,7 @@ it('returns an error with an unknown email', function () {
     expect($response->json('errors.0.extensions.details.base'))->toContain('incorrect_login_or_password');
 })->group('ledger:gql:mutation:loginUser');
 
-it('survives null bytes in credentials', function () {
+it('survives null bytes in credentials', function (): void {
     $response = gqlPost(LOGIN_USER_MUTATION, [
         'input' => ['email' => "email@example.com\u{0000}", 'password' => "ILoveLago\u{0000}"],
     ]);

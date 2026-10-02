@@ -9,7 +9,7 @@ use App\Models\BillableMetric;
 use App\Support\CurrentContext;
 use Illuminate\Support\Facades\DB;
 
-beforeEach(function () {
+beforeEach(function (): void {
     CurrentContext::reset();
 });
 
@@ -18,13 +18,13 @@ function billableMetricOrganization(): Organization
     return CurrentContext::$organization = Organization::factory()->create();
 }
 
-it('is valid with the factory defaults', function () {
+it('is valid with the factory defaults', function (): void {
     $metric = BillableMetric::factory()->for(billableMetricOrganization())->make();
 
     expect($metric->validateAttributes())->toBe([]);
 });
 
-it('requires a name and a code', function () {
+it('requires a name and a code', function (): void {
     $metric = BillableMetric::factory()->for(billableMetricOrganization())->make([
         'name' => null,
         'code' => '',
@@ -36,7 +36,7 @@ it('requires a name and a code', function () {
     ]);
 });
 
-it('requires a field_name for aggregations that aggregate on a property', function () {
+it('requires a field_name for aggregations that aggregate on a property', function (): void {
     $organization = billableMetricOrganization();
 
     $sum = BillableMetric::factory()->for($organization)->sum()->make(['field_name' => null]);
@@ -48,7 +48,7 @@ it('requires a field_name for aggregations that aggregate on a property', functi
         ->and($custom->validateAttributes())->not->toHaveKey('field_name');
 });
 
-it('requires a custom_aggregator for custom_agg', function () {
+it('requires a custom_aggregator for custom_agg', function (): void {
     $metric = BillableMetric::factory()->for(billableMetricOrganization())->custom()->make([
         'custom_aggregator' => null,
     ]);
@@ -56,7 +56,7 @@ it('requires a custom_aggregator for custom_agg', function () {
     expect($metric->validateAttributes())->toHaveKey('custom_aggregator', ['value_is_mandatory']);
 });
 
-it('rejects an invalid aggregation type and leaves it unassigned', function () {
+it('rejects an invalid aggregation type and leaves it unassigned', function (): void {
     $metric = BillableMetric::factory()->for(billableMetricOrganization())->make([
         'aggregation_type' => 'invalid_agg',
     ]);
@@ -65,7 +65,7 @@ it('rejects an invalid aggregation type and leaves it unassigned', function () {
         ->and($metric->validateAttributes())->toHaveKey('aggregation_type', ['value_is_invalid']);
 });
 
-it('keeps the previous aggregation type when a stored metric is assigned an invalid one', function () {
+it('keeps the previous aggregation type when a stored metric is assigned an invalid one', function (): void {
     $metric = BillableMetric::factory()->for(billableMetricOrganization())->sum()->create();
     $metric->aggregation_type = 'invalid_agg';
 
@@ -73,7 +73,7 @@ it('keeps the previous aggregation type when a stored metric is assigned an inva
         ->and($metric->getAttributes()['aggregation_type'])->toBe(AggregationType::SumAgg->value);
 });
 
-it('validates the uniqueness of the code per organization, ignoring discarded metrics', function () {
+it('validates the uniqueness of the code per organization, ignoring discarded metrics', function (): void {
     $organization = billableMetricOrganization();
     $otherOrganization = Organization::factory()->create();
 
@@ -88,7 +88,7 @@ it('validates the uniqueness of the code per organization, ignoring discarded me
         ->toBe([]);
 });
 
-it('ignores the stored record itself when validating the code uniqueness', function () {
+it('ignores the stored record itself when validating the code uniqueness', function (): void {
     $metric = BillableMetric::factory()->for(billableMetricOrganization())->create(['code' => 'api_calls']);
 
     $metric->name = 'Renamed';
@@ -96,7 +96,7 @@ it('ignores the stored record itself when validating the code uniqueness', funct
     expect($metric->validateAttributes())->toBe([]);
 });
 
-it('resets the field_name when the aggregation type is count_agg', function () {
+it('resets the field_name when the aggregation type is count_agg', function (): void {
     $organization = billableMetricOrganization();
 
     $built = BillableMetric::factory()->for($organization)->make([
@@ -117,7 +117,7 @@ it('resets the field_name when the aggregation type is count_agg', function () {
     expect($stored->fresh()->field_name)->toBeNull();
 });
 
-it('rejects recurring with aggregation types that do not support it', function () {
+it('rejects recurring with aggregation types that do not support it', function (): void {
     $organization = billableMetricOrganization();
 
     $max = BillableMetric::factory()->for($organization)->max()->make(['recurring' => true]);
@@ -133,7 +133,7 @@ it('rejects recurring with aggregation types that do not support it', function (
         ->and($sum->validateAttributes())->toBe([]);
 });
 
-it('rejects a weighted_sum metric without a weighted_interval', function () {
+it('rejects a weighted_sum metric without a weighted_interval', function (): void {
     $metric = BillableMetric::factory()->for(billableMetricOrganization())->weightedSum()->make([
         'weighted_interval' => null,
     ]);
@@ -141,7 +141,7 @@ it('rejects a weighted_sum metric without a weighted_interval', function () {
     expect($metric->validateAttributes())->toHaveKey('weighted_interval', ['value_is_invalid']);
 });
 
-it('rejects an unknown weighted_interval value', function () {
+it('rejects an unknown weighted_interval value', function (): void {
     $metric = BillableMetric::factory()->for(billableMetricOrganization())->weightedSum()->make([
         'weighted_interval' => 'hours',
     ]);
@@ -149,7 +149,7 @@ it('rejects an unknown weighted_interval value', function () {
     expect($metric->validateAttributes())->toHaveKey('weighted_interval', ['value_is_invalid']);
 });
 
-it('rejects an invalid rounding_function and allows a null one', function () {
+it('rejects an invalid rounding_function and allows a null one', function (): void {
     $organization = billableMetricOrganization();
 
     $invalid = BillableMetric::factory()->for($organization)->sum()->make(['rounding_function' => 'truncate']);
@@ -160,7 +160,7 @@ it('rejects an invalid rounding_function and allows a null one', function () {
         ->and($nil->validateAttributes())->toBe([]);
 });
 
-it('reports the aggregation types payable in advance', function () {
+it('reports the aggregation types payable in advance', function (): void {
     $payable = ['count_agg', 'sum_agg', 'unique_count_agg', 'custom_agg'];
 
     foreach (AggregationType::cases() as $type) {
@@ -178,7 +178,7 @@ it('reports the aggregation types payable in advance', function () {
     }
 });
 
-it('detects whether the metric is attached to a plan', function () {
+it('detects whether the metric is attached to a plan', function (): void {
     $organization = billableMetricOrganization();
     $metric = BillableMetric::factory()->for($organization)->sum()->create();
 

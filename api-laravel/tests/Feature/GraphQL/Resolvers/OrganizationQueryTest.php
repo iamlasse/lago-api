@@ -63,7 +63,7 @@ function gqlOrganizationQuery(App\Models\User $user, ?string $organizationId, ar
     ]);
 }
 
-it('returns the current organization', function () {
+it('returns the current organization', function (): void {
     $organization = gqlCreateOrganization();
     $user = gqlCreateUser();
     gqlCreateMembership($user, $organization);
@@ -83,7 +83,7 @@ it('returns the current organization', function () {
         ->and($data['taxes'])->toBe([]);
 })->group('ledger:gql:query:organization');
 
-it('resolves the current session, api key, webhook url and billing configuration fields', function () {
+it('resolves the current session, api key, webhook url and billing configuration fields', function (): void {
     $organization = gqlCreateOrganization();
     $user = gqlCreateUser();
     gqlCreateMembership($user, $organization);
@@ -106,7 +106,7 @@ it('resolves the current session, api key, webhook url and billing configuration
         ->and($data['billingConfiguration']['invoiceGracePeriod'])->toBe(0);
 })->group('ledger:gql:query:organization');
 
-it('serializes email settings with the enum wire values and filters feature flags', function () {
+it('serializes email settings with the enum wire values and filters feature flags', function (): void {
     $organization = gqlCreateOrganization();
     $organization->email_settings = ['invoice.finalized', 'credit_note.created'];
     $organization->feature_flags = ['order_forms', 'not_a_real_flag'];
@@ -123,7 +123,7 @@ it('serializes email settings with the enum wire values and filters feature flag
         ->and($data['featureFlags'])->toBe(['order_forms']);
 })->group('ledger:gql:query:organization');
 
-it('returns unauthorized on organization without a token', function () {
+it('returns unauthorized on organization without a token', function (): void {
     $response = gqlPost(ORGANIZATION_QUERY);
 
     $response->assertOk();
@@ -136,7 +136,7 @@ it('returns unauthorized on organization without a token', function () {
         ]);
 })->group('ledger:gql:query:organization');
 
-it('returns forbidden on organization without an organization id', function () {
+it('returns forbidden on organization without an organization id', function (): void {
     $user = gqlCreateUser();
 
     $response = gqlOrganizationQuery($user, null);
@@ -149,7 +149,7 @@ it('returns forbidden on organization without an organization id', function () {
         ]);
 })->group('ledger:gql:query:organization');
 
-it('returns forbidden when the user has no membership in the requested organization', function () {
+it('returns forbidden when the user has no membership in the requested organization', function (): void {
     $user = gqlCreateUser();
     $other = gqlCreateOrganization('Other Corp');
     gqlCreateMembership(gqlCreateUser('other@example.com'), $other);

@@ -56,7 +56,7 @@ mutation($input: UpdateOrganizationInput!) {
 }
 GQL;
 
-it('updates the organization', function () {
+it('updates the organization', function (): void {
     $organization = gqlCreateOrganizationWithBillingEntity();
     $user = gqlCreateUser();
     gqlCreateMembership($user, $organization);
@@ -110,7 +110,7 @@ it('updates the organization', function () {
     expect($organization->refresh()->city)->toBe('Foobar');
 })->group('ledger:gql:mutation:updateOrganization');
 
-it('returns the validation error envelope for eu tax management outside the eu', function () {
+it('returns the validation error envelope for eu tax management outside the eu', function (): void {
     $organization = gqlCreateOrganizationWithBillingEntity();
     $user = gqlCreateUser();
     gqlCreateMembership($user, $organization);
@@ -130,7 +130,7 @@ it('returns the validation error envelope for eu tax management outside the eu',
         ]);
 })->group('ledger:gql:mutation:updateOrganization');
 
-it('returns forbidden without an organization id', function () {
+it('returns forbidden without an organization id', function (): void {
     $user = gqlCreateUser();
 
     $response = gqlPost(

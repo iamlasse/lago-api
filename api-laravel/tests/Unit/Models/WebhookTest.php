@@ -9,7 +9,7 @@ use App\Models\Organization;
 use App\Models\WebhookEndpoint;
 use Illuminate\Support\Facades\Config;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->endpoint = WebhookEndpoint::factory()->create();
     $this->organization = Organization::findOrFail($this->endpoint->organization_id);
     $this->webhook = Webhook::factory()
@@ -27,7 +27,7 @@ beforeEach(function () {
         ]);
 });
 
-it('computes the HMAC signature over the payload JSON with the organization hmac key', function () {
+it('computes the HMAC signature over the payload JSON with the organization hmac key', function (): void {
     // Rails: Base64.strict_encode64(OpenSSL::HMAC.digest("sha-256",
     // organization.hmac_key, payload.to_json)) — computed independently here.
     $expected = base64_encode(hash_hmac(
@@ -42,7 +42,7 @@ it('computes the HMAC signature over the payload JSON with the organization hmac
     expect($this->webhook->fresh()->hmacSignature())->toBe($expected);
 });
 
-it('generates the HMAC signature headers', function () {
+it('generates the HMAC signature headers', function (): void {
     $this->endpoint->update(['signature_algo' => 1]); // :hmac
 
     $headers = $this->webhook->fresh()->generateHeaders();
@@ -53,7 +53,7 @@ it('generates the HMAC signature headers', function () {
         ->and($headers['X-Lago-Unique-Key'])->toBe($this->webhook->id);
 });
 
-it('generates the JWT signature headers and signs the payload with RS256', function () {
+it('generates the JWT signature headers and signs the payload with RS256', function (): void {
     $key = openssl_pkey_new(['private_key_bits' => 2048, 'private_key_type' => OPENSSL_KEYTYPE_RSA]);
     openssl_pkey_export($key, $privatePem);
     $details = openssl_pkey_get_details($key);
@@ -87,7 +87,7 @@ it('generates the JWT signature headers and signs the payload with RS256', funct
     unlink($path);
 });
 
-it('exposes the Rails status helpers', function () {
+it('exposes the Rails status helpers', function (): void {
     expect($this->webhook->pending())->toBeTrue()
         ->and($this->webhook->succeeded())->toBeFalse();
 
@@ -96,7 +96,7 @@ it('exposes the Rails status helpers', function () {
         ->and($this->webhook->fresh()->statusValue())->toBe(WebhookStatus::Succeeded->value);
 });
 
-it('stores and reads back a scalar JSON response', function () {
+it('stores and reads back a scalar JSON response', function (): void {
     $this->webhook->storeResponse('ok');
     $this->webhook->save();
 

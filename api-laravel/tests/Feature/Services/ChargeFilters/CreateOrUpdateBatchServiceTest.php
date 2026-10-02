@@ -41,7 +41,7 @@ function filterCharge(): Charge
     ]);
 }
 
-it('creates filters with generated codes', function () {
+it('creates filters with generated codes', function (): void {
     $charge = filterCharge();
 
     $result = CreateOrUpdateBatchService::call(charge: $charge, filtersParams: [
@@ -59,7 +59,7 @@ it('creates filters with generated codes', function () {
         ->and(ChargeFilterValue::query()->where('charge_filter_id', $filters[0]->id)->count())->toBe(1);
 })->group('ledger:svc:ChargeFilters.CreateOrUpdateBatchService');
 
-it('suffices duplicated codes derived from the same values hash', function () {
+it('suffices duplicated codes derived from the same values hash', function (): void {
     $charge = filterCharge();
 
     $result = CreateOrUpdateBatchService::call(charge: $charge, filtersParams: [
@@ -74,7 +74,7 @@ it('suffices duplicated codes derived from the same values hash', function () {
         ->and(ChargeFilter::nextFreeCode('fresh', [$baseCode]))->toBe('fresh');
 });
 
-it('updates an existing filter matched by values', function () {
+it('updates an existing filter matched by values', function (): void {
     $charge = filterCharge();
 
     CreateOrUpdateBatchService::call(charge: $charge, filtersParams: [
@@ -94,7 +94,7 @@ it('updates an existing filter matched by values', function () {
         ->and($filters[0]->invoice_display_name)->toBe('US only');
 });
 
-it('removes filters that are no longer in the payload', function () {
+it('removes filters that are no longer in the payload', function (): void {
     $charge = filterCharge();
 
     CreateOrUpdateBatchService::call(charge: $charge, filtersParams: [
@@ -111,7 +111,7 @@ it('removes filters that are no longer in the payload', function () {
         ->and($charge->filters()->withTrashed()->count())->toBe(2);
 });
 
-it('removes all filters when the payload is empty', function () {
+it('removes all filters when the payload is empty', function (): void {
     $charge = filterCharge();
 
     CreateOrUpdateBatchService::call(charge: $charge, filtersParams: [
@@ -126,7 +126,7 @@ it('removes all filters when the payload is empty', function () {
         ->toBe(1);
 });
 
-it('fails when any filter has empty values', function () {
+it('fails when any filter has empty values', function (): void {
     $charge = filterCharge();
 
     $result = CreateOrUpdateBatchService::call(charge: $charge, filtersParams: [
@@ -138,7 +138,7 @@ it('fails when any filter has empty values', function () {
         ->and($result->getError()->messages['values'])->toBe(['value_is_mandatory']);
 });
 
-it('keeps input order via monotonically increasing timestamps', function () {
+it('keeps input order via monotonically increasing timestamps', function (): void {
     $charge = filterCharge();
 
     $result = CreateOrUpdateBatchService::call(charge: $charge, filtersParams: [

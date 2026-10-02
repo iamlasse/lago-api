@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Enums\InvoicePaymentStatus;
-use App\Enums\InvoiceStatus;
-use App\Enums\InvoiceType;
-use App\Enums\InvoiceTaxStatus;
-use App\Models\Customer;
 use App\Models\Invoice;
-use App\Models\Organization;
+use App\Models\Customer;
+use App\Enums\InvoiceType;
+use App\Enums\InvoiceStatus;
+use App\Enums\InvoiceTaxStatus;
+use App\Enums\InvoicePaymentStatus;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\MembershipStatus;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
@@ -14,8 +16,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * has_secure_password, minimal columns. Password hashing is cross-language
  * compatible: PHP's password_verify accepts Ruby bcrypt's $2a$/$2b$ prefixes.
  */
-#[\Illuminate\Database\Eloquent\Attributes\Fillable(['email', 'password', 'cs_admin'])]
-#[\Illuminate\Database\Eloquent\Attributes\Hidden(['password_digest'])]
+#[Fillable(['email', 'password', 'cs_admin'])]
+#[Hidden(['password_digest'])]
 class User extends BaseModel
 {
     use HasFactory;

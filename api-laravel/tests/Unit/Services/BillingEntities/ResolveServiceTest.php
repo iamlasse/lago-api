@@ -9,11 +9,11 @@ use Illuminate\Support\Facades\DB;
 use App\Services\Failures\NotFoundFailure;
 use App\Services\BillingEntities\ResolveService;
 
-beforeEach(function () {
+beforeEach(function (): void {
     CurrentContext::reset();
 });
 
-it('fails when the organization has no active billing entity', function () {
+it('fails when the organization has no active billing entity', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
 
     $code = $organization->allBillingEntities()->first()->code;
@@ -30,7 +30,7 @@ it('fails when the organization has no active billing entity', function () {
         ->and($result->getError()->getMessage())->toBe('billing_entity_not_found');
 })->group('ledger:svc:BillingEntities.ResolveService');
 
-it('returns the default billing entity when no code is given', function () {
+it('returns the default billing entity when no code is given', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
 
     $extra = BillingEntity::factory()->count(3)->for($organization)->create();
@@ -42,7 +42,7 @@ it('returns the default billing entity when no code is given', function () {
         ->and($result->billing_entity->id)->not->toBe($extra->first()->id);
 });
 
-it('fails when the code does not match any billing entity', function () {
+it('fails when the code does not match any billing entity', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
 
     $result = ResolveService::call(organization: $organization, billingEntityCode: '123');
@@ -51,7 +51,7 @@ it('fails when the code does not match any billing entity', function () {
         ->and($result->getError())->toBeInstanceOf(NotFoundFailure::class);
 });
 
-it('returns the billing entity matching the code', function () {
+it('returns the billing entity matching the code', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
 
     $first = BillingEntity::factory()->for($organization)->create();

@@ -7,6 +7,8 @@ namespace App\Models;
 use App\Models\Casts\PostgresArray;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -14,13 +16,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * Frozen-schema model for `charge_filter_values` (Rails' ChargeFilterValue) —
  * the per-key allowed values of a charge filter.
  */
-#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+#[Fillable([
     'charge_filter_id',
     'billable_metric_filter_id',
     'values',
     'organization_id',
 ])]
-#[\Illuminate\Database\Eloquent\Attributes\Table(name: 'charge_filter_values')]
+#[Table(name: 'charge_filter_values')]
 class ChargeFilterValue extends BaseModel
 {
     use HasFactory;

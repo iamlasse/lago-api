@@ -50,7 +50,7 @@ it('creates a customer', function (): void {
 
     $this->postJson('/api/v1/customers', ['customer' => $createParams], [
         'Authorization' => 'Bearer '.$apiKey->value,
-    ])->assertOk()->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($organization, $createParams) {
+    ])->assertOk()->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($organization, $createParams): void {
         $json->where('customer.lago_id', fn ($id) => is_string($id) && $id !== '')
             ->where('customer.external_id', $createParams['external_id'])
             ->where('customer.name', $createParams['name'])
@@ -118,7 +118,7 @@ it('creates a customer with account_type partner when premium revenue_share', fu
             'account_type' => 'partner',
         ]], ['Authorization' => 'Bearer '.$apiKey->value])
             ->assertOk()
-            ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($externalId) {
+            ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($externalId): void {
                 $json->where('customer.external_id', $externalId)
                     ->where('customer.account_type', 'partner')
                     ->etc();
@@ -140,7 +140,7 @@ it('creates a customer with metadata', function (): void {
         ],
     ]], ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json): void {
             $json->where('customer.metadata.0.key', 'Hello')
                 ->where('customer.metadata.0.value', 'Hi')
                 ->where('customer.metadata.0.display_in_invoice', true)
@@ -309,7 +309,7 @@ it('returns all customers from the organization', function (): void {
 
     getWithToken('/api/v1/customers', [], $apiKey->value)
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json): void {
             $json->where('meta.total_count', 2)
                 ->has('customers.0.taxes')
                 ->etc();
@@ -324,7 +324,7 @@ it('filters customers by account_type', function (): void {
 
     getWithToken('/api/v1/customers', ['account_type' => ['partner']], $apiKey->value)
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($partner) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($partner): void {
             $json->count('customers', 1)->where('customers.0.lago_id', (string) $partner->id)->etc();
         });
 });
@@ -337,7 +337,7 @@ it('filters customers by customer_type', function (): void {
 
     getWithToken('/api/v1/customers', ['customer_type' => 'company'], $apiKey->value)
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($company) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($company): void {
             $json->count('customers', 1)->where('customers.0.lago_id', (string) $company->id)->etc();
         });
 });
@@ -379,7 +379,7 @@ it('filters customers by billing_entity_code', function (): void {
 
     getWithToken('/api/v1/customers', ['billing_entity_codes' => [$billingEntity->code]], $apiKey->value)
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($customer) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($customer): void {
             $json->count('customers', 1)->where('customers.0.lago_id', (string) $customer->id)->etc();
         });
 
@@ -391,14 +391,14 @@ it('filters customers by billing_entity_code', function (): void {
     // "with invalid billing entity codes" (scalar, not an array) — ignored.
     getWithToken('/api/v1/customers', ['billing_entity_codes' => 'invalid_code'], $apiKey->value)
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($customer) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($customer): void {
             $json->count('customers', 3)->where('customers.0.lago_id', (string) $customer->id)->etc();
         });
 
     // "with two identical billing entity codes"
     getWithToken('/api/v1/customers', ['billing_entity_codes' => [$billingEntity->code, $billingEntity->code]], $apiKey->value)
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($customer) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($customer): void {
             $json->count('customers', 1)->where('customers.0.lago_id', (string) $customer->id)->etc();
         });
 });
@@ -410,7 +410,7 @@ it('filters customers by external_id', function (): void {
 
     getWithToken('/api/v1/customers', ['external_id' => $customer->external_id], $apiKey->value)
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($customer) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($customer): void {
             $json->count('customers', 1)->where('customers.0.lago_id', (string) $customer->id)->etc();
         });
 });
@@ -541,7 +541,7 @@ it('filters customers by search_term', function (): void {
 
     getWithToken('/api/v1/customers', ['search_term' => 'oo b'], $apiKey->value)
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($customer) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($customer): void {
             $json->count('customers', 1)->where('customers.0.lago_id', (string) $customer->id)->etc();
         });
 });
@@ -578,7 +578,7 @@ it('returns the customer', function (): void {
 
     $this->getJson('/api/v1/customers/'.$customer->external_id, [
         'Authorization' => 'Bearer '.$apiKey->value,
-    ])->assertOk()->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($customer) {
+    ])->assertOk()->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($customer): void {
         $json->where('customer.lago_id', (string) $customer->id)
             ->has('customer.taxes')
             ->etc();

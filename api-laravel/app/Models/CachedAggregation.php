@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-
 use App\Models\Casts\BcNumeric;
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Frozen-schema model for `cached_aggregations` — Rails'
  * CachedAggregation (app/models/cached_aggregation.rb). Stores the carried
  * over aggregation value of recurring metrics between billing periods.
  */
-#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+#[Fillable([
     'organization_id',
     'timestamp',
     'external_subscription_id',
@@ -28,7 +29,7 @@ use App\Models\Casts\BcNumeric;
     'event_transaction_id',
     'presentation_breakdowns',
 ])]
-#[\Illuminate\Database\Eloquent\Attributes\Table(name: 'cached_aggregations')]
+#[Table(name: 'cached_aggregations')]
 class CachedAggregation extends BaseModel
 {
     use HasFactory;

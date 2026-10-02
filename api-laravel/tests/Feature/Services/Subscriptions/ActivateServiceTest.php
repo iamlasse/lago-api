@@ -11,11 +11,11 @@ use App\Services\Subscriptions\ActivateService;
  * Port of spec/services/subscriptions/activate_service_spec.rb (core scenarios,
  * minus the payment-gating branches deferred with activation rules).
  */
-beforeEach(function () {
+beforeEach(function (): void {
     CarbonImmutable::setTestNow(CarbonImmutable::parse('2024-05-15 10:00:00', 'UTC'));
 });
 
-afterEach(function () {
+afterEach(function (): void {
     CarbonImmutable::setTestNow();
 });
 
@@ -33,7 +33,7 @@ function activatablePending(array $overrides = []): Subscription
     ], $overrides));
 }
 
-it('activates a standalone pending subscription', function () {
+it('activates a standalone pending subscription', function (): void {
     $subscription = activatablePending();
 
     $result = ActivateService::call(
@@ -47,7 +47,7 @@ it('activates a standalone pending subscription', function () {
         ->and($result->subscription->activated_at->format('Y-m-d H:i:s'))->toBe('2024-05-15 10:00:00');
 })->group('ledger:svc:Subscriptions.ActivateService');
 
-it('returns the subscription untouched when already active', function () {
+it('returns the subscription untouched when already active', function (): void {
     $subscription = activatablePending();
     $subscription->markAsActive('2024-05-01 00:00:00');
     $subscription->save();
@@ -58,7 +58,7 @@ it('returns the subscription untouched when already active', function () {
         ->and($result->subscription->started_at->format('Y-m-d H:i:s'))->toBe('2024-05-01 00:00:00');
 });
 
-it('terminates the previous subscription and activates the new one on upgrade', function () {
+it('terminates the previous subscription and activates the new one on upgrade', function (): void {
     $previousPlan = Plan::factory()->create(['interval' => 'monthly', 'amount_cents' => 2900]);
     $newPlan = Plan::factory()->create(['interval' => 'monthly', 'amount_cents' => 9900]);
 
@@ -93,7 +93,7 @@ it('terminates the previous subscription and activates the new one on upgrade', 
         ->and($new->fresh()->started_at->format('Y-m-d H:i:s'))->toBe('2024-05-15 10:00:00');
 });
 
-it('terminates the previous subscription and activates the new one on downgrade', function () {
+it('terminates the previous subscription and activates the new one on downgrade', function (): void {
     $previousPlan = Plan::factory()->create(['interval' => 'monthly', 'amount_cents' => 9900]);
     $newPlan = Plan::factory()->create(['interval' => 'monthly', 'amount_cents' => 2900]);
 
@@ -127,7 +127,7 @@ it('terminates the previous subscription and activates the new one on downgrade'
         ->and($new->fresh()->started_at->format('Y-m-d H:i:s'))->toBe('2024-05-15 10:00:00');
 });
 
-it('detects the upgrade branch against the previous subscription plan', function () {
+it('detects the upgrade branch against the previous subscription plan', function (): void {
     $subscription = activatablePending();
     $previous = Plan::factory()->create(['interval' => 'monthly', 'amount_cents' => 1000]);
     $subscription->previous_subscription_id = Subscription::factory()->create([

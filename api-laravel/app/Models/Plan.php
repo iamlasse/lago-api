@@ -6,12 +6,14 @@ namespace App\Models;
 
 use App\Enums\PlanInterval;
 use App\Services\Validators\Currencies;
-use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Concerns\BelongsToOrganization;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
@@ -24,7 +26,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * - TODO(port): metadata (Metadata::ItemMetadata), usage_thresholds,
  *   entitlements, add-on coupon targets and Clickhouse activity logs.
  */
-#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+#[Fillable([
     'organization_id',
     'name',
     'code',
@@ -40,7 +42,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
     'invoice_display_name',
     'bill_fixed_charges_monthly',
 ])]
-#[\Illuminate\Database\Eloquent\Attributes\Table(name: 'plans')]
+#[Table(name: 'plans')]
 class Plan extends BaseModel
 {
     use BelongsToOrganization;
@@ -116,15 +118,6 @@ class Plan extends BaseModel
             'id',
             'tax_id',
         );
-    }
-
-    // -- Scopes ------------------------------------------------------------------
-
-    /** Rails: `scope :parents, -> { where(parent_id: nil) }`. */
-    #[Scope]
-    protected function parents(Builder $query): Builder
-    {
-        return $query->whereNull('parent_id');
     }
 
     // -- Enum helpers (Rails enum suffix methods) -----------------------------------
@@ -290,6 +283,15 @@ class Plan extends BaseModel
         }
 
         return $errors;
+    }
+
+    // -- Scopes ------------------------------------------------------------------
+
+    /** Rails: `scope :parents, -> { where(parent_id: nil) }`. */
+    #[Scope]
+    protected function parents(Builder $query): Builder
+    {
+        return $query->whereNull('parent_id');
     }
 
     protected function casts(): array

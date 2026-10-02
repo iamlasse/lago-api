@@ -9,7 +9,7 @@ use App\Services\Failures\NotFoundFailure;
 use App\Services\Failures\ValidationFailure;
 use App\Services\Organizations\UpdateService;
 
-beforeEach(function () {
+beforeEach(function (): void {
     CurrentContext::reset();
 });
 
@@ -35,7 +35,7 @@ function orgUpdateParams(): array
     ];
 }
 
-it('updates the organization and its default billing entity', function () {
+it('updates the organization and its default billing entity', function (): void {
     CurrentContext::$organization = Organization::factory()->create();
     $organization = CurrentContext::$organization;
 
@@ -72,7 +72,7 @@ it('updates the organization and its default billing entity', function () {
         ->and($billingEntity->document_locale)->toBe('fr');
 })->group('ledger:svc:Organizations.UpdateService');
 
-it('upcases the document number prefix', function () {
+it('upcases the document number prefix', function (): void {
     CurrentContext::$organization = Organization::factory()->create();
     $params = orgUpdateParams();
     $params['document_number_prefix'] = 'abc';
@@ -83,7 +83,7 @@ it('upcases the document number prefix', function () {
         ->and(CurrentContext::$organization->fresh()->document_number_prefix)->toBe('ABC');
 });
 
-it('normalizes and rejects invalid slugs', function () {
+it('normalizes and rejects invalid slugs', function (): void {
     CurrentContext::$organization = Organization::factory()->create();
     $params = orgUpdateParams();
     $params['slug'] = '  My-Slug  ';
@@ -101,7 +101,7 @@ it('normalizes and rejects invalid slugs', function () {
         ->and($result->getError()->messages['slug'])->not->toBeEmpty();
 });
 
-it('rejects a taken or reserved slug', function () {
+it('rejects a taken or reserved slug', function (): void {
     CurrentContext::$organization = Organization::factory()->create();
     Organization::factory()->create(['slug' => 'taken-slug']);
     $params = orgUpdateParams();
@@ -119,7 +119,7 @@ it('rejects a taken or reserved slug', function () {
         ->and($result->getError()->messages['slug'])->not->toBeEmpty();
 });
 
-it('rejects an invalid document number prefix', function () {
+it('rejects an invalid document number prefix', function (): void {
     CurrentContext::$organization = Organization::factory()->create();
     $params = orgUpdateParams();
     $params['document_number_prefix'] = 'aaaaaaaaaaaaaaa';
@@ -131,7 +131,7 @@ it('rejects an invalid document number prefix', function () {
         ->and($result->getError()->messages['document_number_prefix'])->toBe(['value_is_too_long']);
 });
 
-it('rejects an invalid country code', function () {
+it('rejects an invalid country code', function (): void {
     CurrentContext::$organization = Organization::factory()->create();
     $params = orgUpdateParams();
     $params['country'] = '---';
@@ -143,7 +143,7 @@ it('rejects an invalid country code', function () {
         ->and($result->getError()->messages['country'])->toBe(['not_a_valid_country_code']);
 });
 
-it('sanitizes unicode lookalike characters in the email', function () {
+it('sanitizes unicode lookalike characters in the email', function (): void {
     CurrentContext::$organization = Organization::factory()->create();
 
     $result = UpdateService::call(organization: CurrentContext::$organization, params: [
@@ -154,7 +154,7 @@ it('sanitizes unicode lookalike characters in the email', function () {
         ->and(CurrentContext::$organization->fresh()->email)->toBe('hello@something-other.com');
 });
 
-it('updates the document numbering on organization and billing entity', function () {
+it('updates the document numbering on organization and billing entity', function (): void {
     CurrentContext::$organization = Organization::factory()->create();
     $params = ['document_numbering' => 'per_organization'];
 
@@ -166,7 +166,7 @@ it('updates the document numbering on organization and billing entity', function
         ->toBe('per_billing_entity');
 });
 
-it('rejects an invalid document numbering value', function () {
+it('rejects an invalid document numbering value', function (): void {
     CurrentContext::$organization = Organization::factory()->create();
     $params = ['document_numbering' => 'not_existing_document_numbering'];
 
@@ -177,7 +177,7 @@ it('rejects an invalid document numbering value', function () {
         ->and($result->getError()->messages['document_numbering'])->toBe(['value_is_invalid']);
 });
 
-it('validates eu tax management against the organization country', function () {
+it('validates eu tax management against the organization country', function (): void {
     CurrentContext::$organization = Organization::factory()->create();
     $params = ['eu_tax_management' => true, 'country' => 'fr'];
 
@@ -195,7 +195,7 @@ it('validates eu tax management against the organization country', function () {
         ->and(CurrentContext::$organization->fresh()->eu_tax_management)->toBeTrue();
 });
 
-it('can disable eu tax management outside the eu', function () {
+it('can disable eu tax management outside the eu', function (): void {
     CurrentContext::$organization = Organization::factory()->create();
     CurrentContext::$organization->update(['country' => 'US', 'eu_tax_management' => true]);
 
@@ -205,7 +205,7 @@ it('can disable eu tax management outside the eu', function () {
         ->and(CurrentContext::$organization->fresh()->eu_tax_management)->toBeFalse();
 });
 
-it('updates the webhook url on the first webhook endpoint', function () {
+it('updates the webhook url on the first webhook endpoint', function (): void {
     CurrentContext::$organization = Organization::factory()->withoutWebhookEndpoint()->create();
     $organization = CurrentContext::$organization;
 
@@ -221,7 +221,7 @@ it('updates the webhook url on the first webhook endpoint', function () {
         ->and($organization->webhookEndpoints()->first()->webhook_url)->toBe('https://example.com/hook2');
 });
 
-it('fails with a not found failure when there is no active billing entity', function () {
+it('fails with a not found failure when there is no active billing entity', function (): void {
     CurrentContext::$organization = Organization::factory()->create();
     $organization = CurrentContext::$organization;
 

@@ -12,12 +12,12 @@ use App\Services\Subscriptions\CreateService;
 /**
  * Port of spec/services/subscriptions/create_service_spec.rb (core scenarios).
  */
-beforeEach(function () {
+beforeEach(function (): void {
     CurrentContext::reset();
     CarbonImmutable::setTestNow(CarbonImmutable::parse('2024-05-15 10:00:00', 'UTC'));
 });
 
-afterEach(function () {
+afterEach(function (): void {
     CarbonImmutable::setTestNow();
     CurrentContext::reset();
 });
@@ -39,7 +39,7 @@ function createServiceCustomer(array $overrides = []): Customer
     ], $overrides));
 }
 
-it('creates an active subscription when it starts today', function () {
+it('creates an active subscription when it starts today', function (): void {
     $customer = createServiceCustomer();
     $plan = createPlan();
 
@@ -65,7 +65,7 @@ it('creates an active subscription when it starts today', function () {
         ->and($subscription->consolidate_invoice)->toBeTrue();
 })->group('ledger:svc:Subscriptions.CreateService');
 
-it('creates a pending subscription when it starts in the future', function () {
+it('creates a pending subscription when it starts in the future', function (): void {
     $customer = createServiceCustomer();
     $plan = createPlan();
 
@@ -82,7 +82,7 @@ it('creates a pending subscription when it starts in the future', function () {
         ->and($result->subscription->subscription_at->format('Y-m-d'))->toBe('2024-06-20');
 });
 
-it('creates an active subscription with clamped started_at when it started in the past', function () {
+it('creates an active subscription with clamped started_at when it started in the past', function (): void {
     $customer = createServiceCustomer();
     $plan = createPlan();
 
@@ -100,7 +100,7 @@ it('creates an active subscription with clamped started_at when it started in th
         ->and($subscription->started_at->format('Y-m-d H:i:s'))->toBe('2024-01-10 08:30:00');
 });
 
-it('clamps a backdated start to the last invoiced termination time', function () {
+it('clamps a backdated start to the last invoiced termination time', function (): void {
     $customer = createServiceCustomer();
     $plan = createPlan();
 
@@ -123,7 +123,7 @@ it('clamps a backdated start to the last invoiced termination time', function ()
         ->and($result->subscription->started_at->format('Y-m-d H:i:s'))->toBe('2024-03-01 00:00:00');
 });
 
-it('does not clamp the backdate when the previous termination did not invoice', function () {
+it('does not clamp the backdate when the previous termination did not invoice', function (): void {
     $customer = createServiceCustomer();
     $plan = createPlan();
 
@@ -145,7 +145,7 @@ it('does not clamp the backdate when the previous termination did not invoice', 
     expect($result->subscription->started_at->format('Y-m-d H:i:s'))->toBe('2024-01-01 00:00:00');
 });
 
-it('creates the subscription on an existing editable subscription id', function () {
+it('creates the subscription on an existing editable subscription id', function (): void {
     $customer = createServiceCustomer();
     $plan = createPlan();
 
@@ -168,7 +168,7 @@ it('creates the subscription on an existing editable subscription id', function 
         ->and($result->subscription->id)->toBe($future->id);
 });
 
-it('routes to the downgrade branch and schedules a pending next subscription', function () {
+it('routes to the downgrade branch and schedules a pending next subscription', function (): void {
     $customer = createServiceCustomer();
     $currentPlan = createPlan(['amount_cents' => 9900]);
     $cheaperPlan = createPlan(['amount_cents' => 2900, 'code' => 'basic']);
@@ -205,7 +205,7 @@ it('routes to the downgrade branch and schedules a pending next subscription', f
         ->and($current->fresh()->active())->toBeTrue();
 });
 
-it('fails when the external_id already has an active subscription in the organization', function () {
+it('fails when the external_id already has an active subscription in the organization', function (): void {
     $customer = createServiceCustomer();
     $plan = createPlan();
 
@@ -230,7 +230,7 @@ it('fails when the external_id already has an active subscription in the organiz
         ->and($result->getError()->messages)->toBe(['external_id' => ['value_already_exist']]);
 });
 
-it('fails when the subscription is incomplete for the same external_id', function () {
+it('fails when the subscription is incomplete for the same external_id', function (): void {
     $customer = createServiceCustomer();
     $plan = createPlan();
 
@@ -250,7 +250,7 @@ it('fails when the subscription is incomplete for the same external_id', functio
         ->and($result->getError()->messages)->toBe(['subscription' => ['subscription_incomplete']]);
 });
 
-it('fails in api context without external_customer_id', function () {
+it('fails in api context without external_customer_id', function (): void {
     CurrentContext::$source = 'api';
     $customer = createServiceCustomer();
     $plan = createPlan();
@@ -262,7 +262,7 @@ it('fails in api context without external_customer_id', function () {
     expect($result->getError()->messages)->toBe(['external_customer_id' => ['value_is_mandatory']]);
 });
 
-it('fails with an invalid billing_time', function () {
+it('fails with an invalid billing_time', function (): void {
     $customer = createServiceCustomer();
     $plan = createPlan();
 
@@ -275,7 +275,7 @@ it('fails with an invalid billing_time', function () {
     expect($result->getError()->messages)->toBe(['billing_time' => ['value_is_invalid']]);
 });
 
-it('fails with an invalid ending_at', function () {
+it('fails with an invalid ending_at', function (): void {
     $customer = createServiceCustomer();
     $plan = createPlan();
 
@@ -288,7 +288,7 @@ it('fails with an invalid ending_at', function () {
     expect($result->getError()->messages)->toBe(['ending_at' => ['invalid_date']]);
 });
 
-it('does not validate or assign on_termination_credit_note on create (Rails parity)', function () {
+it('does not validate or assign on_termination_credit_note on create (Rails parity)', function (): void {
     // Rails' CreateService passes neither on_termination flag to the validator
     // nor to the model on create — only UpdateService/TerminateService set it.
     $customer = createServiceCustomer();
@@ -304,7 +304,7 @@ it('does not validate or assign on_termination_credit_note on create (Rails pari
         ->and($result->subscription->on_termination_credit_note)->toBeNull();
 });
 
-it('fails with an invalid consolidate_invoice value', function () {
+it('fails with an invalid consolidate_invoice value', function (): void {
     $customer = createServiceCustomer();
     $plan = createPlan();
 
@@ -317,7 +317,7 @@ it('fails with an invalid consolidate_invoice value', function () {
     expect($result->getError()->messages)->toBe(['consolidate_invoice' => ['invalid_value']]);
 });
 
-it('updates the customer currency from the plan currency', function () {
+it('updates the customer currency from the plan currency', function (): void {
     $customer = createServiceCustomer(['currency' => null]);
     $plan = createPlan(['amount_currency' => 'USD']);
 
@@ -330,7 +330,7 @@ it('updates the customer currency from the plan currency', function () {
         ->and($customer->fresh()->currency)->toBe('USD');
 });
 
-it('accepts ending_at when it is after today and after subscription_at', function () {
+it('accepts ending_at when it is after today and after subscription_at', function (): void {
     $customer = createServiceCustomer();
     $plan = createPlan();
 
@@ -344,7 +344,7 @@ it('accepts ending_at when it is after today and after subscription_at', functio
         ->and($result->subscription->ending_at->format('Y-m-d'))->toBe('2025-01-01');
 });
 
-it('stores progressive billing settings and normalizes the purchase order number', function () {
+it('stores progressive billing settings and normalizes the purchase order number', function (): void {
     $customer = createServiceCustomer();
     $plan = createPlan(['pay_in_advance' => true]);
 

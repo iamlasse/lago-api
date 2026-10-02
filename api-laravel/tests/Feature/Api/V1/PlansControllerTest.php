@@ -95,7 +95,7 @@ it('creates a plan with charges and fixed charges', function (): void {
 
     $this->postJson('/api/v1/plans', ['plan' => $createParams], [
         'Authorization' => 'Bearer '.$apiKey->value,
-    ])->assertOk()->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($createParams, $tax) {
+    ])->assertOk()->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($createParams, $tax): void {
         $json->where('plan.lago_id', fn ($id) => is_string($id) && $id !== '')
             ->where('plan.code', $createParams['code'])
             ->where('plan.name', $createParams['name'])
@@ -143,7 +143,7 @@ it('ignores premium fields when license is not premium', function (): void {
 
     $this->postJson('/api/v1/plans', ['plan' => $createParams], [
         'Authorization' => 'Bearer '.$apiKey->value,
-    ])->assertOk()->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) {
+    ])->assertOk()->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json): void {
         $json->where('plan.charges.0.invoiceable', true)
             ->where('plan.charges.0.regroup_paid_fees', null)
             ->etc();
@@ -170,7 +170,7 @@ it('creates a plan with graduated charges', function (): void {
 
     $this->postJson('/api/v1/plans', ['plan' => $createParams], [
         'Authorization' => 'Bearer '.$apiKey->value,
-    ])->assertOk()->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) {
+    ])->assertOk()->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json): void {
         $json->where('plan.charges.0.charge_model', 'graduated')
             ->where('plan.charges.0.properties.graduated_ranges.0.flat_amount', '10')
             ->etc();
@@ -184,7 +184,7 @@ it('creates a plan without charges', function (): void {
 
     $this->postJson('/api/v1/plans', ['plan' => $createParams], [
         'Authorization' => 'Bearer '.$apiKey->value,
-    ])->assertOk()->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) {
+    ])->assertOk()->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json): void {
         $json->where('plan.code', 'plan_code')
             ->where('plan.charges', [])
             ->etc();
@@ -295,7 +295,7 @@ it('updates a plan', function (): void {
         'pay_in_advance' => false,
     ]], ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($plan) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($plan): void {
             $json->where('plan.lago_id', (string) $plan->id)
                 ->where('plan.name', 'P1 updated')
                 ->where('plan.amount_cents', 200)
@@ -325,7 +325,7 @@ it('returns unprocessable_entity error when plan code already exists in organiza
         'interval' => 'monthly',
     ]], ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertStatus(422)
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json): void {
             $json->where('status', 422)
                 ->where('code', 'validation_errors')
                 ->has('error_details.code')
@@ -341,7 +341,7 @@ it('returns the plan', function (): void {
 
     getPlansWithToken('/api/v1/plans/'.$plan->code, [], $apiKey->value)
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($plan) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($plan): void {
             $json->where('plan.lago_id', (string) $plan->id)
                 ->where('plan.code', $plan->code)
                 ->etc();
@@ -408,7 +408,7 @@ it('marks the plan as pending deletion and returns it', function (): void {
 
     $this->deleteJson('/api/v1/plans/'.$plan->code, [], [
         'Authorization' => 'Bearer '.$apiKey->value,
-    ])->assertOk()->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($plan) {
+    ])->assertOk()->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($plan): void {
         $json->where('plan.lago_id', (string) $plan->id)
             ->where('plan.code', $plan->code)
             ->where('plan.applicable_usage_thresholds', [])
@@ -476,7 +476,7 @@ it('returns plans', function (): void {
 
     getPlansWithToken('/api/v1/plans?page=1&per_page=1', [], $apiKey->value)
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($plan) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($plan): void {
             $json->count('plans', 1)
                 ->where('plans.0.lago_id', (string) $plan->id)
                 ->where('plans.0.code', $plan->code)
@@ -492,7 +492,7 @@ it('includes the pending for deletion plan in the response', function (): void {
 
     getPlansWithToken('/api/v1/plans', [], $apiKey->value)
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json): void {
             $json->count('plans', 2)->etc();
         });
 });
@@ -503,7 +503,7 @@ it('returns plans with correct meta data', function (): void {
 
     getPlansWithToken('/api/v1/plans?page=1&per_page=1', [], $apiKey->value)
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json): void {
             $json->count('plans', 1)->etc()
                 ->where('meta.current_page', 1)
                 ->where('meta.next_page', 2)

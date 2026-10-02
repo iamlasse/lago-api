@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Firebase\JWT\JWT;
 use App\Enums\WebhookStatus;
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -19,7 +22,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * port always uses the database columns (payload_key / response_key stay
  * null), which is Rails' legacy path — same payloads, same accessors.
  */
-#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+#[Fillable([
     'object_id',
     'object_type',
     'status',
@@ -35,7 +38,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
     'payload_key',
     'response_key',
 ])]
-#[\Illuminate\Database\Eloquent\Attributes\Table(name: 'webhooks')]
+#[Table(name: 'webhooks')]
 class Webhook extends BaseModel
 {
     use HasFactory;
@@ -118,7 +121,7 @@ class Webhook extends BaseModel
      */
     public function jwtSignature(): string
     {
-        return \Firebase\JWT\JWT::encode(
+        return JWT::encode(
             [
                 'data' => $this->payloadJson(),
                 'iss' => $this->issuer(),

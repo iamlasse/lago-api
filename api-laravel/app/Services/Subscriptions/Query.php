@@ -4,19 +4,18 @@ declare(strict_types=1);
 
 namespace App\Services\Subscriptions;
 
-use App\Enums\SubscriptionStatus;
-use App\Models\Customer;
 use App\Models\Plan;
-use App\Models\Subscription;
-use App\GraphQL\Support\Page;
+use App\Models\Customer;
 use App\Models\Organization;
+use App\Models\Subscription;
 use App\Services\BaseResult;
+use App\GraphQL\Support\Page;
 use App\Services\BaseService;
+use App\Enums\SubscriptionStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 use function is_array;
-use function is_string;
 
 /**
  * Port of Rails' SubscriptionsQuery (app/queries/subscriptions_query.rb) —
@@ -95,7 +94,7 @@ class Query extends BaseService
      */
     private function baseScope(): Builder
     {
-        $scope = Subscription::query()->where('organization_id', $this->organization->id);
+        $scope = Subscription::query()->where('subscriptions.organization_id', $this->organization->id);
 
         $searchTerm = (string) ($this->searchTerm ?? '');
 

@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\SoftDeletes;
-
 use App\Enums\CouponType;
 use App\Enums\CouponStatus;
 use App\Enums\CouponFrequency;
 use App\Enums\CouponExpiration;
 use App\Models\Casts\BcNumeric;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Port of Rails' Coupon (app/models/coupon.rb) for the invoicing pipeline.
@@ -21,7 +22,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * modeled yet; the pipeline only reads `limited_plans` /
  * `limited_billable_metrics` flags and the target ids.
  */
-#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+#[Fillable([
     'organization_id',
     'name',
     'code',
@@ -40,11 +41,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'limited_billable_metrics',
     'description',
 ])]
-#[\Illuminate\Database\Eloquent\Attributes\Table(name: 'coupons')]
+#[Table(name: 'coupons')]
 class Coupon extends BaseModel
 {
     use HasFactory;
-
     use SoftDeletes;
 
     public function appliedCoupons(): HasMany

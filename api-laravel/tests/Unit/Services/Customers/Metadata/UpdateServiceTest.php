@@ -8,7 +8,7 @@ use App\Support\CurrentContext;
 use App\Services\Failures\ValidationFailure;
 use App\Services\Customers\Metadata\UpdateService;
 
-beforeEach(function () {
+beforeEach(function (): void {
     CurrentContext::reset();
 });
 
@@ -30,7 +30,7 @@ function metadataRow(Customer $customer, string $key, string $value = 'v'): obje
     ]);
 }
 
-it('creates metadata without ids', function () {
+it('creates metadata without ids', function (): void {
     [, $customer] = metadataContext();
 
     $result = UpdateService::call(customer: $customer, params: [
@@ -44,7 +44,7 @@ it('creates metadata without ids', function () {
         ->and($customer->metadata()->where('key', 'k2')->first()->display_in_invoice)->toBeFalse();
 })->group('ledger:svc:Customers.Metadata.UpdateService');
 
-it('updates metadata by id', function () {
+it('updates metadata by id', function (): void {
     [, $customer] = metadataContext();
     $row = metadataRow($customer, 'k1', 'old');
 
@@ -58,7 +58,7 @@ it('updates metadata by id', function () {
         ->and($customer->metadata()->count())->toBe(1);
 });
 
-it('deletes metadata absent from the payload', function () {
+it('deletes metadata absent from the payload', function (): void {
     [, $customer] = metadataContext();
     $kept = metadataRow($customer, 'k1');
     $removed = metadataRow($customer, 'k2');
@@ -73,7 +73,7 @@ it('deletes metadata absent from the payload', function () {
         ->and($removed->fresh())->toBeNull();
 });
 
-it('keeps newly created metadata through the sanitization', function () {
+it('keeps newly created metadata through the sanitization', function (): void {
     [, $customer] = metadataContext();
     metadataRow($customer, 'gone');
 
@@ -85,7 +85,7 @@ it('keeps newly created metadata through the sanitization', function () {
         ->and($customer->metadata()->pluck('key')->all())->toBe(['fresh']);
 });
 
-it('rejects a too long key or value', function () {
+it('rejects a too long key or value', function (): void {
     [, $customer] = metadataContext();
 
     $result = UpdateService::call(customer: $customer, params: [
@@ -104,7 +104,7 @@ it('rejects a too long key or value', function () {
         ->and($result->getError()->messages['value'])->toBe(['value_is_too_long']);
 });
 
-it('rejects duplicate keys on the same customer', function () {
+it('rejects duplicate keys on the same customer', function (): void {
     [, $customer] = metadataContext();
     metadataRow($customer, 'dup');
 

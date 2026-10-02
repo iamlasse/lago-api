@@ -9,7 +9,7 @@ use Database\Factories\TaxFactory;
 use Illuminate\Support\Facades\DB;
 use App\Services\Customers\ApplyTaxesService;
 
-beforeEach(function () {
+beforeEach(function (): void {
     CurrentContext::reset();
 });
 
@@ -24,7 +24,7 @@ function applyTaxesContext(): array
     return [$organization, $customer, $tax1, $tax2];
 }
 
-it('applies taxes to the customer', function () {
+it('applies taxes to the customer', function (): void {
     [, $customer, $tax1, $tax2] = applyTaxesContext();
 
     $result = ApplyTaxesService::call(customer: $customer, taxCodes: [$tax1->code, $tax2->code]);
@@ -34,7 +34,7 @@ it('applies taxes to the customer', function () {
         ->and($result->applied_taxes)->toHaveCount(2);
 })->group('ledger:svc:Customers.ApplyTaxesService');
 
-it('marks draft invoices as ready to be refreshed', function () {
+it('marks draft invoices as ready to be refreshed', function (): void {
     [, $customer, $tax1, $tax2] = applyTaxesContext();
 
     DB::table('invoices')->insert([
@@ -53,14 +53,14 @@ it('marks draft invoices as ready to be refreshed', function () {
     expect((bool) DB::table('invoices')->where('customer_id', $customer->id)->value('ready_to_be_refreshed'))->toBeTrue();
 });
 
-it('fails when the customer is missing', function () {
+it('fails when the customer is missing', function (): void {
     $result = ApplyTaxesService::call(customer: null, taxCodes: []);
 
     expect($result->success())->toBeFalse()
         ->and($result->getError()->getMessage())->toBe('customer_not_found');
 });
 
-it('fails when a tax code is unknown', function () {
+it('fails when a tax code is unknown', function (): void {
     [, $customer] = applyTaxesContext();
 
     $result = ApplyTaxesService::call(customer: $customer, taxCodes: ['unknown']);
@@ -69,7 +69,7 @@ it('fails when a tax code is unknown', function () {
         ->and($result->getError()->getMessage())->toBe('tax_not_found');
 });
 
-it('does not duplicate an already applied tax', function () {
+it('does not duplicate an already applied tax', function (): void {
     [, $customer, $tax1, $tax2] = applyTaxesContext();
 
     $customer->appliedTaxes()->create([
@@ -84,7 +84,7 @@ it('does not duplicate an already applied tax', function () {
     expect($customer->appliedTaxes()->count())->toBe(2);
 });
 
-it('removes applied taxes that are no longer requested', function () {
+it('removes applied taxes that are no longer requested', function (): void {
     [, $customer, $tax1, $tax2] = applyTaxesContext();
 
     $customer->appliedTaxes()->create([
@@ -98,7 +98,7 @@ it('removes applied taxes that are no longer requested', function () {
         ->and($customer->appliedTaxes()->first()->tax_id)->toBe($tax2->id);
 });
 
-it('assigns a duplicated tax code only once', function () {
+it('assigns a duplicated tax code only once', function (): void {
     [, $customer, $tax1] = applyTaxesContext();
 
     ApplyTaxesService::call(customer: $customer, taxCodes: [$tax1->code, $tax1->code]);

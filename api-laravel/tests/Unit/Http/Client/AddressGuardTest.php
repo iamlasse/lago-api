@@ -12,7 +12,7 @@ use Illuminate\Http\Client\ConnectionException;
 /**
  * Port of spec/lib/lago_http_client/address_guard_spec.rb (SSRF vectors).
  */
-it('blocks private and special-purpose IPv4 ranges', function (string $ip) {
+it('blocks private and special-purpose IPv4 ranges', function (string $ip): void {
     expect(AddressGuard::blockedIp($ip))->toBeTrue();
 })->with([
     'this-network' => '0.0.0.0',
@@ -28,7 +28,7 @@ it('blocks private and special-purpose IPv4 ranges', function (string $ip) {
     'reserved' => '240.0.0.1',
 ]);
 
-it('blocks non-global and special-purpose IPv6 addresses', function (string $ip) {
+it('blocks non-global and special-purpose IPv6 addresses', function (string $ip): void {
     expect(AddressGuard::blockedIp($ip))->toBeTrue();
 })->with([
     'loopback' => '::1',
@@ -41,7 +41,7 @@ it('blocks non-global and special-purpose IPv6 addresses', function (string $ip)
     'nat64-embedded-private' => '64:ff9b::a00:1', // 10.0.0.1
 ]);
 
-it('allows global unicast addresses', function (string $ip) {
+it('allows global unicast addresses', function (string $ip): void {
     expect(AddressGuard::blockedIp($ip))->toBeFalse();
 })->with([
     'public-v4' => '8.8.8.8',
@@ -49,7 +49,7 @@ it('allows global unicast addresses', function (string $ip) {
     'global-v6' => '2600::1',
 ]);
 
-it('is enabled by default and honors the override', function () {
+it('is enabled by default and honors the override', function (): void {
     expect(AddressGuard::enabled())->toBeTrue();
 
     $_ENV['LAGO_WEBHOOK_ALLOW_PRIVATE_URLS'] = 'true';
@@ -62,15 +62,15 @@ it('is enabled by default and honors the override', function () {
     }
 });
 
-it('raises the blocked address error for loopback hosts', function () {
+it('raises the blocked address error for loopback hosts', function (): void {
     AddressGuard::resolve('localhost');
 })->throws(BlockedAddressError::class);
 
-it('raises a connection error for hosts that do not resolve', function () {
+it('raises a connection error for hosts that do not resolve', function (): void {
     AddressGuard::resolve('lago-does-not-exist.invalid');
 })->throws(ConnectionException::class);
 
-it('resolves public hosts', function () {
+it('resolves public hosts', function (): void {
     // DNS may be unavailable in the environment; only assert the error
     // contract, not the address.
     try {
@@ -83,7 +83,7 @@ it('resolves public hosts', function () {
 
 // -- LagoHttpClient surface -------------------------------------------------------
 
-it('raises LagoHttpError for non-success codes', function () {
+it('raises LagoHttpError for non-success codes', function (): void {
     Http::fake(['https://wh.test.com' => Http::response('nope', 500)]);
 
     $client = new LagoHttpClient('https://wh.test.com', readTimeout: 30);
@@ -97,7 +97,7 @@ it('raises LagoHttpError for non-success codes', function () {
     }
 });
 
-it('posts the json body with the given headers', function () {
+it('posts the json body with the given headers', function (): void {
     Http::fake(['https://wh.test.com' => Http::response('ok', 200)]);
 
     $client = new LagoHttpClient('https://wh.test.com');
@@ -111,7 +111,7 @@ it('posts the json body with the given headers', function () {
     });
 });
 
-it('blocks the request before it is sent for private targets', function () {
+it('blocks the request before it is sent for private targets', function (): void {
     Http::fake();
 
     $client = new LagoHttpClient('http://192.168.0.1:9/hook', blockPrivateAddresses: true);

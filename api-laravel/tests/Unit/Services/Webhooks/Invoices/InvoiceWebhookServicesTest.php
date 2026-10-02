@@ -14,7 +14,7 @@ use App\Services\Webhooks\Invoices\DraftedService;
  * Port of the "creates webhook" shared example for the invoice builders
  * (spec/services/webhooks/invoices/*_service_spec.rb).
  */
-beforeEach(function () {
+beforeEach(function (): void {
     Queue::fake();
 
     $this->organization = Organization::factory()->withoutWebhookEndpoint()->create();
@@ -35,7 +35,7 @@ beforeEach(function () {
     ]);
 });
 
-it('creates an invoice.created webhook', function () {
+it('creates an invoice.created webhook', function (): void {
     CreatedService::call(object: $this->invoice);
 
     $webhook = Webhook::query()->latest('created_at')->first();
@@ -52,7 +52,7 @@ it('creates an invoice.created webhook', function () {
     Queue::assertPushed(App\Jobs\SendHttpWebhookJob::class, 1);
 });
 
-it('creates an invoice.drafted webhook', function () {
+it('creates an invoice.drafted webhook', function (): void {
     DraftedService::call(object: $this->invoice);
 
     $payload = Webhook::query()->latest('created_at')->first()->payload;

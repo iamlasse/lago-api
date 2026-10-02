@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Builder;
 use App\Enums\SubscriptionInvoicingReason;
 use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Port of Rails' InvoiceSubscription (app/models/invoice_subscription.rb).
@@ -17,7 +19,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * The `matching?` guard is the double-billing protection for the recurring
  * billing process — it must behave exactly like Rails.
  */
-#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+#[Fillable([
     'invoice_id',
     'subscription_id',
     'recurring',
@@ -32,7 +34,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'fixed_charges_from_datetime',
     'fixed_charges_to_datetime',
 ])]
-#[\Illuminate\Database\Eloquent\Attributes\Table(name: 'invoice_subscriptions')]
+#[Table(name: 'invoice_subscriptions')]
 class InvoiceSubscription extends BaseModel
 {
     use HasFactory;
@@ -44,10 +46,19 @@ class InvoiceSubscription extends BaseModel
      */
     public static function matching(Subscription $subscription, BillingPeriodBoundaries $boundaries, bool $recurring = true): bool
     {
+        // Bind with the model's timestamp(6) format: Rails' matching? compares
+        // the full-precision boundaries (end-of-period carries .999999), and
+        // the default grammar format would truncate the fraction and miss.
+        $format = (new static)->getDateFormat();
+
+        $bind = function (mixed $value) use ($format) {
+            return $value instanceof DateTimeInterface ? $value->format($format) : $value;
+        };
+
         $baseQuery = static::query()
             ->where('subscription_id', $subscription->id)
-            ->where('from_datetime', $boundaries->fromDatetime)
-            ->where('to_datetime', $boundaries->toDatetime);
+            ->where('from_datetime', $bind($boundaries->fromDatetime))
+            ->where('to_datetime', $bind($boundaries->toDatetime));
 
         if ($recurring) {
             $baseQuery->recurring();

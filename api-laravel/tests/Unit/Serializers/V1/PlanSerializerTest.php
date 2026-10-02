@@ -33,7 +33,7 @@ function serializerPlan(): Plan
     ]);
 }
 
-it('serializes a plan with literal snake_case keys', function () {
+it('serializes a plan with literal snake_case keys', function (): void {
     $plan = serializerPlan();
 
     $payload = (new PlanSerializer($plan))->serialize();
@@ -56,7 +56,7 @@ it('serializes a plan with literal snake_case keys', function () {
         ->and(array_key_exists('charges', $payload))->toBeFalse();
 })->group('ledger:ser:V1.PlanSerializer');
 
-it('serializes nested charges with the filters collection', function () {
+it('serializes nested charges with the filters collection', function (): void {
     $plan = serializerPlan();
     $metric = BillableMetric::factory()->create(['organization_id' => $plan->organization_id, 'code' => 'api']);
     $metricFilter = BillableMetricFilter::query()->create([
@@ -111,7 +111,7 @@ it('serializes nested charges with the filters collection', function () {
         ->and($serializedCharge['filters'][0]['properties'])->toBe(['amount' => '20']);
 });
 
-it('serializes a fixed charge with units as a BigDecimal-style string', function () {
+it('serializes a fixed charge with units as a BigDecimal-style string', function (): void {
     $plan = serializerPlan();
     $addOn = AddOn::factory()->create(['organization_id' => $plan->organization_id, 'code' => 'support']);
 
@@ -147,7 +147,7 @@ it('serializes a fixed charge with units as a BigDecimal-style string', function
         ->and(FixedChargeSerializer::serializeUnits('25.5000000000'))->toBe('25.5');
 })->group('ledger:ser:V1.FixedChargeSerializer');
 
-it('serializes a charge filter with the values hash', function () {
+it('serializes a charge filter with the values hash', function (): void {
     $plan = serializerPlan();
     $metric = BillableMetric::factory()->create(['organization_id' => $plan->organization_id, 'code' => 'api']);
     $metricFilter = BillableMetricFilter::query()->create([
@@ -187,7 +187,7 @@ it('serializes a charge filter with the values hash', function () {
         ->and($payload['values'])->toBe(['region' => ['us']]);
 })->group('ledger:ser:V1.ChargeFilterSerializer');
 
-it('serializes a charge standalone with taxes omitted unless included', function () {
+it('serializes a charge standalone with taxes omitted unless included', function (): void {
     $plan = serializerPlan();
     $metric = BillableMetric::factory()->create(['organization_id' => $plan->organization_id, 'code' => 'api']);
     $charge = Charge::factory()->create([

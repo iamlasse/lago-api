@@ -12,7 +12,7 @@ use App\Services\Customers\CreateService;
 use App\Services\Failures\NotFoundFailure;
 use App\Services\Failures\ValidationFailure;
 
-beforeEach(function () {
+beforeEach(function (): void {
     CurrentContext::reset();
     CurrentContext::$source = 'graphql';
 });
@@ -26,7 +26,7 @@ function createArgs(Organization $organization): array
     ];
 }
 
-it('creates a new customer on the default billing entity', function () {
+it('creates a new customer on the default billing entity', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
 
     $result = CreateService::call(organization: $organization, args: createArgs($organization));
@@ -44,7 +44,7 @@ it('creates a new customer on the default billing entity', function () {
         ->and($customer->slug)->not->toBeNull();
 })->group('ledger:svc:Customers.CreateService');
 
-it('creates a customer with shipping address and billing configuration', function () {
+it('creates a customer with shipping address and billing configuration', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
 
     $args = createArgs($organization);
@@ -78,7 +78,7 @@ it('creates a customer with shipping address and billing configuration', functio
         ->and($customer->document_locale)->toBe('fr');
 });
 
-it('creates a customer with a customer type', function () {
+it('creates a customer with a customer type', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
 
     $args = createArgs($organization);
@@ -90,7 +90,7 @@ it('creates a customer with a customer type', function () {
         ->and($result->customer->getRawOriginal('customer_type'))->toBe('individual');
 });
 
-it('creates a customer with metadata', function () {
+it('creates a customer with metadata', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
 
     $args = createArgs($organization);
@@ -105,7 +105,7 @@ it('creates a customer with metadata', function () {
         ->and($result->customer->metadata()->count())->toBe(2);
 });
 
-it('rejects more than five metadata entries', function () {
+it('rejects more than five metadata entries', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
 
     $args = createArgs($organization);
@@ -119,7 +119,7 @@ it('rejects more than five metadata entries', function () {
         ->and($result->getError()->messages)->toBe(['metadata' => ['invalid_count']]);
 });
 
-it('fails when the customer external_id already exists', function () {
+it('fails when the customer external_id already exists', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
 
     $args = createArgs($organization);
@@ -132,7 +132,7 @@ it('fails when the customer external_id already exists', function () {
         ->and($result->getError()->messages['external_id'])->toBe(['value_already_exist']);
 });
 
-it('fails without external_id', function () {
+it('fails without external_id', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
 
     $args = createArgs($organization);
@@ -144,7 +144,7 @@ it('fails without external_id', function () {
         ->and($result->getError())->toBeInstanceOf(ValidationFailure::class);
 });
 
-it('fails when the organization does not exist', function () {
+it('fails when the organization does not exist', function (): void {
     $result = CreateService::call(organization: null, args: ['external_id' => 'x']);
 
     expect($result->success())->toBeFalse()
@@ -152,7 +152,7 @@ it('fails when the organization does not exist', function () {
         ->and($result->getError()->resource)->toBe('organization');
 });
 
-it('fails when the organization has no active billing entity', function () {
+it('fails when the organization has no active billing entity', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
 
     DB::table('billing_entities')->where('organization_id', $organization->id)->update(['archived_at' => now()]);
@@ -164,7 +164,7 @@ it('fails when the organization has no active billing entity', function () {
         ->and($result->getError()->resource)->toBe('billing_entity');
 });
 
-it('fails when the billing entity code belongs to an archived billing entity', function () {
+it('fails when the billing entity code belongs to an archived billing entity', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
     $archived = BillingEntity::factory()->for($organization)->create(['archived_at' => now()]);
 
@@ -177,7 +177,7 @@ it('fails when the billing entity code belongs to an archived billing entity', f
         ->and($result->getError())->toBeInstanceOf(NotFoundFailure::class);
 });
 
-it('resolves a specific billing entity by code', function () {
+it('resolves a specific billing entity by code', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
     $entity2 = BillingEntity::factory()->for($organization)->create();
 
@@ -190,7 +190,7 @@ it('resolves a specific billing entity by code', function () {
         ->and($result->customer->billing_entity_id)->toBe($entity2->id);
 });
 
-it('applies eu auto taxes when the billing entity manages eu taxes', function () {
+it('applies eu auto taxes when the billing entity manages eu taxes', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
     $organization->defaultBillingEntity->update(['eu_tax_management' => true, 'country' => 'FR']);
 
@@ -210,7 +210,7 @@ it('applies eu auto taxes when the billing entity manages eu taxes', function ()
         ->and($result->customer->taxes()->pluck('code')->all())->toBe(['lago_eu_fr_standard']);
 });
 
-it('applies the requested tax codes to the customer', function () {
+it('applies the requested tax codes to the customer', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
 
     $tax = TaxFactory::new()->create(['organization_id' => $organization->id, 'code' => 'custom-tax']);
@@ -224,7 +224,7 @@ it('applies the requested tax codes to the customer', function () {
         ->and($result->customer->taxes()->pluck('code')->all())->toBe([$tax->code]);
 });
 
-it('fails on an unknown tax code', function () {
+it('fails on an unknown tax code', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
 
     $args = createArgs($organization);
@@ -236,7 +236,7 @@ it('fails on an unknown tax code', function () {
         ->and($result->getError()->getMessage())->toBe('tax_not_found');
 });
 
-it('skips eu auto taxes (vies pending) when a tax identification number is set', function () {
+it('skips eu auto taxes (vies pending) when a tax identification number is set', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
     $organization->defaultBillingEntity->update(['eu_tax_management' => true, 'country' => 'FR']);
 

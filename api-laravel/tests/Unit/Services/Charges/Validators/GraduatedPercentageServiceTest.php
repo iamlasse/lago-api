@@ -28,7 +28,7 @@ function validGraduatedPercentageRanges(): array
     ];
 }
 
-it('is valid with well-formed ranges on a latest_agg metric', function () {
+it('is valid with well-formed ranges on a latest_agg metric', function (): void {
     $validator = graduatedPercentageValidator([
         'graduated_percentage_ranges' => validGraduatedPercentageRanges(),
     ]);
@@ -36,7 +36,7 @@ it('is valid with well-formed ranges on a latest_agg metric', function () {
     expect($validator->valid())->toBeTrue();
 });
 
-it('is invalid when the billable metric is not latest_agg', function () {
+it('is invalid when the billable metric is not latest_agg', function (): void {
     $metric = metricForValidation(BillableMetricFactory::SUM_AGG);
 
     $validator = new GraduatedPercentageService(chargeWithMetricForValidation([
@@ -46,19 +46,19 @@ it('is invalid when the billable metric is not latest_agg', function () {
     expectPropertyError($validator, 'billable_metric', 'invalid_value');
 });
 
-it('ensures the presence of ranges', function () {
+it('ensures the presence of ranges', function (): void {
     $validator = graduatedPercentageValidator([]);
 
     expectPropertyError($validator, 'graduated_percentage_ranges', 'missing_graduated_percentage_ranges');
 });
 
-it('fails validation instead of raising when the ranges key is absent', function () {
+it('fails validation instead of raising when the ranges key is absent', function (): void {
     $validator = graduatedPercentageValidator(['foo' => 'bar']);
 
     expectPropertyError($validator, 'graduated_percentage_ranges', 'missing_graduated_percentage_ranges');
 });
 
-it('is invalid when ranges do not start at 0', function () {
+it('is invalid when ranges do not start at 0', function (): void {
     $validator = graduatedPercentageValidator([
         'graduated_percentage_ranges' => [
             ['from_value' => -1, 'to_value' => 100, 'rate' => '0.1', 'flat_amount' => '0'],
@@ -68,7 +68,7 @@ it('is invalid when ranges do not start at 0', function () {
     expectPropertyError($validator, 'graduated_percentage_ranges', 'invalid_graduated_percentage_ranges');
 });
 
-it('is invalid when ranges do not end at infinity', function () {
+it('is invalid when ranges do not end at infinity', function (): void {
     $validator = graduatedPercentageValidator([
         'graduated_percentage_ranges' => [
             ['from_value' => 0, 'to_value' => 100, 'rate' => '0.1', 'flat_amount' => '0'],
@@ -78,7 +78,7 @@ it('is invalid when ranges do not end at infinity', function () {
     expectPropertyError($validator, 'graduated_percentage_ranges', 'invalid_graduated_percentage_ranges');
 });
 
-it('is invalid when ranges have holes', function () {
+it('is invalid when ranges have holes', function (): void {
     $validator = graduatedPercentageValidator([
         'graduated_percentage_ranges' => [
             ['from_value' => 0, 'to_value' => 100, 'rate' => '0.1', 'flat_amount' => '0'],
@@ -89,7 +89,7 @@ it('is invalid when ranges have holes', function () {
     expectPropertyError($validator, 'graduated_percentage_ranges', 'invalid_graduated_percentage_ranges');
 });
 
-it('is invalid when ranges are overlapping', function () {
+it('is invalid when ranges are overlapping', function (): void {
     $validator = graduatedPercentageValidator([
         'graduated_percentage_ranges' => [
             ['from_value' => 0, 'to_value' => 100, 'rate' => '0.1', 'flat_amount' => '0'],
@@ -100,7 +100,7 @@ it('is invalid when ranges are overlapping', function () {
     expectPropertyError($validator, 'graduated_percentage_ranges', 'invalid_graduated_percentage_ranges');
 });
 
-it('is invalid with no range rate', function () {
+it('is invalid with no range rate', function (): void {
     $validator = graduatedPercentageValidator([
         'graduated_percentage_ranges' => [
             ['from_value' => 0, 'to_value' => null, 'rate' => null, 'flat_amount' => '0'],
@@ -110,7 +110,7 @@ it('is invalid with no range rate', function () {
     expectPropertyError($validator, 'rate', 'invalid_rate');
 });
 
-it('is invalid with a non-numeric range rate', function () {
+it('is invalid with a non-numeric range rate', function (): void {
     $validator = graduatedPercentageValidator([
         'graduated_percentage_ranges' => [
             ['from_value' => 0, 'to_value' => null, 'rate' => 'foo', 'flat_amount' => '0'],
@@ -120,7 +120,7 @@ it('is invalid with a non-numeric range rate', function () {
     expectPropertyError($validator, 'rate', 'invalid_rate');
 });
 
-it('is invalid with a negative range rate', function () {
+it('is invalid with a negative range rate', function (): void {
     $validator = graduatedPercentageValidator([
         'graduated_percentage_ranges' => [
             ['from_value' => 0, 'to_value' => null, 'rate' => '-0.1', 'flat_amount' => '0'],
@@ -130,7 +130,7 @@ it('is invalid with a negative range rate', function () {
     expectPropertyError($validator, 'rate', 'invalid_rate');
 });
 
-it('is invalid with no range flat amount', function () {
+it('is invalid with no range flat amount', function (): void {
     $validator = graduatedPercentageValidator([
         'graduated_percentage_ranges' => [
             ['from_value' => 0, 'to_value' => null, 'rate' => '0.1', 'flat_amount' => null],

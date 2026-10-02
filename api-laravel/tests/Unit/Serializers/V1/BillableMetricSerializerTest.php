@@ -7,11 +7,11 @@ use App\Models\BillableMetric;
 use App\Support\CurrentContext;
 use App\Serializers\V1\BillableMetricSerializer;
 
-beforeEach(function () {
+beforeEach(function (): void {
     CurrentContext::reset();
 });
 
-it('serializes the billable metric', function () {
+it('serializes the billable metric', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
 
     $metric = BillableMetric::factory()->for($organization)->weightedSum()->create([
@@ -42,7 +42,7 @@ it('serializes the billable metric', function () {
         ->and($result['billable_metric']['filters'])->toBe([]);
 });
 
-it('omits the counters unless included and returns zero counts when included', function () {
+it('omits the counters unless included and returns zero counts when included', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
     $metric = BillableMetric::factory()->for($organization)->create();
 

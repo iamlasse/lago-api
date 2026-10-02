@@ -15,18 +15,18 @@ use Illuminate\Http\Client\ConnectionException;
 // Rails' spec_helper.rb: ENV["LAGO_WEBHOOK_ALLOW_PRIVATE_URLS"] ||= "true".
 // The SSRF guard is exercised explicitly in the guard tests below and in
 // tests/Unit/Http/Client/AddressGuardTest.php.
-beforeEach(function () {
+beforeEach(function (): void {
     $_ENV['LAGO_WEBHOOK_ALLOW_PRIVATE_URLS'] = 'true';
     $_SERVER['LAGO_WEBHOOK_ALLOW_PRIVATE_URLS'] = 'true';
 
     Queue::fake();
 });
 
-afterEach(function () {
+afterEach(function (): void {
     unset($_ENV['LAGO_WEBHOOK_ALLOW_PRIVATE_URLS'], $_SERVER['LAGO_WEBHOOK_ALLOW_PRIVATE_URLS']);
 });
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->endpoint = WebhookEndpoint::factory()->create([
         'webhook_url' => 'https://wh.test.com',
         // HMAC by default in this suite; the JWT tests generate their own key.
@@ -45,7 +45,7 @@ beforeEach(function () {
 
 // -- Success -------------------------------------------------------------------
 
-it('marks the webhook as succeeded', function () {
+it('marks the webhook as succeeded', function (): void {
     Http::fake(['https://wh.test.com' => Http::response('ok', 200)]);
 
     SendHttpService::call(webhook: $this->webhook);
@@ -66,7 +66,7 @@ it('marks the webhook as succeeded', function () {
     Queue::assertNothingPushed();
 });
 
-it('sends the signature headers', function () {
+it('sends the signature headers', function (): void {
     $this->endpoint->update(['signature_algo' => 1]); // :hmac
     Http::fake(['https://wh.test.com' => Http::response('ok', 200)]);
 
@@ -87,7 +87,7 @@ it('sends the signature headers', function () {
     });
 });
 
-it('re-points the endpoint at the endpoint record url before sending', function () {
+it('re-points the endpoint at the endpoint record url before sending', function (): void {
     $this->endpoint->update(['webhook_url' => 'https://wh-updated.test.com']);
     Http::fake(['https://wh-updated.test.com' => Http::response('ok', 200)]);
 
@@ -98,7 +98,7 @@ it('re-points the endpoint at the endpoint record url before sending', function 
 
 // -- HTTP error ----------------------------------------------------------------
 
-it('creates a retrying webhook on an http error', function () {
+it('creates a retrying webhook on an http error', function (): void {
     Http::fake(['https://wh.test.com' => Http::response(['message' => 'forbidden'], 403)]);
 
     SendHttpService::call(webhook: $this->webhook);
@@ -114,7 +114,7 @@ it('creates a retrying webhook on an http error', function () {
     Queue::assertPushed(SendHttpWebhookJob::class, 1);
 });
 
-it('keeps retrying an already retried webhook', function () {
+it('keeps retrying an already retried webhook', function (): void {
     $this->webhook->update(['retries' => 1, 'status' => 3]); // :retrying
     Http::fake(['https://wh.test.com' => Http::response('nope', 403)]);
 
@@ -129,7 +129,7 @@ it('keeps retrying an already retried webhook', function () {
     Queue::assertPushed(SendHttpWebhookJob::class, 1);
 });
 
-it('fails the webhook after the attempt limit and stops re-enqueueing', function () {
+it('fails the webhook after the attempt limit and stops re-enqueueing', function (): void {
     $this->webhook->update(['retries' => 2, 'status' => 3]); // :retrying
     Http::fake(['https://wh.test.com' => Http::response('nope', 403)]);
 
@@ -144,7 +144,7 @@ it('fails the webhook after the attempt limit and stops re-enqueueing', function
     Queue::assertNothingPushed();
 });
 
-it('honours a configured attempt limit', function () {
+it('honours a configured attempt limit', function (): void {
     config(['lago.webhook.attempts' => 2]);
     $this->webhook->update(['retries' => 1, 'status' => 3]);
     Http::fake(['https://wh.test.com' => Http::response('nope', 500)]);
@@ -158,8 +158,8 @@ it('honours a configured attempt limit', function () {
 
 // -- Connection failures ---------------------------------------------------------
 
-it('stores a generic message when the connection fails', function () {
-    Http::fake(function () {
+it('stores a generic message when the connection fails', function (): void {
+    Http::fake(function (): void {
         throw new ConnectionException('cURL error 7: Failed to connect');
     });
 
@@ -174,7 +174,7 @@ it('stores a generic message when the connection fails', function () {
     Queue::assertPushed(SendHttpWebhookJob::class, 1);
 });
 
-it('does not send the webhook when the endpoint resolves to a private address', function () {
+it('does not send the webhook when the endpoint resolves to a private address', function (): void {
     unset($_ENV['LAGO_WEBHOOK_ALLOW_PRIVATE_URLS'], $_SERVER['LAGO_WEBHOOK_ALLOW_PRIVATE_URLS']);
     $this->endpoint->update(['webhook_url' => 'http://127.0.0.1:9381/hook']);
     $this->webhook->update(['endpoint' => 'http://127.0.0.1:9381/hook']);
@@ -190,7 +190,7 @@ it('does not send the webhook when the endpoint resolves to a private address', 
         ->and($webhook->responseJson())->toBe('Destination address is not allowed');
 });
 
-it('sends when LAGO_WEBHOOK_ALLOW_PRIVATE_URLS allows a private address', function () {
+it('sends when LAGO_WEBHOOK_ALLOW_PRIVATE_URLS allows a private address', function (): void {
     $this->endpoint->update(['webhook_url' => 'http://127.0.0.1:9381/hook']);
     $this->webhook->update(['endpoint' => 'http://127.0.0.1:9381/hook']);
     Http::fake(['http://127.0.0.1:9381/hook' => Http::response('ok', 200)]);
@@ -202,7 +202,7 @@ it('sends when LAGO_WEBHOOK_ALLOW_PRIVATE_URLS allows a private address', functi
 
 // -- Response capping and scrubbing ------------------------------------------------
 
-it('caps the stored response at 64KB', function () {
+it('caps the stored response at 64KB', function (): void {
     Http::fake(['https://wh.test.com' => Http::response(str_repeat('a', SendHttpService::MAX_STORED_RESPONSE_BYTES + 10), 200)]);
 
     SendHttpService::call(webhook: $this->webhook);
@@ -211,7 +211,7 @@ it('caps the stored response at 64KB', function () {
         ->toBe(str_repeat('a', SendHttpService::MAX_STORED_RESPONSE_BYTES));
 });
 
-it('drops a multibyte character cut by the byte cap', function () {
+it('drops a multibyte character cut by the byte cap', function (): void {
     // 'é' is 2 bytes; put it straddling the 64KB boundary.
     $body = str_repeat('a', SendHttpService::MAX_STORED_RESPONSE_BYTES - 1).'é';
     Http::fake(['https://wh.test.com' => Http::response($body, 200)]);
@@ -222,7 +222,7 @@ it('drops a multibyte character cut by the byte cap', function () {
         ->and($this->webhook->fresh()->responseJson())->toBe(str_repeat('a', SendHttpService::MAX_STORED_RESPONSE_BYTES - 1));
 });
 
-it('stores the valid part of a non-UTF-8 response', function () {
+it('stores the valid part of a non-UTF-8 response', function (): void {
     Http::fake(['https://wh.test.com' => Http::response("ok\xFF", 200)]);
 
     SendHttpService::call(webhook: $this->webhook);
@@ -233,7 +233,7 @@ it('stores the valid part of a non-UTF-8 response', function () {
 
 // -- Backoff ---------------------------------------------------------------------
 
-it('computes the exponential backoff with jitter', function () {
+it('computes the exponential backoff with jitter', function (): void {
     $service = new SendHttpService(webhook: $this->webhook);
     $waitValue = new ReflectionMethod($service, 'waitValue');
 
@@ -252,7 +252,7 @@ it('computes the exponential backoff with jitter', function () {
         ->and($wait)->toBeLessThanOrEqual(83 + 81 * 0.15);
 });
 
-it('enqueues the retry with a delay', function () {
+it('enqueues the retry with a delay', function (): void {
     Http::fake(['https://wh.test.com' => Http::response('nope', 403)]);
 
     SendHttpService::call(webhook: $this->webhook);
@@ -264,7 +264,7 @@ it('enqueues the retry with a delay', function () {
 
 // -- Client construction -----------------------------------------------------------
 
-it('builds the http client with the configured timeouts and the SSRF guard', function () {
+it('builds the http client with the configured timeouts and the SSRF guard', function (): void {
     config(['lago.webhook.timeout_seconds' => 45]);
 
     $service = new SendHttpService(webhook: $this->webhook);

@@ -12,7 +12,9 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Services\Subscriptions\DatesService;
 use App\Models\Concerns\BelongsToOrganization;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
@@ -36,7 +38,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  *   billing_object_connections, applied_invoice_custom_sections,
  *   Clickhouse activity logs.
  */
-#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+#[Fillable([
     'customer_id',
     'plan_id',
     'status',
@@ -66,7 +68,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
     'purchase_order_number',
     'billing_anchor_date',
 ])]
-#[\Illuminate\Database\Eloquent\Attributes\Table(name: 'subscriptions')]
+#[Table(name: 'subscriptions')]
 class Subscription extends BaseModel
 {
     use BelongsToOrganization;

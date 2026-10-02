@@ -10,7 +10,7 @@ use App\GraphQL\Exceptions\ExecutionError;
  * (expect_unprocessable_entity / expect_not_found helpers in
  * spec/support/graphql_helper.rb).
  */
-it('builds a validation error with the unprocessable_entity shape', function () {
+it('builds a validation error with the unprocessable_entity shape', function (): void {
     $error = Errors::validationError(['base' => ['incorrect_login_or_password']]);
 
     expect($error)->toBeInstanceOf(ExecutionError::class)
@@ -22,7 +22,7 @@ it('builds a validation error with the unprocessable_entity shape', function () 
         ]);
 });
 
-it('builds a not found error keyed by resource', function () {
+it('builds a not found error keyed by resource', function (): void {
     $error = Errors::notFoundError('customer');
 
     expect($error->getMessage())->toBe('Resource not found')
@@ -33,7 +33,7 @@ it('builds a not found error keyed by resource', function () {
         ]);
 });
 
-it('builds a not allowed error', function () {
+it('builds a not allowed error', function (): void {
     $error = Errors::notAllowedError('signup_disabled');
 
     expect($error->getMessage())->toBe('Method Not Allowed')
@@ -41,7 +41,7 @@ it('builds a not allowed error', function () {
         ->and($error->getExtensions()['code'])->toBe('signup_disabled');
 });
 
-it('builds a forbidden error', function () {
+it('builds a forbidden error', function (): void {
     $error = Errors::forbiddenError('permissions_failure');
 
     expect($error->getMessage())->toBe('forbidden')
@@ -51,7 +51,7 @@ it('builds a forbidden error', function () {
         ]);
 });
 
-it('builds a third party failure wrapping messages under error', function () {
+it('builds a third party failure wrapping messages under error', function (): void {
     $error = Errors::thirdPartyFailure(['provider exploded']);
 
     expect($error->getExtensions())->toBe([
@@ -61,7 +61,7 @@ it('builds a third party failure wrapping messages under error', function () {
     ]);
 });
 
-it('lowerCamelizes details keys like Rails camelize(:lower)', function () {
+it('lowerCamelizes details keys like Rails camelize(:lower)', function (): void {
     $error = Errors::validationError([
         'external_customer_id' => ['cant_be_blank'],
         'name' => ['already_exists'],
@@ -75,7 +75,7 @@ it('lowerCamelizes details keys like Rails camelize(:lower)', function () {
     ]);
 });
 
-it('leaves message arrays untouched while camelizing keys only', function () {
+it('leaves message arrays untouched while camelizing keys only', function (): void {
     $error = Errors::validationError(['base' => ['incorrect_login_or_password']]);
 
     expect($error->getExtensions()['details']['base'])->toBe(['incorrect_login_or_password']);

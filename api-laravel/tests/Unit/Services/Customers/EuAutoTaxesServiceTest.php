@@ -11,7 +11,7 @@ use App\Services\Failures\ServiceFailure;
 use App\Services\Customers\EuAutoTaxesService;
 use App\Services\Failures\MethodNotAllowedFailure;
 
-beforeEach(function () {
+beforeEach(function (): void {
     CurrentContext::reset();
 });
 
@@ -26,7 +26,7 @@ function euTaxContext(bool $euTaxManagement = true, string $entityCountry = 'FR'
     return [$organization, $billingEntity, $customer];
 }
 
-it('requires eu tax management on the billing entity', function () {
+it('requires eu tax management on the billing entity', function (): void {
     [, , $customer] = euTaxContext(euTaxManagement: false);
 
     $result = EuAutoTaxesService::call(customer: $customer, newRecord: true, taxAttributesChanged: true);
@@ -36,7 +36,7 @@ it('requires eu tax management on the billing entity', function () {
         ->and($result->getError()->code)->toBe('eu_tax_not_applicable');
 })->group('ledger:svc:Customers.EuAutoTaxesService');
 
-it('assigns the billing entity standard tax when the customer has no country', function () {
+it('assigns the billing entity standard tax when the customer has no country', function (): void {
     [, , $customer] = euTaxContext();
 
     $customer->country = null;
@@ -47,7 +47,7 @@ it('assigns the billing entity standard tax when the customer has no country', f
         ->and($result->tax_code)->toBe('lago_eu_fr_standard');
 });
 
-it('assigns the customer country standard tax for EU countries', function () {
+it('assigns the customer country standard tax for EU countries', function (): void {
     [, , $customer] = euTaxContext();
 
     $customer->country = 'DE';
@@ -58,7 +58,7 @@ it('assigns the customer country standard tax for EU countries', function () {
         ->and($result->tax_code)->toBe('lago_eu_de_standard');
 });
 
-it('assigns the tax exempt tax for non EU customer countries', function () {
+it('assigns the tax exempt tax for non EU customer countries', function (): void {
     [, , $customer] = euTaxContext();
 
     $customer->country = 'US';
@@ -69,7 +69,7 @@ it('assigns the tax exempt tax for non EU customer countries', function () {
         ->and($result->tax_code)->toBe('lago_eu_tax_exempt');
 });
 
-it('detects special territories by postcode', function () {
+it('detects special territories by postcode', function (): void {
     // Canary Islands exception (Spain): postcode 35xxx / 38xxx.
     [, , $customer] = euTaxContext(entityCountry: 'ES');
 
@@ -82,7 +82,7 @@ it('detects special territories by postcode', function () {
         ->and($result->tax_code)->toStartWith('lago_eu_es_exception_');
 });
 
-it('does not detect the FR B2B-only territories without a VAT number', function () {
+it('does not detect the FR B2B-only territories without a VAT number', function (): void {
     // France overseas (Corse exception is not B2B only; use a FR exception)
     [, , $customer] = euTaxContext(entityCountry: 'FR');
 
@@ -95,7 +95,7 @@ it('does not detect the FR B2B-only territories without a VAT number', function 
         ->and($result->tax_code)->toBe('lago_eu_fr_standard');
 });
 
-it('returns a pending VIES failure when a tax identification number is set', function () {
+it('returns a pending VIES failure when a tax identification number is set', function (): void {
     [, , $customer] = euTaxContext();
 
     $customer->tax_identification_number = 'DE123456789';
@@ -107,7 +107,7 @@ it('returns a pending VIES failure when a tax identification number is set', fun
         ->and($result->getError()->code)->toBe('vies_check_pending');
 });
 
-it('does not reapply when eu taxes already exist and attributes are unchanged', function () {
+it('does not reapply when eu taxes already exist and attributes are unchanged', function (): void {
     [, $billingEntity, $customer] = euTaxContext();
 
     TaxFactory::new()->create(['organization_id' => CurrentContext::$organization->id,

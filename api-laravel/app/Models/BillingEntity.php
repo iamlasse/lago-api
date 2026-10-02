@@ -9,12 +9,16 @@ use App\Enums\EntityDocumentNumbering;
 use App\Services\Validators\Countries;
 use App\Services\Validators\Timezones;
 use App\Services\Validators\Currencies;
+use App\Services\Validators\EuVatRates;
 use Illuminate\Database\Eloquent\Builder;
 use App\Services\Validators\EmailSanitizer;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use App\Enums\SubscriptionInvoiceIssuingDateAnchor;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Enums\SubscriptionInvoiceIssuingDateAdjustment;
@@ -24,7 +28,7 @@ use App\Enums\SubscriptionInvoiceIssuingDateAdjustment;
  * refined with the Rails BillingEntity model's relations, enums, scopes and
  * validations.
  */
-#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+#[Fillable([
     'organization_id',
     'address_line1',
     'address_line2',
@@ -59,7 +63,7 @@ use App\Enums\SubscriptionInvoiceIssuingDateAdjustment;
     'phone',
     'payment_term',
 ])]
-#[\Illuminate\Database\Eloquent\Attributes\Table(name: 'billing_entities')]
+#[Table(name: 'billing_entities')]
 class BillingEntity extends BaseModel
 {
     use HasFactory;
@@ -235,7 +239,7 @@ class BillingEntity extends BaseModel
     // -- Scopes --------------------------------------------------------------
 
     /** Rails: `scope :active, -> { where(archived_at: nil).order(created_at: :asc) }`. */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    #[Scope]
     protected function active(Builder $query): Builder
     {
         return $query->whereNull('archived_at')->oldest('created_at');

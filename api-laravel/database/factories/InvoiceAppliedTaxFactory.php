@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Models\Tax;
 use App\Models\Invoice;
 use App\Models\InvoiceAppliedTax;
-use App\Models\Tax;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

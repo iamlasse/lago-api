@@ -11,7 +11,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Concerns\BelongsToOrganization;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
@@ -20,7 +22,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * refined with the Rails BillableMetric model's enums, domain methods and
  * validations.
  */
-#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+#[Fillable([
     'organization_id',
     'name',
     'code',
@@ -35,7 +37,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
     'rounding_function',
     'rounding_precision',
 ])]
-#[\Illuminate\Database\Eloquent\Attributes\Table(name: 'billable_metrics')]
+#[Table(name: 'billable_metrics')]
 class BillableMetric extends BaseModel
 {
     use BelongsToOrganization;

@@ -9,7 +9,7 @@ use App\Models\CustomerMetadata;
 use Database\Factories\TaxFactory;
 use App\Serializers\V1\CustomerSerializer;
 
-beforeEach(function () {
+beforeEach(function (): void {
     CurrentContext::reset();
 });
 
@@ -24,7 +24,7 @@ function serializedCustomer(Customer $customer, array $options = []): array
     return json_decode($serializer->toJson(), true);
 }
 
-it('serializes the customer with literal snake_case keys', function () {
+it('serializes the customer with literal snake_case keys', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
     $customer = Customer::factory()->for($organization)->create([
         'shipping_city' => 'Paris',
@@ -79,7 +79,7 @@ it('serializes the customer with literal snake_case keys', function () {
         ]);
 })->group('ledger:ser:V1.CustomerSerializer');
 
-it('emits taxes only when included', function () {
+it('emits taxes only when included', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
     $customer = Customer::factory()->for($organization)->create();
 
@@ -93,7 +93,7 @@ it('emits taxes only when included', function () {
     expect($withTaxes['customer']['taxes'])->toBe([]);
 });
 
-it('serializes the vies_check include from the options', function () {
+it('serializes the vies_check include from the options', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
     $customer = Customer::factory()->for($organization)->create();
 
@@ -105,7 +105,7 @@ it('serializes the vies_check include from the options', function () {
     expect($result['customer']['vies_check'])->toBe(['custom_hash' => 'yes']);
 });
 
-it('serializes partner accounts and customer types', function () {
+it('serializes partner accounts and customer types', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
     $customer = Customer::factory()->for($organization)->create([
         'account_type' => 'partner',

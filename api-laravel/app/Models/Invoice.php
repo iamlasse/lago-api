@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-
 use App\Enums\InvoiceType;
 use App\Enums\InvoiceStatus;
 use App\Enums\InvoiceTaxStatus;
@@ -13,8 +11,12 @@ use App\Models\Concerns\Sequenced;
 use Illuminate\Support\Facades\DB;
 use App\Enums\InvoicePaymentStatus;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Attributes\Boot;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
@@ -24,7 +26,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * Ransack search, credit-note offsets precalculation, payment requests,
  * usage thresholds, invoice custom sections, error details, activity logs.
  */
-#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+#[Fillable([
     'issuing_date',
     'taxes_amount_cents',
     'total_amount_cents',
@@ -77,11 +79,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
     'payment_term_source',
     'search_terms',
 ])]
-#[\Illuminate\Database\Eloquent\Attributes\Table(name: 'invoices')]
+#[Table(name: 'invoices')]
 class Invoice extends BaseModel
 {
     use HasFactory;
-
     use Sequenced;
 
     /**
@@ -389,7 +390,7 @@ class Invoice extends BaseModel
 
     // -- Rails before_save hooks ----------------------------------------------
 
-    #[\Illuminate\Database\Eloquent\Attributes\Boot]
+    #[Boot]
     protected static function bootInvoice(): void
     {
         static::saving(function (self $invoice): void {

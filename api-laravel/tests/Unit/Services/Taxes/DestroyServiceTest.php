@@ -12,7 +12,7 @@ use Database\Factories\TaxFactory;
 use Illuminate\Support\Facades\DB;
 use App\Services\Taxes\DestroyService;
 
-beforeEach(function () {
+beforeEach(function (): void {
     CurrentContext::reset();
 });
 
@@ -102,7 +102,7 @@ function insertFeeTax(string $feeId, object $tax, object $organization): string
     return $id;
 }
 
-it('soft deletes the tax', function () {
+it('soft deletes the tax', function (): void {
     [, $tax] = destroyTaxFixture();
 
     $result = DestroyService::call(tax: $tax);
@@ -112,7 +112,7 @@ it('soft deletes the tax', function () {
         ->and($tax->fresh()->trashed())->toBeTrue();
 })->group('ledger:svc:Taxes.DestroyService');
 
-it('hard-deletes the customers_taxes join rows', function () {
+it('hard-deletes the customers_taxes join rows', function (): void {
     [, $tax, $customer] = destroyTaxFixture();
 
     DestroyService::call(tax: $tax);
@@ -121,7 +121,7 @@ it('hard-deletes the customers_taxes join rows', function () {
         ->and($customer->appliedTaxes()->count())->toBe(0);
 });
 
-it('removes the draft invoice and fee taxes but keeps the finalized ones', function () {
+it('removes the draft invoice and fee taxes but keeps the finalized ones', function (): void {
     [$organization, $tax, $customer] = destroyTaxFixture();
 
     $draftInvoiceId = invoiceForTaxScenarios($organization, $customer, 0);
@@ -142,7 +142,7 @@ it('removes the draft invoice and fee taxes but keeps the finalized ones', funct
         ->and(DB::table('fees_taxes')->where('id', $finalizedFeeTaxId)->exists())->toBeTrue();
 });
 
-it('marks the draft invoices of the applicable customers as ready to be refreshed', function () {
+it('marks the draft invoices of the applicable customers as ready to be refreshed', function (): void {
     [$organization, $tax, $customer] = destroyTaxFixture();
 
     $invoiceId = invoiceForTaxScenarios($organization, $customer, 0);
@@ -152,7 +152,7 @@ it('marks the draft invoices of the applicable customers as ready to be refreshe
     expect(Invoice::query()->find($invoiceId)->ready_to_be_refreshed)->toBeTrue();
 });
 
-it('returns the tax untouched when it is already discarded', function () {
+it('returns the tax untouched when it is already discarded', function (): void {
     [, $tax, $customer] = destroyTaxFixture();
     $tax->deleted_at = now();
     $tax->save();
@@ -165,7 +165,7 @@ it('returns the tax untouched when it is already discarded', function () {
         ->and($customer->appliedTaxes()->count())->toBe(1);
 });
 
-it('fails when the tax is not found', function () {
+it('fails when the tax is not found', function (): void {
     $result = DestroyService::call(tax: null);
 
     expect($result->failure())->toBeTrue()

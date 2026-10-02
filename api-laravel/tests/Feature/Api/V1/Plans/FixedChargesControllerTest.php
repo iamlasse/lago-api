@@ -48,7 +48,7 @@ it('returns a list of fixed charges', function (): void {
 
     test()->getJson('/api/v1/plans/'.$plan->code.'/fixed_charges', fixedChargesBearer([$organization, $apiKey]))
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($fixedCharge) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($fixedCharge): void {
             $json->count('fixed_charges', 1)
                 ->where('fixed_charges.0.lago_id', (string) $fixedCharge->id)
                 ->where('fixed_charges.0.code', $fixedCharge->code)
@@ -65,7 +65,7 @@ it('returns fixed charge pagination metadata', function (): void {
 
     test()->getJson('/api/v1/plans/'.$plan->code.'/fixed_charges?per_page=2&page=1', fixedChargesBearer([$organization, $apiKey]))
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json): void {
             $json->count('fixed_charges', 2)->etc()
                 ->where('meta.current_page', 1)
                 ->where('meta.total_pages', 2);
@@ -95,7 +95,7 @@ it('only returns parent fixed charges', function (): void {
 
     test()->getJson('/api/v1/plans/'.$plan->code.'/fixed_charges', fixedChargesBearer([$organization, $apiKey]))
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($fixedCharge) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($fixedCharge): void {
             $json->count('fixed_charges', 1)
                 ->where('fixed_charges.0.lago_id', (string) $fixedCharge->id)
                 ->etc();
@@ -114,7 +114,7 @@ it('returns the fixed charge', function (): void {
 
     test()->getJson('/api/v1/plans/'.$plan->code.'/fixed_charges/'.$fixedCharge->code, fixedChargesBearer([$organization, $apiKey]))
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($fixedCharge) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($fixedCharge): void {
             $json->where('fixed_charge.lago_id', (string) $fixedCharge->id)
                 ->where('fixed_charge.code', $fixedCharge->code)
                 ->where('fixed_charge.charge_model', 'standard')
@@ -158,7 +158,7 @@ it('creates a new fixed charge', function (): void {
 
     test()->postJson('/api/v1/plans/'.$plan->code.'/fixed_charges', ['fixed_charge' => $createParams], fixedChargesBearer([$organization, $apiKey]))
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($addOn) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($addOn): void {
             $json->where('fixed_charge.code', 'new_fixed_charge_code')
                 ->where('fixed_charge.charge_model', 'standard')
                 ->where('fixed_charge.invoice_display_name', 'Test Fixed Charge')
@@ -232,7 +232,7 @@ it('creates a fixed charge with taxes', function (): void {
 
     test()->postJson('/api/v1/plans/'.$plan->code.'/fixed_charges', ['fixed_charge' => $createParams], fixedChargesBearer([$organization, $apiKey]))
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($tax) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($tax): void {
             $json->count('fixed_charge.taxes', 1)
                 ->where('fixed_charge.taxes.0.code', $tax->code)
                 ->etc();
@@ -273,7 +273,7 @@ it('updates the fixed charge', function (): void {
         'properties' => ['amount' => '200'],
     ]], fixedChargesBearer([$organization, $apiKey]))
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json): void {
             $json->where('fixed_charge.invoice_display_name', 'Updated Fixed Charge Name')
                 ->where('fixed_charge.units', '20.0')
                 ->where('fixed_charge.properties.amount', '200')

@@ -7,7 +7,9 @@ namespace App\Models;
 use App\Models\Casts\PostgresArray;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -16,13 +18,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * BillableMetricFilter). The filter keys/values of a billable metric that
  * charge filters narrow down.
  */
-#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+#[Fillable([
     'billable_metric_id',
     'key',
     'values',
     'organization_id',
 ])]
-#[\Illuminate\Database\Eloquent\Attributes\Table(name: 'billable_metric_filters')]
+#[Table(name: 'billable_metric_filters')]
 class BillableMetricFilter extends BaseModel
 {
     use HasFactory;

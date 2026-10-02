@@ -16,8 +16,10 @@ use App\Services\Validators\EmailSanitizer;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Concerns\BelongsToOrganization;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use App\Enums\SubscriptionInvoiceIssuingDateAnchor;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Enums\SubscriptionInvoiceIssuingDateAdjustment;
@@ -28,7 +30,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * refined with the Rails Customer model's relations, enums, scopes,
  * domain methods and validations.
  */
-#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+#[Fillable([
     'external_id',
     'name',
     'organization_id',
@@ -80,7 +82,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
     'dunning_currency_attempts',
     'payment_term',
 ])]
-#[\Illuminate\Database\Eloquent\Attributes\Table(name: 'customers')]
+#[Table(name: 'customers')]
 class Customer extends BaseModel
 {
     use BelongsToOrganization;

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
@@ -14,14 +16,14 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * services (this slice) need for the premium minimum-commitment write path;
  * the full Commitments domain is a later milestone.
  */
-#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+#[Fillable([
     'plan_id',
     'commitment_type',
     'amount_cents',
     'invoice_display_name',
     'organization_id',
 ])]
-#[\Illuminate\Database\Eloquent\Attributes\Table(name: 'commitments')]
+#[Table(name: 'commitments')]
 class Commitment extends BaseModel
 {
     use HasFactory;

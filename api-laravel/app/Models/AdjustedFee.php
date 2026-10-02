@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\FeeType;
+use App\Models\Casts\BcNumeric;
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
@@ -11,7 +15,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * (app/models/adjusted_fee.rb): per-fee overrides (units / amount / display
  * name) applied on draft invoices at billing time.
  */
-#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+#[Fillable([
     'fee_id',
     'invoice_id',
     'subscription_id',
@@ -30,7 +34,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
     'organization_id',
     'fixed_charge_id',
 ])]
-#[\Illuminate\Database\Eloquent\Attributes\Table(name: 'adjusted_fees')]
+#[Table(name: 'adjusted_fees')]
 class AdjustedFee extends BaseModel
 {
     use HasFactory;

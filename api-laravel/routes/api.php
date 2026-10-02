@@ -5,11 +5,11 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\SetBetaHeader;
 use App\Exceptions\Api\NotFoundException;
-use App\Http\Controllers\Api\V1\CustomersController;
 use App\Http\Controllers\Api\V1\PlansController;
-use App\Http\Controllers\Api\V1\SubscriptionsController;
+use App\Http\Controllers\Api\V1\CustomersController;
 use App\Http\Controllers\Api\V1\OrganizationsController;
 use App\Http\Controllers\Api\V1\Plans\ChargesController;
+use App\Http\Controllers\Api\V1\SubscriptionsController;
 use App\Http\Controllers\Api\V1\Plans\FixedChargesController;
 use App\Http\Controllers\Api\V1\Plans\Charges\FiltersController;
 
@@ -99,7 +99,6 @@ $sharedApi = function (): void {
             ->where('external_id', '.+');
         Route::delete('subscriptions/{external_id}', [SubscriptionsController::class, 'terminate'])
             ->where('external_id', '.+');
-
 
         // customers and subscriptions are looked up by external_id, which
         // may contain dots. Rails constrains those params with /[^\/]+/ (a

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-
 use App\Enums\FeeType;
 use App\Support\MoneyMath;
 use App\Enums\FeePaymentStatus;
@@ -13,8 +11,11 @@ use App\Models\Casts\BcNumeric;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
@@ -22,7 +23,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * Not ported (TODO(port)): presentation_breakdowns, pricing_unit_usage,
  * wallet transactions, payment refinements.
  */
-#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+#[Fillable([
     'invoice_id',
     'charge_id',
     'subscription_id',
@@ -71,11 +72,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
     'contract_id',
     'contract_rate_card_id',
 ])]
-#[\Illuminate\Database\Eloquent\Attributes\Table(name: 'fees')]
+#[Table(name: 'fees')]
 class Fee extends BaseModel
 {
     use HasFactory;
-
     use SoftDeletes;
 
     public function invoice(): BelongsTo

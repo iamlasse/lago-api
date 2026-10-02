@@ -8,8 +8,8 @@ use LogicException;
 use App\Models\Organization;
 use App\Support\CurrentContext;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
@@ -31,6 +31,15 @@ trait BelongsToOrganization
         return $this->belongsTo(Organization::class);
     }
 
+    protected static function bootBelongsToOrganization(): void
+    {
+        static::creating(function (Model $model): void {
+            if (! $model->isDirty('organization_id') && CurrentContext::$organization !== null) {
+                $model->organization_id = CurrentContext::$organization->id;
+            }
+        });
+    }
+
     #[Scope]
     protected function ofCurrentOrganization(Builder $query): Builder
     {
@@ -50,14 +59,5 @@ trait BelongsToOrganization
     protected function withoutTenancy(Builder $query): Builder
     {
         return $query;
-    }
-
-    protected static function bootBelongsToOrganization(): void
-    {
-        static::creating(function (Model $model): void {
-            if (! $model->isDirty('organization_id') && CurrentContext::$organization !== null) {
-                $model->organization_id = CurrentContext::$organization->id;
-            }
-        });
     }
 }

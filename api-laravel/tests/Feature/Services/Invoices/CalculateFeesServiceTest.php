@@ -2,15 +2,12 @@
 
 declare(strict_types=1);
 
-use App\Enums\FeeType;
 use App\Enums\InvoiceStatus;
-use App\Enums\InvoiceTaxStatus;
-use App\Models\BillingPeriodBoundaries;
 use App\Models\InvoiceSubscription;
+use App\Models\BillingPeriodBoundaries;
+use App\Services\Invoices\FinalizeService;
 use App\Services\Invoices\CalculateFeesService;
 use App\Services\Invoices\ComputeTaxesAndTotalsService;
-use App\Services\Invoices\FinalizeService;
-use App\Support\MoneyMath;
 
 /**
  * Port of spec/services/invoices/calculate_fees_service_spec.rb +
@@ -20,22 +17,22 @@ use App\Support\MoneyMath;
  */
 function invoicePipelineFixture(array $overrides = []): array
 {
-    $organization = \App\Models\Organization::factory()->create();
-    $customer = \App\Models\Customer::factory()->create(['organization_id' => $organization->id]);
-    $plan = \App\Models\Plan::factory()->create([
+    $organization = App\Models\Organization::factory()->create();
+    $customer = App\Models\Customer::factory()->create(['organization_id' => $organization->id]);
+    $plan = App\Models\Plan::factory()->create([
         'organization_id' => $organization->id,
         'amount_cents' => 0,
         'amount_currency' => 'EUR',
         'interval' => 'monthly',
         'pay_in_advance' => false,
     ]);
-    $metric = \App\Models\BillableMetric::factory()->create([
+    $metric = App\Models\BillableMetric::factory()->create([
         'organization_id' => $organization->id,
         'aggregation_type' => 1, // sum_agg
         'recurring' => false,
         'field_name' => 'value',
     ]);
-    $charge = \App\Models\Charge::factory()->create([
+    $charge = App\Models\Charge::factory()->create([
         'plan_id' => $plan->id,
         'organization_id' => $organization->id,
         'billable_metric_id' => $metric->id,
@@ -44,7 +41,7 @@ function invoicePipelineFixture(array $overrides = []): array
         'invoiceable' => true,
         'pay_in_advance' => false,
     ]);
-    $subscription = \App\Models\Subscription::factory()->create(array_merge([
+    $subscription = App\Models\Subscription::factory()->create(array_merge([
         'customer_id' => $customer->id,
         'plan_id' => $plan->id,
         'organization_id' => $organization->id,
@@ -56,7 +53,7 @@ function invoicePipelineFixture(array $overrides = []): array
         'subscription_at' => '2026-10-01 00:00:00',
     ], $overrides));
 
-    $invoice = \App\Models\Invoice::factory()->create([
+    $invoice = App\Models\Invoice::factory()->create([
         'organization_id' => $organization->id,
         'customer_id' => $customer->id,
         'status' => InvoiceStatus::Generating,
@@ -65,12 +62,12 @@ function invoicePipelineFixture(array $overrides = []): array
     ]);
 
     $boundaries = new BillingPeriodBoundaries(
-        fromDatetime: \Carbon\CarbonImmutable::parse('2026-10-01 00:00:00', 'UTC'),
-        toDatetime: \Carbon\CarbonImmutable::parse('2026-11-01 00:00:00', 'UTC'),
-        chargesFromDatetime: \Carbon\CarbonImmutable::parse('2026-10-01 00:00:00', 'UTC'),
-        chargesToDatetime: \Carbon\CarbonImmutable::parse('2026-11-01 00:00:00', 'UTC'),
+        fromDatetime: Carbon\CarbonImmutable::parse('2026-10-01 00:00:00', 'UTC'),
+        toDatetime: Carbon\CarbonImmutable::parse('2026-11-01 00:00:00', 'UTC'),
+        chargesFromDatetime: Carbon\CarbonImmutable::parse('2026-10-01 00:00:00', 'UTC'),
+        chargesToDatetime: Carbon\CarbonImmutable::parse('2026-11-01 00:00:00', 'UTC'),
         chargesDuration: 31,
-        timestamp: \Carbon\CarbonImmutable::parse('2026-10-01 00:00:00', 'UTC'),
+        timestamp: Carbon\CarbonImmutable::parse('2026-10-01 00:00:00', 'UTC'),
     );
 
     InvoiceSubscription::query()->create([
@@ -89,11 +86,11 @@ function invoicePipelineFixture(array $overrides = []): array
     return compact('organization', 'customer', 'plan', 'metric', 'charge', 'subscription', 'invoice', 'boundaries');
 }
 
-it('creates the charge fee from the cached aggregation and rolls up totals', function () {
+it('creates the charge fee from the cached aggregation and rolls up totals', function (): void {
     $f = invoicePipelineFixture();
 
     // Pre-aggregated units for the standard charge: 10 × 100 cents = 1000
-    \App\Models\CachedAggregation::query()->create([
+    App\Models\CachedAggregation::query()->create([
         'organization_id' => $f['organization']->id,
         'charge_id' => $f['charge']->id,
         'external_subscription_id' => 'sub-pipeline-1',
@@ -120,10 +117,10 @@ it('creates the charge fee from the cached aggregation and rolls up totals', fun
         ->and($invoice->paymentStatusEnum()->label())->toBe('pending');
 });
 
-it('applies taxes through the chain and writes the invoice snapshot rows', function () {
+it('applies taxes through the chain and writes the invoice snapshot rows', function (): void {
     $f = invoicePipelineFixture();
 
-    \App\Models\CachedAggregation::query()->create([
+    App\Models\CachedAggregation::query()->create([
         'organization_id' => $f['organization']->id,
         'charge_id' => $f['charge']->id,
         'external_subscription_id' => 'sub-pipeline-1',
@@ -133,15 +130,15 @@ it('applies taxes through the chain and writes the invoice snapshot rows', funct
         'presentation_breakdowns' => [],
     ]);
 
-    $tax = \App\Models\Tax::factory()->create([
+    $tax = App\Models\Tax::factory()->create([
         'organization_id' => $f['organization']->id,
         'rate' => 20.0,
         'name' => 'VAT',
         'code' => 'vat-test',
     ]);
     // charges_taxes join table (Charges::ApplyTaxes-style linkage)
-    \Illuminate\Support\Facades\DB::table('charges_taxes')->insert([
-        'id' => (string) \Illuminate\Support\Str::uuid(),
+    Illuminate\Support\Facades\DB::table('charges_taxes')->insert([
+        'id' => (string) Illuminate\Support\Str::uuid(),
         'charge_id' => $f['charge']->id,
         'tax_id' => $tax->id,
         'organization_id' => $f['organization']->id,
@@ -171,10 +168,10 @@ it('applies taxes through the chain and writes the invoice snapshot rows', funct
         ->and((int) $fee->taxes_amount_cents)->toBe(200);
 });
 
-it('applies a percentage coupon before VAT', function () {
+it('applies a percentage coupon before VAT', function (): void {
     $f = invoicePipelineFixture();
 
-    \App\Models\CachedAggregation::query()->create([
+    App\Models\CachedAggregation::query()->create([
         'organization_id' => $f['organization']->id,
         'charge_id' => $f['charge']->id,
         'external_subscription_id' => 'sub-pipeline-1',
@@ -184,10 +181,10 @@ it('applies a percentage coupon before VAT', function () {
         'presentation_breakdowns' => [],
     ]);
 
-    $coupon = \App\Models\Coupon::factory()->percentage('20')->create([
+    $coupon = App\Models\Coupon::factory()->percentage('20')->create([
         'organization_id' => $f['organization']->id,
     ]);
-    $appliedCoupon = \App\Models\AppliedCoupon::factory()->percentage('20')->create([
+    $appliedCoupon = App\Models\AppliedCoupon::factory()->percentage('20')->create([
         'coupon_id' => $coupon->id,
         'customer_id' => $f['customer']->id,
         'organization_id' => $f['organization']->id,
@@ -208,7 +205,7 @@ it('applies a percentage coupon before VAT', function () {
     expect((float) $fee->precise_coupons_amount_cents)->toBe(200.0);
 });
 
-it('finalizes a draft invoice assigning number and sequential id via Sequenced', function () {
+it('finalizes a draft invoice assigning number and sequential id via Sequenced', function (): void {
     $f = invoicePipelineFixture();
     $invoice = $f['invoice'];
     $invoice->status = InvoiceStatus::Draft;
@@ -216,6 +213,7 @@ it('finalizes a draft invoice assigning number and sequential id via Sequenced',
     $invoice->save();
 
     $result = FinalizeService::call(invoice: $invoice);
+    $result->invoice->refresh();
 
     expect($result->success())->toBeTrue()
         ->and($result->invoice->statusEnum()->label())->toBe('finalized')
@@ -227,7 +225,7 @@ it('finalizes a draft invoice assigning number and sequential id via Sequenced',
         ->and($result->invoice->search_terms)->not->toBeNull();
 });
 
-it('computes zero total invoices as succeeded and closed per setting', function () {
+it('computes zero total invoices as succeeded and closed per setting', function (): void {
     $f = invoicePipelineFixture();
 
     // no cached aggregation → zero-amount charge fee only

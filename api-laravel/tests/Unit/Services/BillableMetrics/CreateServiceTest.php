@@ -9,7 +9,7 @@ use App\Services\Failures\ForbiddenFailure;
 use App\Services\Failures\ValidationFailure;
 use App\Services\BillableMetrics\CreateService;
 
-beforeEach(function () {
+beforeEach(function (): void {
     CurrentContext::reset();
 });
 
@@ -29,7 +29,7 @@ function createMetricArgs(Organization $organization, array $overrides = []): ar
     ];
 }
 
-it('creates a billable metric', function () {
+it('creates a billable metric', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
 
     $result = CreateService::call(createMetricArgs($organization));
@@ -45,7 +45,7 @@ it('creates a billable metric', function () {
         ->and($result->billable_metric->expression)->toBe('1 + 2');
 })->group('ledger:svc:BillableMetrics.CreateService');
 
-it('creates a billable metric with a code used by a deleted metric', function () {
+it('creates a billable metric with a code used by a deleted metric', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
 
     BillableMetric::factory()->for($organization)->create([
@@ -61,7 +61,7 @@ it('creates a billable metric with a code used by a deleted metric', function ()
         ->toBe(['new_metric']);
 });
 
-it('returns a validation error when the code already exists', function () {
+it('returns a validation error when the code already exists', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
 
     BillableMetric::factory()->for($organization)->create(['code' => 'new_metric']);
@@ -73,7 +73,7 @@ it('returns a validation error when the code already exists', function () {
         ->and($result->getError()->messages['code'])->toBe(['value_already_exist']);
 });
 
-it('returns a validation error for an unknown aggregation type', function () {
+it('returns a validation error for an unknown aggregation type', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
 
     $result = CreateService::call(createMetricArgs($organization, [
@@ -86,7 +86,7 @@ it('returns a validation error for an unknown aggregation type', function () {
         ->and($result->getError()->messages['aggregation_type'])->toBe(['value_is_invalid']);
 });
 
-it('returns a forbidden failure for the custom aggregation without the organization feature', function () {
+it('returns a forbidden failure for the custom aggregation without the organization feature', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
 
     $result = CreateService::call(createMetricArgs($organization, [
@@ -99,7 +99,7 @@ it('returns a forbidden failure for the custom aggregation without the organizat
         ->and(BillableMetric::count())->toBe(0);
 });
 
-it('rejects a custom aggregation metric without a custom_aggregator', function () {
+it('rejects a custom aggregation metric without a custom_aggregator', function (): void {
     // NOTE: Rails' CreateService passes neither custom_aggregator nor
     // filters to BillableMetric.create!, so a custom_agg create without a
     // previously assigned custom aggregator fails the model's presence

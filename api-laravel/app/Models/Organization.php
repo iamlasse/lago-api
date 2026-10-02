@@ -16,6 +16,8 @@ use App\Services\Validators\EmailSanitizer;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\RouteKey;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
@@ -24,7 +26,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * Enum column `document_numbering` is an integer column mapped by Rails'
  * enum (0=per_customer, 1=per_organization); array columns are varchar[].
  */
-#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+#[Fillable([
     'name', 'webhook_url', 'vat_rate', 'country', 'address_line1', 'address_line2',
     'state', 'zipcode', 'email', 'city', 'logo', 'legal_name', 'legal_number',
     'invoice_footer', 'invoice_grace_period', 'timezone', 'document_locale',
@@ -33,7 +35,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
     'eu_tax_management', 'premium_integrations', 'custom_aggregation',
     'finalize_zero_amount_invoice', 'audit_logs_period',
 ])]
-#[\Illuminate\Database\Eloquent\Attributes\RouteKey('id')]
+#[RouteKey('id')]
 class Organization extends BaseModel
 {
     use HasFactory;

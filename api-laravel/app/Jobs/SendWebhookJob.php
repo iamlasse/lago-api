@@ -7,11 +7,7 @@ namespace App\Jobs;
 use LogicException;
 use App\Models\Webhook;
 use App\Models\Organization;
-use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
 use App\Services\Webhooks\Invoices\CreatedService as InvoiceCreatedService;
 use App\Services\Webhooks\Invoices\DraftedService as InvoiceDraftedService;
 use App\Services\Webhooks\Customers\CreatedService as CustomerCreatedService;
@@ -35,10 +31,7 @@ use App\Services\Webhooks\Subscriptions\TerminatedService as SubscriptionTermina
  */
 class SendWebhookJob implements ShouldQueue
 {
-    use Dispatchable;
-    use InteractsWithQueue;
-    use Queueable;
-    use SerializesModels;
+    use \Illuminate\Foundation\Queue\Queueable;
 
     /**
      * Port of the WEBHOOK_SERVICES hash — M1 surface.

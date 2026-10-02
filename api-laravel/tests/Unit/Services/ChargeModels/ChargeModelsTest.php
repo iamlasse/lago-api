@@ -3,15 +3,14 @@
 declare(strict_types=1);
 
 use App\Enums\ChargeModel;
-use App\Services\ChargeModels\AggregationResult;
 use App\Services\ChargeModels\Factory;
 use App\Services\ChargeModels\PricingStructure;
+use App\Services\ChargeModels\AggregationResult;
 
 /**
  * Port of spec/services/charge_models/* (the 8 charge model amount
  * computations). Aggregations are the M1 value-object seam.
  */
-
 function chargeModelPricing(ChargeModel $model, array $properties): PricingStructure
 {
     return new PricingStructure(
@@ -23,7 +22,7 @@ function chargeModelPricing(ChargeModel $model, array $properties): PricingStruc
     );
 }
 
-function applyChargeModel(ChargeModel $model, array $properties, AggregationResult $aggregation): \App\Services\ChargeModels\ChargeModelResult
+function applyChargeModel(ChargeModel $model, array $properties, AggregationResult $aggregation): App\Services\ChargeModels\ChargeModelResult
 {
     return Factory::newInstance(
         pricingStructure: chargeModelPricing($model, $properties),
@@ -33,7 +32,7 @@ function applyChargeModel(ChargeModel $model, array $properties, AggregationResu
 
 // -- standard -----------------------------------------------------------------
 
-it('computes the standard charge model amount', function () {
+it('computes the standard charge model amount', function (): void {
     $result = applyChargeModel(ChargeModel::Standard, ['amount' => '2'], new AggregationResult(aggregation: '10.5', count: 3));
 
     expect((float) $result->amount)->toBe(21.0)
@@ -44,7 +43,7 @@ it('computes the standard charge model amount', function () {
 
 // -- package ------------------------------------------------------------------
 
-it('computes the package charge model with rounding up to full packages', function () {
+it('computes the package charge model with rounding up to full packages', function (): void {
     $result = applyChargeModel(ChargeModel::Package, [
         'amount' => '10',
         'free_units' => 5,
@@ -56,7 +55,7 @@ it('computes the package charge model with rounding up to full packages', functi
         ->and((float) $result->amountDetails['paid_units'])->toBe(17.0);
 });
 
-it('computes zero for package usage below the free units', function () {
+it('computes zero for package usage below the free units', function (): void {
     $result = applyChargeModel(ChargeModel::Package, [
         'amount' => '10',
         'free_units' => 5,
@@ -68,7 +67,7 @@ it('computes zero for package usage below the free units', function () {
 
 // -- graduated ----------------------------------------------------------------
 
-it('computes the graduated charge model across ranges', function () {
+it('computes the graduated charge model across ranges', function (): void {
     $result = applyChargeModel(ChargeModel::Graduated, [
         'graduated_ranges' => [
             ['from_value' => 0, 'to_value' => 10, 'per_unit_amount' => '1', 'flat_amount' => '5'],
@@ -81,7 +80,7 @@ it('computes the graduated charge model across ranges', function () {
         ->and($result->amountDetails['graduated_ranges'])->toHaveCount(2);
 });
 
-it('breaks graduated ranges at the last relevant one', function () {
+it('breaks graduated ranges at the last relevant one', function (): void {
     $result = applyChargeModel(ChargeModel::Graduated, [
         'graduated_ranges' => [
             ['from_value' => 0, 'to_value' => 10, 'per_unit_amount' => '1', 'flat_amount' => '0'],
@@ -96,7 +95,7 @@ it('breaks graduated ranges at the last relevant one', function () {
 
 // -- graduated_percentage -----------------------------------------------------
 
-it('computes the graduated_percentage charge model', function () {
+it('computes the graduated_percentage charge model', function (): void {
     $result = applyChargeModel(ChargeModel::GraduatedPercentage, [
         'graduated_percentage_ranges' => [
             ['from_value' => 0, 'to_value' => 10, 'rate' => '10', 'flat_amount' => '5'],
@@ -110,7 +109,7 @@ it('computes the graduated_percentage charge model', function () {
 
 // -- percentage ---------------------------------------------------------------
 
-it('computes the percentage charge model with rate and fixed fee', function () {
+it('computes the percentage charge model with rate and fixed fee', function (): void {
     $result = applyChargeModel(ChargeModel::Percentage, [
         'rate' => '10',
         'fixed_amount' => '2',
@@ -121,7 +120,7 @@ it('computes the percentage charge model with rate and fixed fee', function () {
         ->and($result->amountDetails['paid_events'])->toBe(5);
 });
 
-it('applies free events and free amount in the percentage model', function () {
+it('applies free events and free amount in the percentage model', function (): void {
     $result = applyChargeModel(ChargeModel::Percentage, [
         'rate' => '10',
         'fixed_amount' => '1',
@@ -134,7 +133,7 @@ it('applies free events and free amount in the percentage model', function () {
 
 // -- volume -------------------------------------------------------------------
 
-it('computes the volume charge model picking a single tier', function () {
+it('computes the volume charge model picking a single tier', function (): void {
     $result = applyChargeModel(ChargeModel::Volume, [
         'volume_ranges' => [
             ['from_value' => 0, 'to_value' => 100, 'per_unit_amount' => '1', 'flat_amount' => '5'],
@@ -148,7 +147,7 @@ it('computes the volume charge model picking a single tier', function () {
 
 // -- custom -------------------------------------------------------------------
 
-it('computes the custom charge model from the custom aggregation amount', function () {
+it('computes the custom charge model from the custom aggregation amount', function (): void {
     $result = applyChargeModel(ChargeModel::Custom, [], new AggregationResult(
         aggregation: '5',
         count: 1,
@@ -161,7 +160,7 @@ it('computes the custom charge model from the custom aggregation amount', functi
 
 // -- dynamic ------------------------------------------------------------------
 
-it('computes the dynamic charge model from the precise event total', function () {
+it('computes the dynamic charge model from the precise event total', function (): void {
     $result = applyChargeModel(ChargeModel::Dynamic, [], new AggregationResult(
         aggregation: '10',
         fullUnitsNumber: '10',
@@ -175,7 +174,7 @@ it('computes the dynamic charge model from the precise event total', function ()
 
 // -- grouped ------------------------------------------------------------------
 
-it('applies grouped aggregations per group entry', function () {
+it('applies grouped aggregations per group entry', function (): void {
     $result = Factory::newInstance(
         pricingStructure: new PricingStructure(
             chargeModel: ChargeModel::Standard,
@@ -199,15 +198,15 @@ it('applies grouped aggregations per group entry', function () {
 
 // -- factory routing ----------------------------------------------------------
 
-it('routes each charge model to its service', function () {
+it('routes each charge model to its service', function (): void {
     $pricing = fn (ChargeModel $m) => chargeModelPricing($m, ['amount' => '1']);
 
-    expect(Factory::chargeModelClass($pricing(ChargeModel::Standard)))->toBe(\App\Services\ChargeModels\StandardService::class)
-        ->and(Factory::chargeModelClass($pricing(ChargeModel::Graduated)))->toBe(\App\Services\ChargeModels\GraduatedService::class)
-        ->and(Factory::chargeModelClass($pricing(ChargeModel::Package)))->toBe(\App\Services\ChargeModels\PackageService::class)
-        ->and(Factory::chargeModelClass($pricing(ChargeModel::Percentage)))->toBe(\App\Services\ChargeModels\PercentageService::class)
-        ->and(Factory::chargeModelClass($pricing(ChargeModel::Volume)))->toBe(\App\Services\ChargeModels\VolumeService::class)
-        ->and(Factory::chargeModelClass($pricing(ChargeModel::GraduatedPercentage)))->toBe(\App\Services\ChargeModels\GraduatedPercentageService::class)
-        ->and(Factory::chargeModelClass($pricing(ChargeModel::Custom)))->toBe(\App\Services\ChargeModels\CustomService::class)
-        ->and(Factory::chargeModelClass($pricing(ChargeModel::Dynamic)))->toBe(\App\Services\ChargeModels\DynamicService::class);
+    expect(Factory::chargeModelClass($pricing(ChargeModel::Standard)))->toBe(App\Services\ChargeModels\StandardService::class)
+        ->and(Factory::chargeModelClass($pricing(ChargeModel::Graduated)))->toBe(App\Services\ChargeModels\GraduatedService::class)
+        ->and(Factory::chargeModelClass($pricing(ChargeModel::Package)))->toBe(App\Services\ChargeModels\PackageService::class)
+        ->and(Factory::chargeModelClass($pricing(ChargeModel::Percentage)))->toBe(App\Services\ChargeModels\PercentageService::class)
+        ->and(Factory::chargeModelClass($pricing(ChargeModel::Volume)))->toBe(App\Services\ChargeModels\VolumeService::class)
+        ->and(Factory::chargeModelClass($pricing(ChargeModel::GraduatedPercentage)))->toBe(App\Services\ChargeModels\GraduatedPercentageService::class)
+        ->and(Factory::chargeModelClass($pricing(ChargeModel::Custom)))->toBe(App\Services\ChargeModels\CustomService::class)
+        ->and(Factory::chargeModelClass($pricing(ChargeModel::Dynamic)))->toBe(App\Services\ChargeModels\DynamicService::class);
 });

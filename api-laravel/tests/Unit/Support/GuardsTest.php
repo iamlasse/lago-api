@@ -50,7 +50,7 @@ function makeGuardMembership(User $user, Organization $organization): Membership
     return $membership;
 }
 
-it('raises unauthorized when AuthenticableApiUser has no current user', function () {
+it('raises unauthorized when AuthenticableApiUser has no current user', function (): void {
     try {
         AuthenticableApiUser::authorize(guardContext());
         $this->fail('Expected ExecutionError');
@@ -63,13 +63,13 @@ it('raises unauthorized when AuthenticableApiUser has no current user', function
     }
 });
 
-it('passes AuthenticableApiUser when a current user is present', function () {
+it('passes AuthenticableApiUser when a current user is present', function (): void {
     AuthenticableApiUser::authorize(guardContext(makeGuardUser()));
 
     expect(true)->toBeTrue();
 });
 
-it('raises forbidden with missing organization id without an organization', function () {
+it('raises forbidden with missing organization id without an organization', function (): void {
     $user = makeGuardUser();
 
     try {
@@ -84,7 +84,7 @@ it('raises forbidden with missing organization id without an organization', func
     }
 });
 
-it('raises forbidden with missing membership without a membership', function () {
+it('raises forbidden with missing membership without a membership', function (): void {
     $user = makeGuardUser();
     $organization = makeGuardOrganization();
 
@@ -96,7 +96,7 @@ it('raises forbidden with missing membership without a membership', function () 
     }
 });
 
-it('raises forbidden when the membership does not link user and organization', function () {
+it('raises forbidden when the membership does not link user and organization', function (): void {
     $user = makeGuardUser();
     $organization = makeGuardOrganization();
     $membership = makeGuardMembership($user, $organization);
@@ -114,7 +114,7 @@ it('raises forbidden when the membership does not link user and organization', f
     }
 });
 
-it('passes RequiredOrganization when user, organization and membership align', function () {
+it('passes RequiredOrganization when user, organization and membership align', function (): void {
     $user = makeGuardUser();
     $organization = makeGuardOrganization();
     $membership = makeGuardMembership($user, $organization);

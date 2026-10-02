@@ -13,7 +13,7 @@ use App\Services\Taxes\UpdateService;
 use App\Services\Failures\NotFoundFailure;
 use App\Services\Failures\ValidationFailure;
 
-beforeEach(function () {
+beforeEach(function (): void {
     CurrentContext::reset();
 });
 
@@ -42,7 +42,7 @@ function draftInvoiceForCustomer(object $organization, Customer $customer): stri
     return $invoiceId;
 }
 
-it('updates the tax', function () {
+it('updates the tax', function (): void {
     [$organization, $tax] = updateTaxFixture();
 
     $result = UpdateService::call(tax: $tax, params: [
@@ -59,7 +59,7 @@ it('updates the tax', function () {
         ->and($result->tax->description)->toBe('updated desc');
 })->group('ledger:svc:Taxes.UpdateService');
 
-it('fails when the tax is not found', function () {
+it('fails when the tax is not found', function (): void {
     $result = UpdateService::call(tax: null, params: ['code' => 'x']);
 
     expect($result->failure())->toBeTrue()
@@ -67,7 +67,7 @@ it('fails when the tax is not found', function () {
         ->and($result->getError()->getMessage())->toBe('tax_not_found');
 });
 
-it('returns a validation error when the name is blank', function () {
+it('returns a validation error when the name is blank', function (): void {
     [, $tax] = updateTaxFixture();
 
     $result = UpdateService::call(tax: $tax, params: ['name' => null, 'code' => 'code']);
@@ -77,7 +77,7 @@ it('returns a validation error when the name is blank', function () {
         ->and($result->getError()->messages['name'])->toBe(['value_is_mandatory']);
 });
 
-it('marks the draft invoices of the applicable customers as ready to be refreshed', function () {
+it('marks the draft invoices of the applicable customers as ready to be refreshed', function (): void {
     [$organization, $tax] = updateTaxFixture();
 
     $customer = Customer::factory()->for($organization)->create();
@@ -92,7 +92,7 @@ it('marks the draft invoices of the applicable customers as ready to be refreshe
     expect(DB::table('invoices')->where('id', $invoiceId)->value('ready_to_be_refreshed'))->toBeTrue();
 });
 
-it('flags applied_to_organization when updated to true', function () {
+it('flags applied_to_organization when updated to true', function (): void {
     [$organization, $tax] = updateTaxFixture();
 
     $result = UpdateService::call(tax: $tax, params: ['applied_to_organization' => true]);

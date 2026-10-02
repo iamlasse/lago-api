@@ -67,7 +67,7 @@ it('updates an organization', function (): void {
 
     $this->getJson('/api/v1/organizations', ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($organization, $webhookUrl) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($organization, $webhookUrl): void {
             $json->where('organization.name', $organization->name)
                 ->where('organization.default_currency', 'EUR')
                 ->where('organization.webhook_url', $webhookUrl)
@@ -95,7 +95,7 @@ it('updates an organization with premium features', function (): void {
             ],
         ]], ['Authorization' => 'Bearer '.$apiKey->value])
             ->assertOk()
-            ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) {
+            ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json): void {
                 $json->where('organization.timezone', 'Europe/Paris')
                     ->where('organization.email_settings', ['invoice.finalized'])
                     ->where('organization.billing_configuration.invoice_grace_period', 3)
@@ -137,7 +137,7 @@ it('returns the organization', function (): void {
 
     $this->getJson('/api/v1/organizations', ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($organization) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($organization): void {
             $json->where('organization.name', $organization->name)->etc();
         });
 });

@@ -233,7 +233,7 @@ class BillingService extends \App\Services\BaseService
 
         // Rails hydrates with find_by_sql; we hydrate Eloquent models for the
         // grouping step (relations are used downstream).
-        return Subscription::query()->with(['plan', 'customer', 'nextSubscription'])->find($ids);
+        return Subscription::query()->with(['plan', 'customer'])->find($ids);
     }
 
     // -- SQL fragments (verbatim port of the Rails scopes) ---------------------
@@ -536,7 +536,7 @@ class BillingService extends \App\Services\BaseService
             return [$subscriptions];
         }
 
-        return array_values(collect($subscriptions)->groupBy($resolve)->values()->all());
+        return array_map(fn ($group) => array_values($group instanceof Collection ? $group->all() : $group), collect($subscriptions)->groupBy($resolve)->values()->all());
     }
 
     /**
@@ -630,7 +630,8 @@ class BillingService extends \App\Services\BaseService
 
         foreach ($subscriptionGroups as $subscriptions) {
             foreach (collect($subscriptions)->groupBy($keyBy)->values()->all() as $group) {
-                $groups[] = array_values($group);
+                $items = $group instanceof Collection ? $group->all() : $group;
+                $groups[] = array_values($items);
             }
         }
 

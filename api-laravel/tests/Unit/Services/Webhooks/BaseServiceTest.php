@@ -32,7 +32,7 @@ class DummyWebhookService extends BaseService
     }
 }
 
-beforeEach(function () {
+beforeEach(function (): void {
     Queue::fake();
 
     $this->organization = Organization::factory()->withoutWebhookEndpoint()->create();
@@ -41,7 +41,7 @@ beforeEach(function () {
     $this->organization->refresh();
 });
 
-it('creates a pending webhook', function () {
+it('creates a pending webhook', function (): void {
     DummyWebhookService::call(object: $this->customer);
 
     $webhook = Webhook::query()->latest('created_at')->first();
@@ -61,7 +61,7 @@ it('creates a pending webhook', function () {
     Queue::assertPushed(SendHttpWebhookJob::class, 1);
 });
 
-it('creates one webhook row per webhook endpoint', function () {
+it('creates one webhook row per webhook endpoint', function (): void {
     WebhookEndpoint::factory()->forOrganization($this->organization)->create();
     $this->customer->refresh();
 
@@ -72,7 +72,7 @@ it('creates one webhook row per webhook endpoint', function () {
     Queue::assertPushed(SendHttpWebhookJob::class, 2);
 });
 
-it('does not fan out when the organization has no webhook endpoint', function () {
+it('does not fan out when the organization has no webhook endpoint', function (): void {
     WebhookEndpoint::query()->where('organization_id', $this->organization->id)->delete();
 
     DummyWebhookService::call(object: $this->customer);
@@ -82,7 +82,7 @@ it('does not fan out when the organization has no webhook endpoint', function ()
     Queue::assertNothingPushed();
 });
 
-it('skips the fan-out early when the organization has no webhook endpoints', function () {
+it('skips the fan-out early when the organization has no webhook endpoints', function (): void {
     $organization = Organization::factory()->withoutWebhookEndpoint()->create();
     $customer = Customer::factory()->for($organization)->create();
 
@@ -91,7 +91,7 @@ it('skips the fan-out early when the organization has no webhook endpoints', fun
     expect(Webhook::query()->where('object_id', $customer->id)->doesntExist())->toBeTrue();
 });
 
-it('creates only one webhook when an endpoint was deleted mid fan-out', function () {
+it('creates only one webhook when an endpoint was deleted mid fan-out', function (): void {
     $extraEndpoint = WebhookEndpoint::factory()->forOrganization($this->organization)->create();
 
     // Preload the webhook endpoints, then delete one to simulate the race
@@ -106,7 +106,7 @@ it('creates only one webhook when an endpoint was deleted mid fan-out', function
     Queue::assertPushed(SendHttpWebhookJob::class, 1);
 });
 
-it('filters webhooks by the endpoint event types', function () {
+it('filters webhooks by the endpoint event types', function (): void {
     // Not matching: skipped.
     DB::table('webhook_endpoints')->where('id', $this->endpoint->id)->update(['event_types' => '{other.type}']);
     $this->endpoint->refresh();
@@ -118,7 +118,7 @@ it('filters webhooks by the endpoint event types', function () {
     Queue::assertNothingPushed();
 });
 
-it('creates the webhook when the event type matches', function () {
+it('creates the webhook when the event type matches', function (): void {
     DB::table('webhook_endpoints')->where('id', $this->endpoint->id)->update(['event_types' => '{dummy.test}']);
     $this->endpoint->refresh();
 
@@ -129,7 +129,7 @@ it('creates the webhook when the event type matches', function () {
     Queue::assertPushed(SendHttpWebhookJob::class, 1);
 });
 
-it('does not create the webhook when event_types is empty', function () {
+it('does not create the webhook when event_types is empty', function (): void {
     DB::table('webhook_endpoints')->where('id', $this->endpoint->id)->update(['event_types' => '{}']);
     $this->endpoint->refresh();
 
@@ -138,7 +138,7 @@ it('does not create the webhook when event_types is empty', function () {
     expect(Webhook::query()->where('object_id', $this->customer->id)->doesntExist())->toBeTrue();
 });
 
-it('creates the webhook when event_types is null', function () {
+it('creates the webhook when event_types is null', function (): void {
     DB::table('webhook_endpoints')->where('id', $this->endpoint->id)->update(['event_types' => null]);
     $this->endpoint->refresh();
 
@@ -147,7 +147,7 @@ it('creates the webhook when event_types is null', function () {
     expect(Webhook::query()->where('object_id', $this->customer->id)->exists())->toBeTrue();
 });
 
-it('routes the http job on the webhook queue', function () {
+it('routes the http job on the webhook queue', function (): void {
     DummyWebhookService::call(object: $this->customer);
 
     Queue::assertPushed(SendHttpWebhookJob::class, fn ($job) => $job->queue === 'webhook');
