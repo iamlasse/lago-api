@@ -364,6 +364,16 @@ abstract class DatesService
         return $this->computeFixedChargesDuration($this->computeFixedChargesFromDate());
     }
 
+    public function firstMonthInYearlyPeriod(): bool
+    {
+        return false;
+    }
+
+    public function firstMonthInSemiannualPeriod(): bool
+    {
+        return false;
+    }
+
     /** Rails: Time.days_in_month(month, year). */
     protected static function daysInMonth(int $month, int $year): int
     {
@@ -398,16 +408,6 @@ abstract class DatesService
     protected function computeFixedChargesDuration(CarbonImmutable $fromDate): int
     {
         return $this->computeChargesDuration($fromDate);
-    }
-
-    protected function firstMonthInYearlyPeriod(): bool
-    {
-        return false;
-    }
-
-    protected function firstMonthInSemiannualPeriod(): bool
-    {
-        return false;
     }
 
     // -- Shared helpers -------------------------------------------------------------

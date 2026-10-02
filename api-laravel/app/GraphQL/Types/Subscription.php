@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\GraphQL\Types;
 
 use App\Enums\BillingTime;
-use Carbon\CarbonImmutable;
 use App\Models\Plan as PlanModel;
 use App\Services\Subscriptions\DatesService;
 use App\Models\Subscription as SubscriptionModel;
@@ -101,36 +100,10 @@ class Subscription
      * started day when the next subscription is an active downgrade,
      * otherwise (next subscription pending) the day after the current
      * period's end.
-     *
-     * NOTE: implemented here instead of delegating to the model method —
-     * App\Models\Subscription::downgradePlanDate() gates on the wrong
-     * subscription (`! $this->pending()` instead of Rails'
-     * `return unless next_subscription.pending?`), so an active subscription
-     * with a pending downgrade would resolve null. Revisit when the model
-     * port is reconciled.
      */
     public function downgradePlanDate(SubscriptionModel $root): mixed
     {
-        $nextSubscription = $root->nextSubscription();
-
-        if ($nextSubscription === null) {
-            return null;
-        }
-
-        if ($nextSubscription->active() && $root->downgraded()) {
-            $startedAt = $nextSubscription->started_at;
-
-            return $startedAt === null ? null : CarbonImmutable::instance($startedAt)->startOfDay();
-        }
-
-        if (! $nextSubscription->pending()) {
-            return null;
-        }
-
-        return DatesService::newInstance($root, CarbonImmutable::now())
-            ->nextEndOfPeriod()
-            ->addDay()
-            ->startOfDay();
+        return $root->downgradePlanDate();
     }
 
     /** Rails: period_end_date — DatesService#next_end_of_period. */

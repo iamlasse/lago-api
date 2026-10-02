@@ -47,7 +47,7 @@ class Subscription
             ? $query->find($id)
             : $query->where('external_id', $externalId)
                 ->orderByRaw('terminated_at desc nulls first')
-                ->orderByDesc('started_at')
+                ->latest('started_at')
                 ->first();
 
         if ($found === null) {

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Services\Invoices;
 
-use ReflectionMethod;
 use App\Models\Invoice;
 use Carbon\CarbonImmutable;
 use App\Services\BaseResult;
@@ -262,23 +261,6 @@ class CalculateFeesService extends \App\Services\BaseService
             || ($subscription->terminated() && ($subscription->terminated_at?->gt($this->invoice->created_at) ?? false));
     }
 
-    /**
-     * Rails calls the DatesService helpers `first_month_in_semiannual_period?`
-     * / `first_month_in_yearly_period?`; they are protected on the ported
-     * DatesService (owned by the Subscriptions slice), so they are invoked
-     * reflectively.
-     *
-     * TODO(integration): verify signature against ported DatesService —
-     * expose these as public helpers instead of reflection.
-     */
-    private function datesServiceHelper(DatesService $dateService, string $method): bool
-    {
-        $reflection = new ReflectionMethod($dateService, $method);
-        $reflection->setAccessible(true);
-
-        return (bool) $reflection->invoke($dateService);
-    }
-
     private function shouldCreateSemiannualSubscriptionFee($subscription): bool
     {
         $plan = $subscription->plan;
@@ -288,19 +270,18 @@ class CalculateFeesService extends \App\Services\BaseService
         }
 
         if ($plan->pay_in_advance && ! $subscription->startedInPast()) {
-            return $this->datesServiceHelper($this->dateService($subscription), 'firstMonthInSemiannualPeriod')
+            return $this->dateService($subscription)->firstMonthInSemiannualPeriod()
                 || ! $subscription->alreadyBilled();
         }
 
         if ($plan->pay_in_advance && $subscription->startedInPast()) {
-            // TODO(port): first_month_in_first_semiannual_period — protected on
-            // the ported DatesService; approximated by firstMonthInSemiannualPeriod.
-            return ! $this->datesServiceHelper($this->dateService($subscription), 'firstMonthInSemiannualPeriod');
+            return ! $this->dateService($subscription)->firstMonthInFirstSemiannualPeriod()
+                && $this->dateService($subscription)->firstMonthInSemiannualPeriod();
         }
 
         if ($plan->payInArrears()) {
             return $subscription->terminated()
-                || $this->datesServiceHelper($this->dateService($subscription), 'firstMonthInSemiannualPeriod');
+                || $this->dateService($subscription)->firstMonthInSemiannualPeriod();
         }
 
         return false;
@@ -315,18 +296,18 @@ class CalculateFeesService extends \App\Services\BaseService
         }
 
         if ($plan->pay_in_advance && ! $subscription->startedInPast()) {
-            return $this->datesServiceHelper($this->dateService($subscription), 'firstMonthInYearlyPeriod')
+            return $this->dateService($subscription)->firstMonthInYearlyPeriod()
                 || ! $subscription->alreadyBilled();
         }
 
         if ($plan->pay_in_advance && $subscription->startedInPast()) {
-            // TODO(port): first_month_in_first_yearly_period (see semiannual note).
-            return ! $this->datesServiceHelper($this->dateService($subscription), 'firstMonthInYearlyPeriod');
+            return ! $this->dateService($subscription)->firstMonthInFirstYearlyPeriod()
+                && $this->dateService($subscription)->firstMonthInYearlyPeriod();
         }
 
         if ($plan->payInArrears()) {
             return $subscription->terminated()
-                || $this->datesServiceHelper($this->dateService($subscription), 'firstMonthInYearlyPeriod');
+                || $this->dateService($subscription)->firstMonthInYearlyPeriod();
         }
 
         return false;
@@ -370,7 +351,7 @@ class CalculateFeesService extends \App\Services\BaseService
             return false;
         }
 
-        $last = $subscription->invoiceSubscriptions()->orderByDesc('created_at')->first();
+        $last = $subscription->invoiceSubscriptions()->latest()->first();
 
         if ($last === null || ! $last->subscriptionStarting()) {
             return false;

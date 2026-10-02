@@ -168,7 +168,7 @@ class SubscriptionsController extends ApiController
         $query = $this->currentOrganization()
             ->subscriptions()
             ->where('external_id', $request->route('external_id'))
-            ->orderByDesc('subscription_at');
+            ->latest('subscription_at');
 
         $subscription = ($query->count() > 1
             ? $this->subscriptionsMatchingStatus($query, $request)
@@ -204,7 +204,7 @@ class SubscriptionsController extends ApiController
         $subscription = $this->currentOrganization()
             ->subscriptions()
             ->orderByRaw('terminated_at desc nulls first')
-            ->orderByDesc('started_at')
+            ->latest('started_at')
             ->where('external_id', $request->route('external_id'))
             ->where('status', $status)
             ->first();

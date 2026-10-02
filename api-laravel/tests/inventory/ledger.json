@@ -260,11 +260,13 @@
             "source": "schema.json",
             "laravel": "App\\GraphQL\\Mutation\\CreateApiKey",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/GraphQL/Mutations/ApiKeysMutationTest.php"
+            ],
             "notes": ""
         },
         {
@@ -416,11 +418,13 @@
             "source": "schema.json",
             "laravel": "App\\GraphQL\\Mutation\\CreateCustomer",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/GraphQL/Mutations/CustomerMutationsTest.php"
+            ],
             "notes": ""
         },
         {
@@ -848,11 +852,13 @@
             "source": "schema.json",
             "laravel": "App\\GraphQL\\Mutation\\CreateSubscription",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/GraphQL/Mutations/SubscriptionMutationsTest.php"
+            ],
             "notes": ""
         },
         {
@@ -980,11 +986,13 @@
             "source": "schema.json",
             "laravel": "App\\GraphQL\\Mutation\\DestroyApiKey",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/GraphQL/Mutations/ApiKeysMutationTest.php"
+            ],
             "notes": ""
         },
         {
@@ -1076,11 +1084,13 @@
             "source": "schema.json",
             "laravel": "App\\GraphQL\\Mutation\\DestroyCustomer",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/GraphQL/Mutations/CustomerMutationsTest.php"
+            ],
             "notes": ""
         },
         {
@@ -1966,11 +1976,13 @@
             "source": "schema.json",
             "laravel": "App\\GraphQL\\Mutation\\RotateApiKey",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/GraphQL/Mutations/ApiKeysMutationTest.php"
+            ],
             "notes": ""
         },
         {
@@ -2110,11 +2122,13 @@
             "source": "schema.json",
             "laravel": "App\\GraphQL\\Mutation\\TerminateSubscription",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/GraphQL/Mutations/SubscriptionMutationsTest.php"
+            ],
             "notes": ""
         },
         {
@@ -2158,11 +2172,13 @@
             "source": "schema.json",
             "laravel": "App\\GraphQL\\Mutation\\UpdateApiKey",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/GraphQL/Mutations/ApiKeysMutationTest.php"
+            ],
             "notes": ""
         },
         {
@@ -2290,11 +2306,13 @@
             "source": "schema.json",
             "laravel": "App\\GraphQL\\Mutation\\UpdateCustomer",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/GraphQL/Mutations/CustomerMutationsTest.php"
+            ],
             "notes": ""
         },
         {
@@ -2566,11 +2584,13 @@
             "source": "schema.json",
             "laravel": "App\\GraphQL\\Mutation\\UpdateOrganization",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/GraphQL/Mutations/UpdateOrganizationMutationTest.php"
+            ],
             "notes": ""
         },
         {
@@ -2746,11 +2766,13 @@
             "source": "schema.json",
             "laravel": "App\\GraphQL\\Mutation\\UpdateSubscription",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/GraphQL/Mutations/SubscriptionMutationsTest.php"
+            ],
             "notes": ""
         },
         {
@@ -3046,11 +3068,13 @@
             "source": "schema.json",
             "laravel": "App\\GraphQL\\Query\\ApiKey",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/GraphQL/Resolvers/ApiKeysResolverTest.php"
+            ],
             "notes": ""
         },
         {
@@ -3058,11 +3082,13 @@
             "source": "schema.json",
             "laravel": "App\\GraphQL\\Query\\ApiKeys",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/GraphQL/Resolvers/ApiKeysResolverTest.php"
+            ],
             "notes": ""
         },
         {
@@ -3314,11 +3340,13 @@
             "source": "schema.json",
             "laravel": "App\\GraphQL\\Query\\Customer",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/GraphQL/Resolvers/CustomersResolverTest.php"
+            ],
             "notes": ""
         },
         {
@@ -3494,11 +3522,13 @@
             "source": "schema.json",
             "laravel": "App\\GraphQL\\Query\\Customers",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/GraphQL/Resolvers/CustomersResolverTest.php"
+            ],
             "notes": ""
         },
         {
@@ -3974,11 +4004,13 @@
             "source": "schema.json",
             "laravel": "App\\GraphQL\\Query\\Organization",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/GraphQL/Resolvers/OrganizationQueryTest.php"
+            ],
             "notes": ""
         },
         {
@@ -4370,11 +4402,13 @@
             "source": "schema.json",
             "laravel": "App\\GraphQL\\Query\\Subscription",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/GraphQL/Resolvers/SubscriptionsResolverTest.php"
+            ],
             "notes": ""
         },
         {
@@ -4430,11 +4464,13 @@
             "source": "schema.json",
             "laravel": "App\\GraphQL\\Query\\Subscriptions",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/GraphQL/Resolvers/SubscriptionsResolverTest.php"
+            ],
             "notes": ""
         },
         {
@@ -4730,11 +4766,13 @@
             "source": "app/jobs/bill_subscription_job.rb",
             "laravel": "App\\Jobs\\BillSubscriptionJob",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Jobs/BillSubscriptionJobTest.php"
+            ],
             "notes": ""
         },
         {
@@ -7682,11 +7720,13 @@
             "source": "app/jobs/send_http_webhook_job.rb",
             "laravel": "App\\Jobs\\SendHttpWebhookJob",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Jobs/SendWebhookJobTest.php"
+            ],
             "notes": ""
         },
         {
@@ -7694,11 +7734,13 @@
             "source": "app/jobs/send_webhook_job.rb",
             "laravel": "App\\Jobs\\SendWebhookJob",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Jobs/SendWebhookJobTest.php"
+            ],
             "notes": ""
         },
         {
@@ -7778,12 +7820,14 @@
             "source": "app/jobs/subscriptions/terminate_job.rb",
             "laravel": "App\\Jobs\\Subscriptions\\TerminateJob",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/Organizations/BillingServiceTest.php"
+            ],
+            "notes": "Bus::assertDispatched(TerminateJob) in the billing-run test."
         },
         {
             "id": "job:Taxes.UpdateAllEuTaxesJob",
@@ -7958,11 +8002,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\CustomersController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/CustomersControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -8102,11 +8148,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\PlansController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/PlansControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -8114,11 +8162,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Plans\\ChargesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/Plans/ChargesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -8162,11 +8212,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Plans\\FixedChargesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/Plans/FixedChargesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -8198,11 +8250,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\SubscriptionsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/SubscriptionsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -8438,11 +8492,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\CustomersController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/CustomersControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -8582,11 +8638,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\PlansController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/PlansControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -8762,11 +8820,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\SubscriptionsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/SubscriptionsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9278,11 +9338,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\CustomersController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/CustomersControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9290,11 +9352,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\CustomersController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/CustomersControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9638,11 +9702,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\OrganizationsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/OrganizationsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9650,11 +9716,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\OrganizationsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/OrganizationsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9734,11 +9802,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\PlansController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/PlansControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9746,11 +9816,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\PlansController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/PlansControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9758,11 +9830,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Plans\\ChargesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/Plans/ChargesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9770,11 +9844,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Plans\\ChargesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/Plans/ChargesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9782,11 +9858,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Plans\\Charges\\FiltersController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/Plans/ChargesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9794,11 +9872,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Plans\\Charges\\FiltersController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/Plans/ChargesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9842,11 +9922,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Plans\\FixedChargesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/Plans/FixedChargesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9854,11 +9936,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Plans\\FixedChargesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/Plans/FixedChargesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9950,11 +10034,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\SubscriptionsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/SubscriptionsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9962,11 +10048,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\SubscriptionsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/SubscriptionsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -10670,11 +10758,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\CustomersController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/CustomersControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -10682,11 +10772,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\CustomersController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/CustomersControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -11030,11 +11122,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\OrganizationsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/OrganizationsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -11138,11 +11232,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V2\\PlansController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/PlansControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -11498,11 +11594,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\SubscriptionsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/SubscriptionsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -11510,11 +11608,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\SubscriptionsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/SubscriptionsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -12942,11 +13042,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\CustomersController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/CustomersControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -13278,11 +13380,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\PlansController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/PlansControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -13290,11 +13394,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Plans\\ChargesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/Plans/ChargesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -13326,11 +13432,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Plans\\FixedChargesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/Plans/FixedChargesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -13386,11 +13494,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\SubscriptionsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/SubscriptionsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -13698,11 +13808,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\CustomersController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/CustomersControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -14226,11 +14338,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\SubscriptionsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/SubscriptionsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -14658,11 +14772,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\OrganizationsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/OrganizationsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -14670,11 +14786,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\PlansController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/PlansControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -14682,11 +14800,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Plans\\ChargesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/Plans/ChargesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -14706,11 +14826,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Plans\\FixedChargesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/Plans/FixedChargesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -14730,11 +14852,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\SubscriptionsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/SubscriptionsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -15102,11 +15226,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\OrganizationsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/OrganizationsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -15114,11 +15240,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V2\\PlansController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/PlansControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -16102,11 +16230,13 @@
             "source": "app/serializers/v1/billable_metric_serializer.rb",
             "laravel": "App\\Serializers\\V1\\BillableMetricSerializer",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Serializers/V1/BillableMetricSerializerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -16126,11 +16256,13 @@
             "source": "app/serializers/v1/charge_filter_serializer.rb",
             "laravel": "App\\Serializers\\V1\\ChargeFilterSerializer",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Serializers/V1/PlanSerializerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -16502,11 +16634,13 @@
             "source": "app/serializers/v1/fixed_charge_serializer.rb",
             "laravel": "App\\Serializers\\V1\\FixedChargeSerializer",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Serializers/V1/PlanSerializerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -16876,11 +17010,13 @@
             "source": "app/serializers/v1/plan_serializer.rb",
             "laravel": "App\\Serializers\\V1\\PlanSerializer",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Serializers/V1/PlanSerializerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -16960,11 +17096,13 @@
             "source": "app/serializers/v1/subscription_serializer.rb",
             "laravel": "App\\Serializers\\V1\\SubscriptionSerializer",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Serializers/V1/SubscriptionSerializerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -17528,36 +17666,42 @@
             "source": "app/services/api_keys/create_service.rb",
             "laravel": "App\\Services\\ApiKeys\\CreateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/Mutations/ApiKeysMutationTest.php"
+            ],
+            "notes": "Exercised through the createApiKey mutation tests."
         },
         {
             "id": "svc:ApiKeys.DestroyService",
             "source": "app/services/api_keys/destroy_service.rb",
             "laravel": "App\\Services\\ApiKeys\\DestroyService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/Mutations/ApiKeysMutationTest.php"
+            ],
+            "notes": "Exercised through the destroyApiKey mutation tests."
         },
         {
             "id": "svc:ApiKeys.RotateService",
             "source": "app/services/api_keys/rotate_service.rb",
             "laravel": "App\\Services\\ApiKeys\\RotateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/Mutations/ApiKeysMutationTest.php"
+            ],
+            "notes": "Exercised through the rotateApiKey mutation tests."
         },
         {
             "id": "svc:ApiKeys.TrackUsageService",
@@ -17576,24 +17720,28 @@
             "source": "app/services/api_keys/update_service.rb",
             "laravel": "App\\Services\\ApiKeys\\UpdateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/Mutations/ApiKeysMutationTest.php"
+            ],
+            "notes": "Exercised through the updateApiKey mutation tests."
         },
         {
             "id": "svc:AppliedCoupons.AmountService",
             "source": "app/services/applied_coupons/amount_service.rb",
             "laravel": "App\\Services\\AppliedCoupons\\AmountService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/Invoices/CalculateFeesServiceTest.php"
+            ],
+            "notes": "Exercised via Credits\\AppliedCouponService in the coupon scenario."
         },
         {
             "id": "svc:AppliedCoupons.CreateService",
@@ -18032,11 +18180,13 @@
             "source": "app/services/billable_metrics/create_service.rb",
             "laravel": "App\\Services\\BillableMetrics\\CreateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/BillableMetrics/CreateServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -18044,11 +18194,13 @@
             "source": "app/services/billable_metrics/destroy_service.rb",
             "laravel": "App\\Services\\BillableMetrics\\DestroyService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/BillableMetrics/DestroyServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -18116,11 +18268,13 @@
             "source": "app/services/billable_metrics/update_service.rb",
             "laravel": "App\\Services\\BillableMetrics\\UpdateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/BillableMetrics/UpdateServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -18562,11 +18716,13 @@
             "source": "app/services/charge_filters/create_or_update_batch_service.rb",
             "laravel": "App\\Services\\ChargeFilters\\CreateOrUpdateBatchService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Services/ChargeFilters/CreateOrUpdateBatchServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -18694,11 +18850,13 @@
             "source": "app/services/charge_models/custom_service.rb",
             "laravel": "App\\Services\\ChargeModels\\CustomService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/ChargeModels/ChargeModelsTest.php"
+            ],
             "notes": ""
         },
         {
@@ -18706,11 +18864,13 @@
             "source": "app/services/charge_models/dynamic_service.rb",
             "laravel": "App\\Services\\ChargeModels\\DynamicService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/ChargeModels/ChargeModelsTest.php"
+            ],
             "notes": ""
         },
         {
@@ -18718,11 +18878,13 @@
             "source": "app/services/charge_models/factory.rb",
             "laravel": "App\\Services\\ChargeModels\\Factory",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/ChargeModels/ChargeModelsTest.php"
+            ],
             "notes": ""
         },
         {
@@ -18778,11 +18940,13 @@
             "source": "app/services/charge_models/graduated_percentage_service.rb",
             "laravel": "App\\Services\\ChargeModels\\GraduatedPercentageService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/ChargeModels/ChargeModelsTest.php"
+            ],
             "notes": ""
         },
         {
@@ -18790,11 +18954,13 @@
             "source": "app/services/charge_models/graduated_service.rb",
             "laravel": "App\\Services\\ChargeModels\\GraduatedService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/ChargeModels/ChargeModelsTest.php"
+            ],
             "notes": ""
         },
         {
@@ -18814,11 +18980,13 @@
             "source": "app/services/charge_models/package_service.rb",
             "laravel": "App\\Services\\ChargeModels\\PackageService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/ChargeModels/ChargeModelsTest.php"
+            ],
             "notes": ""
         },
         {
@@ -18826,11 +18994,13 @@
             "source": "app/services/charge_models/percentage_service.rb",
             "laravel": "App\\Services\\ChargeModels\\PercentageService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/ChargeModels/ChargeModelsTest.php"
+            ],
             "notes": ""
         },
         {
@@ -18838,11 +19008,13 @@
             "source": "app/services/charge_models/pricing_structure.rb",
             "laravel": "App\\Services\\ChargeModels\\PricingStructure",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/ChargeModels/ChargeModelsTest.php"
+            ],
             "notes": ""
         },
         {
@@ -18874,11 +19046,13 @@
             "source": "app/services/charge_models/standard_service.rb",
             "laravel": "App\\Services\\ChargeModels\\StandardService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/ChargeModels/ChargeModelsTest.php"
+            ],
             "notes": ""
         },
         {
@@ -18886,11 +19060,13 @@
             "source": "app/services/charge_models/volume_service.rb",
             "laravel": "App\\Services\\ChargeModels\\VolumeService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/ChargeModels/ChargeModelsTest.php"
+            ],
             "notes": ""
         },
         {
@@ -18910,11 +19086,13 @@
             "source": "app/services/charges/apply_taxes_service.rb",
             "laravel": "App\\Services\\Charges\\ApplyTaxesService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Services/Charges/ApplyTaxesServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -18958,11 +19136,13 @@
             "source": "app/services/charges/create_service.rb",
             "laravel": "App\\Services\\Charges\\CreateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Services/Charges/CreateServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -18982,12 +19162,14 @@
             "source": "app/services/charges/destroy_service.rb",
             "laravel": "App\\Services\\Charges\\DestroyService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Api/V1/Plans/ChargesControllerTest.php"
+            ],
+            "notes": "Exercised through the DELETE charge endpoint tests."
         },
         {
             "id": "svc:Charges.EstimateInstant.PercentageService",
@@ -19078,12 +19260,14 @@
             "source": "app/services/charges/update_service.rb",
             "laravel": "App\\Services\\Charges\\UpdateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Api/V1/Plans/ChargesControllerTest.php"
+            ],
+            "notes": "Exercised through the PUT charge endpoint tests."
         },
         {
             "id": "svc:Charges.Validators.AdjacentVolumeService",
@@ -19102,11 +19286,13 @@
             "source": "app/services/charges/validators/base_service.rb",
             "laravel": "App\\Services\\Charges\\Validators\\BaseService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Charges/Validators/StandardServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -19114,11 +19300,13 @@
             "source": "app/services/charges/validators/graduated_percentage_service.rb",
             "laravel": "App\\Services\\Charges\\Validators\\GraduatedPercentageService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Charges/Validators/GraduatedPercentageServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -19126,11 +19314,13 @@
             "source": "app/services/charges/validators/graduated_service.rb",
             "laravel": "App\\Services\\Charges\\Validators\\GraduatedService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Charges/Validators/GraduatedServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -19138,11 +19328,13 @@
             "source": "app/services/charges/validators/package_service.rb",
             "laravel": "App\\Services\\Charges\\Validators\\PackageService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Charges/Validators/PackageServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -19150,11 +19342,13 @@
             "source": "app/services/charges/validators/percentage_service.rb",
             "laravel": "App\\Services\\Charges\\Validators\\PercentageService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Charges/Validators/PercentageServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -19162,11 +19356,13 @@
             "source": "app/services/charges/validators/standard_service.rb",
             "laravel": "App\\Services\\Charges\\Validators\\StandardService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Charges/Validators/StandardServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -19174,11 +19370,13 @@
             "source": "app/services/charges/validators/volume_service.rb",
             "laravel": "App\\Services\\Charges\\Validators\\VolumeService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Charges/Validators/VolumeServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -19774,24 +19972,28 @@
             "source": "app/services/credits/applied_coupon_service.rb",
             "laravel": "App\\Services\\Credits\\AppliedCouponService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/Invoices/CalculateFeesServiceTest.php"
+            ],
+            "notes": "Exercised via Credits\\AppliedCouponsService in the coupon scenario."
         },
         {
             "id": "svc:Credits.AppliedCouponsService",
             "source": "app/services/credits/applied_coupons_service.rb",
             "laravel": "App\\Services\\Credits\\AppliedCouponsService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/Invoices/CalculateFeesServiceTest.php"
+            ],
+            "notes": "Percentage-coupon scenario asserts the created credit."
         },
         {
             "id": "svc:Credits.AppliedPrepaidCreditsService",
@@ -19822,12 +20024,14 @@
             "source": "app/services/credits/progressive_billing_service.rb",
             "laravel": "App\\Services\\Credits\\ProgressiveBillingService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/Invoices/CalculateFeesServiceTest.php"
+            ],
+            "notes": "Unconditional call in the CalculateFeesService pipeline."
         },
         {
             "id": "svc:CustomerPortal.CustomerUpdateService",
@@ -19898,12 +20102,14 @@
             "source": "app/services/customers/destroy_service.rb",
             "laravel": "App\\Services\\Customers\\DestroyService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Api/V1/CustomersControllerTest.php"
+            ],
+            "notes": "Exercised through the DELETE customer endpoint tests."
         },
         {
             "id": "svc:Customers.EuAutoTaxesService",
@@ -21370,12 +21576,14 @@
             "source": "app/services/fees/apply_taxes_service.rb",
             "laravel": "App\\Services\\Fees\\ApplyTaxesService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/Invoices/CalculateFeesServiceTest.php"
+            ],
+            "notes": "Fee-level appliedTaxes rows asserted in the pipeline test."
         },
         {
             "id": "svc:Fees.BuildPayInAdvanceFixedChargeService",
@@ -21394,36 +21602,42 @@
             "source": "app/services/fees/charge_service.rb",
             "laravel": "App\\Services\\Fees\\ChargeService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/Invoices/CalculateFeesServiceTest.php"
+            ],
+            "notes": "Charge-fee creation exercised through the CalculateFeesService pipeline."
         },
         {
             "id": "svc:Fees.ChargeService.MeteredItem",
             "source": "app/services/fees/charge_service/metered_item.rb",
             "laravel": "App\\Services\\Fees\\ChargeService\\MeteredItem",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/Invoices/CalculateFeesServiceTest.php"
+            ],
+            "notes": "Exercised via Fees\\ChargeService under the pipeline test."
         },
         {
             "id": "svc:Fees.ChargeService.Options",
             "source": "app/services/fees/charge_service/options.rb",
             "laravel": "App\\Services\\Fees\\ChargeService\\Options",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/Invoices/CalculateFeesServiceTest.php"
+            ],
+            "notes": "Exercised via Fees\\ChargeService under the pipeline test."
         },
         {
             "id": "svc:Fees.ChargeService.Sources.BillingSegment",
@@ -21646,11 +21860,13 @@
             "source": "app/services/fees/subscription_service.rb",
             "laravel": "App\\Services\\Fees\\SubscriptionService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Services/Fees/SubscriptionServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -21754,12 +21970,14 @@
             "source": "app/services/fixed_charges/apply_taxes_service.rb",
             "laravel": "App\\Services\\FixedCharges\\ApplyTaxesService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Api/V1/PlansControllerTest.php"
+            ],
+            "notes": "plan.fixed_charges.0.taxes.0 asserted through the plan-create flow."
         },
         {
             "id": "svc:FixedCharges.CascadeChildPlanUpdateService",
@@ -23782,12 +24000,14 @@
             "source": "app/services/invoices/apply_taxes_service.rb",
             "laravel": "App\\Services\\Invoices\\ApplyTaxesService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/Invoices/CalculateFeesServiceTest.php"
+            ],
+            "notes": "invoices_taxes/fees_taxes snapshot rows asserted in the pipeline test."
         },
         {
             "id": "svc:Invoices.BuildRegenerationPreviewService",
@@ -23806,11 +24026,13 @@
             "source": "app/services/invoices/calculate_fees_service.rb",
             "laravel": "App\\Services\\Invoices\\CalculateFeesService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Services/Invoices/CalculateFeesServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -23818,23 +24040,27 @@
             "source": "app/services/invoices/compute_amounts_from_fees.rb",
             "laravel": "App\\Services\\Invoices\\ComputeAmountsFromFees",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/Invoices/CalculateFeesServiceTest.php"
+            ],
+            "notes": "Exercised via ComputeTaxesAndTotalsService under the CalculateFeesServiceTest pipeline."
         },
         {
             "id": "svc:Invoices.ComputeTaxesAndTotalsService",
             "source": "app/services/invoices/compute_taxes_and_totals_service.rb",
             "laravel": "App\\Services\\Invoices\\ComputeTaxesAndTotalsService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Services/Invoices/CalculateFeesServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -23866,11 +24092,13 @@
             "source": "app/services/invoices/create_invoice_subscription_service.rb",
             "laravel": "App\\Services\\Invoices\\CreateInvoiceSubscriptionService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Services/Invoices/CreateInvoiceSubscriptionServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -23986,11 +24214,13 @@
             "source": "app/services/invoices/finalize_service.rb",
             "laravel": "App\\Services\\Invoices\\FinalizeService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Services/Invoices/CalculateFeesServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -26376,11 +26606,13 @@
             "source": "app/services/plans/create_service.rb",
             "laravel": "App\\Services\\Plans\\CreateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Services/Plans/CreateServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -26412,12 +26644,14 @@
             "source": "app/services/plans/prepare_destroy_service.rb",
             "laravel": "App\\Services\\Plans\\PrepareDestroyService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Api/V1/PlansControllerTest.php"
+            ],
+            "notes": "Exercised through the DELETE plan endpoint tests (pending_deletion asserted)."
         },
         {
             "id": "svc:Plans.UpdateAmountService",
@@ -26436,11 +26670,13 @@
             "source": "app/services/plans/update_service.rb",
             "laravel": "App\\Services\\Plans\\UpdateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Services/Plans/UpdateServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -27228,11 +27464,13 @@
             "source": "app/services/subscriptions/activate_service.rb",
             "laravel": "App\\Services\\Subscriptions\\ActivateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Services/Subscriptions/ActivateServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -27504,11 +27742,13 @@
             "source": "app/services/subscriptions/create_service.rb",
             "laravel": "App\\Services\\Subscriptions\\CreateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Services/Subscriptions/CreateServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -27516,11 +27756,13 @@
             "source": "app/services/subscriptions/dates/monthly_service.rb",
             "laravel": "App\\Services\\Subscriptions\\Dates\\MonthlyService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Subscriptions/Dates/MonthlyServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -27528,11 +27770,13 @@
             "source": "app/services/subscriptions/dates/quarterly_service.rb",
             "laravel": "App\\Services\\Subscriptions\\Dates\\QuarterlyService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Subscriptions/Dates/QuarterlyServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -27540,11 +27784,13 @@
             "source": "app/services/subscriptions/dates/semiannual_service.rb",
             "laravel": "App\\Services\\Subscriptions\\Dates\\SemiannualService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Subscriptions/Dates/SemiannualServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -27552,11 +27798,13 @@
             "source": "app/services/subscriptions/dates/weekly_service.rb",
             "laravel": "App\\Services\\Subscriptions\\Dates\\WeeklyService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Subscriptions/Dates/WeeklyServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -27564,11 +27812,13 @@
             "source": "app/services/subscriptions/dates/yearly_service.rb",
             "laravel": "App\\Services\\Subscriptions\\Dates\\YearlyService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Subscriptions/Dates/YearlyServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -27576,11 +27826,13 @@
             "source": "app/services/subscriptions/dates_service.rb",
             "laravel": "App\\Services\\Subscriptions\\DatesService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Subscriptions/DatesServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -27634,25 +27886,29 @@
         {
             "id": "svc:Subscriptions.OrganizationBillingService",
             "source": "app/services/subscriptions/organization_billing_service.rb",
-            "laravel": "App\\Services\\Subscriptions\\OrganizationBillingService",
+            "laravel": "App\\Services\\Organizations\\BillingService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/Organizations/BillingServiceTest.php"
+            ],
+            "notes": "Ledger laravel projection corrected from App\\Services\\Subscriptions\\OrganizationBillingService to the ported class (App\\Services\\Organizations\\BillingService)."
         },
         {
             "id": "svc:Subscriptions.PlanDowngradeService",
             "source": "app/services/subscriptions/plan_downgrade_service.rb",
             "laravel": "App\\Services\\Subscriptions\\PlanDowngradeService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Services/Subscriptions/PlanUpgradeServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -27660,11 +27916,13 @@
             "source": "app/services/subscriptions/plan_upgrade_service.rb",
             "laravel": "App\\Services\\Subscriptions\\PlanUpgradeService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Services/Subscriptions/PlanUpgradeServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -27684,11 +27942,13 @@
             "source": "app/services/subscriptions/terminate_service.rb",
             "laravel": "App\\Services\\Subscriptions\\TerminateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Services/Subscriptions/TerminateServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -27696,12 +27956,14 @@
             "source": "app/services/subscriptions/terminated_dates_service.rb",
             "laravel": "App\\Services\\Subscriptions\\TerminatedDatesService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/Invoices/CalculateFeesServiceTest.php"
+            ],
+            "notes": "Instantiated unconditionally in the CalculateFeesService pipeline; clamp logic itself is covered indirectly."
         },
         {
             "id": "svc:Subscriptions.UpdateOrOverrideChargeService",
@@ -27732,11 +27994,13 @@
             "source": "app/services/subscriptions/update_service.rb",
             "laravel": "App\\Services\\Subscriptions\\UpdateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Services/Subscriptions/UpdateServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -27756,12 +28020,15 @@
             "source": "app/services/subscriptions/validate_service.rb",
             "laravel": "App\\Services\\Subscriptions\\ValidateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/Subscriptions/CreateServiceTest.php",
+                "tests/Feature/Services/Subscriptions/UpdateServiceTest.php"
+            ],
+            "notes": "Invoked by both Create and Update services under their passing tests."
         },
         {
             "id": "svc:Taxes.AutoGenerateService",
@@ -27780,11 +28047,13 @@
             "source": "app/services/taxes/create_service.rb",
             "laravel": "App\\Services\\Taxes\\CreateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Taxes/CreateServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -27792,11 +28061,13 @@
             "source": "app/services/taxes/destroy_service.rb",
             "laravel": "App\\Services\\Taxes\\DestroyService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Taxes/DestroyServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -27804,11 +28075,13 @@
             "source": "app/services/taxes/update_service.rb",
             "laravel": "App\\Services\\Taxes\\UpdateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Taxes/UpdateServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -28740,11 +29013,13 @@
             "source": "app/services/webhooks/base_service.rb",
             "laravel": "App\\Services\\Webhooks\\BaseService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Webhooks/BaseServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -28824,11 +29099,13 @@
             "source": "app/services/webhooks/customers/created_service.rb",
             "laravel": "App\\Services\\Webhooks\\Customers\\CreatedService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Webhooks/Customers/CreatedServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -28836,11 +29113,13 @@
             "source": "app/services/webhooks/customers/updated_service.rb",
             "laravel": "App\\Services\\Webhooks\\Customers\\UpdatedService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Webhooks/Customers/CreatedServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -29052,11 +29331,13 @@
             "source": "app/services/webhooks/invoices/created_service.rb",
             "laravel": "App\\Services\\Webhooks\\Invoices\\CreatedService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Webhooks/Invoices/InvoiceWebhookServicesTest.php"
+            ],
             "notes": ""
         },
         {
@@ -29076,11 +29357,13 @@
             "source": "app/services/webhooks/invoices/drafted_service.rb",
             "laravel": "App\\Services\\Webhooks\\Invoices\\DraftedService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Webhooks/Invoices/InvoiceWebhookServicesTest.php"
+            ],
             "notes": ""
         },
         {
@@ -29508,11 +29791,13 @@
             "source": "app/services/webhooks/retry_service.rb",
             "laravel": "App\\Services\\Webhooks\\RetryService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Webhooks/RetryServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -29520,11 +29805,13 @@
             "source": "app/services/webhooks/send_http_service.rb",
             "laravel": "App\\Services\\Webhooks\\SendHttpService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Webhooks/SendHttpServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -29532,11 +29819,13 @@
             "source": "app/services/webhooks/subscriptions/canceled_service.rb",
             "laravel": "App\\Services\\Webhooks\\Subscriptions\\CanceledService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Webhooks/Subscriptions/SubscriptionWebhookServicesTest.php"
+            ],
             "notes": ""
         },
         {
@@ -29556,11 +29845,13 @@
             "source": "app/services/webhooks/subscriptions/started_service.rb",
             "laravel": "App\\Services\\Webhooks\\Subscriptions\\StartedService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Webhooks/Subscriptions/SubscriptionWebhookServicesTest.php"
+            ],
             "notes": ""
         },
         {
@@ -29568,11 +29859,13 @@
             "source": "app/services/webhooks/subscriptions/terminated_service.rb",
             "laravel": "App\\Services\\Webhooks\\Subscriptions\\TerminatedService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Webhooks/Subscriptions/SubscriptionWebhookServicesTest.php"
+            ],
             "notes": ""
         },
         {
@@ -29604,11 +29897,13 @@
             "source": "app/services/webhooks/subscriptions/updated_service.rb",
             "laravel": "App\\Services\\Webhooks\\Subscriptions\\UpdatedService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Webhooks/Subscriptions/SubscriptionWebhookServicesTest.php"
+            ],
             "notes": ""
         },
         {

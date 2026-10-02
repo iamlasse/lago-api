@@ -168,7 +168,7 @@ final class MoneyMath
         // strip trailing fractional zeros / bare dot ("3.00" -> "3")
         $trimmed = mb_rtrim(mb_rtrim($numeric, '0'), '.');
 
-        return ($trimmed === '' || $trimmed === '-') ? '0' : $trimmed;
+        return ($trimmed === '' || $trimmed === '-') ? '0' : (string) $trimmed;
     }
 
     private static function expandExponent(string $numeric): string

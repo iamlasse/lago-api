@@ -1,0 +1,54 @@
+# Mago's settings for this project. Tusk made this file from its defaults for Laravel;
+# Settings > PHP Analysis edits it, and keeps your comments.
+
+[source]
+# The editor sends one file at a time on standard input. Mago reads `paths` as the project's
+# own code and `includes` as library code, and uses both as context, so project classes and
+# framework classes such as Laravel facades resolve. Don't list project folders in
+# `includes`: Mago never lints included files. The editor replaces "." with the project's top-level
+# folders and PHP files, less hidden ones, vendor, node_modules, and storage, since Mago walks every
+# file under a path before it applies `excludes`.
+paths = ["api", "api-laravel", "connectors", "deploy", "docker", "docs", "events-processor", "examples", "extra", "front", "Plans", "scripts", "traefik"]
+# The editor adds Laravel's alias stubs (`use DB;`) to this list, so keep it on one line.
+includes = ["vendor"]
+# Hidden folders can hold whole copies of the project, such as git worktrees in .claude/. The editor adds
+# vendor files it gives Mago corrected copies of, and the project's vendor folders to skip (Index Exclusions),
+# so keep this on one line too.
+excludes = [".*", "node_modules", "storage", "bootstrap/cache"]
+
+[linter]
+integrations = ["laravel"]
+
+# Rules that flag idiomatic Laravel code on almost every file.
+[linter.rules]
+strict-types = { enabled = false }
+literal-named-argument = { enabled = false }
+# Filament and the container fill a closure's parameters by name (`$record`, `$livewire`), which a first-class
+# callable such as `$this->print(...)` renames to the method's.
+prefer-first-class-callable = { enabled = false }
+# Code size and complexity metrics flag long Filament resources and form builders more than real problems.
+cyclomatic-complexity = { enabled = false }
+halstead = { enabled = false }
+kan-defect = { enabled = false }
+too-many-methods = { enabled = false }
+too-many-properties = { enabled = false }
+too-many-enum-cases = { enabled = false }
+excessive-parameter-list = { enabled = false }
+# Taste rather than mistakes, and on almost every Filament closure.
+prefer-static-closure = { enabled = false }
+no-else-clause = { enabled = false }
+prefer-early-continue = { enabled = false }
+no-boolean-flag-parameter = { enabled = false }
+no-isset = { enabled = false }
+readable-literal = { enabled = false }
+assert-description = { enabled = false }
+# Style and hardening advice rather than mistakes.
+no-empty = { level = "warning" }
+no-error-control-operator = { level = "warning" }
+final-controller = { level = "warning" }
+sensitive-parameter = { level = "warning" }
+# Tests, factories, and seeders set passwords for fake users.
+no-literal-password = { exclude = ["tests/", "database/factories/", "database/seeders/"] }
+
+[analyzer]
+ignore = ["invalid-return-statement", "possibly-false-argument"]

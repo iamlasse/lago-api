@@ -79,6 +79,19 @@ class MonthlyService extends DatesService
     {
         $billingDate = $this->billingDate();
 
+        // NOTE: Rails-verified contract (integration check 2026-10-02): base
+        // date is billing_date - 1 month because billing_at is expected to be
+        // the end of the billing period + 1 day. A bill run on 2026-07-04
+        // therefore belongs to the JUNE period of a subscription anchored on
+        // the 1st: from/to resolve to June 1 → July 1 (duration 30) — not
+        // July → August (31). On a first invoice where the subscription
+        // started (2026-07-01) after the computed period start (June 1),
+        // fromDatetime()/toDatetime() clamp both bounds to started_at, so
+        // from == to == 2026-07-01 while previousBeginningOfPeriod() still
+        // reports June 1 and the duration stays the whole period's 30 days.
+        // This matches Rails (app/services/subscriptions/dates/ monthly_service.rb
+        // + DatesService#from_datetime) exactly; it is not a port bug.
+
         // NOTE: if subscription anniversary is on last day of month and current
         // month days count is less than month anniversary day count, we need to
         // use the last day of the previous month

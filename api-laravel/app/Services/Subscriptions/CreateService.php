@@ -416,7 +416,7 @@ class CreateService extends BaseService
                             ->whereNull('previous_subscription_id');
                     });
             })
-            ->orderByDesc('started_at');
+            ->latest('started_at');
     }
 
     protected function consolidateInvoice(): bool

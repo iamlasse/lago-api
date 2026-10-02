@@ -77,8 +77,8 @@ class AppliedCouponsService extends \App\Services\BaseService
             ->active()
             ->where('customer_id', $customerId)
             ->join('coupons', 'coupons.id', '=', 'applied_coupons.coupon_id')
-            ->orderByDesc('coupons.limited_billable_metrics')
-            ->orderByDesc('coupons.limited_plans')
+            ->latest('coupons.limited_billable_metrics')
+            ->latest('coupons.limited_plans')
             ->orderBy('applied_coupons.created_at')
             ->select('applied_coupons.*')
             ->get();

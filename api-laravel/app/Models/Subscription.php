@@ -170,6 +170,9 @@ class Subscription extends BaseModel
     }
 
     // -- Scopes ------------------------------------------------------------------
+    // Legacy scopeXyz() form: #[Scope] pending()/active()/terminated()/
+    // canceled()/incomplete()/startingInTheFuture() would collide with the
+    // same-named boolean status helpers below.
 
     /** Rails: `scope :starting_in_the_future, -> { pending.where(previous_subscription: nil) }`. */
     public function scopeStartingInTheFuture(Builder $query): Builder
@@ -453,8 +456,8 @@ class Subscription extends BaseModel
     {
         return $this->nextSubscriptions()
             ->where('status', '!=', SubscriptionStatus::Canceled->value)
-            ->orderByDesc('created_at')
-            ->orderByDesc('id')
+            ->latest()
+            ->latest('id')
             ->first();
     }
 
@@ -504,7 +507,7 @@ class Subscription extends BaseModel
             return $startedAt === null ? null : CarbonImmutable::instance($startedAt)->startOfDay();
         }
 
-        if (! $this->pending()) {
+        if (! $nextSubscription->pending()) {
             return null;
         }
 
@@ -556,8 +559,8 @@ class Subscription extends BaseModel
     {
         return $this->fees()
             ->where('fee_type', 2)
-            ->orderByDesc('created_at')
-            ->orderByDesc('id')
+            ->latest()
+            ->latest('id')
             ->first();
     }
 

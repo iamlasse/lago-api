@@ -37,12 +37,24 @@ it('applies taxes to the customer', function (): void {
 it('marks draft invoices as ready to be refreshed', function (): void {
     [, $customer, $tax1, $tax2] = applyTaxesContext();
 
+    // Rails invoice STATUS map: draft = 0, finalized = 1.
     DB::table('invoices')->insert([
         'id' => Illuminate\Support\Str::uuid(),
         'organization_id' => $customer->organization_id,
         'customer_id' => $customer->id,
         'billing_entity_id' => $customer->billing_entity_id,
-        'status' => 1, // draft
+        'status' => 0, // draft
+        'issuing_date' => now()->toDateString(),
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    DB::table('invoices')->insert([
+        'id' => Illuminate\Support\Str::uuid(),
+        'organization_id' => $customer->organization_id,
+        'customer_id' => $customer->id,
+        'billing_entity_id' => $customer->billing_entity_id,
+        'status' => 1, // finalized
         'issuing_date' => now()->toDateString(),
         'created_at' => now(),
         'updated_at' => now(),
@@ -50,7 +62,10 @@ it('marks draft invoices as ready to be refreshed', function (): void {
 
     ApplyTaxesService::call(customer: $customer, taxCodes: [$tax1->code, $tax2->code]);
 
-    expect((bool) DB::table('invoices')->where('customer_id', $customer->id)->value('ready_to_be_refreshed'))->toBeTrue();
+    // Rails: customer.invoices.draft.update_all(ready_to_be_refreshed: true) —
+    // only the draft invoice is flagged.
+    expect((bool) DB::table('invoices')->where('customer_id', $customer->id)->where('status', 0)->value('ready_to_be_refreshed'))->toBeTrue()
+        ->and((bool) DB::table('invoices')->where('customer_id', $customer->id)->where('status', 1)->value('ready_to_be_refreshed'))->toBeFalse();
 });
 
 it('fails when the customer is missing', function (): void {

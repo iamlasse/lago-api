@@ -64,7 +64,8 @@ class ApplyTaxesService extends BaseService
                 }
 
                 // Mark draft invoices for refresh.
-                $customer->invoices()->where('status', 1)->update(['ready_to_be_refreshed' => true]);
+                $customer->invoices()->where('status', 0) // Rails: Invoice.draft (draft: 0)
+                    ->update(['ready_to_be_refreshed' => true]);
 
                 $result->applied_taxes = $appliedTaxes;
 

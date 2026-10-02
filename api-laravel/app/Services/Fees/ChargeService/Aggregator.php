@@ -59,8 +59,8 @@ final class Aggregator
             ->where('external_subscription_id', $this->externalSubscriptionId)
             ->where('charge_id', $this->meteredItem->chargeId())
             ->whereNull('charge_filter_id')
-            ->orderByDesc('timestamp')
-            ->orderByDesc('created_at')
+            ->latest('timestamp')
+            ->latest()
             ->first();
     }
 }
