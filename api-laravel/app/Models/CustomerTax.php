@@ -19,7 +19,7 @@ class CustomerTax extends BaseModel
     protected function casts(): array
     {
         return [
-    
+
         ];
     }
 }

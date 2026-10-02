@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Casts\PostgresArray;
 use App\Enums\EntityDocumentNumbering;
 use App\Services\Validators\Countries;
 use App\Services\Validators\Timezones;
@@ -76,14 +77,25 @@ class BillingEntity extends BaseModel
     /** Rails' I18n.available_locales (LanguageCodeValidator data). */
     public const AVAILABLE_LOCALES = ['en', 'fr', 'nb', 'de', 'it', 'es', 'sv', 'pt-BR', 'zh-TW'];
 
-    // -- Scopes --------------------------------------------------------------
-
-    /** Rails: `scope :active, -> { where(archived_at: nil).order(created_at: :asc) }`. */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
-    protected function active(Builder $query): Builder
-    {
-        return $query->whereNull('archived_at')->oldest('created_at');
-    }
+    /**
+     * Rails' ActiveRecord carries the schema's column defaults in every new
+     * instance; Eloquent does not, so they are declared here.
+     */
+    protected $attributes = [
+        'timezone' => 'UTC',
+        'default_currency' => 'USD',
+        'document_locale' => 'en',
+        'document_numbering' => 'per_customer',
+        'finalize_zero_amount_invoice' => true,
+        'invoice_grace_period' => 0,
+        'net_payment_term' => 0,
+        'email_settings' => '{}',
+        'eu_tax_management' => false,
+        'einvoicing' => false,
+        'vat_rate' => 0.0,
+        'subscription_invoice_issuing_date_anchor' => 'next_period_start',
+        'subscription_invoice_issuing_date_adjustment' => 'align_with_finalization_date',
+    ];
 
     /**
      * Rails: `update!(document_number_prefix: "#{name.first(3).upcase}-#{id.last(4).upcase}")
@@ -220,6 +232,15 @@ class BillingEntity extends BaseModel
         });
     }
 
+    // -- Scopes --------------------------------------------------------------
+
+    /** Rails: `scope :active, -> { where(archived_at: nil).order(created_at: :asc) }`. */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function active(Builder $query): Builder
+    {
+        return $query->whereNull('archived_at')->oldest('created_at');
+    }
+
     // -- Attribute behavior ---------------------------------------------------
 
     protected function email(): Attribute
@@ -244,13 +265,14 @@ class BillingEntity extends BaseModel
             fn (?string $value) => $value === null ? null : mb_strtoupper($value),
         );
     }
+
     protected function casts(): array
     {
         return [
             'finalize_zero_amount_invoice' => 'boolean',
             'invoice_grace_period' => 'integer',
             'net_payment_term' => 'integer',
-            'email_settings' => 'array',
+            'email_settings' => PostgresArray::class,
             'eu_tax_management' => 'boolean',
             'vat_rate' => 'float',
             'archived_at' => 'datetime',

@@ -24,6 +24,30 @@ class PaginationUser
     }
 }
 
+function createPaginationOrganization(string $name = 'Pagination Org'): Organization
+{
+    $organization = Organization::create(['name' => $name]);
+
+    // customers.billing_entity_id is NOT NULL in the frozen schema.
+    App\Models\BillingEntity::create(['organization_id' => $organization->id, 'name' => $name, 'code' => 'default']);
+
+    return $organization;
+}
+
+function createCustomerRow(Organization $organization, string $externalId, string $name): Customer
+{
+    $billingEntity = App\Models\BillingEntity::query()
+        ->where('organization_id', $organization->id)
+        ->firstOrFail();
+
+    return Customer::create([
+        'organization_id' => $organization->id,
+        'billing_entity_id' => $billingEntity->id,
+        'external_id' => $externalId,
+        'name' => $name,
+    ]);
+}
+
 function paginateCustomers(Organization $organization, int $page, int $perPage = 100): LengthAwarePaginator
 {
     return Customer::query()
@@ -33,7 +57,7 @@ function paginateCustomers(Organization $organization, int $page, int $perPage =
 }
 
 it('returns zeroed meta when total_count is 0', function (): void {
-    $organization = Organization::create(['name' => 'Pagination Org']);
+    $organization = createPaginationOrganization();
     $paginator = paginateCustomers($organization, 1);
 
     $meta = (new PaginationUser)->meta($paginator);
@@ -49,9 +73,9 @@ it('returns zeroed meta when total_count is 0', function (): void {
 });
 
 it('computes navigation pages across the full matrix', function (): void {
-    $organization = Organization::create(['name' => 'Pagination Org']);
+    $organization = createPaginationOrganization();
     foreach (range(1, 250) as $i) {
-        Customer::create(['organization_id' => $organization->id, 'external_id' => "cust-{$i}", 'name' => "C{$i}"]);
+        createCustomerRow($organization, "cust-{$i}", "C{$i}");
     }
 
     $user = new PaginationUser;
@@ -74,13 +98,13 @@ it('computes navigation pages across the full matrix', function (): void {
 
 it('caches the total count for 30 minutes when key, organization and params are given', function (): void {
     Cache::flush();
-    $organization = Organization::create(['name' => 'Pagination Org']);
+    $organization = createPaginationOrganization();
     foreach (range(1, 250) as $i) {
-        Customer::create(['organization_id' => $organization->id, 'external_id' => "cust-{$i}", 'name' => "C{$i}"]);
+        createCustomerRow($organization, "cust-{$i}", "C{$i}");
     }
 
     $user = new PaginationUser;
-    $params = ['per_page' => '100'];
+    $params = ['page' => '1', 'per_page' => '100'];
 
     $meta = $user->meta(paginateCustomers($organization, 1), 'customers', $organization->id, $params);
 
@@ -93,54 +117,54 @@ it('caches the total count for 30 minutes when key, organization and params are 
 
 it('serves the cached count and skips re-querying while the cache is fresh', function (): void {
     Cache::flush();
-    $organization = Organization::create(['name' => 'Pagination Org']);
+    $organization = createPaginationOrganization();
     foreach (range(1, 250) as $i) {
-        Customer::create(['organization_id' => $organization->id, 'external_id' => "cust-{$i}", 'name' => "C{$i}"]);
+        createCustomerRow($organization, "cust-{$i}", "C{$i}");
     }
 
     $user = new PaginationUser;
-    $params = ['per_page' => '100'];
 
-    $user->meta(paginateCustomers($organization, 1), 'customers', $organization->id, $params);
+    $user->meta(paginateCustomers($organization, 1), 'customers', $organization->id, ['page' => '1', 'per_page' => '100']);
 
-    // Data changes under our feet — page 1 still serves the cached count.
+    // Data changes under our feet — page 1 still serves the cached count
+    // (cached 250 > 100 * 1).
     Customer::where('organization_id', $organization->id)->whereIn('external_id', ['cust-1', 'cust-2'])->delete();
 
-    expect($user->meta(paginateCustomers($organization, 1), 'customers', $organization->id, $params)['total_count'])->toBe(250);
+    expect($user->meta(paginateCustomers($organization, 1), 'customers', $organization->id, ['page' => '1', 'per_page' => '100'])['total_count'])->toBe(250);
 
     // Rails: re-calculate on the last page because the number of records
     // could have changed (cached 250 <= 100 * 3).
-    expect($user->meta(paginateCustomers($organization, 3), 'customers', $organization->id, $params)['total_count'])->toBe(248);
+    expect($user->meta(paginateCustomers($organization, 3), 'customers', $organization->id, ['page' => '3', 'per_page' => '100'])['total_count'])->toBe(248);
 });
 
 it('derives the same cache key regardless of param order (deep sort)', function (): void {
     Cache::flush();
-    $organization = Organization::create(['name' => 'Pagination Org']);
-    Customer::create(['organization_id' => $organization->id, 'external_id' => 'cust-1', 'name' => 'C1']);
+    $organization = createPaginationOrganization();
+    createCustomerRow($organization, 'cust-1', 'C1');
 
     $user = new PaginationUser;
 
     expect(
-        $user->meta(paginateCustomers($organization, 1), 'customers', $organization->id, ['per_page' => '100', 'search_term' => 'x'])['total_count'],
+        $user->meta(paginateCustomers($organization, 1), 'customers', $organization->id, ['page' => '1', 'per_page' => '100', 'search_term' => 'x'])['total_count'],
     )->toBe(1);
 
     // Remove the record; the reordered params must still hit the same cache
     // entry (cached 1 is NOT > 100*1 though — force a higher count instead).
     Customer::where('organization_id', $organization->id)->delete();
     foreach (range(1, 250) as $i) {
-        Customer::create(['organization_id' => $organization->id, 'external_id' => "new-{$i}", 'name' => "N{$i}"]);
+        createCustomerRow($organization, "new-{$i}", "N{$i}");
     }
 
     expect(
-        $user->meta(paginateCustomers($organization, 1), 'customers', $organization->id, ['search_term' => 'x', 'per_page' => '100'])['total_count'],
+        $user->meta(paginateCustomers($organization, 1), 'customers', $organization->id, ['search_term' => 'x', 'page' => '1', 'per_page' => '100'])['total_count'],
     )->toBe(250);
 });
 
 it('does not use the count cache unless key, organization id and params are all given', function (): void {
     Cache::flush();
-    $organization = Organization::create(['name' => 'Pagination Org']);
+    $organization = createPaginationOrganization();
     foreach (range(1, 250) as $i) {
-        Customer::create(['organization_id' => $organization->id, 'external_id' => "cust-{$i}", 'name' => "C{$i}"]);
+        createCustomerRow($organization, "cust-{$i}", "C{$i}");
     }
 
     $user = new PaginationUser;

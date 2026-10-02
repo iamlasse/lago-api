@@ -78,6 +78,7 @@ class CustomerMetadata extends BaseModel
 
         return $errors;
     }
+
     protected function casts(): array
     {
         return [

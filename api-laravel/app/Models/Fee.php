@@ -64,6 +64,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Fee extends BaseModel
 {
     use SoftDeletes;
+
     protected function casts(): array
     {
         return [

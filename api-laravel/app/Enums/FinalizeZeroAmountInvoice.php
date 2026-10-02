@@ -20,9 +20,28 @@ enum FinalizeZeroAmountInvoice: int
         return ['inherit', 'skip', 'finalize'];
     }
 
+    /**
+     * Rails assigns the enum NAME ("inherit" | "skip" | "finalize") and the
+     * column stores the integer position; returns the position, or null when
+     * the name is not one of the options.
+     */
+    public static function fromOption(mixed $value): ?int
+    {
+        if (is_int($value)) {
+            return in_array($value, [0, 1, 2], true) ? $value : null;
+        }
+
+        return match (is_string($value) ? mb_strtolower($value) : null) {
+            'inherit' => self::Inherit->value,
+            'skip' => self::Skip->value,
+            'finalize' => self::Finalize->value,
+            default => null,
+        };
+    }
+
     /** The Rails enum name (the string the REST API emits for the value). */
     public function label(): string
     {
-        return mb_strtolower($this->name);
+        return \Illuminate\Support\Str::snake($this->name);
     }
 }

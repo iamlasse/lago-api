@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class ChargeFilter extends BaseModel
 {
     use SoftDeletes;
+
     protected function casts(): array
     {
         return [

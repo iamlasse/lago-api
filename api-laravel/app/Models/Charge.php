@@ -31,6 +31,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Charge extends BaseModel
 {
     use SoftDeletes;
+
     protected function casts(): array
     {
         return [

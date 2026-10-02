@@ -40,7 +40,7 @@ if (! function_exists('inv_gen_jobs')) {
 if (! function_exists('inv_job_queue_as')) {
     function inv_job_queue_as(string $contents): string
     {
-        if (preg_match('/^\s*queue_as\s+([A-Za-z_][\w]*)\s*$/m', $contents, $m) === 1) {
+        if (preg_match('/^\s*queue_as\s+:?([A-Za-z_][\w]*)\s*$/m', $contents, $m) === 1 && $m[1] !== 'do') {
             return $m[1];
         }
 

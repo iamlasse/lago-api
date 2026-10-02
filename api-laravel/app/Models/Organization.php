@@ -7,6 +7,7 @@ namespace App\Models;
 use Illuminate\Support\Str;
 use App\Enums\MembershipStatus;
 use App\Enums\DocumentNumbering;
+use App\Models\Casts\PostgresArray;
 use App\Services\Validators\Countries;
 use App\Services\Validators\Timezones;
 use App\Services\Validators\Currencies;
@@ -68,6 +69,31 @@ class Organization extends BaseModel
         'features', 'feature', 'tax', 'webhook', 'api-keys', 'create', 'update', 'duplicate',
     ];
 
+    /**
+     * Rails' ActiveRecord carries the schema's column defaults in every new
+     * instance; Eloquent does not, so they are declared here. `slug`,
+     * `hmac_key` and `document_number_prefix` stay unset — the model
+     * generates them on create.
+     */
+    protected $attributes = [
+        'vat_rate' => 0.0,
+        'invoice_grace_period' => 0,
+        'timezone' => 'UTC',
+        'document_locale' => 'en',
+        'email_settings' => '{}',
+        'net_payment_term' => 0,
+        'default_currency' => 'USD',
+        'document_numbering' => 0,
+        'eu_tax_management' => false,
+        'premium_integrations' => '{}',
+        'custom_aggregation' => false,
+        'finalize_zero_amount_invoice' => true,
+        'clickhouse_events_store' => false,
+        'authentication_methods' => '{email_password,google_oauth}',
+        'audit_logs_period' => 30,
+        'feature_flags' => '{}',
+    ];
+
     /** Port of Organization#events_store. */
     public function eventsStore(): string
     {
@@ -96,7 +122,13 @@ class Organization extends BaseModel
             $errors['country'] = ['not_a_valid_country_code'];
         }
 
-        if (! Currencies::valid($this->getRawOriginal('default_currency'))) {
+        // Column defaults: a never-assigned attribute holds the schema's
+        // default in the database — validate the default like Rails does,
+        // whose models load column defaults into the attribute set.
+        $defaultCurrency = $this->getRawOriginal('default_currency')
+            ?? ($this->isDirty('default_currency') ? null : 'USD');
+
+        if (! Currencies::valid($defaultCurrency)) {
             $errors['default_currency'] = ['value_is_invalid'];
         }
 
@@ -127,7 +159,10 @@ class Organization extends BaseModel
             $errors['name'] = ['value_is_mandatory'];
         }
 
-        if ($this->getRawOriginal('timezone') !== null && ! Timezones::valid($this->getRawOriginal('timezone'))) {
+        $timezone = $this->getRawOriginal('timezone')
+            ?? ($this->isDirty('timezone') ? null : 'UTC');
+
+        if ($timezone !== null && ! Timezones::valid($timezone)) {
             $errors['timezone'] = ['invalid_timezone'];
         }
 
@@ -140,7 +175,9 @@ class Organization extends BaseModel
         }
 
         $documentNumbering = $this->getRawOriginal('document_numbering');
-        if ($documentNumbering !== null && ! in_array((int) $documentNumbering, [0, 1], true)) {
+
+        if ($documentNumbering !== null
+            && (! ctype_digit((string) $documentNumbering) || ! in_array((int) $documentNumbering, [0, 1], true))) {
             $errors['document_numbering'] = ['value_is_invalid'];
         }
 
@@ -390,16 +427,17 @@ class Organization extends BaseModel
 
         return $candidate;
     }
+
     protected function casts(): array
     {
         return [
             'vat_rate' => 'float',
             'invoice_grace_period' => 'integer',
             'net_payment_term' => 'integer',
-            'email_settings' => 'array',
-            'premium_integrations' => 'array',
-            'feature_flags' => 'array',
-            'authentication_methods' => 'array',
+            'email_settings' => PostgresArray::class,
+            'premium_integrations' => PostgresArray::class,
+            'feature_flags' => PostgresArray::class,
+            'authentication_methods' => PostgresArray::class,
             'document_numbering' => DocumentNumbering::class,
             'eu_tax_management' => 'boolean',
             'custom_aggregation' => 'boolean',

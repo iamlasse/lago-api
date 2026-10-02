@@ -65,23 +65,33 @@ it('renders the exception envelopes with a body status matching the http status'
         'status' => 404,
         'error' => 'Not Found',
         'code' => 'customer_not_found',
-    ])->and((new UnauthorizedException)->body())->toBe([
+    ]);
+
+    expect((new UnauthorizedException)->body())->toBe([
         'status' => 401,
         'error' => 'Unauthorized',
-    ])->and((new ForbiddenException('read_action_not_allowed_for_plans'))->body())->toBe([
+    ]);
+
+    expect((new ForbiddenException('read_action_not_allowed_for_plans'))->body())->toBe([
         'status' => 403,
         'error' => 'Forbidden',
         'code' => 'read_action_not_allowed_for_plans',
-    ])->and((new ValidationException(['name' => ['error_blank']]))->body())->toBe([
+    ]);
+
+    expect((new ValidationException(['name' => ['error_blank']]))->body())->toBe([
         'status' => 422,
         'error' => 'Unprocessable Entity',
         'code' => 'validation_errors',
         'error_details' => ['name' => ['error_blank']],
-    ])->and((new MethodNotAllowedException('endpoint_not_available'))->body())->toBe([
+    ]);
+
+    expect((new MethodNotAllowedException('endpoint_not_available'))->body())->toBe([
         'status' => 405,
         'error' => 'Method Not Allowed',
         'code' => 'endpoint_not_available',
-    ])->and((new BadRequestException('nope'))->body())->toBe([
+    ]);
+
+    expect((new BadRequestException('nope'))->body())->toBe([
         'status' => 400,
         'error' => 'BadRequest: nope',
     ]);

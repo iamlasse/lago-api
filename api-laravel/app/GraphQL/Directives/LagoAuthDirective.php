@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\GraphQL\Directives;
 
-use App\GraphQL\Guards\AuthenticableApiUser;
 use Closure;
-use Nuwave\Lighthouse\Schema\Directives\BaseDirective;
+use App\GraphQL\Guards\AuthenticableApiUser;
 use Nuwave\Lighthouse\Schema\Values\FieldValue;
-use Nuwave\Lighthouse\Support\Contracts\FieldMiddleware;
+use Nuwave\Lighthouse\Schema\Directives\BaseDirective;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
+use Nuwave\Lighthouse\Support\Contracts\FieldMiddleware;
 
 /**
  * Port of Rails' AuthenticableApiUser concern, applied as a field-level guard:

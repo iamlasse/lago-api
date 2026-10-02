@@ -9,8 +9,11 @@ namespace App\Exceptions\Api;
  */
 class ForbiddenException extends ApiException
 {
-    public function __construct(private readonly string $code)
+    public function __construct(string $code)
     {
+        // Exception::$code (inherited) carries the Lago error code.
+        $this->code = $code;
+
         parent::__construct('Forbidden');
     }
 

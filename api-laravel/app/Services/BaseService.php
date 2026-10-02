@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Support\CurrentContext;
+use App\Services\Failures\FailedResult;
 
 /**
  * Port of Rails' BaseService (app/services/base_service.rb).

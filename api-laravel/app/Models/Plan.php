@@ -30,6 +30,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Plan extends BaseModel
 {
     use SoftDeletes;
+
     protected function casts(): array
     {
         return [

@@ -86,6 +86,7 @@ class Invoice extends BaseModel
     {
         return $this->customer_id.'-'.$this->billing_entity_id;
     }
+
     protected function casts(): array
     {
         return [

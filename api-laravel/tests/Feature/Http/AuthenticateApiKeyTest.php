@@ -80,7 +80,7 @@ it('tracks api key usage in the cache on trackable endpoints', function (): void
     $this->getJson('/api/v1/placeholder', ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk();
 
-    expect(Cache::get("api_key_last_used_{$apiKey->id}"))->toBe(now()->toIso8601String());
+    expect(Cache::get("api_key_last_used_{$apiKey->id}"))->toBe(now()->utc()->format('Y-m-d\\TH:i:s\\Z'));
 });
 
 it('does not parse the auth scheme, mirroring Rails split-on-whitespace', function (): void {
@@ -105,9 +105,17 @@ it('returns 403 with the mode/resource code when permissions are enforced and de
     config(['lago.license' => 'premium-license-token']);
 
     [$organization, $apiKey] = createOrganizationWithApiKey(
-        ['name' => 'Perms Org', 'premium_integrations' => ['api_permissions']],
+        ['name' => 'Perms Org'],
         ['permissions' => ['organization' => ['write']]],
     );
+
+    // premium_integrations is a varchar[] column (Rails string array); the
+    // model's 'array' cast emits JSON, so set the value in SQL.
+    Illuminate\Support\Facades\DB::update(
+        'update organizations set premium_integrations = ARRAY[?]::varchar[] where id = ?',
+        ['api_permissions', $organization->id],
+    );
+    $organization->refresh();
 
     // GET -> mode "read" -> denied.
     $this->getJson('/api/v1/placeholder', ['Authorization' => 'Bearer '.$apiKey->value])

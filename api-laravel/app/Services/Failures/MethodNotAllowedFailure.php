@@ -6,8 +6,16 @@ namespace App\Services\Failures;
 
 class MethodNotAllowedFailure extends FailedResult
 {
-    public function __construct(object $result, public readonly string $code)
+    /**
+     * The failure's error code. \Exception carries its own untyped int
+     * $code, so this shadow cannot be typed or readonly.
+     */
+    public $code;
+
+    public function __construct(object $result, string $code)
     {
+        $this->code = $code;
+
         parent::__construct($result, $code);
     }
 }

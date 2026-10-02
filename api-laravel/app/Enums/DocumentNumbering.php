@@ -12,4 +12,10 @@ enum DocumentNumbering: int
 {
     case PerCustomer = 0;
     case PerOrganization = 1;
+
+    /** The Rails enum name (the string the REST API emits for the value). */
+    public function label(): string
+    {
+        return \Illuminate\Support\Str::snake($this->name);
+    }
 }

@@ -57,6 +57,7 @@ class Membership extends BaseModel
     {
         return $query->where('status', MembershipStatus::Active->value);
     }
+
     protected function casts(): array
     {
         return [

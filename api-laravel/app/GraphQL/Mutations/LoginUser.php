@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\GraphQL\Mutations;
 
-use App\Enums\MembershipStatus;
 use App\Models\User;
+use App\Enums\MembershipStatus;
 use App\Support\Utils\AuthToken;
 use App\GraphQL\Execution\Errors;
 use App\GraphQL\Exceptions\ExecutionError;

@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Tax extends BaseModel
 {
     use SoftDeletes;
+
     protected function casts(): array
     {
         return [

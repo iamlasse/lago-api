@@ -22,10 +22,18 @@ trait FrozenSchemaDatabase
 
     protected function refreshTestDatabase()
     {
-        DB::statement('DROP SCHEMA public CASCADE');
-        DB::statement('CREATE SCHEMA public');
+        // Once per process: reset the schema (enum types survive migrate:fresh)
+        // and re-run the frozen loader. Per test: transaction only — same
+        // structure as Laravel's RefreshDatabase, otherwise every test pays
+        // the ~5s schema load.
+        if (! \Illuminate\Foundation\Testing\RefreshDatabaseState::$migrated) {
+            DB::statement('DROP SCHEMA IF EXISTS public CASCADE');
+            DB::statement('CREATE SCHEMA public');
 
-        $this->artisan('migrate', ['--force' => true]);
+            $this->artisan('migrate', ['--force' => true]);
+
+            \Illuminate\Foundation\Testing\RefreshDatabaseState::$migrated = true;
+        }
 
         $this->beginDatabaseTransaction();
     }

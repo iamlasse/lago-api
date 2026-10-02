@@ -6,11 +6,19 @@ namespace App\Services\Failures;
 
 class UnknownTaxFailure extends FailedResult
 {
+    /**
+     * The failure's error code. \Exception carries its own untyped int
+     * $code, so this shadow cannot be typed or readonly.
+     */
+    public $code;
+
     public function __construct(
         object $result,
-        public readonly string $code,
+        string $code,
         public readonly string $errorMessage,
     ) {
+        $this->code = $code;
+
         parent::__construct($result, $code.': '.$errorMessage);
     }
 }

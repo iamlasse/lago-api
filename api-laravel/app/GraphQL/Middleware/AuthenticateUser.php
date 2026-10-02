@@ -6,9 +6,9 @@ namespace App\GraphQL\Middleware;
 
 use Closure;
 use Throwable;
-use App\Enums\MembershipStatus;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Enums\MembershipStatus;
 use App\Support\CurrentContext;
 use App\Support\Utils\AuthToken;
 use Firebase\JWT\ExpiredException;
@@ -148,7 +148,8 @@ class AuthenticateUser
     private function controllerError(string $code, int $status, ?string $message = null): Response
     {
         return response()->json([
-            'data' => [],
+            // Rails renders data: {} (an object, never an array)
+            'data' => (object) [],
             'errors' => [
                 [
                     'message' => $message ?? $code,

@@ -6,7 +6,7 @@ namespace App\GraphQL\Exceptions;
 
 use Exception;
 use GraphQL\Error\ClientAware;
-use GraphQL\Error\ProvidesErrorExtensions;
+use GraphQL\Error\ProvidesExtensions;
 
 /**
  * Port of GraphQL::ExecutionError with extensions `{status, code, details?}`
@@ -17,18 +17,24 @@ use GraphQL\Error\ProvidesErrorExtensions;
  * { |k| k.to_s.camelize(:lower) }`), so the extensions leave the API in the
  * exact wire shape the frontend expects.
  */
-class ExecutionError extends Exception implements ClientAware, ProvidesErrorExtensions
+class ExecutionError extends Exception implements ClientAware, ProvidesExtensions
 {
+    public readonly string $errorCode;
+
     /**
+     * NOTE: the wire field is `code`, but Exception already owns `$code`, so
+     * the value lives in $errorCode (and parent $code stays 0).
+     *
      * @param  array<string, mixed>|null  $details
      */
     public function __construct(
         string $error = 'Internal Error',
         public readonly int|string $status = 422,
-        public readonly string $code = 'internal_error',
+        string $code = 'internal_error',
         public readonly ?array $details = null,
     ) {
         parent::__construct($error);
+        $this->errorCode = $code;
     }
 
     public function isClientSafe(): bool
@@ -45,7 +51,7 @@ class ExecutionError extends Exception implements ClientAware, ProvidesErrorExte
     {
         $payload = [
             'status' => $this->status,
-            'code' => $this->code,
+            'code' => $this->errorCode,
         ];
 
         if ($this->details !== null) {

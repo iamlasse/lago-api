@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Support\Utils;
 
 use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use UnexpectedValueException;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\SignatureInvalidException;
@@ -57,9 +58,9 @@ class AuthToken
             return null;
         }
 
-        // JWT::decode with a keyed secret asserts the algorithm and verifies
-        // exp; mirror Rails' `reduce({}, :merge)` — return the payload array.
-        return (array) JWT::decode($token, self::secret());
+        // JWT::decode with a Key asserts the algorithm and verifies exp;
+        // mirror Rails' `reduce({}, :merge)` — return the payload array.
+        return (array) JWT::decode($token, new Key(self::secret(), self::ALGORITHM));
     }
 
     /**

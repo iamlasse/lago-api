@@ -374,7 +374,7 @@ class InvRouteParser
         // block, then the nearest resource's member path (a bare `get :x`
         // inside a resources block is a member route), then the namespace
         // prefix.
-        $on = (string) ($options['on'] ?? '');
+        $on = mb_ltrim((string) ($options['on'] ?? ''), ':');
         $resource = $this->nearestResource();
 
         $base = match ($on) {
@@ -411,6 +411,10 @@ class InvRouteParser
                 ?? ($resource['controller'] ?? null)
                 ?? ($resource['name'] ?? '');
             $handler = inv_routes_handler(null, $context['module_prefix'], $controller, '', $action);
+        }
+
+        if ($on === '' && $context['route_base_source'] === 'member') {
+            $on = 'member';
         }
 
         foreach ($verb === 'MATCH' ? inv_routes_via_verbs($options['via'] ?? null) : [$verb] as $singleVerb) {
@@ -494,9 +498,14 @@ class InvRouteParser
 
         $pathPrefix = $pathParts === [] ? '/' : '/'.implode('/', $pathParts);
 
+        $base = $routeBase !== '' ? $routeBase : ($memberBase ?? $pathPrefix);
+
         return [
             'path_prefix' => $pathPrefix,
-            'route_base' => $routeBase !== '' ? $routeBase : ($memberBase ?? $pathPrefix),
+            'route_base' => $base,
+            // Where the base came from: a bare `get :x` inside a resources
+            // block is a member route even without an explicit on:.
+            'route_base_source' => $routeBase !== '' ? 'explicit' : ($memberBase !== null ? 'member' : 'prefix'),
             'module_prefix' => implode('/', $moduleParts),
             'member_base' => $memberBase,
         ];
@@ -763,7 +772,9 @@ if (! function_exists('inv_routes_handler')) {
             return '';
         }
 
-        $full = $absolute ? '/'.mb_ltrim($controller, '/') : inv_routes_join_path($modulePrefix, $controller);
+        $full = $absolute
+            ? '/'.mb_ltrim($controller, '/')
+            : mb_ltrim(inv_routes_join_path($modulePrefix, $controller), '/');
 
         return $action === '' ? $full : $full.'#'.$action;
     }

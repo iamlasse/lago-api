@@ -60,15 +60,6 @@ class ApiKey extends BaseModel
         return $this->belongsTo(Organization::class);
     }
 
-    /** Rails: `scope :active` — non-expired keys only. */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
-    protected function active($query)
-    {
-        return $query->where(function ($query): void {
-            $query->whereNull('expires_at')->orWhere('expires_at', '>', now());
-        });
-    }
-
     /** Rails: `expired?`. */
     public function expired(?CarbonInterface $time = null): bool
     {
@@ -113,6 +104,16 @@ class ApiKey extends BaseModel
             }
         });
     }
+
+    /** Rails: `scope :active` — non-expired keys only. */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function active($query)
+    {
+        return $query->where(function ($query): void {
+            $query->whereNull('expires_at')->orWhere('expires_at', '>', now());
+        });
+    }
+
     protected function casts(): array
     {
         return [

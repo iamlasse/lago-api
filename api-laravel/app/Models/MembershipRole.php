@@ -19,10 +19,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class MembershipRole extends BaseModel
 {
     use SoftDeletes;
+
     protected function casts(): array
     {
         return [
-    
+
         ];
     }
 }

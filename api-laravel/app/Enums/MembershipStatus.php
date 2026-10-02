@@ -16,6 +16,6 @@ enum MembershipStatus: int
     /** The Rails enum name (the string the API emits for the value). */
     public function label(): string
     {
-        return mb_strtolower($this->name);
+        return \Illuminate\Support\Str::snake($this->name);
     }
 }

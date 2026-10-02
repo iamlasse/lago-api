@@ -81,7 +81,8 @@ class AuthenticateApiKey
      */
     private function trackApiKeyUsage(ApiKey $apiKey): void
     {
-        Cache::forever('api_key_last_used_'.$apiKey->id, now()->toIso8601String());
+        // Rails: Time.current.iso8601 — UTC with a literal Z, not +00:00.
+        Cache::forever('api_key_last_used_'.$apiKey->id, now()->utc()->format('Y-m-d\TH:i:s\Z'));
     }
 
     /**

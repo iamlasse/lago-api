@@ -124,6 +124,22 @@ class Customer extends BaseModel
     /** Rails' I18n.available_locales (LanguageCodeValidator data). */
     public const AVAILABLE_LOCALES = ['en', 'fr', 'nb', 'de', 'it', 'es', 'sv', 'pt-BR', 'zh-TW'];
 
+    /**
+     * Rails' ActiveRecord carries the schema's column defaults in every new
+     * instance; Eloquent does not, so the NOT NULL DEFAULT columns are
+     * declared here to keep reads (and the serializers) identical to Rails.
+     */
+    protected $attributes = [
+        'exclude_from_dunning_campaign' => false,
+        'finalize_zero_amount_invoice' => 0,
+        'skip_invoice_custom_sections' => false,
+        'account_type' => 'customer',
+        'awaiting_wallet_refresh' => false,
+        'last_dunning_campaign_attempt' => 0,
+        'payment_receipt_counter' => 0,
+        'dunning_currency_attempts' => '{}',
+    ];
+
     // -- Relationships --------------------------------------------------------
 
     public function invoices(): HasMany
@@ -429,6 +445,7 @@ class Customer extends BaseModel
     {
         return Attribute::set(fn (?string $value) => EmailSanitizer::sanitize($value));
     }
+
     protected function casts(): array
     {
         return [

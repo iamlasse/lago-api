@@ -37,7 +37,15 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // The Lago error envelope: HTTP status matches the body's `status`.
         $exceptions->render(function (ApiException $exception, Request $request) {
-            return response()->json($exception->body(), $exception->statusCode());
+            $response = response()->json($exception->body(), $exception->statusCode());
+
+            // Every /api/v2/* response carries the beta header, errors
+            // included (Rails prepends set_beta_header! in BaseController).
+            if ($request->is('api/v2/*')) {
+                $response->headers->set('X-Lago-Endpoint-Status', 'beta');
+            }
+
+            return $response;
         });
 
         // Catch-all unmatched API route (Rails: get "*path" ->

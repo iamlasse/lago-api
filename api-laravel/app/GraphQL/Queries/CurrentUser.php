@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\GraphQL\Queries;
 
-use App\GraphQL\Exceptions\ExecutionError;
 use App\GraphQL\Support\LagoContext;
+use App\GraphQL\Exceptions\ExecutionError;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
 /**

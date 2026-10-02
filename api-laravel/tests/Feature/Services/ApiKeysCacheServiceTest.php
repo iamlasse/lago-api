@@ -77,20 +77,79 @@ it('serves the stale cached pair without hitting the database', function (): voi
         ->and($foundOrganization?->id)->toBe($organization->id);
 });
 
-it('ignores a cached entry whose api key has expired and falls through to the database', function (): void {
-    // Rails: with_cache reads the cache, rejects the entry when
-    // api_key.expired?, then re-fetches from the database — where the active
-    // scope hides the expired row, so the pair is nil.
+it('serves a cached entry even when the database row has since expired', function (): void {
+    // Rails: with_cache reads the cache and serves the pair while the cached
+    // copy is not itself expired — DB-side expiry is invisible until the
+    // cache TTL elapses.
     [$organization, $apiKey] = makeKeyedOrganization();
 
     CacheService::call($apiKey->value, withCache: true);
 
+    // Cache holds the unexpired copy — Rails serves it regardless of the DB
+    // row now expiring; the cache expires on its own TTL.
     $apiKey->forceFill(['expires_at' => now()->subMinute()])->save();
+
+    [$foundKey, $foundOrganization] = CacheService::call($apiKey->value, withCache: true);
+
+    expect($foundKey?->id)->toBe($apiKey->id)
+        ->and($foundOrganization?->id)->toBe($organization->id);
+});
+
+it('rejects a cached entry whose api key has expired and refetches from the database', function (): void {
+    // Happens when the key expires before the cache TTL elapses: the cached
+    // payload's expires_at is already past (Rails: `unless api_key.expired?`),
+    // so the pair is re-fetched — where the active scope hides an expired row.
+    config(['lago.api_key_cache_ttl' => 3600]);
+    [$organization, $apiKey] = makeKeyedOrganization();
+
+    Cache::put(
+        (new CacheService($apiKey->value))->cacheKey(),
+        json_encode([
+            'organization' => $organization->attributesToArray(),
+            'api_key' => [
+                'id' => $apiKey->id,
+                'value' => $apiKey->value,
+                'expires_at' => now()->subMinute()->format('Y-m-d H:i:s.u'),
+                'permissions' => '{}',
+            ],
+        ]),
+        3600,
+    );
+
+    // The database row is expired too — the active scope hides it.
+    Illuminate\Support\Facades\DB::table('api_keys')
+        ->where('id', $apiKey->id)
+        ->update(['expires_at' => now()->subMinute()]);
 
     [$foundKey, $foundOrganization] = CacheService::call($apiKey->value, withCache: true);
 
     expect($foundKey)->toBeNull()
         ->and($foundOrganization)->toBeNull();
+});
+
+it('refetches a fresh pair when the cached entry is expired but the db row is valid', function (): void {
+    config(['lago.api_key_cache_ttl' => 3600]);
+    [$organization, $apiKey] = makeKeyedOrganization(['expires_at' => now()->addHour()]);
+
+    // Seed an already-expired cached copy (the key expired between writes).
+    Cache::put(
+        (new CacheService($apiKey->value))->cacheKey(),
+        json_encode([
+            'organization' => $organization->attributesToArray(),
+            'api_key' => [
+                'id' => $apiKey->id,
+                'value' => $apiKey->value,
+                'expires_at' => now()->subMinute()->format('Y-m-d H:i:s.u'),
+                'permissions' => '{}',
+            ],
+        ]),
+        3600,
+    );
+
+    [$foundKey, $foundOrganization] = CacheService::call($apiKey->value, withCache: true);
+
+    expect($foundKey?->id)->toBe($apiKey->id)
+        ->and($foundOrganization?->id)->toBe($organization->id);
 });
 
 it('expires the cache early when the api key expires sooner than the ttl', function (): void {

@@ -35,22 +35,24 @@ class User extends BaseModel
         return $this->belongsToMany(Organization::class, 'memberships', 'user_id', 'organization_id');
     }
 
-    protected function password(): \Illuminate\Database\Eloquent\Casts\Attribute
-    {
-        return \Illuminate\Database\Eloquent\Casts\Attribute::make(set: function (?string $password) {
-            if ($password !== null) {
-                $this->attributes['password_digest'] = password_hash($password, PASSWORD_BCRYPT);
-            }
-            return ['password_digest' => password_hash($password, PASSWORD_BCRYPT)];
-        });
-    }
-
     public function authenticate(string $password): bool
     {
         $digest = $this->password_digest ?? '';
 
         return $digest !== '' && password_verify($password, $digest);
     }
+
+    protected function password(): \Illuminate\Database\Eloquent\Casts\Attribute
+    {
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(set: function (?string $password) {
+            if ($password !== null) {
+                $this->attributes['password_digest'] = password_hash($password, PASSWORD_BCRYPT);
+            }
+
+            return ['password_digest' => password_hash($password, PASSWORD_BCRYPT)];
+        });
+    }
+
     protected function casts(): array
     {
         return [
