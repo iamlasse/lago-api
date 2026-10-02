@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\Support\CurrentContext;
@@ -19,11 +21,10 @@ use App\Support\CurrentContext;
  */
 abstract class BaseService
 {
-    /** Port of `Result = BaseResult[...]` — override in subclasses. */
-    protected static function makeResult(string ...$attributes): BaseResult
-    {
-        return BaseResult::of(...$attributes);
-    }
+    protected function __construct() {}
+
+    /** Port of the instance-level `#call`. */
+    abstract public function execute(): BaseResult;
 
     /** Port of `self.call(*, **)`. */
     public static function call(mixed ...$args): BaseResult
@@ -43,16 +44,17 @@ abstract class BaseService
         return static::call(...$args)->raiseIfError();
     }
 
-    /** Port of the instance-level `#call`. */
-    abstract public function execute(): BaseResult;
-
     /** Port of the instance-level `#call!`. */
     public function callOrFail(): BaseResult
     {
         return $this->execute()->raiseIfError();
     }
 
-    protected function __construct() {}
+    /** Port of `Result = BaseResult[...]` — override in subclasses. */
+    protected static function makeResult(string ...$attributes): BaseResult
+    {
+        return BaseResult::of(...$attributes);
+    }
 
     protected function source(): ?string
     {

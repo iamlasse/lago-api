@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Enums;
 
 /**
@@ -12,15 +14,15 @@ enum FinalizeZeroAmountInvoice: int
     case Skip = 1;
     case Finalize = 2;
 
-    /** The Rails enum name (the string the REST API emits for the value). */
-    public function label(): string
-    {
-        return strtolower($this->name);
-    }
-
     /** @return list<string> Rails' Customer::FINALIZE_ZERO_AMOUNT_INVOICE_OPTIONS. */
     public static function options(): array
     {
         return ['inherit', 'skip', 'finalize'];
+    }
+
+    /** The Rails enum name (the string the REST API emits for the value). */
+    public function label(): string
+    {
+        return mb_strtolower($this->name);
     }
 }

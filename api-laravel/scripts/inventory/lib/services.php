@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Generator: services inventory from app/services/**/*.rb.
 // Row ids: svc:<dotted namespace class name>, e.g. svc:Invoices.CalculateFeesService.
 
@@ -14,7 +16,7 @@ if (! function_exists('inv_gen_services')) {
         $rows = [];
 
         foreach ($files as $file) {
-            $relative = ltrim(substr($file, strlen($railsPath.'/app/services/')), '/');
+            $relative = mb_ltrim(mb_substr($file, mb_strlen($railsPath.'/app/services/')), '/');
 
             $rows[] = [
                 'id' => 'svc:'.inv_ruby_class_from_path($relative),

@@ -1,21 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 // INTERIM generator: REST route inventory parsed STATICALLY from Rails'
 // config/routes.rb + config/routes/{shared_api,plan_nested_api}.rb.
 //
 // THE PLAN FORBIDS TRUSTING THIS PERMANENTLY: "live route dump (bin/rails
 // runner over Rails.application.routes) — never parse routes.rb statically".
-// Static parsing cannot see environment-conditional blocks, dynamic sets,
-// constraint lambdas or default-drawn resources in gems. Every row is marked
-// "provisional": true and the artifact carries a loud warning. It exists so
-// the coverage ledger has *something* to join against until gen_routes.rb can
-// run inside the Rails docker image (see scripts/inventory/README.md).
+// Static parsing cannot see environment-conditional blocks, gem defaults, or
+// constraint lambdas. Every row is marked "provisional": true and the
+// artifact carries a loud warning. It exists so the coverage ledger has
+// something to join against until gen_routes.rb runs inside the Rails docker
+// image (see scripts/inventory/README.md).
 //
 // Supports the DSL subset these files actually use: resources/resource blocks
-// (only:, except:, param:, controller:, constraints:, code:), nesting,
-// namespace/scope (incl. module:), collection/member blocks, on: routes,
-// draw(:file), get/post/put/patch/delete/match (to:/action:/via:), and
-// environment/ENV conditionals (parsed transparently — provisional anyway).
+// (only:, except:, param:, controller:, module:, path:, constraints:, code:),
+// nesting, namespace/scope (incl. module:), collection/member blocks, on:
+// routes, draw(:file), get/post/put/patch/delete/match (to:/action:/via:),
+// and environment/ENV conditionals (parsed transparently — provisional
+// anyway, so env-specific routes are included on purpose).
 
 if (! function_exists('inv_gen_routes_from_source')) {
     /**
@@ -29,18 +32,16 @@ if (! function_exists('inv_gen_routes_from_source')) {
         $rows = $parser->parse($lines);
 
         $seen = [];
-        $unique = [];
 
-        foreach ($rows as $row) {
+        return inv_sort_rows(array_values(array_filter($rows, function (array $row) use (&$seen): bool {
             if (isset($seen[$row['id']])) {
-                continue;
+                return false;
             }
 
             $seen[$row['id']] = true;
-            $unique[] = $row;
-        }
 
-        return inv_sort_rows($unique);
+            return true;
+        })));
     }
 }
 
@@ -59,7 +60,7 @@ if (! function_exists('inv_routes_load_file')) {
         $lines = [];
 
         foreach (preg_split('/\r?\n/', (string) file_get_contents($railsPath.'/'.$relative)) as $line) {
-            $trimmed = trim($line);
+            $trimmed = mb_trim($line);
 
             if ($trimmed === '' || str_starts_with($trimmed, '#')) {
                 continue;
@@ -81,6 +82,81 @@ if (! function_exists('inv_routes_load_file')) {
     }
 }
 
+if (! function_exists('inv_routes_statements')) {
+    /**
+     * Joins physical lines into logical statements (continues while brackets
+     * are unbalanced or the line ends with a trailing comma).
+     *
+     * @param  string[]  $lines
+     * @return string[]
+     */
+    function inv_routes_statements(array $lines): array
+    {
+        $statements = [];
+        $current = '';
+        $balance = 0;
+
+        foreach ($lines as $line) {
+            $current = $current === '' ? $line : $current.' '.$line;
+            $balance += inv_routes_bracket_delta($line);
+
+            if ($balance > 0 || str_ends_with(mb_rtrim($current), ',')) {
+                continue;
+            }
+
+            $statements[] = mb_trim($current);
+            $current = '';
+            $balance = 0;
+        }
+
+        if (mb_trim($current) !== '') {
+            $statements[] = mb_trim($current);
+        }
+
+        return $statements;
+    }
+}
+
+if (! function_exists('inv_routes_bracket_delta')) {
+    /**
+     * Net (), [], {} delta of a line, ignoring double-quoted strings and
+     * /regex/ literals.
+     */
+    function inv_routes_bracket_delta(string $line): int
+    {
+        $delta = 0;
+        $length = mb_strlen($line);
+
+        for ($i = 0; $i < $length; $i++) {
+            $char = $line[$i];
+
+            if ($char === '"') {
+                $i++;
+
+                while ($i < $length && $line[$i] !== '"') {
+                    $i += $line[$i] === '\\' ? 2 : 1;
+                }
+
+                continue;
+            }
+
+            if ($char === '/' && preg_match('/\/(?:[^\/\\\\]|\\\\.)*\//', $line, $m, 0, $i) === 1) {
+                $i += mb_strlen($m[0]) - 1;
+
+                continue;
+            }
+
+            $delta += match ($char) {
+                '(', '[', '{' => 1,
+                ')', ']', '}' => -1,
+                default => 0,
+            };
+        }
+
+        return $delta;
+    }
+}
+
 class InvRouteParser
 {
     /** @var array<int, array<string, mixed>> */
@@ -97,9 +173,7 @@ class InvRouteParser
      */
     public function parse(array $lines): array
     {
-        $statements = inv_routes_statements($lines);
-
-        foreach ($statements as $statement) {
+        foreach (inv_routes_statements($lines) as $statement) {
             $this->statement($statement);
         }
 
@@ -114,30 +188,30 @@ class InvRouteParser
             return;
         }
 
-        // Transparent blocks: Rails.application.routes.draw do / if / unless.
-        if (preg_match('/^(Rails\.application\.routes\.draw|if\s|unless\s)/', $line) === 1) {
+        // Transparent blocks: routes.draw do / if / unless.
+        if (preg_match('/^(Rails\.application\.routes\.draw\b|if\b|unless\b)/', $line) === 1) {
             $this->frames[] = ['type' => 'plain'];
 
             return;
         }
 
-        if (preg_match('/^namespace\s+:(\w+)\s*(?:,\s*(.*))?do$/', $line, $m) === 1) {
+        if (preg_match('/^namespace\s+:(\w+)\s*(?:,\s*(.*?))?\s*do$/', $line, $m) === 1) {
             $options = inv_routes_options($m[2] ?? '');
             $this->frames[] = [
                 'type' => 'namespace',
                 'path' => $m[1],
-                'module' => (string) ($options['module'] ?? $m[1]),
+                'module' => isset($options['module']) ? mb_ltrim((string) $options['module'], ':/') : $m[1],
             ];
 
             return;
         }
 
-        if (preg_match('/^scope\s+(.+)\sdo$/', $line, $m) === 1 || preg_match('/^scope\s+(.+)$/', $line, $m) === 1) {
+        if (preg_match('/^scope\b\s*(.*?)\s*do$/', $line, $m) === 1) {
             $options = inv_routes_options($m[1]);
             $this->frames[] = [
                 'type' => 'scope',
-                'path' => isset($options['path']) ? trim((string) $options['path'], '/') : '',
-                'module' => isset($options['module']) ? trim((string) $options['module'], '/') : '',
+                'path' => isset($options['path']) ? mb_trim((string) $options['path'], '/') : '',
+                'module' => isset($options['module']) ? mb_trim(mb_ltrim(mb_trim((string) $options['module'], ':'), '/')) : '',
             ];
 
             return;
@@ -152,15 +226,16 @@ class InvRouteParser
                 return;
             }
 
-            $path = $m[1] === 'collection' ? $resource['collection_path'] : $resource['member_path'];
-
-            $this->frames[] = ['type' => $m[1], 'path' => $path];
+            $this->frames[] = [
+                'type' => $m[1],
+                'path' => $m[1] === 'collection' ? $resource['collection_path'] : $resource['member_path'],
+            ];
 
             return;
         }
 
-        if (preg_match('/^(resources|resource)\s+:(\w+)\s*(.*?)(?:\sdo)?$/', $line, $m) === 1) {
-            $this->openResource($m[1] === 'resources', $m[2], rtrim($m[3] ?? '', ','));
+        if (preg_match('/^(resources|resource)\s+:(\w+)\s*(.*?)(?:\s+(do))?$/', $line, $m) === 1) {
+            $this->openResource($m[1] === 'resources', $m[2], $m[3], ($m[4] ?? '') === 'do');
 
             return;
         }
@@ -169,21 +244,21 @@ class InvRouteParser
             return;
         }
 
-        // mount/root/unknown statements: counted as ignored, no row.
+        // mount / root / unknown statements are ignored.
         $this->frames[] = ['type' => 'plain'];
     }
 
-    private function openResource(bool $plural, string $name, string $optionString): void
+    private function openResource(bool $plural, string $name, string $optionString, bool $hasBlock): void
     {
         $options = inv_routes_options($optionString);
 
-        $parent = $this->routeContext();
-        $base = $parent['member_base'] ?? $parent['path_prefix'];
+        $context = $this->routeContext();
 
-        $pathSegment = isset($options['path']) ? trim((string) $options['path'], '/') : $name;
+        $base = $context['member_base'] ?? $context['path_prefix'];
+        $pathSegment = isset($options['path']) ? mb_trim((string) $options['path'], '/') : $name;
         $collectionPath = inv_routes_join_path($base, $pathSegment);
 
-        $param = (string) ($options['param'] ?? ($plural ? 'id' : null) ?? 'id');
+        $param = mb_ltrim((string) ($options['param'] ?? 'id'), ':');
 
         $frame = [
             'type' => 'resource',
@@ -192,7 +267,7 @@ class InvRouteParser
             'param' => $param,
             'collection_path' => $collectionPath,
             'member_path' => $plural ? inv_routes_join_path($collectionPath, ':'.$param) : $collectionPath,
-            'module' => $parent['module_prefix'],
+            'module' => $context['module_prefix'],
             'only' => $options['only'] ?? null,
             'except' => $options['except'] ?? null,
             'controller' => $options['controller'] ?? null,
@@ -200,26 +275,22 @@ class InvRouteParser
 
         $this->frames[] = $frame;
 
-        if (! str_ends_with($optionString, 'do') && ! isset($options['__block'])) {
-            // No block: the resource frame was pushed only to compute paths for
-            // nothing — pop it immediately unless a `do` opened a block.
-            array_pop($this->frames);
-
-            return;
-        }
-
         $this->emitResourceRoutes($frame);
+
+        if (! $hasBlock) {
+            array_pop($this->frames);
+        }
     }
 
     /**
-     * Standard RESTful action set for a (singular | plural) resource.
+     * Standard RESTful action set for a (plural | singular) resource.
      *
      * @return array<int, array{action: string, verb: string, path: string, on: string}>
      */
     private function resourceActions(array $frame): array
     {
-        $collection = $frame['collection_path'];
-        $member = $frame['member_path'];
+        $collection = (string) $frame['collection_path'];
+        $member = (string) $frame['member_path'];
 
         if ($frame['plural']) {
             return [
@@ -247,7 +318,7 @@ class InvRouteParser
 
     private function emitResourceRoutes(array $frame): void
     {
-        $allowed = inv_routes_action_filter($frame['only'] ?? null, $frame['except'] ?? null);
+        $allowed = inv_routes_action_filter($frame['only'], $frame['except']);
 
         foreach ($this->resourceActions($frame) as $action) {
             if (! in_array($action['action'], $allowed, true)) {
@@ -257,7 +328,7 @@ class InvRouteParser
             $this->emit(
                 $action['verb'],
                 $action['path'],
-                inv_routes_handler($frame['controller'], $frame['module'], $frame['name'], $action['action']),
+                inv_routes_handler(null, (string) $frame['module'], $frame['controller'], $frame['name'], $action['action']),
                 $action['on']
             );
         }
@@ -273,20 +344,19 @@ class InvRouteParser
             return false;
         }
 
-        $verb = strtoupper($m[1]);
-        $rest = rtrim($m[2], ',');
-
+        $verb = mb_strtoupper($m[1]);
+        $rest = mb_rtrim($m[2], ',');
         $context = $this->routeContext();
 
         $pathArg = null;
         $handlerArg = null;
         $options = [];
 
-        // Hash-rocket style: match "*unmatched" => "application#not_found", via: [...]
-        if (preg_match('/^(?<path>"[^"]*"|:[\w]+)\s*=>\s*(?<handler>"[^"]*")\s*(?:,\s*(.*))?$/', $rest, $m) === 1) {
-            $pathArg = trim($m['path'], '"');
-            $handlerArg = trim($m['handler'], '"');
-            $options = inv_routes_options($m[2] ?? '');
+        // Hash-rocket style: match "*unmatched" => "application#not_found", :via => [...]
+        if (preg_match('/^(?<path>"[^"]*")\s*=>\s*(?<handler>"[^"]*")\s*(?:,\s*(.*))?$/', $rest, $m) === 1) {
+            $pathArg = mb_trim($m['path'], '"');
+            $handlerArg = mb_trim($m['handler'], '"');
+            $options = inv_routes_options($m[1] ?? '');
         } else {
             [$pathArg, $optionString] = inv_routes_split_first_arg($rest);
             $options = inv_routes_options($optionString);
@@ -300,41 +370,50 @@ class InvRouteParser
             return true;
         }
 
-        // Resolve the base path: on: / enclosing collection|member block /
-        // nearest resource's member path / plain prefix.
+        // Path base: explicit on: wins, then the enclosing collection/member
+        // block, then the nearest resource's member path (a bare `get :x`
+        // inside a resources block is a member route), then the namespace
+        // prefix.
         $on = (string) ($options['on'] ?? '');
+        $resource = $this->nearestResource();
 
-        if ($on === 'collection' || $on === 'member') {
-            $resource = $this->nearestResource();
-            $base = $resource === null
-                ? $context['path_prefix']
-                : ($on === 'collection' ? $resource['collection_path'] : $resource['member_path']);
+        $base = match ($on) {
+            'collection' => $resource['collection_path'] ?? $context['path_prefix'],
+            'member' => $resource['member_path'] ?? $context['path_prefix'],
+            default => $context['route_base'],
+        };
+
+        $quoted = str_starts_with((string) $pathArg, '"');
+        $rawPath = mb_trim((string) $pathArg, '"');
+
+        if ($quoted) {
+            // Quoted segments are literal, ":key" included — keep params.
+            $path = inv_routes_join_path($base, $rawPath);
+            $action = (string) ($options['action'] ?? mb_ltrim(basename($rawPath), ':'));
+        } elseif (str_starts_with($rawPath, ':')) {
+            // Symbol segment: a literal path part named after the symbol.
+            $segment = mb_ltrim($rawPath, ':');
+            $path = inv_routes_join_path($base, $segment);
+            $action = (string) ($options['action'] ?? $segment);
         } else {
-            $base = $context['route_base'];
+            $path = inv_routes_join_path($base, $rawPath);
+            $action = (string) ($options['action'] ?? mb_ltrim(basename($rawPath), ':'));
         }
 
-        if (str_starts_with((string) $pathArg, ':')) {
-            $path = inv_routes_join_path($base, ':'.ltrim((string) $pathArg, ':'));
-        } elseif (str_starts_with((string) $pathArg, '/')) {
-            $path = inv_routes_join_path($base, $pathArg);
+        $action = mb_ltrim($action, ':');
+
+        if ($handlerArg !== null) {
+            $handler = inv_routes_handler($handlerArg, $context['module_prefix'], $options['controller'] ?? null, '', $action);
         } else {
-            // Bare relative segment (no leading colon — rare).
-            $path = inv_routes_join_path($base, (string) $pathArg);
+            // No to:: the controller is the enclosing resource's (explicit
+            // option, else the resource name under the current module).
+            $controller = $options['controller']
+                ?? ($resource['controller'] ?? null)
+                ?? ($resource['name'] ?? '');
+            $handler = inv_routes_handler(null, $context['module_prefix'], $controller, '', $action);
         }
 
-        $action = (string) ($options['action'] ?? ($handlerArg !== null
-            ? (explode('#', $handlerArg)[1] ?? '')
-            : ltrim(pathinfo((string) $pathArg, PATHINFO_FILENAME), ':')));
-
-        $verbs = $verb === 'MATCH'
-            ? inv_routes_via_verbs($options['via'] ?? null)
-            : [$verb];
-
-        $handler = $handlerArg !== null
-            ? inv_routes_handler($handlerArg, $context['module_prefix'], null, $action)
-            : inv_routes_handler(null, $context['module_prefix'], $this->nearestResource()['controller'] ?? null, $action);
-
-        foreach ($verbs as $singleVerb) {
+        foreach ($verb === 'MATCH' ? inv_routes_via_verbs($options['via'] ?? null) : [$verb] as $singleVerb) {
             $this->emit($singleVerb, $path, $handler, $on !== '' ? $on : null);
         }
 
@@ -345,7 +424,7 @@ class InvRouteParser
     {
         $path = inv_routes_normalize_path($path);
 
-        if ($handler === '' || ! in_array($verb, ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'], true)) {
+        if ($handler === '' || str_starts_with($handler, '#') || ! in_array($verb, ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'], true)) {
             return;
         }
 
@@ -360,7 +439,7 @@ class InvRouteParser
         ];
     }
 
-    /** @return array<string, mixed> */
+    /** @return array<string, mixed>|null */
     private function nearestResource(): ?array
     {
         for ($i = count($this->frames) - 1; $i >= 0; $i--) {
@@ -373,19 +452,18 @@ class InvRouteParser
     }
 
     /**
-     * Everything a route line needs to know: the absolute path prefixes and
-     * the module prefix implied by the open frame stack.
+     * Everything a route line needs to know, implied by the open frames:
+     * the namespace path prefix, the default base for bare route lines and
+     * the module prefix controllers resolve against.
      *
-     * @return array{path_prefix: string, route_base: string, module_prefix: string, member_base?: string}
+     * @return array{path_prefix: string, route_base: string, module_prefix: string, member_base: ?string}
      */
     private function routeContext(): array
     {
         $pathParts = [];
         $moduleParts = [];
-
-        $pathPrefix = '';
-        $routeBase = '';
         $memberBase = null;
+        $routeBase = '';
 
         foreach ($this->frames as $frame) {
             switch ($frame['type']) {
@@ -414,113 +492,26 @@ class InvRouteParser
             }
         }
 
-        $pathPrefix = implode('/', $pathParts);
-        $pathPrefix = $pathPrefix === '' ? '/' : '/'.$pathPrefix;
-
-        if ($routeBase === '') {
-            // No collection/member block: routes attach to the nearest
-            // resource's member path, else the namespace prefix.
-            $resource = $this->nearestResource();
-            $routeBase = $memberBase ?? $pathPrefix;
-            unset($resource);
-        }
+        $pathPrefix = $pathParts === [] ? '/' : '/'.implode('/', $pathParts);
 
         return [
             'path_prefix' => $pathPrefix,
-            'route_base' => $routeBase,
+            'route_base' => $routeBase !== '' ? $routeBase : ($memberBase ?? $pathPrefix),
             'module_prefix' => implode('/', $moduleParts),
             'member_base' => $memberBase,
         ];
     }
 }
 
-if (! function_exists('inv_routes_statements')) {
-    /**
-     * Joins physical lines into logical statements (continues while brackets
-     * are unbalanced or the line ends with a trailing comma).
-     *
-     * @param  string[]  $lines
-     * @return string[]
-     */
-    function inv_routes_statements(array $lines): array
-    {
-        $statements = [];
-        $current = '';
-        $balance = 0;
-
-        foreach ($lines as $line) {
-            $current = $current === '' ? $line : $current.' '.$line;
-            $balance += inv_routes_bracket_delta($line);
-
-            $trimmed = rtrim($current);
-
-            if ($balance > 0 || str_ends_with($trimmed, ',')) {
-                continue;
-            }
-
-            $statements[] = trim($current);
-            $current = '';
-            $balance = 0;
-        }
-
-        if (trim($current) !== '') {
-            $statements[] = trim($current);
-        }
-
-        return $statements;
-    }
-}
-
-if (! function_exists('inv_routes_bracket_delta')) {
-    /**
-     * Net (), [], {} delta of a line, ignoring quoted strings, regex
-     * literals and %i[]/%w[] word lists (their brackets never straddle
-     * statement continuations in these files).
-     */
-    function inv_routes_bracket_delta(string $line): int
-    {
-        $delta = 0;
-        $length = strlen($line);
-
-        for ($i = 0; $i < $length; $i++) {
-            $char = $line[$i];
-
-            if ($char === '"') {
-                $i++;
-
-                while ($i < $length && $line[$i] !== '"') {
-                    $i += $line[$i] === '\\' ? 2 : 1;
-                }
-
-                continue;
-            }
-
-            if ($char === '/' && preg_match('/\/((?:[^\/\\\\]|\\\\.)+)\//', $line, $m, 0, $i) === 1) {
-                $i += strlen($m[0]) - 1;
-
-                continue;
-            }
-
-            $delta += match ($char) {
-                '(', '[', '{' => 1,
-                ')', ']', '}' => -1,
-                default => 0,
-            };
-        }
-
-        return $delta;
-    }
-}
-
 if (! function_exists('inv_routes_split_first_arg')) {
     /**
-     * Splits "…first argument…, options…" into [first, rest].
+     * Splits "first argument, options" into [first (raw), options].
      *
      * @return array{0: string, 1: string}
      */
     function inv_routes_split_first_arg(string $rest): array
     {
-        $length = strlen($rest);
+        $length = mb_strlen($rest);
 
         for ($i = 0; $i < $length; $i++) {
             $char = $rest[$i];
@@ -535,50 +526,48 @@ if (! function_exists('inv_routes_split_first_arg')) {
                 continue;
             }
 
-            if ($char === ',' && ($i + 1 >= $length || $rest[$i + 1] === ' ')) {
-                return [trim(substr($rest, 0, $i)), trim(substr($rest, $i + 1))];
+            if ($char === ',') {
+                return [mb_trim(mb_substr($rest, 0, $i)), mb_trim(mb_substr($rest, $i + 1))];
             }
         }
 
-        return [trim($rest), ''];
+        return [mb_trim($rest), ''];
     }
 }
 
 if (! function_exists('inv_routes_options')) {
     /**
-     * Parses a Rails route option string into a plain map. Values stay raw
-     * strings except only:/except:/via: which become string arrays.
+     * Parses a Rails route option string into a plain map. only:/except:/via:
+     * values become string arrays; everything else stays a raw string.
      *
      * @return array<string, string|list<string>>
      */
     function inv_routes_options(string $options): array
     {
-        $options = trim($options);
+        $options = mb_trim($options);
 
         if ($options === '') {
             return [];
         }
 
         $parsed = [];
-        $length = strlen($options);
+        $length = mb_strlen($options);
         $i = 0;
 
         while ($i < $length) {
-            // Key: either `key:` (new hash syntax) or `:key =>` (old syntax).
-            if (preg_match('/\G(?::(\w+)\s*=>|(\w+)\s*:)/', $options, $m, 0, $i) !== 1) {
+            if (preg_match('/\G\s*(?::(\w+)\s*=>|(\w+)\s*:)/', $options, $m, 0, $i) !== 1) {
                 $i++;
+
                 continue;
             }
 
-            $key = $m[1] ?? $m[2];
-            $i += strlen($m[0]);
+            $key = (($m[1] ?? '') !== '') ? $m[1] : $m[2];
+            $i += mb_strlen($m[0]);
             [$value, $i] = inv_routes_read_value($options, $i);
 
-            if (in_array($key, ['only', 'except', 'via'], true)) {
-                $parsed[$key] = inv_routes_sym_list($value);
-            } else {
-                $parsed[$key] = $value;
-            }
+            $parsed[$key] = in_array($key, ['only', 'except', 'via'], true)
+                ? inv_routes_sym_list($value)
+                : $value;
         }
 
         return $parsed;
@@ -587,45 +576,73 @@ if (! function_exists('inv_routes_options')) {
 
 if (! function_exists('inv_routes_read_value')) {
     /**
-     * Reads one value token starting at $offset.
+     * Reads one value token starting at $offset (quotes, %i[] word lists,
+     * balanced [] / {} / (), lambda blocks, or a bare token up to the next
+     * top-level comma).
      *
-     * @return array{0: string, 1: int} [value, next offset]
+     * @return array{0: string, 1: int} [raw value, next offset]
      */
-    function inv_routes_read_value(string $options, int $offset): array
+    function inv_routes_read_value(string $subject, int $offset): array
     {
-        $options = ltrim($options);
-        // Offsets were computed against the un-ltrimmed string; recompute.
-        $skipped = strlen($options) - strlen(ltrim(substr($options, 0)));
+        $length = mb_strlen($subject);
 
-        $value = '';
-        $char = $options[$offset] ?? '';
-
-        if ($char === '"' || $char === "'") {
-            $end = strpos($options, $char, $offset + 1);
-            $end = $end === false ? strlen($options) : $end;
-            $value = substr($options, $offset + 1, $end - $offset - 1);
-            $offset = $end + 1;
-        } elseif ($char === '[' || $char === '{') {
-            [$_, $offset] = inv_routes_read_balanced($options, $offset);
-            $value = trim(substr($options, $offset - 0, 0)); // replaced below
-        } else {
-            $end = $offset;
-
-            while ($end < strlen($options) && ! str_starts_with(substr($options.' ', $end), ',')) {
-                $end++;
-            }
-
-            $value = trim(substr($options, $offset, $end - $offset), " \t");
-            $offset = $end + 1;
+        while ($offset < $length && in_array($subject[$offset], [' ', "\t"], true)) {
+            $offset++;
         }
 
-        return [$value, $offset];
+        if ($offset >= $length) {
+            return ['', $offset];
+        }
+
+        $char = $subject[$offset];
+
+        if ($char === '"' || $char === "'") {
+            $end = mb_strpos($subject, $char, $offset + 1);
+            $end = $end === false ? $length : $end;
+
+            return [mb_substr($subject, $offset + 1, $end - $offset - 1), $end + 1];
+        }
+
+        if ($char === '[' || $char === '{' || $char === '(') {
+            [$raw, $end] = inv_routes_read_balanced($subject, $offset);
+
+            return [$raw, $end];
+        }
+
+        $end = $offset;
+        $depth = 0;
+
+        while ($end < $length) {
+            $current = $subject[$end];
+
+            if ($current === '"') {
+                $end++;
+
+                while ($end < $length && $subject[$end] !== '"') {
+                    $end += $subject[$end] === '\\' ? 2 : 1;
+                }
+            } elseif ($current === '{' || $current === '(') {
+                $depth++;
+            } elseif ($current === '}' || $current === ')') {
+                if ($depth === 0) {
+                    break;
+                }
+
+                $depth--;
+            } elseif ($current === ',' && $depth === 0) {
+                break;
+            }
+
+            $end++;
+        }
+
+        return [mb_trim(mb_substr($subject, $offset, $end - $offset)), $end + 1];
     }
 }
 
 if (! function_exists('inv_routes_read_balanced')) {
     /**
-     * @return array{0: string, 1: int}
+     * @return array{0: string, 1: int} [balanced raw text, next offset]
      */
     function inv_routes_read_balanced(string $subject, int $offset): array
     {
@@ -633,11 +650,11 @@ if (! function_exists('inv_routes_read_balanced')) {
         $close = match ($open) {
             '[' => ']',
             '{' => '}',
-            default => '(',
+            default => ')',
         };
 
         $depth = 0;
-        $length = strlen($subject);
+        $length = mb_strlen($subject);
         $start = $offset;
 
         while ($offset < $length) {
@@ -655,49 +672,51 @@ if (! function_exists('inv_routes_read_balanced')) {
                 $depth--;
 
                 if ($depth === 0) {
-                    return [substr($subject, $start, $offset - $start + 1), $offset + 1];
+                    return [mb_substr($subject, $start, $offset - $start + 1), $offset + 1];
                 }
             }
 
             $offset++;
         }
 
-        return [substr($subject, $start), $length];
+        return [mb_substr($subject, $start), $length];
     }
 }
 
 if (! function_exists('inv_routes_sym_list')) {
     /**
-     * %i[index show destroy], [:index, :show], :index, "index show" → list.
+     * %i[index show destroy], [:index, "show"], :index, "index show" → list.
      *
      * @return list<string>
      */
     function inv_routes_sym_list(string $raw): array
     {
-        $raw = trim($raw);
+        $raw = mb_trim($raw);
 
-        if (preg_match('/^%i\[([^]]*)\]$/', $raw, $m) === 1 || preg_match('/^%w\[([^]]*)\]$/', $raw, $m) === 1) {
-            return preg_split('/\s+/', trim($m[1])) ?: [];
+        if (preg_match('/^%?[iw]?\[?\s*\]?$/', $raw) === 1) {
+            return [];
         }
 
-        if (preg_match('/^\[(.*)\]$/', $raw, $m) === 1) {
-            return array_values(array_filter(array_map(
-                static fn (string $part) => trim(trim(trim($part), '"'), ':'),
-                explode(',', $m[1])
-            ), static fn (string $part) => $part !== ''));
+        if (preg_match('/^(?:%[iw])?\[(.*)\]$/s', $raw, $m) === 1) {
+            $raw = $m[1];
         }
 
-        return [trim($raw, ':"')];
+        $parts = str_contains($raw, ',') ? explode(',', $raw) : (preg_split('/\s+/', mb_trim($raw)) ?: []);
+
+        return array_values(array_filter(
+            array_map(static fn (string $part): string => mb_trim(mb_trim(mb_trim($part), '"'), ':'), $parts),
+            static fn (string $part): bool => $part !== ''
+        ));
     }
 }
 
 if (! function_exists('inv_routes_action_filter')) {
     /**
-     * @param  string|list<string>|null  $only
-     * @param  string|list<string>|null  $except
+     * @param  mixed  $only  string|list<string>|null
+     * @param  mixed  $except  string|list<string>|null
      * @return list<string>
      */
-    function inv_routes_action_filter(string|array|null $only, string|array|null $except): array
+    function inv_routes_action_filter(mixed $only, mixed $except): array
     {
         $all = ['index', 'new', 'create', 'show', 'edit', 'update', 'destroy'];
 
@@ -715,45 +734,36 @@ if (! function_exists('inv_routes_action_filter')) {
 
 if (! function_exists('inv_routes_handler')) {
     /**
-     * Resolves the effective "controller#action" from any combination of an
-     * explicit `to:` target, an explicit `controller:` option and a default
-     * resource controller. A leading "/" on a controller escapes the current
-     * module namespace (Rails' absolute-controller idiom).
+     * Resolves the effective "controller#action". A controller is absolute
+     * (escapes the module prefix) only when its raw source string started
+     * with "/" — Rails' `controller: "/api/v1/plans/charges"` idiom.
      */
-    function inv_routes_handler(?string $target, string $modulePrefix, ?string $controllerOption, string $action): string
+    function inv_routes_handler(?string $target, string $modulePrefix, string|array|null $controllerOption, string $fallbackController, string $action): string
     {
-        if ($target !== null && str_contains($target, '#')) {
-            [$controller, $targetAction] = explode('#', $target, 2);
-            $action = $targetAction !== '' ? $targetAction : $action;
+        $controller = null;
+
+        if ($target !== null) {
+            [$controller, $targetAction] = array_pad(explode('#', $target, 2), 2, '');
+
+            if ($targetAction !== '') {
+                $action = $targetAction;
+            }
+        } elseif ($controllerOption !== null && $controllerOption !== '') {
+            $controller = mb_trim((string) (is_array($controllerOption) ? '' : $controllerOption), '/');
         } else {
-            $controller = $target ?? $controllerOption ?? '';
+            $controller = $fallbackController;
         }
 
-        $controller = trim((string) $controller, '/');
+        $raw = $target ?? (is_string($controllerOption) ? $controllerOption : null);
+        $absolute = $raw !== null && str_starts_with(mb_ltrim($raw), '/');
+
+        $controller = mb_trim((string) $controller, '/');
 
         if ($controller === '') {
-            return $action === '' ? '' : '#'.$action;
+            return '';
         }
 
-        $absolute = str_starts_with(trim((string) ($target ?? $controllerOption ?? '')), '/')
-            && ! str_starts_with(ltrim((string) ($target ?? '')), '/');
-
-        // Rails: a leading slash in `controller:` escapes module scoping. A
-        // `to:` string is always relative to the module unless it too starts
-        // with "/" — inv_routes_handler receives them pre-stripped, so the
-        // caller marks absoluteness by keeping the leading slash.
-        $isAbsolute = str_starts_with(trim((string) ($target ?? $controllerOption ?? '')), '/')
-            && str_starts_with(trim((string) ($controllerOption ?? $target ?? '')), '/');
-
-        unset($absolute);
-
-        $prefix = ($target !== null
-            ? (str_starts_with(trim($target), '/') ? '' : $modulePrefix)
-            : (str_starts_with(trim((string) $controllerOption), '/') ? '' : $modulePrefix));
-
-        unset($isAbsolute);
-
-        $full = inv_routes_join_path($prefix, $controller);
+        $full = $absolute ? '/'.mb_ltrim($controller, '/') : inv_routes_join_path($modulePrefix, $controller);
 
         return $action === '' ? $full : $full.'#'.$action;
     }
@@ -770,12 +780,11 @@ if (! function_exists('inv_routes_via_verbs')) {
         }
 
         $map = ['get' => 'GET', 'post' => 'POST', 'put' => 'PUT', 'patch' => 'PATCH', 'delete' => 'DELETE'];
-
         $verbs = [];
 
         foreach ((array) $via as $raw) {
             foreach (inv_routes_sym_list((string) $raw) as $verb) {
-                $upper = $map[strtolower($verb)] ?? strtoupper($verb);
+                $upper = $map[mb_strtolower($verb)] ?? mb_strtoupper($verb);
 
                 if (! in_array($upper, $verbs, true)) {
                     $verbs[] = $upper;
@@ -797,7 +806,7 @@ if (! function_exists('inv_routes_join_path')) {
                 continue;
             }
 
-            $joined .= '/'.trim($part, '/');
+            $joined .= '/'.mb_trim($part, '/');
         }
 
         return $joined === '' ? '/' : $joined;
@@ -807,8 +816,7 @@ if (! function_exists('inv_routes_join_path')) {
 if (! function_exists('inv_routes_normalize_path')) {
     function inv_routes_normalize_path(string $path): string
     {
-        $path = preg_replace('#/+#', '/', $path) ?? $path;
-        $path = rtrim($path, '/');
+        $path = mb_rtrim((string) preg_replace('#/+#', '/', $path), '/');
 
         return $path === '' ? '/' : $path;
     }

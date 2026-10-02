@@ -1,13 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\GraphQL\Scalars;
 
+use Exception;
 use Carbon\Carbon;
-use Carbon\CarbonInterface;
+use DateTimeInterface;
 use GraphQL\Error\Error;
+use Carbon\CarbonInterface;
 use GraphQL\Language\AST\Node;
-use GraphQL\Language\AST\StringValueNode;
 use GraphQL\Type\Definition\ScalarType;
+use GraphQL\Language\AST\StringValueNode;
 
 /**
  * Port of GraphQL-Ruby's `GraphQL::Types::ISO8601Date` as used by Lago: dates
@@ -20,14 +24,14 @@ class ISO8601Date extends ScalarType
 
     public function serialize($value): string
     {
-        if ($value instanceof CarbonInterface || $value instanceof \DateTimeInterface) {
+        if ($value instanceof CarbonInterface || $value instanceof DateTimeInterface) {
             return $value->clone()->setTimezone('UTC')->format('Y-m-d\TH:i:s\Z');
         }
 
         if (is_string($value)) {
             try {
                 return Carbon::parse($value)->setTimezone('UTC')->format('Y-m-d\TH:i:s\Z');
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 throw new Error('ISO8601Date cannot serialize value: '.$value);
             }
         }
@@ -43,7 +47,7 @@ class ISO8601Date extends ScalarType
 
         try {
             return Carbon::parse($value)->startOfDay()->setTimezone('UTC');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new Error('ISO8601Date cannot represent value: '.$value);
         }
     }

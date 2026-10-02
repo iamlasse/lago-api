@@ -1,17 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Middleware;
 
-use App\Exceptions\Api\ForbiddenException;
-use App\Exceptions\Api\UnauthorizedException;
-use App\Http\Controllers\Api\ApiController;
+use Closure;
 use App\Models\ApiKey;
 use App\Models\Organization;
-use App\Services\ApiKeys\CacheService;
-use App\Support\CurrentContext;
-use Closure;
 use Illuminate\Http\Request;
+use App\Support\CurrentContext;
 use Illuminate\Support\Facades\Cache;
+use App\Services\ApiKeys\CacheService;
+use App\Exceptions\Api\ForbiddenException;
+use App\Http\Controllers\Api\ApiController;
+use App\Exceptions\Api\UnauthorizedException;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -25,7 +27,7 @@ class AuthenticateApiKey
         $token = $this->authToken($request);
 
         if ($token === null) {
-            throw new UnauthorizedException();
+            throw new UnauthorizedException;
         }
 
         $controller = $request->route()?->getController();
@@ -36,7 +38,7 @@ class AuthenticateApiKey
         );
 
         if ($apiKey === null || $organization === null) {
-            throw new UnauthorizedException();
+            throw new UnauthorizedException;
         }
 
         $this->setContextSource($apiKey, $organization);
@@ -61,7 +63,7 @@ class AuthenticateApiKey
      */
     private function authToken(Request $request): ?string
     {
-        $parts = preg_split('/\s+/', trim((string) $request->headers->get('Authorization', ''))) ?: [];
+        $parts = preg_split('/\s+/', mb_trim((string) $request->headers->get('Authorization', ''))) ?: [];
 
         return $parts[1] ?? null;
     }

@@ -1,12 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\GraphQL\Scalars;
 
-use Carbon\CarbonInterface;
+use Exception;
+use Carbon\Carbon;
+use DateTimeInterface;
 use GraphQL\Error\Error;
+use Carbon\CarbonInterface;
 use GraphQL\Language\AST\Node;
-use GraphQL\Language\AST\StringValueNode;
 use GraphQL\Type\Definition\ScalarType;
+use GraphQL\Language\AST\StringValueNode;
 
 /**
  * Port of GraphQL-Ruby's `GraphQL::Types::ISO8601DateTime` as used by Lago:
@@ -19,14 +24,14 @@ class ISO8601DateTime extends ScalarType
 
     public function serialize($value): string
     {
-        if ($value instanceof CarbonInterface || $value instanceof \DateTimeInterface) {
+        if ($value instanceof CarbonInterface || $value instanceof DateTimeInterface) {
             return $value->clone()->setTimezone('UTC')->format('Y-m-d\TH:i:s\Z');
         }
 
         if (is_string($value)) {
             try {
-                return \Carbon\Carbon::parse($value)->setTimezone('UTC')->format('Y-m-d\TH:i:s\Z');
-            } catch (\Exception $e) {
+                return Carbon::parse($value)->setTimezone('UTC')->format('Y-m-d\TH:i:s\Z');
+            } catch (Exception $e) {
                 throw new Error('ISO8601DateTime cannot serialize value: '.$value);
             }
         }
@@ -34,20 +39,20 @@ class ISO8601DateTime extends ScalarType
         throw new Error('ISO8601DateTime cannot serialize value of type '.get_debug_type($value));
     }
 
-    public function parseValue($value): \Carbon\Carbon
+    public function parseValue($value): Carbon
     {
         if (! is_string($value)) {
             throw new Error('ISO8601DateTime cannot represent non string value');
         }
 
         try {
-            return \Carbon\Carbon::parse($value)->setTimezone('UTC');
-        } catch (\Exception $e) {
+            return Carbon::parse($value)->setTimezone('UTC');
+        } catch (Exception $e) {
             throw new Error('ISO8601DateTime cannot represent value: '.$value);
         }
     }
 
-    public function parseLiteral(Node $valueNode, ?array $variables = null): \Carbon\Carbon
+    public function parseLiteral(Node $valueNode, ?array $variables = null): Carbon
     {
         if (! $valueNode instanceof StringValueNode) {
             throw new Error('ISO8601DateTime cannot represent non string value');

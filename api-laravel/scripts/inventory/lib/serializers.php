@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Generator: serializers inventory from app/serializers/**/*.rb.
 // Row ids: ser:<Ruby dotted class name>, e.g. ser:V1.CustomerSerializer.
 
@@ -14,7 +16,7 @@ if (! function_exists('inv_gen_serializers')) {
         $rows = [];
 
         foreach ($files as $file) {
-            $relative = ltrim(substr($file, strlen($railsPath.'/app/serializers/')), '/');
+            $relative = mb_ltrim(mb_substr($file, mb_strlen($railsPath.'/app/serializers/')), '/');
 
             $rows[] = [
                 'id' => 'ser:'.inv_ruby_class_from_path($relative),

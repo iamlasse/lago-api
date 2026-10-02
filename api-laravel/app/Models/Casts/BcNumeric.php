@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Casts;
 
+use InvalidArgumentException;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 
 /**
@@ -38,7 +41,7 @@ class BcNumeric implements CastsAttributes
         // Reject anything that isn't a plain numeric string — no floats, no
         // scientific notation leaking into money columns.
         if (! preg_match('/^-?\d+(\.\d+)?$/', $value)) {
-            throw new \InvalidArgumentException(sprintf(
+            throw new InvalidArgumentException(sprintf(
                 'Non-exact numeric value assigned to %s::%s: %s',
                 get_class($model),
                 $key,

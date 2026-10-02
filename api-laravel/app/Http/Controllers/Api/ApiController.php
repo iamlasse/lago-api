@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api;
 
-use App\Exceptions\Api\ParameterMissingException;
-use App\Http\Controllers\Controller;
 use App\Models\ApiKey;
 use App\Models\Organization;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Exceptions\Api\ParameterMissingException;
 
 /**
  * Port of the Api::BaseController controller state. Authentication,
@@ -42,16 +44,6 @@ abstract class ApiController extends Controller
         $this->currentOrganization = $organization;
     }
 
-    protected function currentApiKey(): ?ApiKey
-    {
-        return $this->currentApiKey;
-    }
-
-    protected function currentOrganization(): ?Organization
-    {
-        return $this->currentOrganization;
-    }
-
     /**
      * Port of Api::BaseController#track_api_key_usage? (true by default).
      */
@@ -67,6 +59,16 @@ abstract class ApiController extends Controller
     public function cachedApiKey(): bool
     {
         return false;
+    }
+
+    protected function currentApiKey(): ?ApiKey
+    {
+        return $this->currentApiKey;
+    }
+
+    protected function currentOrganization(): ?Organization
+    {
+        return $this->currentOrganization;
     }
 
     /**

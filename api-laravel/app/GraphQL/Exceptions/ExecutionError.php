@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\GraphQL\Exceptions;
 
+use Exception;
 use GraphQL\Error\ClientAware;
 use GraphQL\Error\ProvidesErrorExtensions;
 
@@ -14,7 +17,7 @@ use GraphQL\Error\ProvidesErrorExtensions;
  * { |k| k.to_s.camelize(:lower) }`), so the extensions leave the API in the
  * exact wire shape the frontend expects.
  */
-class ExecutionError extends \Exception implements ClientAware, ProvidesErrorExtensions
+class ExecutionError extends Exception implements ClientAware, ProvidesErrorExtensions
 {
     /**
      * @param  array<string, mixed>|null  $details

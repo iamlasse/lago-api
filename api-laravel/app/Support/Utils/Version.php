@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Support\Utils;
 
 /**
@@ -18,11 +20,6 @@ final class Version
         public readonly string $githubUrl,
         public readonly ?string $sha,
     ) {}
-
-    public function shaOrNumber(): string
-    {
-        return $this->sha ?? $this->number;
-    }
 
     public static function call(string $default): self
     {
@@ -43,6 +40,11 @@ final class Version
         return new self($content, self::GITHUB_BASE_URL.'/tree/'.$content, null);
     }
 
+    public function shaOrNumber(): string
+    {
+        return $this->sha ?? $this->number;
+    }
+
     private static function versionFilePath(): string
     {
         return base_path('LAGO_VERSION');
@@ -56,7 +58,7 @@ final class Version
             return null;
         }
 
-        return trim(preg_replace('/\s+/', ' ', $content));
+        return mb_trim(preg_replace('/\s+/', ' ', $content));
     }
 
     private static function releaseDate(): string
@@ -68,6 +70,6 @@ final class Version
 
     private static function isGitHash(string $content): bool
     {
-        return strlen($content) === 40;
+        return mb_strlen($content) === 40;
     }
 }

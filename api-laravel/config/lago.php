@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
 |--------------------------------------------------------------------------
 | Lago configuration — same LAGO_* environment contract as the Rails API
@@ -15,11 +17,11 @@
 // git sha — in which case Rails reports the file's creation date as the
 // version number (a quirk worth keeping).
 $lagoVersionFile = base_path('LAGO_VERSION');
-$lagoVersionContent = is_file($lagoVersionFile) ? trim((string) file_get_contents($lagoVersionFile)) : null;
+$lagoVersionContent = is_file($lagoVersionFile) ? mb_trim((string) file_get_contents($lagoVersionFile)) : null;
 
 $lagoVersion = match (true) {
     $lagoVersionContent === null => env('APP_ENV', 'production'),
-    strlen($lagoVersionContent) === 40 => date('Y-m-d', (int) filectime($lagoVersionFile)),
+    mb_strlen($lagoVersionContent) === 40 => date('Y-m-d', (int) filectime($lagoVersionFile)),
     default => $lagoVersionContent,
 };
 

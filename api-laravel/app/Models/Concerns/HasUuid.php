@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Concerns;
 
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 /**
  * Every Lago table uses `id uuid DEFAULT gen_random_uuid()` (v4 random UUIDs).
@@ -22,15 +24,6 @@ trait HasUuid
         return 'string';
     }
 
-    protected static function bootHasUuid(): void
-    {
-        static::creating(function ($model): void {
-            if ($model->getKey() === null) {
-                $model->setAttribute($model->getKeyName(), (string) Str::uuid());
-            }
-        });
-    }
-
     public function uniqueIds(): array
     {
         return [$this->getKeyName()];
@@ -39,5 +32,14 @@ trait HasUuid
     public function newUniqueId(): ?string
     {
         return (string) Str::uuid();
+    }
+
+    protected static function bootHasUuid(): void
+    {
+        static::creating(function ($model): void {
+            if ($model->getKey() === null) {
+                $model->setAttribute($model->getKeyName(), (string) Str::uuid());
+            }
+        });
     }
 }

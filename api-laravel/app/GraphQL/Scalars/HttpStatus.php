@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\GraphQL\Scalars;
 
 use GraphQL\Error\Error;
-use GraphQL\Language\AST\IntValueNode;
 use GraphQL\Language\AST\Node;
+use GraphQL\Language\AST\IntValueNode;
 use GraphQL\Type\Definition\ScalarType;
 
 /**

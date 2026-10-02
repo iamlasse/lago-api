@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Shared helpers for the inventory generators.
 //
 // Every generator is a plain function (guarded with function_exists so the
@@ -31,7 +33,7 @@ if (! function_exists('inv_rails_path')) {
     {
         $path = $override ?? (getenv('LAGO_RAILS_PATH') ?: LAGO_INVENTORY_DEFAULT_RAILS_PATH);
 
-        return rtrim((string) $path, '/');
+        return mb_rtrim((string) $path, '/');
     }
 }
 
@@ -61,7 +63,7 @@ if (! function_exists('inv_output_dir')) {
         static $forced = null;
 
         if ($override !== null) {
-            $forced = rtrim($override, '/');
+            $forced = mb_rtrim($override, '/');
         }
 
         return $forced ?? (inv_repo_root().'/tests/inventory');
@@ -119,7 +121,7 @@ if (! function_exists('inv_artifact')) {
             $artifact['warning'] = 'PROVISIONAL INVENTORY: rows were parsed statically from routes.rb, '
                 .'which the coverage plan explicitly forbids trusting. Every row is marked '
                 .'provisional:true. Replace this artifact by running gen_routes.rb inside Rails '
-                '(see scripts/inventory/README.md) before gating any milestone on rest rows.';
+                .'(see scripts/inventory/README.md) before gating any milestone on rest rows.';
         }
 
         $artifact['rows'] = $rows;

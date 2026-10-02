@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Support;
 
 /**
@@ -10,9 +12,13 @@ namespace App\Support;
 final class CurrentContext
 {
     public static ?object $membership = null;
+
     public static ?string $source = null;
+
     public static ?string $email = null;
+
     public static ?string $apiKeyId = null;
+
     public static ?array $deviceInfo = null;
 
     /** The organization resolved from the request (API key or membership switch). */

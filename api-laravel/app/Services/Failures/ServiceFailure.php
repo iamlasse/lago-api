@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services\Failures;
+
+use Throwable;
 
 class ServiceFailure extends FailedResult
 {
@@ -8,7 +12,7 @@ class ServiceFailure extends FailedResult
         object $result,
         public readonly string $code,
         public readonly string $errorMessage,
-        ?\Throwable $originalError = null,
+        ?Throwable $originalError = null,
     ) {
         parent::__construct($result, $code.': '.$errorMessage, $originalError);
     }

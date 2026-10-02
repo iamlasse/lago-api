@@ -1,18 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 uses()->group('ledger:rest:api.base_controller');
 
 use App\Models\ApiKey;
+use Illuminate\Support\Str;
 use App\Models\Organization;
 use App\Support\CurrentContext;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Str;
 
 /**
  * Port of Rails' spec/requests/api/base_controller_spec.rb against the
  * `lago.auth` middleware, plus the v2 beta header and permission scenarios.
  */
-
 function createOrganizationWithApiKey(array $orgAttributes = [], array $apiKeyAttributes = []): array
 {
     $organization = Organization::create(array_merge(['name' => 'Auth Org'], $orgAttributes));
@@ -26,7 +27,7 @@ function createOrganizationWithApiKey(array $orgAttributes = [], array $apiKeyAt
     return [$organization, $apiKey];
 }
 
-it('sets the context source to api and records the api key id', function () {
+it('sets the context source to api and records the api key id', function (): void {
     [, $apiKey] = createOrganizationWithApiKey();
 
     $this->getJson('/api/v1/placeholder', ['Authorization' => 'Bearer '.$apiKey->value])
@@ -37,7 +38,7 @@ it('sets the context source to api and records the api key id', function () {
         ->and(CurrentContext::$organization->id)->toBe($apiKey->organization_id);
 });
 
-it('returns success for a valid authorization header', function () {
+it('returns success for a valid authorization header', function (): void {
     // Rails samples a plain and an :expiring (still valid) key — both succeed.
     [$organization, $apiKey] = createOrganizationWithApiKey();
     [, $expiringApiKey] = createOrganizationWithApiKey(['name' => 'Auth Org 2'], [
@@ -51,19 +52,19 @@ it('returns success for a valid authorization header', function () {
         ->assertOk();
 });
 
-it('returns 401 with the Unauthorized envelope for a missing authorization header', function () {
+it('returns 401 with the Unauthorized envelope for a missing authorization header', function (): void {
     $this->getJson('/api/v1/placeholder')
         ->assertUnauthorized()
         ->assertExactJson(['status' => 401, 'error' => 'Unauthorized']);
 });
 
-it('returns 401 for an unknown token', function () {
+it('returns 401 for an unknown token', function (): void {
     $this->getJson('/api/v1/placeholder', ['Authorization' => 'Bearer '.Str::uuid()])
         ->assertUnauthorized()
         ->assertExactJson(['status' => 401, 'error' => 'Unauthorized']);
 });
 
-it('returns 401 for an expired api key', function () {
+it('returns 401 for an expired api key', function (): void {
     // Rails: create(:api_key, :expired) — the active default_scope hides it.
     [$organization, $apiKey] = createOrganizationWithApiKey([], [
         'expires_at' => now()->subMinute(),
@@ -73,7 +74,7 @@ it('returns 401 for an expired api key', function () {
         ->assertUnauthorized();
 });
 
-it('tracks api key usage in the cache on trackable endpoints', function () {
+it('tracks api key usage in the cache on trackable endpoints', function (): void {
     [, $apiKey] = createOrganizationWithApiKey();
 
     $this->getJson('/api/v1/placeholder', ['Authorization' => 'Bearer '.$apiKey->value])
@@ -82,7 +83,7 @@ it('tracks api key usage in the cache on trackable endpoints', function () {
     expect(Cache::get("api_key_last_used_{$apiKey->id}"))->toBe(now()->toIso8601String());
 });
 
-it('does not parse the auth scheme, mirroring Rails split-on-whitespace', function () {
+it('does not parse the auth scheme, mirroring Rails split-on-whitespace', function (): void {
     [, $apiKey] = createOrganizationWithApiKey();
 
     // Rails: headers["Authorization"]&.split(" ")&.second — no "Bearer" check.
@@ -90,7 +91,7 @@ it('does not parse the auth scheme, mirroring Rails split-on-whitespace', functi
         ->assertOk();
 });
 
-it('allows every resource when the organization has no premium api_permissions', function () {
+it('allows every resource when the organization has no premium api_permissions', function (): void {
     [, $apiKey] = createOrganizationWithApiKey([], [
         // Empty permissions map would deny everything if enforced.
         'permissions' => [],
@@ -100,7 +101,7 @@ it('allows every resource when the organization has no premium api_permissions',
         ->assertOk();
 });
 
-it('returns 403 with the mode/resource code when permissions are enforced and deny the action', function () {
+it('returns 403 with the mode/resource code when permissions are enforced and deny the action', function (): void {
     config(['lago.license' => 'premium-license-token']);
 
     [$organization, $apiKey] = createOrganizationWithApiKey(
@@ -123,7 +124,7 @@ it('returns 403 with the mode/resource code when permissions are enforced and de
     ])->assertOk();
 });
 
-it('serves the beta header on every v2 response, errors included', function () {
+it('serves the beta header on every v2 response, errors included', function (): void {
     [, $apiKey] = createOrganizationWithApiKey();
 
     $this->getJson('/api/v2/placeholder', ['Authorization' => 'Bearer '.$apiKey->value])
@@ -136,7 +137,7 @@ it('serves the beta header on every v2 response, errors included', function () {
         ->assertExactJson(['status' => 401, 'error' => 'Unauthorized']);
 });
 
-it('serves the same handlers at v1 and v2', function () {
+it('serves the same handlers at v1 and v2', function (): void {
     [$organization, $apiKey] = createOrganizationWithApiKey();
 
     foreach (['v1', 'v2'] as $version) {

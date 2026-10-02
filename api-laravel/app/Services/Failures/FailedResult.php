@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services\Failures;
 
 use Throwable;
+use RuntimeException;
 
 /**
  * Port of Rails' BaseService::FailedResult — a failure carried inside a
@@ -10,7 +13,7 @@ use Throwable;
  * `BaseResult::raiseIfError()` (Rails' `raise_if_error!`), but services
  * normally return it embedded in the result's `error` field.
  */
-class FailedResult extends \RuntimeException
+class FailedResult extends RuntimeException
 {
     public function __construct(
         public readonly object $result,

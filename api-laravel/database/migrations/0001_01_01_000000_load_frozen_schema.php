@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Support\FrozenSql;
-use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Migrations\Migration;
 
 /**
  * Loads the frozen Lago schema, taken verbatim from the Rails app's
@@ -16,7 +18,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        $sql = file_get_contents(__DIR__ . '/../frozen/structure.sql');
+        $sql = file_get_contents(__DIR__.'/../frozen/structure.sql');
 
         foreach (FrozenSql::statements($sql) as $statement) {
             DB::unprepared($statement);

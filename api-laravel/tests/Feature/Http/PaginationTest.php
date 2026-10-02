@@ -1,18 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 uses()->group('ledger:concern:Pagination');
 
-use App\Http\Controllers\Concerns\Pagination;
 use App\Models\Customer;
 use App\Models\Organization;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
+use App\Http\Controllers\Concerns\Pagination;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 /**
  * Port of Rails' app/controllers/concerns/pagination.rb exercised through a
  * trait user, against real Customer rows.
  */
-
 class PaginationUser
 {
     use Pagination;
@@ -31,7 +32,7 @@ function paginateCustomers(Organization $organization, int $page, int $perPage =
         ->paginate($perPage, ['*'], 'page', $page);
 }
 
-it('returns zeroed meta when total_count is 0', function () {
+it('returns zeroed meta when total_count is 0', function (): void {
     $organization = Organization::create(['name' => 'Pagination Org']);
     $paginator = paginateCustomers($organization, 1);
 
@@ -47,7 +48,7 @@ it('returns zeroed meta when total_count is 0', function () {
     ]);
 });
 
-it('computes navigation pages across the full matrix', function () {
+it('computes navigation pages across the full matrix', function (): void {
     $organization = Organization::create(['name' => 'Pagination Org']);
     foreach (range(1, 250) as $i) {
         Customer::create(['organization_id' => $organization->id, 'external_id' => "cust-{$i}", 'name' => "C{$i}"]);
@@ -71,7 +72,7 @@ it('computes navigation pages across the full matrix', function () {
     ]);
 });
 
-it('caches the total count for 30 minutes when key, organization and params are given', function () {
+it('caches the total count for 30 minutes when key, organization and params are given', function (): void {
     Cache::flush();
     $organization = Organization::create(['name' => 'Pagination Org']);
     foreach (range(1, 250) as $i) {
@@ -90,7 +91,7 @@ it('caches the total count for 30 minutes when key, organization and params are 
     expect(Cache::get("pagination_count/customers/{$hash}"))->toBe(250);
 });
 
-it('serves the cached count and skips re-querying while the cache is fresh', function () {
+it('serves the cached count and skips re-querying while the cache is fresh', function (): void {
     Cache::flush();
     $organization = Organization::create(['name' => 'Pagination Org']);
     foreach (range(1, 250) as $i) {
@@ -112,7 +113,7 @@ it('serves the cached count and skips re-querying while the cache is fresh', fun
     expect($user->meta(paginateCustomers($organization, 3), 'customers', $organization->id, $params)['total_count'])->toBe(248);
 });
 
-it('derives the same cache key regardless of param order (deep sort)', function () {
+it('derives the same cache key regardless of param order (deep sort)', function (): void {
     Cache::flush();
     $organization = Organization::create(['name' => 'Pagination Org']);
     Customer::create(['organization_id' => $organization->id, 'external_id' => 'cust-1', 'name' => 'C1']);
@@ -135,7 +136,7 @@ it('derives the same cache key regardless of param order (deep sort)', function 
     )->toBe(250);
 });
 
-it('does not use the count cache unless key, organization id and params are all given', function () {
+it('does not use the count cache unless key, organization id and params are all given', function (): void {
     Cache::flush();
     $organization = Organization::create(['name' => 'Pagination Org']);
     foreach (range(1, 250) as $i) {

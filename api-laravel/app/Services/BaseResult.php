@@ -1,21 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
+use Throwable;
 use App\Services\Failures\FailedResult;
-use App\Services\Failures\ForbiddenFailure;
-use App\Services\Failures\LockAcquisitionFailure;
-use App\Services\Failures\MethodNotAllowedFailure;
-use App\Services\Failures\NonRetryableFailure;
+use App\Services\Failures\ServiceFailure;
 use App\Services\Failures\NotFoundFailure;
 use App\Services\Failures\ProviderFailure;
-use App\Services\Failures\ServiceFailure;
+use App\Services\Failures\ForbiddenFailure;
 use App\Services\Failures\ThirdPartyFailure;
-use App\Services\Failures\TooManyProviderRequestsFailure;
-use App\Services\Failures\UnauthorizedFailure;
 use App\Services\Failures\UnknownTaxFailure;
 use App\Services\Failures\ValidationFailure;
-use Throwable;
+use App\Services\Failures\NonRetryableFailure;
+use App\Services\Failures\UnauthorizedFailure;
+use App\Services\Failures\LockAcquisitionFailure;
+use App\Services\Failures\MethodNotAllowedFailure;
+use App\Services\Failures\TooManyProviderRequestsFailure;
 
 /**
  * Port of Rails' BaseResult (app/services/base_result.rb).
@@ -27,7 +29,6 @@ use Throwable;
  */
 class BaseResult
 {
-    /** @var bool */
     protected bool $failure = false;
 
     protected ?FailedResult $error = null;
@@ -44,12 +45,6 @@ class BaseResult
         $this->attributeNames = $attributeNames;
     }
 
-    /** Port of `BaseResult[:attribute, ...]` — a fresh typed result. */
-    public static function of(string ...$attributes): static
-    {
-        return new static($attributes);
-    }
-
     public function __get(string $name): mixed
     {
         return $this->attributes[$name] ?? null;
@@ -63,6 +58,12 @@ class BaseResult
     public function __isset(string $name): bool
     {
         return array_key_exists($name, $this->attributes);
+    }
+
+    /** Port of `BaseResult[:attribute, ...]` — a fresh typed result. */
+    public static function of(string ...$attributes): static
+    {
+        return new static($attributes);
     }
 
     public function success(): bool
@@ -123,7 +124,7 @@ class BaseResult
      * Port of `record_validation_failure!(record:)` — takes the errors hash
      * of a validated model (field => [codes]).
      *
-     * @param array<string, list<string>> $messages
+     * @param  array<string, list<string>>  $messages
      */
     public function recordValidationFailure(array $messages): static
     {

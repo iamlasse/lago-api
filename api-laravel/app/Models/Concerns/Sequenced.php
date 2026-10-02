@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Concerns;
 
-use App\Models\Exceptions\SequenceException;
-use Illuminate\Database\QueryException;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\QueryException;
+use Illuminate\Database\Eloquent\Builder;
+use App\Models\Exceptions\SequenceException;
 
 /**
  * Port of Rails' Sequenced concern (app/models/concerns/sequenced.rb).
@@ -31,12 +35,17 @@ trait Sequenced
         });
     }
 
+    public function scopeWithSequentialId($query)
+    {
+        return $query->whereNotNull('sequential_id');
+    }
+
     /**
      * Scope the max(sequential_id) query — port of the `sequenced scope:`
      * lambda. Override in the model, e.g.:
      *   return $this->customer->invoices()->getQuery();
      */
-    protected function sequenceScope(): \Illuminate\Database\Eloquent\Builder
+    protected function sequenceScope(): Builder
     {
         return static::query();
     }
@@ -59,7 +68,7 @@ trait Sequenced
             throw new SequenceException('must be called inside a transaction');
         }
 
-        $lockKey = ($this->sequencedLockKey() ?? \Illuminate\Support\Str::snake(class_basename(static::class))) . '_lock';
+        $lockKey = ($this->sequencedLockKey() ?? Str::snake(class_basename(static::class))).'_lock';
 
         try {
             $connection->statement("SET LOCAL lock_timeout = '10s'");
@@ -76,10 +85,5 @@ trait Sequenced
         $max = (int) ($this->sequenceScope()->max('sequential_id') ?? 0);
 
         return $max + 1;
-    }
-
-    public function scopeWithSequentialId($query)
-    {
-        return $query->whereNotNull('sequential_id');
     }
 }

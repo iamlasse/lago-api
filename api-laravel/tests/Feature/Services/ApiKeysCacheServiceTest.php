@@ -1,19 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 uses()->group('ledger:svc:ApiKeys.CacheService');
 
 use App\Models\ApiKey;
-use App\Models\Organization;
-use App\Services\ApiKeys\CacheService;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
+use App\Models\Organization;
+use Illuminate\Support\Facades\Cache;
+use App\Services\ApiKeys\CacheService;
 
 /**
  * Port of app/services/api_keys/cache_service.rb (no dedicated Rails spec
  * file for it; scenarios derived from the service itself and the
  * base_controller authentication scenarios that exercise it).
  */
-
 function makeKeyedOrganization(array $apiKeyAttributes = []): array
 {
     $organization = Organization::create(['name' => 'Cache Org']);
@@ -26,7 +27,7 @@ function makeKeyedOrganization(array $apiKeyAttributes = []): array
     return [$organization, $apiKey];
 }
 
-it('fetches the api key and organization from the database without cache', function () {
+it('fetches the api key and organization from the database without cache', function (): void {
     [$organization, $apiKey] = makeKeyedOrganization();
 
     [$foundKey, $foundOrganization] = CacheService::call($apiKey->value);
@@ -35,11 +36,11 @@ it('fetches the api key and organization from the database without cache', funct
         ->and($foundOrganization?->id)->toBe($organization->id);
 });
 
-it('returns a nil pair for an unknown token', function () {
+it('returns a nil pair for an unknown token', function (): void {
     expect(CacheService::call((string) Str::uuid()))->each(fn ($pair) => $pair)->toBeNull();
 });
 
-it('returns a nil pair for an expired api key (Rails default_scope :active)', function () {
+it('returns a nil pair for an expired api key (Rails default_scope :active)', function (): void {
     [, $apiKey] = makeKeyedOrganization(['expires_at' => now()->subMinute()]);
 
     [$foundKey, $foundOrganization] = CacheService::call($apiKey->value);
@@ -48,7 +49,7 @@ it('returns a nil pair for an expired api key (Rails default_scope :active)', fu
         ->and($foundOrganization)->toBeNull();
 });
 
-it('writes the pair to the cache on the first cached call', function () {
+it('writes the pair to the cache on the first cached call', function (): void {
     [$organization, $apiKey] = makeKeyedOrganization();
 
     [$foundKey, $foundOrganization] = CacheService::call($apiKey->value, withCache: true);
@@ -62,7 +63,7 @@ it('writes the pair to the cache on the first cached call', function () {
         ->and($payload['organization']['id'])->toBe($organization->id);
 });
 
-it('serves the stale cached pair without hitting the database', function () {
+it('serves the stale cached pair without hitting the database', function (): void {
     [$organization, $apiKey] = makeKeyedOrganization();
 
     CacheService::call($apiKey->value, withCache: true);
@@ -76,7 +77,7 @@ it('serves the stale cached pair without hitting the database', function () {
         ->and($foundOrganization?->id)->toBe($organization->id);
 });
 
-it('ignores a cached entry whose api key has expired and falls through to the database', function () {
+it('ignores a cached entry whose api key has expired and falls through to the database', function (): void {
     // Rails: with_cache reads the cache, rejects the entry when
     // api_key.expired?, then re-fetches from the database — where the active
     // scope hides the expired row, so the pair is nil.
@@ -92,35 +93,35 @@ it('ignores a cached entry whose api key has expired and falls through to the da
         ->and($foundOrganization)->toBeNull();
 });
 
-it('expires the cache early when the api key expires sooner than the ttl', function () {
+it('expires the cache early when the api key expires sooner than the ttl', function (): void {
     config(['lago.api_key_cache_ttl' => 3600]);
     [, $apiKey] = makeKeyedOrganization(['expires_at' => now()->addSeconds(120)]);
 
     expect((new CacheService($apiKey->value))->cacheTtlFor($apiKey))->toBeLessThanOrEqual(120);
 });
 
-it('uses the configured ttl when the key outlives it', function () {
+it('uses the configured ttl when the key outlives it', function (): void {
     config(['lago.api_key_cache_ttl' => 3600]);
     [, $apiKey] = makeKeyedOrganization(['expires_at' => now()->addDay()]);
 
     expect((new CacheService($apiKey->value))->cacheTtlFor($apiKey))->toBe(3600);
 });
 
-it('uses the configured ttl when the key never expires', function () {
+it('uses the configured ttl when the key never expires', function (): void {
     config(['lago.api_key_cache_ttl' => 3600]);
     [, $apiKey] = makeKeyedOrganization();
 
     expect((new CacheService($apiKey->value))->cacheTtlFor($apiKey))->toBe(3600);
 });
 
-it('version-pins and token-keys the cache entry', function () {
+it('version-pins and token-keys the cache entry', function (): void {
     [, $apiKey] = makeKeyedOrganization();
 
     expect(CacheService::CACHE_KEY_VERSION)->toBe('1')
         ->and((new CacheService($apiKey->value))->cacheKey())->toBe('api_key/1/'.$apiKey->value);
 });
 
-it('expires all cache entries of an organization', function () {
+it('expires all cache entries of an organization', function (): void {
     [$organization, $apiKey] = makeKeyedOrganization();
     $secondKey = ApiKey::create([
         'organization_id' => $organization->id,

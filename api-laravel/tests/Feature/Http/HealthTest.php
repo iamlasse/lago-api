@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 uses()->group('ledger:rest:GET:/health', 'ledger:rest:GET:/ready');
 
 use Illuminate\Support\Facades\DB;
@@ -7,8 +9,7 @@ use Illuminate\Support\Facades\DB;
 /**
  * Port of ApplicationController#health / #ready (Rails: GET /health, GET /ready).
  */
-
-it('answers GET /health with version, github_url and Success when the database is reachable', function () {
+it('answers GET /health with version, github_url and Success when the database is reachable', function (): void {
     $response = $this->getJson('/health');
 
     $response->assertOk()
@@ -19,7 +20,7 @@ it('answers GET /health with version, github_url and Success when the database i
         ]);
 });
 
-it('answers GET /health with 500 Unhealthy and details when the database check fails', function () {
+it('answers GET /health with 500 Unhealthy and details when the database check fails', function (): void {
     DB::shouldReceive('select')
         ->andThrow(new RuntimeException('connection refused'));
 
@@ -34,8 +35,7 @@ it('answers GET /health with 500 Unhealthy and details when the database check f
         ]);
 });
 
-
-it('answers GET /ready with status ok', function () {
+it('answers GET /ready with status ok', function (): void {
     $this->getJson('/ready')
         ->assertOk()
         ->assertJson(['status' => 'ok']);

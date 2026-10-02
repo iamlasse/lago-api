@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
+use Throwable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
@@ -23,7 +26,7 @@ class HealthController extends Controller
                 'github_url' => config('lago.github_url'),
                 'message' => 'Success',
             ]);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return response()->json([
                 'version' => config('lago.version'),
                 'github_url' => config('lago.github_url'),

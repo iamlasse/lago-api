@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services\ApiKeys;
 
 use App\Models\ApiKey;
+use App\Models\BaseModel;
 use App\Models\Organization;
 use Illuminate\Support\Facades\Cache;
 
@@ -143,8 +146,8 @@ class CacheService
             return null;
         }
 
-        /** @var \App\Models\BaseModel $model */
-        $model = new $class();
+        /** @var BaseModel $model */
+        $model = new $class;
 
         foreach ($model->getCasts() as $column => $cast) {
             if (($cast === 'array' || str_starts_with($cast, 'array:')) && isset($attributes[$column]) && is_array($attributes[$column])) {

@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\GraphQL\Scalars;
 
 use GraphQL\Error\Error;
 use GraphQL\Language\AST\Node;
-use GraphQL\Language\AST\StringValueNode;
 use GraphQL\Type\Definition\ScalarType;
+use GraphQL\Language\AST\StringValueNode;
 
 /**
  * Port of Rails' Types::ObfuscatedStringType

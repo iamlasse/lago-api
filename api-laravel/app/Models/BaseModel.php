@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Models\Concerns\HasUuid;
@@ -10,14 +12,10 @@ use Illuminate\Database\Eloquent\Model;
  * db/structure.sql): uuid v4 primary keys, `timestamp(6) without time zone`
  * columns holding UTC, soft deletes on `deleted_at`.
  */
+#[\Illuminate\Database\Eloquent\Attributes\DateFormat('Y-m-d H:i:s.u')]
 abstract class BaseModel extends Model
 {
     use HasUuid;
-
-    /**
-     * timestamp(6) columns — serialize with microseconds, matching Rails.
-     */
-    protected $dateFormat = 'Y-m-d H:i:s.u';
 
     /**
      * Rails model names, verbatim — the `versions` audit table stores Rails

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services\Validators;
 
 /**
@@ -34,7 +36,7 @@ final class EmailSanitizer
         $email = preg_replace(self::DASH_LOOKALIKES, '-', $email);
         $email = preg_replace(self::INVISIBLE_CHARS, '', $email);
 
-        return trim((string) $email);
+        return mb_trim((string) $email);
     }
 
     public static function valid(?string $value): bool
@@ -48,7 +50,7 @@ final class EmailSanitizer
         $emails = explode(',', $value);
 
         foreach ($emails as $email) {
-            if (preg_match(self::EMAIL, trim($email)) !== 1) {
+            if (preg_match(self::EMAIL, mb_trim($email)) !== 1) {
                 return false;
             }
         }

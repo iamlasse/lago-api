@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Concerns;
 
+use LogicException;
 use App\Models\Organization;
 use App\Support\CurrentContext;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
@@ -34,7 +37,7 @@ trait BelongsToOrganization
         if ($organization === null) {
             // Same failure mode as Rails: no current_organization means the
             // caller forgot authentication — never silently return data.
-            throw new \LogicException('No current organization in context; refusing unscoped tenant query.');
+            throw new LogicException('No current organization in context; refusing unscoped tenant query.');
         }
 
         return $query->where($this->qualifyColumn('organization_id'), $organization->id);

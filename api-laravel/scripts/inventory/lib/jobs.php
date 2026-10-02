@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Generator: jobs inventory from app/jobs/**/*.rb.
 // Row ids: job:<ClassName> (bare class name — Sidekiq worker names are unique
 // across the app). Captures queue_as, plus unique:/retry_on: stanzas verbatim
@@ -16,7 +18,7 @@ if (! function_exists('inv_gen_jobs')) {
         $rows = [];
 
         foreach ($files as $file) {
-            $relative = ltrim(substr($file, strlen($railsPath.'/app/jobs/')), '/');
+            $relative = mb_ltrim(mb_substr($file, mb_strlen($railsPath.'/app/jobs/')), '/');
             $class = inv_ruby_class_from_path($relative);
             $fullClass = inv_ruby_namespace_from_path($relative);
             $contents = (string) file_get_contents($file);
@@ -61,7 +63,7 @@ if (! function_exists('inv_job_capture_lines')) {
 
         foreach (preg_split('/\r?\n/', $contents) as $line) {
             if (preg_match($pattern, $line) === 1) {
-                $lines[] = trim($line);
+                $lines[] = mb_trim($line);
             }
         }
 

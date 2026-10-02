@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Concerns;
 
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 /**
  * Port of Rails' app/controllers/concerns/pagination.rb.
@@ -29,8 +31,8 @@ trait Pagination
     /**
      * @param  LengthAwarePaginator  $records  e.g. Model::paginate($perPage)
      * @param  string|null  $key  logical name for the count cache bucket
-     *                         (e.g. "customers") — caching is only enabled
-     *                         when key, organizationId and params are given
+     *                            (e.g. "customers") — caching is only enabled
+     *                            when key, organizationId and params are given
      * @param  array<string, mixed>|null  $params  the request's query params
      * @return array{current_page: int, next_page: int|null, prev_page: int|null, total_pages: int, total_count: int}
      */

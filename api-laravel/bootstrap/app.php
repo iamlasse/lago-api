@@ -1,14 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
+use Illuminate\Http\Request;
 use App\Exceptions\Api\ApiException;
-use App\Http\Controllers\HealthController;
-use App\Http\Middleware\AuthenticateApiKey;
+use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\SetBetaHeader;
 use Illuminate\Foundation\Application;
+use App\Http\Controllers\HealthController;
+use App\Http\Middleware\AuthenticateApiKey;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))

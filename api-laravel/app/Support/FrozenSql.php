@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Support;
 
 /**
@@ -16,7 +18,7 @@ class FrozenSql
     {
         $statements = [];
         $current = '';
-        $length = strlen($sql);
+        $length = mb_strlen($sql);
         $i = 0;
 
         while ($i < $length) {
@@ -24,10 +26,11 @@ class FrozenSql
 
             // Line comment: copy through end of line, semicolons inside don't count.
             if ($char === '-' && $sql[$i + 1] ?? '' === '-') {
-                $end = strpos($sql, "\n", $i);
+                $end = mb_strpos($sql, "\n", $i);
                 $end = $end === false ? $length : $end;
-                $current .= substr($sql, $i, $end - $i);
+                $current .= mb_substr($sql, $i, $end - $i);
                 $i = $end;
+
                 continue;
             }
 
@@ -38,6 +41,7 @@ class FrozenSql
                     if ($sql[$j] === "'") {
                         if (($sql[$j + 1] ?? '') === "'") {
                             $j += 2;
+
                             continue;
                         }
                         $j++;
@@ -45,27 +49,30 @@ class FrozenSql
                     }
                     $j++;
                 }
-                $current .= substr($sql, $i, $j - $i);
+                $current .= mb_substr($sql, $i, $j - $i);
                 $i = $j;
+
                 continue;
             }
 
             // Dollar-quoted string ($tag$ ... $tag$), e.g. function bodies.
             if ($char === '$' && preg_match('/\$([A-Za-z_][A-Za-z0-9_]*)?\$/', $sql, $m, 0, $i) === 1) {
                 $tag = $m[0];
-                $end = strpos($sql, $tag, $i + strlen($tag));
-                $end = $end === false ? $length : $end + strlen($tag);
-                $current .= substr($sql, $i, $end - $i);
+                $end = mb_strpos($sql, $tag, $i + mb_strlen($tag));
+                $end = $end === false ? $length : $end + mb_strlen($tag);
+                $current .= mb_substr($sql, $i, $end - $i);
                 $i = $end;
+
                 continue;
             }
 
             if ($char === ';') {
-                if (trim($current) !== '') {
-                    $statements[] = trim($current);
+                if (mb_trim($current) !== '') {
+                    $statements[] = mb_trim($current);
                 }
                 $current = '';
                 $i++;
+
                 continue;
             }
 
@@ -73,8 +80,8 @@ class FrozenSql
             $i++;
         }
 
-        if (trim($current) !== '') {
-            $statements[] = trim($current);
+        if (mb_trim($current) !== '') {
+            $statements[] = mb_trim($current);
         }
 
         return $statements;

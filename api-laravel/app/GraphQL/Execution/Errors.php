@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\GraphQL\Execution;
 
+use Str;
 use App\GraphQL\Exceptions\ExecutionError;
 
 /**
@@ -97,7 +100,7 @@ final class Errors
         $result = [];
 
         foreach ($details as $key => $value) {
-            $result[\Str::camel((string) $key)] = is_array($value)
+            $result[Str::camel((string) $key)] = is_array($value)
                 ? self::lowerCamelizeKeys($value)
                 : $value;
         }

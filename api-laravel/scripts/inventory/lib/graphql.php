@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Generator: GraphQL operations inventory from the Rails repo's schema.json
 // (a stored introspection result). One row per Query/Mutation/Subscription
 // field. Row ids: gql:query:customer, gql:mutation:createCustomer.

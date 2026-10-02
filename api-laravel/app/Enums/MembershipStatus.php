@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Enums;
 
 /**
@@ -14,6 +16,6 @@ enum MembershipStatus: int
     /** The Rails enum name (the string the API emits for the value). */
     public function label(): string
     {
-        return strtolower($this->name);
+        return mb_strtolower($this->name);
     }
 }

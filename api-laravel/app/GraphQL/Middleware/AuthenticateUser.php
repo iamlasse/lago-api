@@ -1,15 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\GraphQL\Middleware;
 
-use App\GraphQL\Support\LagoContext as LagoContextStore;
+use Closure;
+use Throwable;
+use App\Enums\MembershipStatus;
 use App\Models\User;
+use Illuminate\Http\Request;
 use App\Support\CurrentContext;
 use App\Support\Utils\AuthToken;
-use Closure;
 use Firebase\JWT\ExpiredException;
-use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use App\GraphQL\Support\LagoContext as LagoContextStore;
 
 /**
  * Port of Rails' AuthenticableUser concern (app/controllers/concerns/
@@ -50,7 +54,7 @@ class AuthenticateUser
             } catch (ExpiredException) {
                 // Rails: rescue_from JWT::ExpiredSignature → render_graphql_error
                 return $this->controllerError('expired_jwt_token', 401);
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 // Rails: re-raises in development, otherwise decoded_token is nil.
                 if (app()->environment('local')) {
                     throw $e;
@@ -74,7 +78,7 @@ class AuthenticateUser
             // (Rails enum :status, [:active, :revoked] → active == 0)
             $currentMembership = $currentUser
                 ->memberships()
-                ->where('status', 0)
+                ->where('status', MembershipStatus::Active)
                 ->where('organization_id', $organizationHeader)
                 ->first();
 

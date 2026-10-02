@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Serializers\Base;
 
 /**
@@ -12,7 +14,7 @@ class CollectionSerializer
     public function __construct(
         /** @var iterable<object> */
         protected readonly iterable $collection,
-        /** @var class-string<\App\Serializers\Base\ModelSerializer> */
+        /** @var class-string<ModelSerializer> */
         protected readonly string $modelSerializer,
         protected readonly array $options = [],
     ) {}

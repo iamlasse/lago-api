@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Middleware\SetBetaHeader;
 use App\Exceptions\Api\NotFoundException;
 use App\Http\Controllers\Api\V1\PlaceholderController;
-use App\Http\Middleware\SetBetaHeader;
-use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------

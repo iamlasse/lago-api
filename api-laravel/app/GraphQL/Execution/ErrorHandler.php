@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\GraphQL\Execution;
 
-use App\GraphQL\Exceptions\ExecutionError;
 use Closure;
 use GraphQL\Error\Error;
+use App\GraphQL\Exceptions\ExecutionError;
 use Nuwave\Lighthouse\Execution\ErrorHandler;
 
 /**

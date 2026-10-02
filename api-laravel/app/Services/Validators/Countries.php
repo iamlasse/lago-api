@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services\Validators;
 
 use ResourceBundle;
@@ -21,7 +23,7 @@ final class Countries
             return false;
         }
 
-        return in_array(strtoupper($code), self::all(), true);
+        return in_array(mb_strtoupper($code), self::all(), true);
     }
 
     /** @return list<string> ISO 3166-1 alpha-2 codes. */
@@ -32,7 +34,7 @@ final class Countries
 
             self::$codes = $bundle === null
                 ? []
-                : array_values(array_filter($bundle->keySet() ?? [], fn ($c) => strlen((string) $c) === 2));
+                : array_values(array_filter($bundle->keySet() ?? [], fn ($c) => mb_strlen((string) $c) === 2));
         }
 
         return self::$codes;

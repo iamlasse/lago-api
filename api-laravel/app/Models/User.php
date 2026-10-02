@@ -1,46 +1,48 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
-use Illuminate\Support\Facades\Hash;
+use App\Enums\MembershipStatus;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * Port of Rails' User (frozen `users` table): bcrypt `password_digest` via
  * has_secure_password, minimal columns. Password hashing is cross-language
  * compatible: PHP's password_verify accepts Ruby bcrypt's $2a$/$2b$ prefixes.
  */
+#[\Illuminate\Database\Eloquent\Attributes\Fillable(['email', 'password', 'cs_admin'])]
+#[\Illuminate\Database\Eloquent\Attributes\Hidden(['password_digest'])]
 class User extends BaseModel
 {
-    protected $fillable = ['email', 'password', 'cs_admin'];
+    use HasFactory;
 
-    protected $hidden = ['password_digest'];
-
-    protected $casts = [
-        'cs_admin' => 'boolean',
-    ];
-
-    public function memberships()
+    public function memberships(): HasMany
     {
         return $this->hasMany(Membership::class);
     }
 
-    public function activeMemberships()
+    public function activeMemberships(): HasMany
     {
-        return $this->hasMany(Membership::class)->where('status', Membership::STATUS_ACTIVE);
+        return $this->hasMany(Membership::class)->where('status', MembershipStatus::Active->value);
     }
 
-    public function organizations()
+    public function organizations(): BelongsToMany
     {
         return $this->belongsToMany(Organization::class, 'memberships', 'user_id', 'organization_id');
     }
 
-    // -- has_secure_password port ------------------------------------------
-
-    public function setPasswordAttribute(?string $password): void
+    protected function password(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        if ($password !== null) {
-            $this->attributes['password_digest'] = password_hash($password, PASSWORD_BCRYPT);
-        }
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(set: function (?string $password) {
+            if ($password !== null) {
+                $this->attributes['password_digest'] = password_hash($password, PASSWORD_BCRYPT);
+            }
+            return ['password_digest' => password_hash($password, PASSWORD_BCRYPT)];
+        });
     }
 
     public function authenticate(string $password): bool
@@ -48,5 +50,11 @@ class User extends BaseModel
         $digest = $this->password_digest ?? '';
 
         return $digest !== '' && password_verify($password, $digest);
+    }
+    protected function casts(): array
+    {
+        return [
+            'cs_admin' => 'boolean',
+        ];
     }
 }

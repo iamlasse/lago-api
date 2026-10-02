@@ -1,18 +1,19 @@
 <?php
 
-use App\Models\BillingEntity;
-use App\Models\Customer;
-use App\Models\Exceptions\SequenceException;
+declare(strict_types=1);
+
 use App\Models\Invoice;
+use App\Models\Customer;
 use App\Models\Organization;
 use App\Support\CurrentContext;
 use Illuminate\Support\Facades\DB;
+use App\Models\Exceptions\SequenceException;
 
 /**
  * Port of spec for Rails' Sequenced concern (used by Invoice with the
  * per-customer + per-billing-entity scope and lock key).
  */
-it('assigns sequential ids per customer and billing entity inside a transaction', function () {
+it('assigns sequential ids per customer and billing entity inside a transaction', function (): void {
     $organization = CurrentContext::$organization = Organization::create(['name' => 'Acme Corp']);
     $entity = $organization->billingEntities()->create(['name' => 'BE', 'code' => 'be']);
     $customer = $organization->customers()->create(['external_id' => 'ext-1', 'name' => 'C1', 'billing_entity_id' => $entity->id]);
@@ -21,7 +22,7 @@ it('assigns sequential ids per customer and billing entity inside a transaction'
     $invoiceA = null;
     $invoiceB = null;
 
-    DB::transaction(function () use ($customer, $entity, &$invoiceA) {
+    DB::transaction(function () use ($customer, $entity, &$invoiceA): void {
         $invoiceA = $customer->invoices()->create([
             'billing_entity_id' => $entity->id,
             'organization_id' => $customer->organization_id,
@@ -29,7 +30,7 @@ it('assigns sequential ids per customer and billing entity inside a transaction'
         ]);
     });
 
-    DB::transaction(function () use ($customer, $entity, &$invoiceB) {
+    DB::transaction(function () use ($customer, $entity, &$invoiceB): void {
         $invoiceB = $customer->invoices()->create([
             'billing_entity_id' => $entity->id,
             'organization_id' => $customer->organization_id,
@@ -41,7 +42,7 @@ it('assigns sequential ids per customer and billing entity inside a transaction'
         ->and($invoiceB->sequential_id)->toBe(2);
 
     // A different customer's invoice numbers from 1 again (scope isolation).
-    DB::transaction(function () use ($customer2, $entity, &$invoiceC) {
+    DB::transaction(function () use ($customer2, $entity, &$invoiceC): void {
         $invoiceC = $customer2->invoices()->create([
             'billing_entity_id' => $entity->id,
             'organization_id' => $customer2->organization_id,
@@ -52,7 +53,7 @@ it('assigns sequential ids per customer and billing entity inside a transaction'
     expect($invoiceC->sequential_id)->toBe(1);
 });
 
-it('refuses to assign a sequential id outside a transaction', function () {
+it('refuses to assign a sequential id outside a transaction', function (): void {
     $organization = CurrentContext::$organization = Organization::create(['name' => 'Acme Corp']);
     $entity = $organization->billingEntities()->create(['name' => 'BE', 'code' => 'be']);
     $customer = $organization->customers()->create(['external_id' => 'ext-1', 'name' => 'C1', 'billing_entity_id' => $entity->id]);
