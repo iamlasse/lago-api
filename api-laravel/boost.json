@@ -1,0 +1,26 @@
+{
+    "agents": [
+        "claude_code",
+        "amp",
+        "codex",
+        "cursor",
+        "factory",
+        "grok_build",
+        "opencode",
+        "pi",
+        "zed"
+    ],
+    "cloud": true,
+    "guidelines": true,
+    "mcp": true,
+    "nightwatch": false,
+    "sail": false,
+    "skills": [
+        "infer-conventions",
+        "deploying-to-cloud",
+        "laravel-best-practices",
+        "testing-best-practices",
+        "configuring-horizon",
+        "tailwindcss-development"
+    ]
+}

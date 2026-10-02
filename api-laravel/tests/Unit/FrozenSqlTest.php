@@ -1,0 +1,75 @@
+<?php
+
+use App\Support\FrozenSql;
+
+test('splits simple statements', function () {
+    $statements = FrozenSql::statements("CREATE TABLE a (id int);\nCREATE TABLE b (id int);");
+
+    expect($statements)->toBe([
+        'CREATE TABLE a (id int)',
+        'CREATE TABLE b (id int)',
+    ]);
+});
+
+test('keeps semicolons inside single-quoted strings', function () {
+    $statements = FrozenSql::statements("INSERT INTO t VALUES ('a;b');SELECT 1;");
+
+    expect($statements)->toHaveCount(2)
+        ->and($statements[0])->toBe("INSERT INTO t VALUES ('a;b')");
+});
+
+test('handles escaped single quotes', function () {
+    $statements = FrozenSql::statements("INSERT INTO t VALUES ('it''s; fine');SELECT 1;");
+
+    expect($statements)->toHaveCount(2);
+});
+
+test('keeps semicolons inside dollar-quoted function bodies', function () {
+    $sql = <<<'SQL'
+CREATE FUNCTION f() RETURNS trigger AS $func$
+BEGIN
+  NEW.updated_at := now();
+  RETURN NEW;
+END;
+$func$ LANGUAGE plpgsql;
+SELECT 1;
+SQL;
+
+    $statements = FrozenSql::statements($sql);
+
+    expect($statements)->toHaveCount(2)
+        ->and($statements[0])->toContain('NEW.updated_at := now();')
+        ->and($statements[0])->toEndWith('LANGUAGE plpgsql');
+});
+
+test('ignores semicolons in line comments', function () {
+    $statements = FrozenSql::statements("-- comment; with semicolon\nSELECT 1;");
+
+    expect($statements)->toHaveCount(1)
+        ->and($statements[0])->toContain('-- comment; with semicolon');
+});
+
+test('skips empty statements', function () {
+    expect(FrozenSql::statements(";;\n\n  ;\nSELECT 1;;"))->toBe(['SELECT 1']);
+});
+
+test('parses the real frozen structure.sql without losing statements', function () {
+    $path = database_path('frozen/structure.sql');
+
+    if (! is_file($path)) {
+        $this->markTestSkipped('frozen/structure.sql not generated yet');
+    }
+
+    $statements = FrozenSql::statements((string) file_get_contents($path));
+
+    $createTables = collect($statements)
+        ->filter(fn ($s) => preg_match('/^CREATE TABLE /m', $s))->count();
+    $createTypes = collect($statements)
+        ->filter(fn ($s) => preg_match('/^CREATE TYPE /m', $s))->count();
+
+    // Frozen file: 141 tables, 45 enum types (5 tables + all partman excluded).
+    expect($createTables)->toBe(141)
+        ->and($createTypes)->toBe(45)
+        // Every statement must end balanced-ish: no truncated dollar quotes.
+        ->and(collect($statements)->every(fn ($s) => substr_count($s, '$$') % 2 === 0))->toBeTrue();
+});

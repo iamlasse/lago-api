@@ -2,31 +2,51 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\Hidden;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Hash;
 
-#[Fillable(['name', 'email', 'password'])]
-#[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable
+/**
+ * Port of Rails' User (frozen `users` table): bcrypt `password_digest` via
+ * has_secure_password, minimal columns. Password hashing is cross-language
+ * compatible: PHP's password_verify accepts Ruby bcrypt's $2a$/$2b$ prefixes.
+ */
+class User extends BaseModel
 {
-    /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    protected $fillable = ['email', 'password', 'cs_admin'];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
+    protected $hidden = ['password_digest'];
+
+    protected $casts = [
+        'cs_admin' => 'boolean',
+    ];
+
+    public function memberships()
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return $this->hasMany(Membership::class);
+    }
+
+    public function activeMemberships()
+    {
+        return $this->hasMany(Membership::class)->where('status', Membership::STATUS_ACTIVE);
+    }
+
+    public function organizations()
+    {
+        return $this->belongsToMany(Organization::class, 'memberships', 'user_id', 'organization_id');
+    }
+
+    // -- has_secure_password port ------------------------------------------
+
+    public function setPasswordAttribute(?string $password): void
+    {
+        if ($password !== null) {
+            $this->attributes['password_digest'] = password_hash($password, PASSWORD_BCRYPT);
+        }
+    }
+
+    public function authenticate(string $password): bool
+    {
+        $digest = $this->password_digest ?? '';
+
+        return $digest !== '' && password_verify($password, $digest);
     }
 }
