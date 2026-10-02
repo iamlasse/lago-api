@@ -39,6 +39,9 @@ class LagoResolverProvider extends LighthouseResolverProvider
 {
     public function provideResolver(FieldValue $fieldValue): Closure
     {
+        if (getenv('GQL_DEBUG_RESOLVER')) {
+            var_dump('provideResolver field='.$fieldValue->getFieldName().' parent='.$fieldValue->getParentName());
+        }
         $resolverClass = $this->findResolverClass($fieldValue, '__invoke');
 
         if ($resolverClass !== null) {
