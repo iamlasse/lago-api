@@ -195,7 +195,7 @@ class SubscriptionsController extends ApiController
             ->orderByRaw('terminated_at desc nulls first')
             ->orderByDesc('started_at')
             ->where('external_id', $request->route('external_id'))
-            ->where('status', $status->value)
+            ->where('status', $status)
             ->first();
 
         if ($subscription === null) {

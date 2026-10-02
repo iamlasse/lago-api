@@ -76,6 +76,9 @@ class LagoResolverProvider extends LighthouseResolverProvider
         }
 
         return static function (mixed $root, array $args, mixed $context, \GraphQL\Type\Definition\ResolveInfo $resolveInfo): mixed {
+            if (getenv('GQL_DEBUG_RESOLVER') && $resolveInfo->fieldName === 'status') {
+                var_dump('FALLBACK status root='.get_debug_type($root).' parent='.$resolveInfo->parentType->name());
+            }
             $field = $resolveInfo->fieldName;
             $snakeField = Str::snake($field);
 

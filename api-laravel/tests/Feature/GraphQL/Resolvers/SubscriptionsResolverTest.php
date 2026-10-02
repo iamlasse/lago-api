@@ -383,15 +383,7 @@ it('DEBUG2', function () {
         'plan_id' => App\Models\Plan::factory()->create(['organization_id' => $organization->id])->id,
         'external_id' => 'dbg-1',
     ]);
-    $result = App\Services\Subscriptions\Query::call(
-        organization: $organization,
-        filters: ['exclude_next_subscriptions' => true, 'status' => null],
-        pagination: ['page' => 1, 'limit' => 5],
-        searchTerm: null,
-    );
-    $items = $result->subscriptions->items();
-    dump('item class: '.get_class($items[0] ?? null));
-    dump('item id: '.($items[0]->id ?? 'null'));
-    dump('page class: '.get_class($result->subscriptions));
+    $response2 = gqlPost('query { subscriptions(limit: 5) { collection { status } } }', [], gqlAuthHeaders($user, $organization->id));
+    dump('list: '.json_encode($response2->json()));
     expect(true)->toBeTrue();
 });

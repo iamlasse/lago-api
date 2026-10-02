@@ -89,7 +89,10 @@ class CreateService extends BaseService
         $valid = (new ValidateService($result, [
             'customer' => $this->customer,
             'plan' => $this->plan,
-            'subscription_at' => $this->subscriptionAt,
+            // Rails validates the RAW param (`@subscription_at` ivar —
+            // params[:subscription_at] || Time.current), so an unparseable
+            // string reaches valid_format? and fails with invalid_date.
+            'subscription_at' => $params['subscription_at'] ?? $this->subscriptionAt,
             'ending_at' => $params['ending_at'] ?? null,
             'payment_method' => $params['payment_method'] ?? null,
             'connections' => $params['connections'] ?? null,
