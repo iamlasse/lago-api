@@ -102,7 +102,19 @@ mutation root fields, 1 subscription field):
   `subscriptions` (planCode/status/externalId/externalCustomerId/overriden/
   currency/billingEntityIds filters, search term,
   `exclude_next_subscriptions: true` semantics, kaminari pagination via the
-  `Subscriptions\Query` port — `collection` + `metadata` shape).
+  `Subscriptions\Query` port — `collection` + `metadata` shape),
+  `invoice` (by id, `visible` statuses only — invisible statuses answer the
+  `not_found` envelope), `invoices` (the full frozen-SDL filter set — amount
+  range with `::numeric` casts, billingEntityIds, currency,
+  customerExternalId/customerId, invoiceType, issuing-date range,
+  paymentStatus, paymentDisputeLost, paymentOverdue, partiallyPaid,
+  positiveDueAmount, purchaseOrderNumber (case-insensitive), selfBilled,
+  status (visible-status intersection), subscriptionId — plus the
+  `search_terms`/`number` search term with the UUID id escape hatch and the
+  kaminari pagination through the `Invoices\Query` port).
+- Type classes: `InvoiceCollectionMetadata` (the `BaseQuery::CappedTotalCount`
+  port behind `invoices`: totalCount capped at 10 000, totalCountCapped,
+  hasNextPage — exact even past the cap).
 - Mutations: `loginUser` (input-wrapped), `updateOrganization`,
   `createCustomer`, `updateCustomer`, `destroyCustomer` (soft delete +
   `{id, clientMutationId}` payload), `createApiKey`, `updateApiKey`,
@@ -113,18 +125,26 @@ mutation root fields, 1 subscription field):
   customer/plan → the Rails `not_found` envelope), `updateSubscription`,
   `terminateSubscription` (`on_termination_*` behaviors forwarded Rails'
   `args.compact` style) — backed by the ported
-  `Subscriptions\{Create,Update,Terminate}Service`.
+  `Subscriptions\{Create,Update,Terminate}Service`,
+  `finalizeInvoice` (the invoice is looked up among DRAFT invoices only, so
+  unknown/non-draft ids answer `not_found`; backed by the ported
+  `Invoices\FinalizeService` — Rails' RefreshDraftAndFinalizeService
+  refresh + webhook/document tail land with the invoice-generation slice).
 - Type classes: `Organization` / `CurrentOrganization` (subclass), `Customer`,
   `BillingEntity`, `SanitizedApiKey`, `User` (subclass of `UserType`),
   `Membership` (subclass of `MembershipType`),
   `Subscription` (status/billingTime enum names, nextPlan/previousPlan/
   nextName/nextSubscriptionType/nextSubscriptionAt/nextSubscription,
   downgradePlanDate, periodEndDate + currentBillingPeriod* via the
-  `Subscriptions\DatesService`, usageThresholds `[]`, charges). Unported
-  features keep the null fallback: activationRules/connections
-  (non-null → null violation WHEN SELECTED), fixedCharges unit overrides,
-  lifetimeUsage, paymentMethod, selectedInvoiceCustomSections,
-  activityLogs, fees.
+  `Subscriptions\DatesService`, usageThresholds `[]`, charges), `Invoice`
+  (status/invoiceType/paymentStatus/taxStatus enum names, payableType,
+  totalDueAmountCents/totalSettledAmountCents, paymentDisputeLosable,
+  voidable, taxProviderVoidable (false until ErrorDetails land),
+  associatedActiveWalletPresent (false until Wallets land),
+  allChargesHaveFees/allFixedChargesHaveFees over the ported
+  Charge/ChargeFilter/FixedCharge models, appliedTaxes (taxRate DESC),
+  invoiceSubscriptions/subscriptions (the
+  `order_by_subscription_invoice_name` sort), regeneratedInvoiceId).
 - `App\GraphQL\Support\{Args,Page,TimezoneWire}`: snake_casing of wire args
   (graphql-ruby parity), the `collection` + `metadata` collection shape with
   kaminari defaults (page 1, limit 25), and the TimezoneEnum `TZ_*` wire
@@ -133,6 +153,37 @@ mutation root fields, 1 subscription field):
 
 ## What remains (drives the rest of task 11)
 
+0. **Invoice surface — blocked pieces** (all still on the null stub, each
+   waiting on its feature slice):
+   - Queries: `invoiceCreditNotes` (needs the CreditNote model + the
+     `credit_notes` relation; Rails resolver = invoice.credit_notes.finalized
+     ordered/paginated).
+   - Mutations: `createInvoice`/`updateInvoice`/`deleteInvoice` (one-off
+     invoice slice — `Invoices::CreateOneOffService`, `UpdateService`,
+     `DeleteService` are unported; update/delete additionally reuse the
+     `visible` lookup this slice built), `voidInvoice`
+     (`Invoices::VoidService` + credit notes), `refreshInvoice`
+     (`Invoices::RefreshDraftService`), `retryInvoice`, `downloadInvoice`/
+     `downloadInvoiceXml` (attachments/ActiveStorage), `finalizeAllInvoices`,
+     `retryAllInvoices`, `loseInvoiceDispute`, `resendInvoiceEmail`,
+     `regenerateInvoice`, `retryInvoicePayment`, `retryAllInvoicePayments`,
+     `fetchDraftInvoiceTaxes` (tax provider), `generatePaymentUrl`,
+     `retryTaxProviderVoiding`, the `sync*IntegrationInvoice` payloads.
+   - `Invoice` type fields that stay null/falsy via the fallback: metadata
+     (InvoiceMetadata model unported), creditNotes, payments,
+     errorDetails, activityLogs, fileUrl/xmlUrl (attachments), taxProviderId
+     and the external*/integration* ids + integrationSyncable booleans
+     (integration resources unported), availableToCreditAmountCents/
+     creditableAmountCents/offsettableAmountCents/refundableAmountCents
+     (non-null — null violation WHEN SELECTED, until credit notes land).
+   - The `settlements` filter validates (only `credit_note` reaches the
+     wire) but is NOT applied — the `invoice_settlements` table ships with
+     the credit-notes slice; the `metadata` filter never arrives from the
+     frozen wire.
+   - The Rails finalize tax-provider branch (invoice → `pending` status with
+     `taxStatus: pending` while taxes are pulled) is not ported — the
+     ported FinalizeService finalizes straight away (Anrok integrations are
+     unported).
 1. **Root-field resolvers** — ~130 queries / ~230 mutations still resolve to
    null stubs; each slice lands its own `Queries\*` / `Mutations\*` classes
    (naming convention does the wiring — no SDL edits needed).
@@ -171,6 +222,12 @@ mutation root fields, 1 subscription field):
   `Types\Subscription::downgradePlanDate` reimplements the Rails logic to
   keep the wire correct — reconcile the model (models are owned by the
   models slice) and collapse the duplicate when fixed.
+- Pint's `self_accessor` fixer rewrites an `App\Models\Invoice` type-hint to
+  `self` inside ANY class named `Invoice` (the query and the type class are
+  both named after the GraphQL field/type). Always import the model aliased
+  (`use App\Models\Invoice as InvoiceModel;`) in `App\GraphQL\{Queries,
+  Types, Mutations}\Invoice*` — same pattern as the `SubscriptionModel`
+  alias in the subscriptions slice.
 - Field names that collide with 0-arg/argful MODEL methods resolve through
   the Laravel "relation method" path (`terminatedAt(?timestamp)` on the
   model, for example, explodes as an accessor). Add a

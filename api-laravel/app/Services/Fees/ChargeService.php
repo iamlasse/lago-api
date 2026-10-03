@@ -81,6 +81,15 @@ class ChargeService extends \App\Services\BaseService
                     continue;
                 }
 
+                // BUGFIX(port): Rails' fee.dup keeps the parent fee OBJECT, so
+                // true_up_parent_fee_id resolves at save time even though the
+                // parent is built in memory first — here the id snapshot was
+                // still null. Resolve it from the carried relation now that
+                // the parent fee (earlier in the list) has been saved.
+                if ($fee->true_up_parent_fee_id === null && $fee->relationLoaded('trueUpParentFee')) {
+                    $fee->true_up_parent_fee_id = $fee->trueUpParentFee?->id;
+                }
+
                 $fee->save();
 
                 // TODO(port): AdjustedFee update! branch for draft invoices —

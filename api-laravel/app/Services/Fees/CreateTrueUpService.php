@@ -53,6 +53,12 @@ class CreateTrueUpService extends \App\Services\BaseService
         $trueUpFee->events_count = 0;
         $trueUpFee->charge_filter_id = null;
         $trueUpFee->true_up_parent_fee_id = $this->fee->id;
+        // Rails: true_up_parent_fee: fee — the dup holds the parent OBJECT, so
+        // the id resolves at save time even when the parent is still unsaved
+        // (ChargeService builds fees in memory first). Callers persisting the
+        // parent before this fee read true_up_parent_fee_id; callers saving
+        // both read the relation (see ChargeService's persist loop).
+        $trueUpFee->setRelation('trueUpParentFee', $this->fee);
         $trueUpFee->unit_amount_cents = $amountCents;
         $trueUpFee->precise_unit_amount = MoneyMath::fdiv(
             $preciseAmountCents,

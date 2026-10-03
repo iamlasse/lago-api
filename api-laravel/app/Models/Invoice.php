@@ -13,6 +13,7 @@ use App\Enums\InvoicePaymentStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Attributes\Boot;
 use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -90,6 +91,9 @@ class Invoice extends BaseModel
      * NOTE: `open` is deliberately NOT generated — Rails stores names here.
      */
     public const GENERATED_STATUS_NAMES = ['finalized', 'closed'];
+
+    /** Rails: CREDIT_NOTES_MIN_VERSION. */
+    public const CREDIT_NOTES_MIN_VERSION = 2;
 
     /**
      * Port of the RefreshSearchTermsService update_all — search_terms is a
@@ -386,6 +390,138 @@ class Invoice extends BaseModel
         DB::table('invoices')
             ->where('id', $this->id)
             ->update(['search_terms' => DB::raw(self::searchTermsSql())]);
+    }
+
+    // -- Validation ------------------------------------------------------------
+
+    /**
+     * Port of the model validations the services rely on (validates
+     * :issuing_date, :currency, presence: true) — a field => [codes] hash,
+     * empty when valid.
+     *
+     * @return array<string, list<string>>
+     */
+    public function validateAttributes(): array
+    {
+        $errors = [];
+
+        if ($this->issuing_date === null || $this->issuing_date === '') {
+            $errors['issuing_date'] = ['value_is_mandatory'];
+        }
+
+        if ($this->currency === null || $this->currency === '') {
+            $errors['currency'] = ['value_is_mandatory'];
+        }
+
+        return $errors;
+    }
+
+    // -- Rails scopes ----------------------------------------------------------
+
+    /** Rails: `scope :visible, -> { where(status: VISIBLE_STATUS.keys) }`. */
+    #[Scope]
+    protected function visible(Builder $query): Builder
+    {
+        return $query->whereIn('status', [
+            InvoiceStatus::Draft->value,
+            InvoiceStatus::Finalized->value,
+            InvoiceStatus::Voided->value,
+            InvoiceStatus::Failed->value,
+            InvoiceStatus::Pending->value,
+        ]);
+    }
+
+    /** Rails: `scope :invisible, -> { where(status: INVISIBLE_STATUS.keys) }`. */
+    #[Scope]
+    protected function invisible(Builder $query): Builder
+    {
+        return $query->whereIn('status', [
+            InvoiceStatus::Generating->value,
+            InvoiceStatus::Open->value,
+            InvoiceStatus::Closed->value,
+            InvoiceStatus::Deleted->value,
+        ]);
+    }
+
+    /** Rails `visible?` — the status is not one of the invisible ones. */
+    public function isVisible(): bool
+    {
+        return ! in_array(
+            $this->statusEnum(),
+            [InvoiceStatus::Generating, InvoiceStatus::Open, InvoiceStatus::Closed, InvoiceStatus::Deleted],
+            true,
+        );
+    }
+
+    /** Rails `is_deleted?` */
+    public function isDeleted(): bool
+    {
+        return $this->statusEnum() === InvoiceStatus::Deleted;
+    }
+
+    /** Rails `credit?` — the invoice bills prepaid wallet credits. */
+    public function isCredit(): bool
+    {
+        return $this->typeEnum() === InvoiceType::Credit;
+    }
+
+    /** Rails `payment_overdue?` */
+    public function isPaymentOverdue(): bool
+    {
+        return (bool) $this->payment_overdue;
+    }
+
+    // -- Creditable / refundable amounts ---------------------------------------
+    // NOTE: the credit-note-dependent precision (credit note items, offsets)
+    // is not ported yet — see the TODO(port) markers.
+
+    /**
+     * Port of `available_to_credit_amount_cents` /
+     * `creditable_amount_cents` — the amount cents onto which a credit note
+     * can be issued as credit.
+     *
+     * TODO(port): the booked-tax share (fees_available_to_credit_amount_cents
+     * walks creditable_share * subtotal + booked tax per fee) and the credit
+     * note allocations (fee.credit_note_items) — until the credit-notes
+     * slice lands, the full unallocated subtotal (taxes included) is the
+     * ceiling, floored at zero.
+     */
+    public function creditableAmountCents(): int
+    {
+        if ($this->isCredit()) {
+            return 0;
+        }
+
+        if ((int) $this->version_number < self::CREDIT_NOTES_MIN_VERSION || $this->isDraft()) {
+            return 0;
+        }
+
+        return max((int) $this->sub_total_including_taxes_amount_cents, 0);
+    }
+
+    /**
+     * Port of `refundable_amount_cents` — the amount cents onto which a
+     * credit note can be issued as refund.
+     *
+     * TODO(port): credit note refund sums (already_refunded_cents) and the
+     * prepaid-credit wallet ceiling (prepaid_credit_fee).
+     */
+    public function refundableAmountCents(): int
+    {
+        if ((int) $this->version_number < self::CREDIT_NOTES_MIN_VERSION || $this->isDraft()) {
+            return 0;
+        }
+
+        if (! $this->paymentSucceeded() && (int) $this->total_paid_amount_cents === (int) $this->total_amount_cents) {
+            return 0;
+        }
+
+        // already_refunded_cents = 0 while credit notes are unported.
+        $remainingPaidCents = (int) $this->total_paid_amount_cents;
+
+        $refundableCents = min($remainingPaidCents, $this->creditableAmountCents());
+
+        return max($refundableCents, 0);
     }
 
     // -- Rails before_save hooks ----------------------------------------------

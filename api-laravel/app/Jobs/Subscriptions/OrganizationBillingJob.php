@@ -39,9 +39,11 @@ class OrganizationBillingJob implements ShouldQueue
 
     public function handle(): void
     {
+        // BUGFIX(port): now('UTC') returns a mutable Carbon; BillingService
+        // declares ?CarbonImmutable, so every clock run died with a TypeError.
         BillingService::call(
             organization: $this->organization,
-            billingAt: now('UTC'),
+            billingAt: \Carbon\CarbonImmutable::now('UTC'),
         )->raiseIfError();
     }
 }

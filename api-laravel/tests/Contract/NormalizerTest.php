@@ -163,6 +163,44 @@ class NormalizerTest extends TestCase
 
         $this->assertCount(1, $diffs);
     }
+
+    /**
+     * Minted row ids are per-run state: rows created BY a captured request
+     * get a fresh UUID on each side (Rails at capture, Laravel at replay),
+     * so a UUID under `lago_id` compares as "a UUID". Everything else under
+     * that key — null, a slug, a non-UUID string — stays strict.
+     */
+    public function test_minted_lago_ids_compare_as_uuids(): void
+    {
+        $this->assertSame([], Normalizer::compareJson(
+            '{"customer":{"lago_id":"85d10c0d-364e-423a-959c-f6f754435a31"}}',
+            '{"customer":{"lago_id":"8e82452d-c459-4573-9d8d-c36a3b47ec19"}}'
+        ));
+
+        // Nested minted ids (metadata rows) follow the same rule.
+        $this->assertSame([], Normalizer::compareJson(
+            '{"metadata":[{"lago_id":"82423005-b784-4956-8081-bdf6252e332b","key":"k"}]}',
+            '{"metadata":[{"lago_id":"7270bde1-b3e4-4368-97db-39a43af3ebf7","key":"k"}]}'
+        ));
+
+        // A non-UUID under lago_id (a failed mint, null, garbage) is a diff.
+        $diffs = Normalizer::compareJson(
+            '{"customer":{"lago_id":"85d10c0d-364e-423a-959c-f6f754435a31"}}',
+            '{"customer":{"lago_id":null}}'
+        );
+
+        $this->assertCount(1, $diffs);
+        $this->assertSame('$.customer.lago_id', $diffs[0]['path']);
+
+        // The same UUID under a NON-minted key stays strict — only lago_id
+        // is per-run state.
+        $diffs = Normalizer::compareJson(
+            '{"id":"85d10c0d-364e-423a-959c-f6f754435a31"}',
+            '{"id":"8e82452d-c459-4573-9d8d-c36a3b47ec19"}'
+        );
+
+        $this->assertCount(1, $diffs);
+    }
 }
 
 /** Hoist helper: test-local base64url encode (URL-safe, unpadded). */

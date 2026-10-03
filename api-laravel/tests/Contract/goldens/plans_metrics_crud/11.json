@@ -1,0 +1,24 @@
+{
+  "filters": [
+    {
+      "lago_id": "eae086fa-816f-4fce-a853-e3f96d39b0a6",
+      "charge_code": "filtered-charge",
+      "invoice_display_name": "US only",
+      "properties": {
+        "amount": "12"
+      },
+      "values": {
+        "region": [
+          "us"
+        ]
+      }
+    }
+  ],
+  "meta": {
+    "current_page": 1,
+    "next_page": null,
+    "prev_page": null,
+    "total_pages": 1,
+    "total_count": 1
+  }
+}

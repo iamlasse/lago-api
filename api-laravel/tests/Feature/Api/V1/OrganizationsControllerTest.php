@@ -78,7 +78,8 @@ it('updates an organization', function (): void {
                 // TODO(:timezone): Timezone update is turned off for now.
                 ->where('organization.billing_configuration.invoice_footer', 'footer')
                 ->where('organization.billing_configuration.document_locale', 'fr')
-                ->has('organization.taxes')
+                // Rails quirk (contract golden): show passes `include:` (singular),
+                // which the serializer never reads — GET /organizations emits NO taxes key.
                 ->etc();
         });
 });
@@ -253,12 +254,17 @@ it('does not update with unpermitted params', function (): void {
 it('creates a webhook endpoint from the webhook_url param', function (): void {
     [$organization, $apiKey] = organizationWithApiKey();
 
+    // Rails quirk (contract golden): the serializer renders the STALE
+    // pre-update webhook association — the pre-existing factory endpoint,
+    // not the newly persisted URL.
+    $staleUrl = $organization->webhookEndpoints()->first()->webhook_url;
+
     $this->putJson('/api/v1/organizations', ['organization' => [
         'webhook_url' => 'https://example.com/webhooks',
     ]], ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
-        ->assertJsonPath('organization.webhook_url', 'https://example.com/webhooks')
-        ->assertJsonPath('organization.webhook_urls', ['https://example.com/webhooks']);
+        ->assertJsonPath('organization.webhook_url', $staleUrl)
+        ->assertJsonPath('organization.webhook_urls', [$staleUrl]);
 
     expect($organization->webhookEndpoints()->where('webhook_url', 'https://example.com/webhooks')->exists())->toBeTrue();
 });

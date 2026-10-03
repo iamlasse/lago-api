@@ -27,14 +27,20 @@ abstract class BaseService extends \App\Services\BaseService
     public function execute(): \App\Services\BaseResult
     {
         $result = static::makeResult('properties');
-        $result->properties = $this->sliceProperties() ?? [];
+        $properties = $this->sliceProperties() ?? [];
 
-        $customProperties = $result->properties['custom_properties'] ?? null;
+        // BUGFIX(port): BaseResult::$properties is a magic (overloaded)
+        // property — `$result->properties['x'] = ...` is an indirect
+        // modification that PHP rejects. Mutate locally and write back
+        // (Rails: properties[:custom_properties] = JSON.parse(...)).
+        $customProperties = $properties['custom_properties'] ?? null;
 
         if ($customProperties !== null && $customProperties !== '' && is_string($customProperties)) {
             $decoded = json_decode($customProperties, true);
-            $result->properties['custom_properties'] = is_array($decoded) ? $decoded : [];
+            $properties['custom_properties'] = is_array($decoded) ? $decoded : [];
         }
+
+        $result->properties = $properties;
 
         return $result;
     }

@@ -1602,11 +1602,13 @@
             "source": "schema.json",
             "laravel": "App\\GraphQL\\Mutation\\FinalizeInvoice",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/GraphQL/Mutations/InvoiceMutationsTest.php"
+            ],
             "notes": ""
         },
         {
@@ -3836,11 +3838,13 @@
             "source": "schema.json",
             "laravel": "App\\GraphQL\\Query\\Invoice",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/GraphQL/Resolvers/InvoicesResolverTest.php"
+            ],
             "notes": ""
         },
         {
@@ -3877,7 +3881,7 @@
                 "contract": "untested"
             },
             "tests": [],
-            "notes": ""
+            "notes": "Null-stub: the schema root field resolves to null until the credit-notes slice (asserted in tests/Feature/GraphQL/Resolvers/InvoicesResolverTest.php) — code stays todo."
         },
         {
             "id": "gql:query:invoiceCustomSection",
@@ -3920,11 +3924,13 @@
             "source": "schema.json",
             "laravel": "App\\GraphQL\\Query\\Invoices",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/GraphQL/Resolvers/InvoicesResolverTest.php"
+            ],
             "notes": ""
         },
         {
@@ -4771,7 +4777,9 @@
                 "contract": "untested"
             },
             "tests": [
-                "tests/Unit/Jobs/BillSubscriptionJobTest.php"
+                "tests/Unit/Jobs/BillSubscriptionJobTest.php",
+                "tests/Feature/Jobs/BillSubscriptionJobPipelineTest.php",
+                "tests/Feature/Jobs/BillSubscriptionJobRetryTest.php"
             ],
             "notes": ""
         },
@@ -5248,11 +5256,13 @@
             "source": "app/jobs/clock/subscriptions_biller_job.rb",
             "laravel": "App\\Jobs\\Clock\\SubscriptionsBillerJob",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Jobs/ClockSubscriptionsBillerJobTest.php"
+            ],
             "notes": ""
         },
         {
@@ -7796,11 +7806,13 @@
             "source": "app/jobs/subscriptions/organization_billing_job.rb",
             "laravel": "App\\Jobs\\Subscriptions\\OrganizationBillingJob",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Jobs/ClockSubscriptionsBillerJobTest.php"
+            ],
             "notes": ""
         },
         {
@@ -7954,11 +7966,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\BillableMetricsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/BillableMetricsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -8324,11 +8338,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\TaxesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/TaxesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -8384,11 +8400,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\WebhookEndpointsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/WebhookEndpointsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -8408,11 +8426,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\BillableMetricsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/BillableMetricsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -8894,11 +8914,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\TaxesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/TaxesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -8954,11 +8976,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\WebhookEndpointsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/WebhookEndpointsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9194,11 +9218,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\BillableMetricsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/BillableMetricsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9206,11 +9232,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\BillableMetricsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/BillableMetricsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -10182,11 +10210,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\TaxesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/TaxesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -10194,11 +10224,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\TaxesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/TaxesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -10326,11 +10358,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\WebhookEndpointsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/WebhookEndpointsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -10338,11 +10372,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\WebhookEndpointsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/WebhookEndpointsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -10554,11 +10590,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\BillableMetricsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/BillableMetricsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -10566,11 +10604,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\BillableMetricsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/BillableMetricsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -11742,11 +11782,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\TaxesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/TaxesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -11754,11 +11796,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\TaxesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/TaxesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -11886,11 +11930,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\WebhookEndpointsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/WebhookEndpointsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -11898,11 +11944,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\WebhookEndpointsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/WebhookEndpointsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -12910,11 +12958,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\BillableMetricsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/BillableMetricsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -12922,12 +12972,14 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\BillableMetricsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Api/V1/BillableMetricsControllerTest.php"
+            ],
+            "notes": "Route + blank-expression validation tested; non-blank expressions answer Rails' invalid_expression envelope until the expression parser ports."
         },
         {
             "id": "rest:POST:/api/v1/billing_entities",
@@ -13532,11 +13584,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\TaxesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/TaxesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -13604,11 +13658,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\WebhookEndpointsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/WebhookEndpointsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -13640,11 +13696,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\BillableMetricsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/BillableMetricsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -13652,12 +13710,14 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\BillableMetricsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Api/V1/BillableMetricsControllerTest.php"
+            ],
+            "notes": "Route + blank-expression validation tested; non-blank expressions answer Rails' invalid_expression envelope until the expression parser ports."
         },
         {
             "id": "rest:POST:/api/v2/billing_entities",
@@ -14376,11 +14436,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\TaxesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/TaxesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -14448,11 +14510,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\WebhookEndpointsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/WebhookEndpointsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -14580,11 +14644,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\BillableMetricsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/BillableMetricsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -14926,11 +14992,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\TaxesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/TaxesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -14974,11 +15042,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\WebhookEndpointsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/WebhookEndpointsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -14998,11 +15068,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\BillableMetricsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/BillableMetricsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -15458,11 +15530,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\TaxesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/TaxesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -15506,11 +15580,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\WebhookEndpointsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/WebhookEndpointsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -16270,11 +16346,13 @@
             "source": "app/serializers/v1/charge_serializer.rb",
             "laravel": "App\\Serializers\\V1\\ChargeSerializer",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Serializers/V1/ChargeSerializerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -16366,11 +16444,13 @@
             "source": "app/serializers/v1/credit_serializer.rb",
             "laravel": "App\\Serializers\\V1\\CreditSerializer",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Serializers/V1/CreditSerializerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -16610,11 +16690,13 @@
             "source": "app/serializers/v1/fee_serializer.rb",
             "laravel": "App\\Serializers\\V1\\FeeSerializer",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Serializers/V1/FeeSerializerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -16622,11 +16704,13 @@
             "source": "app/serializers/v1/fees/applied_tax_serializer.rb",
             "laravel": "App\\Serializers\\V1\\Fees\\AppliedTaxSerializer",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Serializers/V1/AppliedTaxSerializerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -16744,11 +16828,13 @@
             "source": "app/serializers/v1/invoices/applied_tax_serializer.rb",
             "laravel": "App\\Serializers\\V1\\Invoices\\AppliedTaxSerializer",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Serializers/V1/AppliedTaxSerializerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -18838,11 +18924,13 @@
             "source": "app/services/charge_models/build_default_properties_service.rb",
             "laravel": "App\\Services\\ChargeModels\\BuildDefaultPropertiesService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/ChargeModels/FilterPropertiesTest.php"
+            ],
             "notes": ""
         },
         {
@@ -18892,11 +18980,13 @@
             "source": "app/services/charge_models/filter_properties/base_service.rb",
             "laravel": "App\\Services\\ChargeModels\\FilterProperties\\BaseService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/ChargeModels/FilterPropertiesTest.php"
+            ],
             "notes": ""
         },
         {
@@ -18904,11 +18994,13 @@
             "source": "app/services/charge_models/filter_properties/charge_service.rb",
             "laravel": "App\\Services\\ChargeModels\\FilterProperties\\ChargeService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/ChargeModels/FilterPropertiesTest.php"
+            ],
             "notes": ""
         },
         {
@@ -18916,11 +19008,13 @@
             "source": "app/services/charge_models/filter_properties/fixed_charge_service.rb",
             "laravel": "App\\Services\\ChargeModels\\FilterProperties\\FixedChargeService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/ChargeModels/FilterPropertiesTest.php"
+            ],
             "notes": ""
         },
         {
@@ -18928,11 +19022,13 @@
             "source": "app/services/charge_models/filter_properties_service.rb",
             "laravel": "App\\Services\\ChargeModels\\FilterPropertiesService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/ChargeModels/FilterPropertiesTest.php"
+            ],
             "notes": ""
         },
         {
@@ -19200,11 +19296,13 @@
             "source": "app/services/charges/generate_code_service.rb",
             "laravel": "App\\Services\\Charges\\GenerateCodeService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Charges/GenerateCodeServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -21716,11 +21814,13 @@
             "source": "app/services/fees/create_true_up_service.rb",
             "laravel": "App\\Services\\Fees\\CreateTrueUpService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Services/Fees/CreateTrueUpServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -24080,11 +24180,13 @@
             "source": "app/services/invoices/create_generating_service.rb",
             "laravel": "App\\Services\\Invoices\\CreateGeneratingService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Services/Invoices/CreateGeneratingServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -24252,11 +24354,14 @@
             "source": "app/services/invoices/issuing_date_service.rb",
             "laravel": "App\\Services\\Invoices\\IssuingDateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Invoices/IssuingDateServiceTest.php",
+                "tests/Feature/Services/Invoices/CreateGeneratingServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -24708,11 +24813,14 @@
             "source": "app/services/invoices/subscription_service.rb",
             "laravel": "App\\Services\\Invoices\\SubscriptionService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Services/Invoices/SubscriptionServiceTest.php",
+                "tests/Feature/Jobs/BillSubscriptionJobPipelineTest.php"
+            ],
             "notes": ""
         },
         {
@@ -24732,11 +24840,13 @@
             "source": "app/services/invoices/transition_to_final_status_service.rb",
             "laravel": "App\\Services\\Invoices\\TransitionToFinalStatusService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Services/Invoices/TransitionToFinalStatusServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -26594,11 +26704,13 @@
             "source": "app/services/plans/chargeables_validation_service.rb",
             "laravel": "App\\Services\\Plans\\ChargeablesValidationService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Services/Plans/ChargeablesValidationServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -26620,11 +26732,13 @@
             "source": "app/services/plans/destroy_service.rb",
             "laravel": "App\\Services\\Plans\\DestroyService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Services/Plans/DestroyServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -26658,11 +26772,13 @@
             "source": "app/services/plans/update_amount_service.rb",
             "laravel": "App\\Services\\Plans\\UpdateAmountService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Services/Plans/UpdateAmountServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -28399,7 +28515,7 @@
         {
             "id": "svc:Utils.AuthToken",
             "source": "app/services/utils/auth_token.rb",
-            "laravel": "App\\Services\\Utils\\AuthToken",
+            "laravel": "App\\Support\\Utils\\AuthToken",
             "status": {
                 "code": "todo",
                 "test": "todo",

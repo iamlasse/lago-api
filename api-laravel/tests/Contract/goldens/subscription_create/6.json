@@ -1,0 +1,81 @@
+{
+  "subscription": {
+    "lago_id": "1b0c4d22-464f-4765-82b3-b6f18669d54c",
+    "external_id": "sub-advance-1",
+    "lago_customer_id": "ccaaec54-66d5-4e76-ba08-be4c5c7b3efe",
+    "external_customer_id": "seed-customer-1",
+    "name": "Advance Sub",
+    "plan_code": "plan-advance",
+    "plan_amount_cents": 1000,
+    "plan_amount_currency": "EUR",
+    "status": "terminated",
+    "billing_time": "calendar",
+    "subscription_at": "2025-06-04T12:00:00Z",
+    "started_at": "2025-06-04T12:00:00.000Z",
+    "trial_ended_at": null,
+    "ending_at": null,
+    "terminated_at": "2025-06-04T12:00:00Z",
+    "canceled_at": null,
+    "created_at": "2025-06-04T12:00:00Z",
+    "previous_plan_code": null,
+    "next_plan_code": null,
+    "downgrade_plan_date": null,
+    "current_billing_period_started_at": "2025-06-04T12:00:00Z",
+    "current_billing_period_ending_at": "2025-06-04T12:00:00Z",
+    "on_termination_credit_note": "credit",
+    "on_termination_invoice": "generate",
+    "progressive_billing_disabled": false,
+    "consolidate_invoice": true,
+    "purchase_order_number": null,
+    "cancellation_reason": null,
+    "activated_at": "2025-06-04T12:00:00Z",
+    "payment_method": {
+      "payment_method_id": null,
+      "payment_method_type": "provider"
+    },
+    "plan": {
+      "lago_id": "8fa103ba-f1c1-428b-b130-60875ef7f7cd",
+      "name": "Advance Plan",
+      "invoice_display_name": "Advance Plan Display",
+      "created_at": "2025-06-04T11:00:00Z",
+      "code": "plan-advance",
+      "interval": "monthly",
+      "description": "pay in advance plan",
+      "amount_cents": 1000,
+      "amount_currency": "EUR",
+      "trial_period": null,
+      "pay_in_advance": true,
+      "bill_charges_monthly": null,
+      "bill_fixed_charges_monthly": false,
+      "customers_count": 0,
+      "active_subscriptions_count": 0,
+      "draft_invoices_count": 0,
+      "parent_id": null,
+      "pending_deletion": false,
+      "charges": [],
+      "usage_thresholds": [],
+      "applicable_usage_thresholds": [],
+      "taxes": []
+    },
+    "applied_invoice_custom_sections": [],
+    "activation_rules": [],
+    "connections": {
+      "payment": {
+        "behavior": "inherit",
+        "code": null
+      },
+      "tax": {
+        "behavior": "inherit",
+        "code": null
+      },
+      "accounting": {
+        "behavior": "inherit",
+        "code": null
+      },
+      "crm": {
+        "behavior": "inherit",
+        "code": null
+      }
+    }
+  }
+}

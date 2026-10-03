@@ -6,10 +6,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\SetBetaHeader;
 use App\Exceptions\Api\NotFoundException;
 use App\Http\Controllers\Api\V1\PlansController;
+use App\Http\Controllers\Api\V1\TaxesController;
 use App\Http\Controllers\Api\V1\CustomersController;
 use App\Http\Controllers\Api\V1\OrganizationsController;
 use App\Http\Controllers\Api\V1\Plans\ChargesController;
 use App\Http\Controllers\Api\V1\SubscriptionsController;
+use App\Http\Controllers\Api\V1\BillableMetricsController;
+use App\Http\Controllers\Api\V1\WebhookEndpointsController;
 use App\Http\Controllers\Api\V1\Plans\FixedChargesController;
 use App\Http\Controllers\Api\V1\Plans\Charges\FiltersController;
 
@@ -44,6 +47,60 @@ $sharedApi = function (): void {
         Route::get('customers', [CustomersController::class, 'index']);
         Route::post('customers', [CustomersController::class, 'create']);
 
+        // -- billable metrics ---------------------------------------------------
+        // Codes may contain dots, so the member routes carry the `.+`
+        // constraint (mirrors Rails' `param: :code, code: /.*/`); the
+        // evaluate_expression collection route is registered ahead of them.
+        //
+        // TODO(port): the Lago expression parser — evaluate_expression
+        // validates the blank-expression case and answers Rails'
+        // invalid_expression envelope for every non-blank expression instead
+        // of evaluating it (see BillableMetricsController).
+        Route::prefix('billable_metrics')->as('billable_metrics:')->group(function () {
+            Route::get('', [BillableMetricsController::class, 'index']);
+            Route::post('', [BillableMetricsController::class, 'create']);
+            Route::post('evaluate_expression', [BillableMetricsController::class, 'evaluateExpression']);
+
+            Route::get('{code}', [BillableMetricsController::class, 'show'])
+                ->where('code', '.+');
+            Route::put('{code}', [BillableMetricsController::class, 'update'])
+                ->where('code', '.+');
+            Route::patch('{code}', [BillableMetricsController::class, 'update'])
+                ->where('code', '.+');
+            Route::delete('{code}', [BillableMetricsController::class, 'destroy'])
+                ->where('code', '.+');
+        });
+
+        // -- taxes -----------------------------------------------------------------
+        // Keyed by code like billable metrics (Rails: `resources :taxes,
+        // param: :code, code: /.*/`).
+        Route::prefix('taxes')->as('taxes:')->group(function () {
+            Route::get('', [TaxesController::class, 'index']);
+            Route::post('', [TaxesController::class, 'create']);
+
+            Route::get('code}', [TaxesController::class, 'show'])
+                ->where('code', '.+');
+            Route::put('code}', [TaxesController::class, 'update'])
+                ->where('code', '.+');
+            Route::patch('code}', [TaxesController::class, 'update'])
+                ->where('code', '.+');
+            Route::delete('code}', [TaxesController::class, 'destroy'])
+                ->where('code', '.+');
+        });
+
+        // -- webhook endpoints ------------------------------------------------------
+        // Keyed by uuid id — Rails draws these with the default param
+        // constraint (no dots), so no `.+` here.
+        Route::prefix('webhook_endpoints')->as('webhook_endpoints:')->group(function () {
+            Route::get('', [WebhookEndpointsController::class, 'index']);
+            Route::post('', [WebhookEndpointsController::class, 'create']);
+
+            Route::get('{id}', [WebhookEndpointsController::class, 'show']);
+            Route::put('{id}', [WebhookEndpointsController::class, 'update']);
+            Route::patch('{id}', [WebhookEndpointsController::class, 'update']);
+            Route::delete('{id}', [WebhookEndpointsController::class, 'destroy']);
+        });
+
         // -- plans ------------------------------------------------------------
         // Nested plan subresources are registered BEFORE the member :code
         // routes below (registration order is match priority, like Rails'
@@ -55,30 +112,31 @@ $sharedApi = function (): void {
         // metadata subresources (no ported services), charge filter
         // create/update/destroy (ChargeFilters::Create/Update/DestroyService
         // not ported — only index/show need no service).
-        Route::get('plans', [PlansController::class, 'index']);
-        Route::post('plans', [PlansController::class, 'create']);
+        Route::prefix('plans')->as('plans:')->group(function () {
+            Route::get('', [PlansController::class, 'index']);
+            Route::post('', [PlansController::class, 'create']);
+            Route::get('{plan_code}/charges', [ChargesController::class, 'index']);
+            Route::post('{plan_code}/charges', [ChargesController::class, 'create']);
+            Route::get('{plan_code}/charges/{code}', [ChargesController::class, 'show']);
+            Route::put('{plan_code}/charges/{code}', [ChargesController::class, 'update']);
+            Route::patch('{plan_code}/charges/{code}', [ChargesController::class, 'update']);
+            Route::delete('{plan_code}/charges/{code}', [ChargesController::class, 'destroy']);
 
-        Route::get('plans/{plan_code}/charges', [ChargesController::class, 'index']);
-        Route::post('plans/{plan_code}/charges', [ChargesController::class, 'create']);
-        Route::get('plans/{plan_code}/charges/{code}', [ChargesController::class, 'show']);
-        Route::put('plans/{plan_code}/charges/{code}', [ChargesController::class, 'update']);
-        Route::patch('plans/{plan_code}/charges/{code}', [ChargesController::class, 'update']);
-        Route::delete('plans/{plan_code}/charges/{code}', [ChargesController::class, 'destroy']);
+            Route::get('{plan_code}/charges/{charge_code}/filters', [FiltersController::class, 'index']);
+            Route::get('{plan_code}/charges/{charge_code}/filters/{id}', [FiltersController::class, 'show']);
 
-        Route::get('plans/{plan_code}/charges/{charge_code}/filters', [FiltersController::class, 'index']);
-        Route::get('plans/{plan_code}/charges/{charge_code}/filters/{id}', [FiltersController::class, 'show']);
+            Route::get('{plan_code}/fixed_charges', [FixedChargesController::class, 'index']);
+            Route::post('{plan_code}/fixed_charges', [FixedChargesController::class, 'create']);
+            Route::get('{plan_code}/fixed_charges/{code}', [FixedChargesController::class, 'show']);
+            Route::put('{plan_code}/fixed_charges/{code}', [FixedChargesController::class, 'update']);
+            Route::patch('{plan_code}/fixed_charges/{code}', [FixedChargesController::class, 'update']);
+            Route::delete('{plan_code}/fixed_charges/{code}', [FixedChargesController::class, 'destroy']);
 
-        Route::get('plans/{plan_code}/fixed_charges', [FixedChargesController::class, 'index']);
-        Route::post('plans/{plan_code}/fixed_charges', [FixedChargesController::class, 'create']);
-        Route::get('plans/{plan_code}/fixed_charges/{code}', [FixedChargesController::class, 'show']);
-        Route::put('plans/{plan_code}/fixed_charges/{code}', [FixedChargesController::class, 'update']);
-        Route::patch('plans/{plan_code}/fixed_charges/{code}', [FixedChargesController::class, 'update']);
-        Route::delete('plans/{plan_code}/fixed_charges/{code}', [FixedChargesController::class, 'destroy']);
-
-        Route::get('plans/{code}', [PlansController::class, 'show'])->where('code', '.+');
-        Route::put('plans/{code}', [PlansController::class, 'update'])->where('code', '.+');
-        Route::patch('plans/{code}', [PlansController::class, 'update'])->where('code', '.+');
-        Route::delete('plans/{code}', [PlansController::class, 'destroy'])->where('code', '.+');
+            Route::get('{code}', [PlansController::class, 'show'])->where('code', '.+');
+            Route::put('{code}', [PlansController::class, 'update'])->where('code', '.+');
+            Route::patch('{code}', [PlansController::class, 'update'])->where('code', '.+');
+            Route::delete('{code}', [PlansController::class, 'destroy'])->where('code', '.+');
+        });
 
         // -- subscriptions ----------------------------------------------------
         // DELETE on a subscription never destroys the row: it terminates it
@@ -88,17 +146,18 @@ $sharedApi = function (): void {
         // subresources lifetime_usage, alerts, entitlements, charges and
         // fixed_charges (no ported controllers/services), and the
         // /customers/:external_id/subscriptions index.
-        Route::get('subscriptions', [SubscriptionsController::class, 'index']);
-        Route::post('subscriptions', [SubscriptionsController::class, 'create']);
-
-        Route::get('subscriptions/{external_id}', [SubscriptionsController::class, 'show'])
-            ->where('external_id', '.+');
-        Route::put('subscriptions/{external_id}', [SubscriptionsController::class, 'update'])
-            ->where('external_id', '.+');
-        Route::patch('subscriptions/{external_id}', [SubscriptionsController::class, 'update'])
-            ->where('external_id', '.+');
-        Route::delete('subscriptions/{external_id}', [SubscriptionsController::class, 'terminate'])
-            ->where('external_id', '.+');
+        Route::prefix('subscriptions')->as('subscriptions:')->group(function () {
+            Route::get('', [SubscriptionsController::class, 'index']);
+            Route::post('', [SubscriptionsController::class, 'create']);
+            Route::get('{external_id}', [SubscriptionsController::class, 'show'])
+                ->where('external_id', '.+');
+            Route::put('{external_id}', [SubscriptionsController::class, 'update'])
+                ->where('external_id', '.+');
+            Route::patch('{external_id}', [SubscriptionsController::class, 'update'])
+                ->where('external_id', '.+');
+            Route::delete('{external_id}', [SubscriptionsController::class, 'terminate'])
+                ->where('external_id', '.+');
+        });
 
         // customers and subscriptions are looked up by external_id, which
         // may contain dots. Rails constrains those params with /[^\/]+/ (a

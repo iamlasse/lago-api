@@ -1,0 +1,25 @@
+{
+  "billable_metric": {
+    "lago_id": "1a4a0d6e-0000-4000-8000-000000000023",
+    "name": "Seeded GPU Hours",
+    "code": "seeded_gpu_hours",
+    "description": "seeded sum aggregation",
+    "aggregation_type": "sum_agg",
+    "weighted_interval": null,
+    "recurring": false,
+    "rounding_function": null,
+    "rounding_precision": null,
+    "created_at": "2025-06-03T11:00:00Z",
+    "field_name": "gpu_hours",
+    "expression": "",
+    "filters": [
+      {
+        "key": "region",
+        "values": [
+          "eu",
+          "us"
+        ]
+      }
+    ]
+  }
+}

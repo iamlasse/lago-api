@@ -1,0 +1,17 @@
+{
+  "tax": {
+    "lago_id": "2960ee67-c103-4d8f-ae59-054da579a17b",
+    "name": "Invoice VAT",
+    "code": "invoice-vat-20",
+    "rate": 20.0,
+    "description": "applied to the invoice customer",
+    "applied_to_organization": false,
+    "add_ons_count": 0,
+    "customers_count": 0,
+    "plans_count": 0,
+    "charges_count": 0,
+    "commitments_count": 0,
+    "created_at": "2025-06-05T12:00:00Z",
+    "applied_to_billing_entities_codes": []
+  }
+}

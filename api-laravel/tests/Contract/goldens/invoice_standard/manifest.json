@@ -1,0 +1,97 @@
+{
+  "captured_at": "2025-06-05T12:00:00Z",
+  "requests": [
+    {
+      "method": "POST",
+      "path": "/api/v1/taxes",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ee",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "tax": {
+          "name": "Invoice VAT",
+          "code": "invoice-vat-20",
+          "rate": "20.0",
+          "description": "applied to the invoice customer"
+        }
+      },
+      "required_headers": {}
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/customers",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ee",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "customer": {
+          "external_id": "invoice-customer-1",
+          "name": "Invoice Customer Co.",
+          "email": "invoice-customer@example.invalid",
+          "currency": "EUR",
+          "country": "FR",
+          "city": "Paris",
+          "address_line1": "9 Rue de la Facture",
+          "zipcode": "75004",
+          "state": "IDF",
+          "tax_codes": [
+            "invoice-vat-20"
+          ]
+        }
+      },
+      "required_headers": {}
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/invoices",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ee",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "invoice": {
+          "external_customer_id": "invoice-customer-1",
+          "currency": "EUR",
+          "fees": [
+            {
+              "add_on_code": "setup-fee",
+              "invoice_display_name": "One-off setup",
+              "unit_amount_cents": 1200,
+              "units": "2",
+              "description": "capture one-off fee",
+              "tax_codes": [
+                "invoice-vat-20"
+              ]
+            }
+          ]
+        }
+      },
+      "required_headers": {}
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/invoices?external_customer_id=invoice-customer-1",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ee"
+      },
+      "body": null,
+      "required_headers": {}
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/invoices/preview",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ee",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "external_customer_id": "preview-customer-1",
+        "plan_code": "invoiced-plan",
+        "billing_time": "calendar"
+      },
+      "required_headers": {}
+    }
+  ]
+}

@@ -395,7 +395,9 @@ class SubscriptionService extends \App\Services\BaseService
             }
         }
 
-        return (int) $plan->amount_cents;
+        // BUGFIX(port): declared `: string` but returned an int — TypeError on
+        // every non-trial full-period subscription fee (Rails: plan.amount_cents).
+        return (string) $plan->amount_cents;
     }
 
     private function dateService(Subscription $subscription): DatesService

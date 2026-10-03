@@ -205,7 +205,13 @@ class SubscriptionService extends \App\Services\BaseService
         $first = $this->subscriptions[0] ?? null;
         $customer = $first?->customer;
 
-        $invoiceResult = CreateGeneratingService::call(
+        // BUGFIX(port): the invoice block belongs to the SERVICE (Rails yields
+        // it inside the creating transaction) — the old code chained
+        // ->withInvoice() onto the BaseResult, which has no such method and
+        // crashed every BillSubscriptionJob run. Build the instance so the
+        // block runs inside CreateGeneratingService's transaction, like
+        // Rails' `CreateGeneratingService.call(...) { |invoice| ... }`.
+        $invoiceResult = (new CreateGeneratingService(
             customer: $customer,
             billingEntity: \App\Models\BillingEntity::query()->find(
                 $first->billing_entity_id ?? $customer?->billing_entity_id,
@@ -216,14 +222,14 @@ class SubscriptionService extends \App\Services\BaseService
             datetime: CarbonImmutable::createFromTimestampUTC($this->timestamp),
             skipCharges: $this->skipCharges,
             purchaseOrderNumber: $first?->purchase_order_number,
-        )->withInvoice(function (Invoice $invoice): void {
+        ))->withInvoice(function (Invoice $invoice): void {
             CreateInvoiceSubscriptionService::call(
                 invoice: $invoice,
                 subscriptions: $this->subscriptions,
                 timestamp: $this->timestamp,
                 invoicingReason: $this->invoicingReason,
             )->raiseIfError();
-        });
+        })->execute();
 
         $invoiceResult->raiseIfError();
 

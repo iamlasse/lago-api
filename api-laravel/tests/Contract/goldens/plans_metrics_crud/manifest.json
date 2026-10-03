@@ -1,0 +1,212 @@
+{
+  "captured_at": "2025-06-03T12:00:00Z",
+  "requests": [
+    {
+      "method": "POST",
+      "path": "/api/v1/billable_metrics",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000cc",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "billable_metric": {
+          "name": "Created Unique Count",
+          "code": "created_unique_count",
+          "description": "created metric",
+          "aggregation_type": "unique_count_agg",
+          "field_name": "item_id",
+          "recurring": false
+        }
+      },
+      "required_headers": {}
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/billable_metrics",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000cc"
+      },
+      "body": null,
+      "required_headers": {}
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/billable_metrics/seeded_gpu_hours",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000cc"
+      },
+      "body": null,
+      "required_headers": {}
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/billable_metrics/seeded_gpu_hours",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000cc",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "billable_metric": {
+          "name": "Seeded GPU Hours Renamed",
+          "description": "renamed by the capture"
+        }
+      },
+      "required_headers": {}
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/plans",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000cc",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "plan": {
+          "name": "Created Plan",
+          "code": "created-plan",
+          "invoice_display_name": "Created Plan Display",
+          "description": "created by the capture",
+          "interval": "monthly",
+          "amount_cents": 4900,
+          "amount_currency": "EUR",
+          "pay_in_advance": false,
+          "charges": [
+            {
+              "billable_metric_id": "1a4a0d6e-0000-4000-8000-000000000023",
+              "code": "std-charge",
+              "invoice_display_name": "Standard charge",
+              "charge_model": "standard",
+              "properties": {
+                "amount": "10"
+              }
+            },
+            {
+              "billable_metric_id": "1a4a0d6e-0000-4000-8000-000000000022",
+              "code": "grad-charge",
+              "invoice_display_name": "Graduated charge",
+              "charge_model": "graduated",
+              "properties": {
+                "graduated_ranges": [
+                  {
+                    "from_value": 0,
+                    "to_value": 10,
+                    "per_unit_amount": "0",
+                    "flat_amount": "200"
+                  },
+                  {
+                    "from_value": 11,
+                    "to_value": null,
+                    "per_unit_amount": "0",
+                    "flat_amount": "300"
+                  }
+                ]
+              }
+            },
+            {
+              "billable_metric_id": "1a4a0d6e-0000-4000-8000-000000000023",
+              "code": "filtered-charge",
+              "invoice_display_name": "Filtered charge",
+              "charge_model": "standard",
+              "properties": {
+                "amount": "8"
+              },
+              "filters": [
+                {
+                  "invoice_display_name": "US only",
+                  "properties": {
+                    "amount": "12"
+                  },
+                  "values": {
+                    "region": [
+                      "us"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "required_headers": {}
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/plans",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000cc"
+      },
+      "body": null,
+      "required_headers": {}
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/plans/created-plan",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000cc"
+      },
+      "body": null,
+      "required_headers": {}
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/plans/created-plan",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000cc",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "plan": {
+          "name": "Created Plan Renamed",
+          "description": "renamed by the capture",
+          "invoice_display_name": "Created Plan Display v2"
+        }
+      },
+      "required_headers": {}
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/plans/created-plan/charges",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000cc"
+      },
+      "body": null,
+      "required_headers": {}
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/plans/created-plan/charges/grad-charge",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000cc"
+      },
+      "body": null,
+      "required_headers": {}
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/plans/created-plan/charges/filtered-charge/filters",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000cc"
+      },
+      "body": null,
+      "required_headers": {}
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/billable_metrics/seeded_count_metric",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000cc"
+      },
+      "body": null,
+      "required_headers": {}
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/billable_metrics/seeded_gpu_hours",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000cc"
+      },
+      "body": null,
+      "required_headers": {}
+    }
+  ]
+}

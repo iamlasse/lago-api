@@ -26,18 +26,29 @@ class OrganizationsController extends ApiController
 
     public function show(): JsonResponse
     {
+        // Rails quirk preserved (contract golden, auth_org): show passes
+        // `include:` (SINGULAR), which ModelSerializer#include? never reads —
+        // so GET /organizations does NOT emit the taxes key. Only PUT does.
         return $this->renderSerializerJson((new OrganizationSerializer(
             $this->currentOrganization(),
-            ['root_name' => 'organization', 'includes' => ['taxes']],
+            ['root_name' => 'organization'],
         ))->toJson());
     }
 
     public function update(Request $request): JsonResponse
     {
         $params = $this->inputParams($request);
+        $organization = $this->currentOrganization();
+
+        // Rails quirk preserved (contract golden, auth_org): the update path
+        // persists the webhook endpoint via first_or_initialize OUTSIDE the
+        // association, so the serializer renders the STALE pre-update
+        // webhook association (empty when none existed). Preload it before
+        // the service runs to reproduce byte-identical output.
+        $organization->load('webhookEndpoints');
 
         $result = UpdateService::call(
-            organization: $this->currentOrganization(),
+            organization: $organization,
             params: $params,
         );
 
@@ -45,7 +56,7 @@ class OrganizationsController extends ApiController
             // TODO(port): api_logs + audit (ApiLoggable/Trackable — non-GET
             // writes append an api log and an audit log).
             return $this->renderSerializerJson((new OrganizationSerializer(
-                $result->organization,
+                $organization,
                 ['root_name' => 'organization', 'includes' => ['taxes']],
             ))->toJson());
         }

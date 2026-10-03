@@ -1,0 +1,115 @@
+{
+  "captured_at": "2025-06-02T12:00:00Z",
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/v1/customers",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000bb"
+      },
+      "body": null,
+      "required_headers": {}
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/customers",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000bb",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "customer": {
+          "external_id": "captured-customer-1",
+          "name": "Captured Customer Inc.",
+          "firstname": "Cap",
+          "lastname": "Tured",
+          "customer_type": "company",
+          "country": "US",
+          "address_line1": "1 Capture Way",
+          "address_line2": "Suite 2",
+          "state": "CA",
+          "zipcode": "94105",
+          "email": "captured@example.invalid",
+          "city": "San Francisco",
+          "url": "https://example.invalid",
+          "phone": "+1-555-0100",
+          "legal_name": "Captured Customer Legal",
+          "legal_number": "123456789",
+          "tax_identification_number": "US-123456789",
+          "currency": "EUR",
+          "timezone": "America/Los_Angeles",
+          "net_payment_term": 10
+        }
+      },
+      "required_headers": {}
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/customers/captured-customer-1",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000bb"
+      },
+      "body": null,
+      "required_headers": {}
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/customers",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000bb",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "customer": {
+          "external_id": "captured-customer-1",
+          "name": "Captured Customer Renamed",
+          "email": "renamed@example.invalid",
+          "metadata": [
+            {
+              "key": "channel",
+              "value": "contract",
+              "display_in_invoice": false
+            }
+          ]
+        }
+      },
+      "required_headers": {}
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/customers",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000bb"
+      },
+      "body": null,
+      "required_headers": {}
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/customers/does-not-exist",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000bb"
+      },
+      "body": null,
+      "required_headers": {}
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/customers/captured-customer-1",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000bb"
+      },
+      "body": null,
+      "required_headers": {}
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/customers/captured-customer-1",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000bb"
+      },
+      "body": null,
+      "required_headers": {}
+    }
+  ]
+}

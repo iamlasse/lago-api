@@ -13,7 +13,7 @@ rest:GET:/api/v1/billable_metrics/:code
 rest:PUT:/api/v1/billable_metrics/:code
 rest:PATCH:/api/v1/billable_metrics/:code
 rest:DELETE:/api/v1/billable_metrics/:code
-rest:POST:/api/v1/billable_metrics/:code/evaluate_expression
+rest:POST:/api/v1/billable_metrics/evaluate_expression
 rest:GET:/api/v1/taxes
 rest:POST:/api/v1/taxes
 rest:GET:/api/v1/taxes/:code

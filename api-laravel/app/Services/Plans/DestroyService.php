@@ -63,6 +63,14 @@ class DestroyService extends \App\Services\BaseService
             // TODO(port): entitlement_values / entitlements soft-deletion.
 
             $plan->pending_deletion = false;
+            // NOTE(port deviation): Rails' discard! persists dirty attributes,
+            // so pending_deletion lands in the DB (destroy_service_spec
+            // asserts reload true→false) — but Rails also runs the destroy
+            // ASYNC (Plans::DestroyJob), so the API still observes the flag
+            // true right after the request. M1 destroys inline
+            // (PrepareDestroyService), and the API contract
+            // (PlansControllerTest) relies on the flag surviving the request.
+            // Persist the flag only once Plans::DestroyJob is ported.
             $plan->delete(); // discard (deleted_at)
 
             $result->plan = $plan;

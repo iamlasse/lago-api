@@ -138,9 +138,14 @@ class Fee extends BaseModel
 
     public function paymentStatusEnum(): ?FeePaymentStatus
     {
+        // BUGFIX(port): payment_status is enum-cast — the raw value may
+        // already be the enum (typeEnum() has the same guard); (int) on it
+        // throws "could not be converted to int".
         return $this->payment_status === null
             ? null
-            : FeePaymentStatus::tryFrom((int) $this->payment_status);
+            : ($this->payment_status instanceof FeePaymentStatus
+                ? $this->payment_status
+                : FeePaymentStatus::tryFrom((int) $this->payment_status));
     }
 
     // -- Rails domain methods --------------------------------------------------

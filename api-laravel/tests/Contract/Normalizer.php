@@ -30,6 +30,14 @@ use InvalidArgumentException;
  *   claim set, so a 3-segment token value is canonicalized to its decoded
  *   claims and those must match exactly (sub, exp, login_method, …). Claims
  *   are equal because both sides mint at the same frozen instant.
+ * - Minted row ids (`lago_id` fields holding a UUID): rows CREATED BY a
+ *   captured request get a fresh SecureRandom.uuid on each side (Rails mints
+ *   at capture, Laravel at replay — even two Rails runs would differ), so
+ *   byte equality is unattainable by construction. A UUID under `lago_id`
+ *   canonicalizes to "<uuid>"; anything else under that key (null, a slug,
+ *   a foreign row's id format mismatch) still compares strictly, so a port
+ *   that fails to mint or fails to echo an id is still a diff. Deterministic
+ *   seeded ids are NOT protected by this rule when asserted in test bodies.
  */
 class Normalizer
 {
@@ -44,6 +52,12 @@ class Normalizer
      * claims rather than bytes.
      */
     public const TOKEN_FIELDS = ['token'];
+
+    /**
+     * JSON keys whose UUID values are per-run minted row ids (rows created
+     * by a captured request), compared as "a UUID" rather than by bytes.
+     */
+    public const MINTED_ID_FIELDS = ['lago_id'];
 
     /**
      * JSON keys whose numeric values are compared as rates (float tolerance).
@@ -139,6 +153,20 @@ class Normalizer
     }
 
     /**
+     * Canonicalizes a per-run minted row id: any UUID under a MINTED_ID_FIELDS
+     * key becomes "<uuid>" (each runtime mints its own), or returns null when
+     * the value is not a UUID so everything else compares strictly.
+     */
+    public static function canonicalMintedId(mixed $value): ?string
+    {
+        if (! is_string($value) || preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $value) !== 1) {
+            return null;
+        }
+
+        return '<uuid>';
+    }
+
+    /**
      * Recursively normalizes a decoded JSON document.
      */
     public static function normalizeValue(mixed $value, ?string $key = null): mixed
@@ -174,6 +202,14 @@ class Normalizer
 
             if ($claims !== null) {
                 return $claims;
+            }
+        }
+
+        if ($key !== null && in_array(mb_strtolower($key), self::MINTED_ID_FIELDS, true)) {
+            $minted = self::canonicalMintedId($value);
+
+            if ($minted !== null) {
+                return $minted;
             }
         }
 
