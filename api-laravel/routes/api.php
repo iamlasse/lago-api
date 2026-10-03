@@ -79,13 +79,13 @@ $sharedApi = function (): void {
             Route::get('', [TaxesController::class, 'index']);
             Route::post('', [TaxesController::class, 'create']);
 
-            Route::get('code}', [TaxesController::class, 'show'])
+            Route::get('{code}', [TaxesController::class, 'show'])
                 ->where('code', '.+');
-            Route::put('code}', [TaxesController::class, 'update'])
+            Route::put('{code}', [TaxesController::class, 'update'])
                 ->where('code', '.+');
-            Route::patch('code}', [TaxesController::class, 'update'])
+            Route::patch('{code}', [TaxesController::class, 'update'])
                 ->where('code', '.+');
-            Route::delete('code}', [TaxesController::class, 'destroy'])
+            Route::delete('{code}', [TaxesController::class, 'destroy'])
                 ->where('code', '.+');
         });
 
