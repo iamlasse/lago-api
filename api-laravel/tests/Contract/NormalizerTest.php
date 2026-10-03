@@ -201,6 +201,54 @@ class NormalizerTest extends TestCase
 
         $this->assertCount(1, $diffs);
     }
+
+    /**
+     * lago_subscription_id references a subscription minted by an earlier
+     * captured request (fees and billing_periods on a subscription invoice),
+     * so each runtime echoes its own fresh id — compared as "a UUID", same
+     * rule as lago_id. Everything else under the key stays strict.
+     */
+    public function test_minted_lago_subscription_ids_compare_as_uuids(): void
+    {
+        $this->assertSame([], Normalizer::compareJson(
+            '{"fees":[{"lago_subscription_id":"c5cdc307-8c07-4521-8a41-c9f93e4f5aea"}]}',
+            '{"fees":[{"lago_subscription_id":"36fcec07-b5bc-479d-9329-d0c941db1d17"}]}'
+        ));
+
+        $this->assertSame([], Normalizer::compareJson(
+            '{"billing_periods":[{"lago_subscription_id":"c5cdc307-8c07-4521-8a41-c9f93e4f5aea"}]}',
+            '{"billing_periods":[{"lago_subscription_id":"36fcec07-b5bc-479d-9329-d0c941db1d17"}]}'
+        ));
+
+        // A non-UUID under lago_subscription_id (null, garbage) is a diff.
+        $diffs = Normalizer::compareJson(
+            '{"fees":[{"lago_subscription_id":"c5cdc307-8c07-4521-8a41-c9f93e4f5aea"}]}',
+            '{"fees":[{"lago_subscription_id":null}]}'
+        );
+
+        $this->assertCount(1, $diffs);
+        $this->assertSame('$.fees[0].lago_subscription_id', $diffs[0]['path']);
+    }
+
+    public function test_minted_subscription_item_ids_compare_as_uuids(): void
+    {
+        // A subscription-type fee item echoes the minted subscription id —
+        // each runtime its own.
+        $this->assertSame([], Normalizer::compareJson(
+            '{"fees":[{"item":{"type":"subscription","lago_item_id":"c5cdc307-8c07-4521-8a41-c9f93e4f5aea"}}]}',
+            '{"fees":[{"item":{"type":"subscription","lago_item_id":"36fcec07-b5bc-479d-9329-d0c941db1d17"}}]}'
+        ));
+
+        // A charge item's lago_item_id is the SEEDED billable metric id and
+        // still compares strictly — emitting the wrong id is a diff.
+        $diffs = Normalizer::compareJson(
+            '{"fees":[{"item":{"type":"charge","lago_item_id":"1a4a0d6e-0000-4000-8000-000000000082"}}]}',
+            '{"fees":[{"item":{"type":"charge","lago_item_id":"1a4a0d6e-0000-4000-8000-000000000083"}}]}'
+        );
+
+        $this->assertCount(1, $diffs);
+        $this->assertSame('$.fees[0].item.lago_item_id', $diffs[0]['path']);
+    }
 }
 
 /** Hoist helper: test-local base64url encode (URL-safe, unpadded). */

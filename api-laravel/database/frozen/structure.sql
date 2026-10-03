@@ -1,3 +1,5 @@
+CREATE SCHEMA partman;
+
 
 --
 -- Name: btree_gin; Type: EXTENSION; Schema: -; Owner: -
@@ -16,6 +18,8 @@ CREATE EXTENSION IF NOT EXISTS btree_gist WITH SCHEMA public;
 --
 -- Name: pg_partman; Type: EXTENSION; Schema: -; Owner: -
 --
+
+CREATE EXTENSION IF NOT EXISTS pg_partman WITH SCHEMA partman;
 
 
 --
@@ -612,6 +616,29 @@ CREATE FUNCTION public.set_payment_receipt_number() RETURNS trigger
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
+
+--
+-- Name: template_public_enriched_events; Type: TABLE; Schema: partman; Owner: -
+--
+
+CREATE TABLE partman.template_public_enriched_events (
+    id uuid NOT NULL,
+    organization_id uuid NOT NULL,
+    event_id uuid NOT NULL,
+    transaction_id character varying NOT NULL,
+    external_subscription_id character varying NOT NULL,
+    code character varying NOT NULL,
+    "timestamp" timestamp(6) without time zone NOT NULL,
+    subscription_id uuid NOT NULL,
+    plan_id uuid NOT NULL,
+    charge_id uuid NOT NULL,
+    charge_filter_id uuid,
+    properties jsonb NOT NULL,
+    grouped_by jsonb NOT NULL,
+    value character varying,
+    decimal_value numeric(40,15) NOT NULL,
+    enriched_at timestamp(6) without time zone NOT NULL
+);
 
 
 --
@@ -1576,6 +1603,59 @@ CREATE TABLE public.dunning_campaigns (
     updated_at timestamp(6) without time zone NOT NULL,
     deleted_at timestamp without time zone,
     bcc_emails character varying[] DEFAULT '{}'::character varying[]
+);
+
+
+--
+-- Name: enriched_events; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.enriched_events (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    organization_id uuid NOT NULL,
+    event_id uuid NOT NULL,
+    transaction_id character varying NOT NULL,
+    external_subscription_id character varying NOT NULL,
+    code character varying NOT NULL,
+    "timestamp" timestamp(6) without time zone NOT NULL,
+    subscription_id uuid NOT NULL,
+    plan_id uuid NOT NULL,
+    charge_id uuid NOT NULL,
+    charge_filter_id uuid,
+    grouped_by jsonb DEFAULT '{}'::jsonb NOT NULL,
+    value character varying,
+    decimal_value numeric(40,15) DEFAULT 0.0 NOT NULL,
+    enriched_at timestamp(6) without time zone NOT NULL,
+    operation_type character varying,
+    precise_total_amount_cents numeric(40,15),
+    target_wallet_code character varying
+)
+PARTITION BY RANGE ("timestamp");
+
+
+--
+-- Name: enriched_events_default; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.enriched_events_default (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    organization_id uuid NOT NULL,
+    event_id uuid NOT NULL,
+    transaction_id character varying NOT NULL,
+    external_subscription_id character varying NOT NULL,
+    code character varying NOT NULL,
+    "timestamp" timestamp(6) without time zone NOT NULL,
+    subscription_id uuid NOT NULL,
+    plan_id uuid NOT NULL,
+    charge_id uuid NOT NULL,
+    charge_filter_id uuid,
+    grouped_by jsonb DEFAULT '{}'::jsonb NOT NULL,
+    value character varying,
+    decimal_value numeric(40,15) DEFAULT 0.0 NOT NULL,
+    enriched_at timestamp(6) without time zone NOT NULL,
+    operation_type character varying,
+    precise_total_amount_cents numeric(40,15),
+    target_wallet_code character varying
 );
 
 
@@ -4641,6 +4721,13 @@ CREATE TABLE public.webhooks (
 
 
 --
+-- Name: enriched_events_default; Type: TABLE ATTACH; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.enriched_events ATTACH PARTITION public.enriched_events_default DEFAULT;
+
+
+--
 -- Name: quote_owners id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -5795,6 +5882,62 @@ ALTER TABLE ONLY public.webhook_endpoints
 
 ALTER TABLE ONLY public.webhooks
     ADD CONSTRAINT webhooks_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: index_enriched_events_on_event_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_enriched_events_on_event_id ON ONLY public.enriched_events USING btree (event_id);
+
+
+--
+-- Name: enriched_events_default_event_id_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX enriched_events_default_event_id_idx ON public.enriched_events_default USING btree (event_id);
+
+
+--
+-- Name: idx_unique_on_enriched_events; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX idx_unique_on_enriched_events ON ONLY public.enriched_events USING btree (organization_id, external_subscription_id, transaction_id, "timestamp", charge_id);
+
+
+--
+-- Name: enriched_events_default_organization_id_external_subscript_idx1; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX enriched_events_default_organization_id_external_subscript_idx1 ON public.enriched_events_default USING btree (organization_id, external_subscription_id, transaction_id, "timestamp", charge_id);
+
+
+--
+-- Name: idx_lookup_on_enriched_events; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_lookup_on_enriched_events ON ONLY public.enriched_events USING btree (organization_id, external_subscription_id, code, "timestamp");
+
+
+--
+-- Name: enriched_events_default_organization_id_external_subscripti_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX enriched_events_default_organization_id_external_subscripti_idx ON public.enriched_events_default USING btree (organization_id, external_subscription_id, code, "timestamp");
+
+
+--
+-- Name: idx_billing_on_enriched_events; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_billing_on_enriched_events ON ONLY public.enriched_events USING btree (organization_id, subscription_id, charge_id, charge_filter_id, "timestamp");
+
+
+--
+-- Name: enriched_events_default_organization_id_subscription_id_cha_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX enriched_events_default_organization_id_subscription_id_cha_idx ON public.enriched_events_default USING btree (organization_id, subscription_id, charge_id, charge_filter_id, "timestamp");
 
 
 --
@@ -10531,6 +10674,34 @@ CREATE UNIQUE INDEX index_wt_invoice_custom_sections_unique ON public.wallet_tra
 --
 
 CREATE UNIQUE INDEX unique_default_payment_method_per_customer ON public.payment_methods USING btree (customer_id) WHERE ((is_default = true) AND (deleted_at IS NULL));
+
+
+--
+-- Name: enriched_events_default_event_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+--
+
+ALTER INDEX public.index_enriched_events_on_event_id ATTACH PARTITION public.enriched_events_default_event_id_idx;
+
+
+--
+-- Name: enriched_events_default_organization_id_external_subscript_idx1; Type: INDEX ATTACH; Schema: public; Owner: -
+--
+
+ALTER INDEX public.idx_unique_on_enriched_events ATTACH PARTITION public.enriched_events_default_organization_id_external_subscript_idx1;
+
+
+--
+-- Name: enriched_events_default_organization_id_external_subscripti_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+--
+
+ALTER INDEX public.idx_lookup_on_enriched_events ATTACH PARTITION public.enriched_events_default_organization_id_external_subscripti_idx;
+
+
+--
+-- Name: enriched_events_default_organization_id_subscription_id_cha_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+--
+
+ALTER INDEX public.idx_billing_on_enriched_events ATTACH PARTITION public.enriched_events_default_organization_id_subscription_id_cha_idx;
 
 
 --

@@ -59,4 +59,42 @@ class CouponFactory extends Factory
     {
         return $this->state(fn () => ['frequency' => CouponFrequency::Forever]);
     }
+
+    /** Rails factory default `reusable` is false; a reusable coupon opts in. */
+    public function reusable(): static
+    {
+        return $this->state(fn () => ['reusable' => true]);
+    }
+
+    public function terminated(): static
+    {
+        return $this->state(fn () => [
+            'status' => CouponStatus::Terminated,
+            'terminated_at' => now('UTC'),
+        ]);
+    }
+
+    /** Rails trait :deleted — a discarded coupon (soft delete). */
+    public function deleted(): static
+    {
+        return $this->state(fn () => ['deleted_at' => now('UTC')]);
+    }
+
+    public function timeLimit(?string $expirationAt = null): static
+    {
+        return $this->state(fn () => [
+            'expiration' => CouponExpiration::TimeLimit,
+            'expiration_at' => $expirationAt ?? now('UTC')->addDays(30),
+        ]);
+    }
+
+    public function limitedPlans(): static
+    {
+        return $this->state(fn () => ['limited_plans' => true]);
+    }
+
+    public function limitedBillableMetrics(): static
+    {
+        return $this->state(fn () => ['limited_billable_metrics' => true]);
+    }
 }

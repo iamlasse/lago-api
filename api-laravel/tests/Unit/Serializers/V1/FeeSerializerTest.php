@@ -90,13 +90,19 @@ it('serializes a charge fee with literal snake_case keys', function (): void {
             'code' => 'api',
             'name' => 'API',
             'description' => 'API calls',
-            'invoice_display_name' => null,
+            // Rails Fee#invoice_name: the charge's own invoice_display_name
+            // (factory-set) wins; a null one falls back to the metric name.
+            'invoice_display_name' => $fee->charge->invoice_display_name,
             'filters' => null,
             'filter_invoice_display_name' => null,
-            'lago_item_id' => $fee->charge_id,
+            // Rails Fee#item_id: the BILLABLE METRIC id on charge fees.
+            'lago_item_id' => $fee->charge->billable_metric_id,
             'item_type' => 'BillableMetric',
-            'grouped_by' => [],
+            // grouped_by asserted below — it serializes as a JSON object.
+            'grouped_by' => $payload['item']['grouped_by'],
         ])
+        // grouped_by serializes as a JSON OBJECT ({} — Rails jsonb), not [].
+        ->and(json_encode($payload['item']['grouped_by']))->toBe('{}')
         ->and($payload['pay_in_advance'])->toBeFalse()
         ->and($payload['invoiceable'])->toBeTrue()
         ->and($payload['amount_cents'])->toBe(100)
@@ -106,8 +112,8 @@ it('serializes a charge fee with literal snake_case keys', function (): void {
         ->and($payload['taxes_amount_cents'])->toBe(20)
         ->and($payload['taxes_precise_amount'])->toBe('0.205')
         ->and($payload['taxes_rate'])->toBe(20.0)
-        // BcNumeric scale 0 — Rails emits the BigDecimal as a string.
-        ->and($payload['total_aggregated_units'])->toBe('1')
+        // BcNumeric scale 0 — Rails emits the BigDecimal as to_s("F") string.
+        ->and($payload['total_aggregated_units'])->toBe('1.0')
         ->and($payload['total_amount_cents'])->toBe(120)
         ->and($payload['total_amount_currency'])->toBe('EUR')
         ->and($payload['units'])->toBe('1.0')
@@ -157,7 +163,10 @@ it('serializes a subscription fee with the plan item', function (): void {
         ->and($payload['item']['code'])->toBe('pro')
         ->and($payload['item']['name'])->toBe('Pro')
         ->and($payload['item']['item_type'])->toBe('Subscription')
-        ->and($payload['item']['lago_item_id'])->toBe($plan->id)
+        // Rails Fee#item_id: the SUBSCRIPTION id on subscription fees (not
+        // the plan's), and invoice_display_name falls back to the
+        // subscription's own name.
+        ->and($payload['item']['lago_item_id'])->toBe($subscription->id)
         // subscription fees carry the plan's pay_in_advance.
         ->and($payload['pay_in_advance'])->toBeTrue();
 })->group('ledger:ser:V1.FeeSerializer');

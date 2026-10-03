@@ -211,6 +211,12 @@ class Customer extends BaseModel
         return $this->hasMany(IntegrationCustomer::class);
     }
 
+    /** Rails: `has_many :wallets`. */
+    public function wallets(): HasMany
+    {
+        return $this->hasMany(Wallet::class);
+    }
+
     // -- Domain methods (ports of the Rails instance methods) ------------------
 
     /** Rails: `partner_account?` (account_type enum suffix helper). */
@@ -222,6 +228,20 @@ class Customer extends BaseModel
     public function customerAccount(): bool
     {
         return $this->getRawOriginal('account_type') === AccountType::Customer->value;
+    }
+
+    /**
+     * Rails: `flag_wallets_for_refresh` — marks the customer so the
+     * wallet-refresh clock picks it up (a no-op without active wallets).
+     */
+    public function flagWalletsForRefresh(): void
+    {
+        if (! $this->wallets()->active()->exists()) {
+            return;
+        }
+
+        $this->awaiting_wallet_refresh = true;
+        $this->save();
     }
 
     /** Rails: `active_subscription` (status enum: pending=0, active=1, …). */

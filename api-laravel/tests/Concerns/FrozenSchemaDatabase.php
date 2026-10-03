@@ -28,6 +28,11 @@ trait FrozenSchemaDatabase
         // the ~5s schema load.
         if (! \Illuminate\Foundation\Testing\RefreshDatabaseState::$migrated) {
             DB::statement('DROP SCHEMA IF EXISTS public CASCADE');
+            // The frozen schema creates the pg_partman extension and schema
+            // (enriched_events partitioning) — both survive a `public`-only
+            // reset, so they are dropped explicitly before reloading.
+            DB::statement('DROP EXTENSION IF EXISTS pg_partman CASCADE');
+            DB::statement('DROP SCHEMA IF EXISTS partman CASCADE');
             DB::statement('CREATE SCHEMA public');
 
             $this->artisan('migrate', ['--force' => true]);

@@ -102,6 +102,18 @@ class Organization extends BaseModel
         return $this->clickhouse_events_store ? 'clickhouse' : 'postgres';
     }
 
+    /** Port of Organization#clickhouse_events_store?. */
+    public function clickhouseEventsStore(): bool
+    {
+        return (bool) $this->clickhouse_events_store;
+    }
+
+    /** Port of Organization#postgres_events_store? — !clickhouse_events_store?. */
+    public function postgresEventsStore(): bool
+    {
+        return ! $this->clickhouseEventsStore();
+    }
+
     /** Port of Organization#eu_vat_eligible?. */
     public function euVatEligible(): bool
     {

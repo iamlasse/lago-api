@@ -40,6 +40,10 @@ use InvalidArgumentException;
  *   mismatch) still compares strictly, so a port that fails to mint or fails
  *   to echo an id is still a diff. Deterministic seeded ids are NOT
  *   protected by this rule when asserted in test bodies.
+ * - Fee `item.lago_item_id` when the item type is "subscription": it carries
+ *   the minted subscription's id (same rationale as lago_subscription_id).
+ *   On charge items it is the seeded billable metric id and compares
+ *   strictly — a port emitting the charge id still fails.
  * - URLs embedding minted row ids (`web_url`): every UUID segment in the
  *   string canonicalizes to "<uuid>" (invoice#web_url contains the customer
  *   and invoice uuids); the rest of the URL compares strictly.
@@ -63,9 +67,11 @@ class Normalizer
      * by a captured request), compared as "a UUID" rather than by bytes.
      * lago_invoice_id / lago_tax_id appear on applied taxes and fees that
      * reference rows minted by an earlier captured request, so each runtime
-     * echoes its own fresh ids.
+     * echoes its own fresh ids; lago_subscription_id appears on fees and
+     * billing_periods of invoices whose subscription was created by an
+     * earlier captured request (same rationale).
      */
-    public const MINTED_ID_FIELDS = ['lago_id', 'lago_invoice_id', 'lago_tax_id'];
+    public const MINTED_ID_FIELDS = ['lago_id', 'lago_invoice_id', 'lago_tax_id', 'lago_subscription_id'];
 
     /**
      * JSON keys whose numeric values are compared as rates (float tolerance).
@@ -199,13 +205,23 @@ class Normalizer
     /**
      * Recursively normalizes a decoded JSON document.
      */
-    public static function normalizeValue(mixed $value, ?string $key = null): mixed
+    public static function normalizeValue(mixed $value, ?string $key = null, bool $forceMinted = false): mixed
     {
         if (is_array($value)) {
+            // On a fee `item`, type "subscription" means lago_item_id carries
+            // the minted subscription's id (each runtime echoes its own); on
+            // charge items it is the seeded billable metric id and compares
+            // strictly. See test_minted_subscription_item_ids_compare_as_uuids.
+            $subscriptionItem = ($value['type'] ?? null) === 'subscription';
+
             $normalized = [];
 
             foreach ($value as $childKey => $childValue) {
-                $normalized[$childKey] = self::normalizeValue($childValue, is_string($childKey) ? $childKey : null);
+                $normalized[$childKey] = self::normalizeValue(
+                    $childValue,
+                    is_string($childKey) ? $childKey : null,
+                    $subscriptionItem && $childKey === 'lago_item_id',
+                );
             }
 
             return $normalized;
@@ -235,7 +251,7 @@ class Normalizer
             }
         }
 
-        if ($key !== null && in_array(mb_strtolower($key), self::MINTED_ID_FIELDS, true)) {
+        if ($key !== null && (in_array(mb_strtolower($key), self::MINTED_ID_FIELDS, true) || $forceMinted)) {
             $minted = self::canonicalMintedId($value);
 
             if ($minted !== null) {

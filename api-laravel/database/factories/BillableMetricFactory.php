@@ -86,6 +86,14 @@ class BillableMetricFactory extends Factory
         ]);
     }
 
+    /** Bind the metric to an existing organization (factory helper). */
+    public function forOrganization($organization): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'organization_id' => $organization instanceof \App\Models\Organization ? $organization->id : $organization,
+        ]);
+    }
+
     /** Rails: factory :sum_billable_metric. */
     public function sum(): static
     {

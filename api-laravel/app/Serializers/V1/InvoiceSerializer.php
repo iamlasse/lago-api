@@ -73,8 +73,7 @@ class InvoiceSerializer extends ModelSerializer
         }
 
         if ($this->include('billing_periods')) {
-            // TODO(port): V1::Invoices::BillingPeriodSerializer.
-            $payload['billing_periods'] = [];
+            $payload = [...$payload, ...$this->billingPeriods()];
         }
 
         if ($this->include('fees')) {
@@ -137,6 +136,28 @@ class InvoiceSerializer extends ModelSerializer
             $subscriptions,
             SubscriptionSerializer::class,
             ['collection_name' => 'subscriptions'],
+        ))->serialize();
+    }
+
+    /**
+     * Port of Rails' billing_periods: the invoice's invoice_subscriptions,
+     * ordered by the subscription's invoice name
+     * (COALESCE(subscriptions.name, plans.invoice_display_name, plans.name)).
+     */
+    /** @return array<string, mixed> */
+    private function billingPeriods(): array
+    {
+        $periods = $this->model->invoiceSubscriptions()
+            ->select('invoice_subscriptions.*')
+            ->join('subscriptions', 'subscriptions.id', '=', 'invoice_subscriptions.subscription_id')
+            ->join('plans', 'plans.id', '=', 'subscriptions.plan_id')
+            ->orderByRaw('COALESCE(subscriptions.name, plans.invoice_display_name, plans.name) ASC')
+            ->get();
+
+        return (new CollectionSerializer(
+            $periods,
+            Invoices\BillingPeriodSerializer::class,
+            ['collection_name' => 'billing_periods'],
         ))->serialize();
     }
 

@@ -34,14 +34,8 @@ if (! is_dir($destDir)) {
 // dropped. Verified against structure.sql: no FK, sequence, or data block
 // outside these objects references them.
 $exclusions = [
-    [
-        'pattern' => '/\bpartman\b/',
-        'reason' => 'pg_partman extension + partman schema (partition management is a runtime concern; re-enabled verbatim when events ingestion lands in M2)',
-    ],
-    [
-        'pattern' => '/enriched_events/',
-        'reason' => 'partitioned events table (public.enriched_events + default partition + its indexes/ATTACH blocks) — owned by the events path, M2+',
-    ],
+    // M2: the partman block and the partitioned enriched_events table are
+    // re-enabled verbatim now that the events ingestion path has landed.
     [
         'pattern' => '/schema_migrations/',
         'reason' => 'Rails bookkeeping table + its INSERT data (Laravel has its own migrations table)',

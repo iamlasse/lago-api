@@ -114,8 +114,14 @@ class BaseResult
         return $this->failWithError(new MethodNotAllowedFailure($this, $code));
     }
 
-    /** @param array<string, list<string>> $messages */
-    public function validationFailure(array $messages): static
+    /**
+     * Port of `validation_failure!(errors:)` — Rails' `errors` argument is
+     * free-form data: the usual field => [codes] hash, but also a bare
+     * string (Events::CreateService's expression failure) or an index-keyed
+     * object (Events::CreateBatchService's per-event errors), passed through
+     * to the `error_details` envelope verbatim.
+     */
+    public function validationFailure(array|object|string $messages): static
     {
         return $this->failWithError(new ValidationFailure($this, $messages));
     }

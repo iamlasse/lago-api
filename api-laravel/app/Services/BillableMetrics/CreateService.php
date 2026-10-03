@@ -17,7 +17,6 @@ use App\Services\Failures\FailedResult;
  *
  * Not ported (dependencies do not exist yet):
  * - TODO(port): filters args (BillableMetricFilters::CreateOrUpdateBatchService).
- * - TODO(port): BillableMetrics::ExpressionCacheService.expire_cache.
  * - TODO(port): SendWebhookJob.perform_after_commit("billable_metric.created")
  *   — webhooks are a later milestone; the emission point is marked below.
  * - TODO(port): SegmentTrackJob "billable_metric_created".
@@ -73,9 +72,10 @@ class CreateService extends BaseService
                 // followed by .raise_if_error!.
             });
 
-            // TODO(port): BillableMetrics::ExpressionCacheService.expire_cache(
-            //   organization.id, code) — an event received for this code before
-            //   the metric existed cached the absence of an expression.
+            ExpressionCacheService::expireCache(
+                (string) $metric->organization_id,
+                (string) $metric->code,
+            ); // an event received for this code before the metric existed cached the absence of an expression.
 
             // TODO(port): SendWebhookJob.perform_after_commit(
             //   "billable_metric.created", metric) — webhook emission hook point.

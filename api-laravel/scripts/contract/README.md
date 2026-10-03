@@ -89,9 +89,41 @@ PAO_DISABLE=1 DB_DATABASE=lago_laravel_golden ./vendor/bin/pest tests/Contract
 | --- | --- | --- | --- |
 | `auth_org` | 4 | green | + 2 cross-language JWT side-assertions |
 | `customers_crud` | 8 | green | create/upsert, show, index, 404, destroy |
-| `plans_metrics_crud` | 13 | 9 green / 4 red | red = finding 3 below |
-| `subscription_create` | 8 | 1 green / 7 red | red = finding 4 below (only `connections`) |
-| `invoice_standard` | 5 + extra `10.json` | 2 green / 3 red | red = finding 5 below |
+| `plans_metrics_crud` | 13 | green | finding 3 closed (metric filters) |
+| `subscription_create` | 8 | green | finding 4 closed (`connections`) |
+| `invoice_standard` | 5 + extra `10.json` | green | one-off invoice surface + show |
+| `invoice_graduated` | 2 + extra `10.json` | show red on `events_count` | finding 12 (seam) |
+| `invoice_package` | 2 + extra `10.json` | show red on `events_count` | finding 12 (seam) |
+| `invoice_percentage` | 2 + extra `10.json` | index red (totals), show blocked | finding 12 (seam) — see finding 9 |
+| `invoice_volume` | 2 + extra `10.json` | show red on `events_count` | finding 12 (seam) |
+| `invoice_graduated_percentage` | 2 + extra `10.json` | green | premium flip, gotcha below |
+
+The five per-charge-model scenarios (`invoice_graduated`, `invoice_package`,
+`invoice_percentage`, `invoice_volume`, `invoice_graduated_percentage`) share
+one shape, documented in `scenarios/invoice_graduated.rb` and replayed by the
+shared base class `tests/Contract/InvoiceChargeModelCase.php`: seed org +
+api key + customer + sum metric + ONE charge of the model under test +
+metered events + one `cached_aggregations` row, then manifest request #1 =
+`POST /subscriptions` (arrears, calendar, `subscription_at` = period start),
+then IN-PROCESS billing via `BillSubscriptionJob.perform_now` under
+`travel_to(BILLING_AT)` (the production billing entry point — billing is a
+clock path, not an HTTP path), then manifest request #2 = invoice index and
+EXTRA golden `10.json` = invoice show of the minted invoice (replay
+substitutes the id its own billing minted, like `invoice_standard`).
+
+**How the metered input is seeded (both sides must aggregate the same):**
+three `:event` rows (deterministic transaction ids, `timestamp` inside the
+billed May period) ride `fixture.sql`; PLUS one `:cached_aggregation` row
+with the same sum for the same charge/subscription. The cached row exists
+because the Laravel aggregation seam
+(`app/Services/Fees/ChargeService/Aggregator.php`) reads
+`cached_aggregations` and NOT `events` (live event aggregation is M2
+there), while Rails ignores cached rows on the arrears periodic path
+(they are only read for pay-in-advance event billing) — so the row is the
+honest carrier of the seam's input and invisible to the Rails capture.
+Everything downstream (tiering math, amount_details) still has to match.
+The seam cannot carry the event COUNT or per-event running_total — those
+gaps are findings 9/12 below.
 
 Replay DBs: each scenario test self-migrates, so any disposable DB works.
 Dedicated `lago_golden_<scenario>` databases exist on `lago-laravel-pg`;
@@ -185,6 +217,23 @@ match exactly — exp matches because both sides mint under the frozen clock.
   `POST /api/v1/invoices/preview` answers 403
   `{"status":403,"error":"Forbidden","code":"feature_unavailable"}`. That
   envelope IS the contract for the OSS capture stack; keep it.
+- Rails' `ActiveSupport::Testing::TimeHelpers` refuse NESTED `travel_to`
+  blocks (RuntimeError) — the in-process billing needs its own top-level
+  `travel_to(BILLING_AT)` trip, and any locals (`auth`) must be re-created
+  inside each block (Ruby block scoping).
+- `graduated_percentage` is `License.premium?`-gated in Rails
+  (`charge.rb:181`); the OSS capture image has no license, so
+  `invoice_graduated_percentage.rb` flips the singleton the same way the
+  Rails suite's own `:premium` specs do
+  (`License.instance_variable_set(:@premium, true)` — see
+  spec/support/license_helper.rb) BEFORE seeding the charge. The fee
+  pipeline downstream is unmodified production code.
+- The in-process `BillSubscriptionJob.perform_now` replay must freeze the
+  SAME instant on both sides (BILLING_AT): the invoice's created_at,
+  issuing_date clock and fee timestamps come from it. The Laravel test
+  mirrors it with `CarbonImmutable::setTestNow(BILLING_AT)` around
+  `(new BillSubscriptionJob(...))->handle()` and restores the captured
+  instant afterwards (see `InvoiceChargeModelCase::billInProcess`).
 
 ## Current findings (Laravel deviations, intentionally not fixed)
 
@@ -252,6 +301,92 @@ red on purpose (rules: capture, don't fix):
    test env should render production-shaped errors or the Normalizer should
    drop debug keys — but today the Laravel test stack answers differently
    from production Laravel too.
+
+6. **Laravel error responses leak debug payloads.** On unmatched routes the
+   replay returns `message`, `exception`, `file`, `line` and a full `trace[]`
+   alongside the envelope (APP_DEBUG on in the test env); Rails never emits
+   these keys. Every 404/405 diff above includes them. Decide whether the
+   test env should render production-shaped errors or the Normalizer should
+   drop debug keys — but today the Laravel test stack answers differently
+   from production Laravel too.
+
+The five per-charge-model scenarios replay their index requests green and
+their shows green except for the aggregation-seam gap (finding 12):
+`events_count` on graduated/package/volume/percentage, and the percentage
+index totals (the per-event fixed fee — finding 9's data dependency).
+Findings 7–11 and 13 are CLOSED; the history is kept below with their root
+causes, since the tests that pinned the bugs travel with the fixes.
+
+7. ~~**Invoice show: `billing_periods` is `[]` (all 5 scenarios).**~~ CLOSED:
+   `app/Serializers/V1/Invoices/BillingPeriodSerializer.php` ports
+   `V1::Invoices::BillingPeriodSerializer` (one entry per invoice_subscription,
+   ordered by COALESCE(subscription name, plan invoice_display_name, plan name)).
+
+8. ~~**Package charge rounds packages DOWN instead of UP.**~~ CLOSED:
+   `PackageService` now uses `MoneyMath::ceil` like Rails'
+   `paid_units.fdiv(per_package_size).ceil` — 111 paid units in packages of
+   10 bill 12 packages (120000c). Unit test:
+   `rounds a partial package UP, not half-up (Rails ceil)`.
+
+9. **Percentage charge: per-event branches (CLOSED at the model level; the
+   CONTRACT replay stays red on the seam).** Two port bugs were fixed:
+   `per_unit_total_amount` emitted Rails' DEAD-CODE expression
+   (`compute_percentage_amount.fdiv(paid_units)` — result discarded in Ruby,
+   so the golden value is `compute_percentage_amount` verbatim), and
+   `fixed_fee_unit_amount` keyed on `paid_units > 0` instead of Rails'
+   `paid_events.positive?`. The full golden math (fee 1315c, free_events 1,
+   paid_events 3, fixed_fee_total "6.0", per_unit_total "7.15") is pinned by
+   the unit test `replays the invoice_percentage golden math` with
+   Rails-shaped inputs (count 4, running_total limited to the first
+   free_units_per_events values per SumService#running_total_per_events).
+   The contract replay cannot feed those inputs — see finding 12.
+
+10. ~~**Fee-level `units` off by 10x for volume and percentage.**~~ CLOSED —
+    and the cause was NOT a scale bug: the fee's stored units were correct
+    (250 / 800); the serializer's `decimalToF` helper rtrimmed trailing
+    zeros from the WHOLE string, so dotless "250" became "25.0" and "800"
+    became "8.0". The shared `MoneyMath::toF` only trims FRACTIONAL zeros.
+
+11. ~~**Fee `item` (invoice show) serialization incomplete (all 5).**~~ CLOSED:
+    subscription fees carry plan name/description + subscription name (via
+    Fee#invoice_name port) + subscription id as `lago_item_id`; charge fees
+    carry the charge invoice_display_name and the BILLABLE METRIC id. The
+    subscription item's minted id is canonicalized in the Normalizer
+    (`item.type === "subscription"` only — charge items still compare
+    strictly; unit test
+    `test_minted_subscription_item_ids_compare_as_uuids`).
+
+12. **Aggregation seam starves the fee metadata (OPEN — M2).** The Aggregator
+    (app/Services/Fees/ChargeService/Aggregator.php) reads the frozen
+    `cached_aggregations` rows, which carry NO events count and NO per-event
+    running total, so it reports `count = 1` and `running_total = [units]`:
+    every fee shows `events_count: 1` (golden: 3 for graduated/package/volume,
+    4 for percentage) and the percentage model's per-event branches cannot
+    fire (paid_events 0, fixed fee 0 → invoice totals 5615 vs 6215). This is
+    the M2 live-aggregation seam (BillableMetrics::Aggregations::* — sum,
+    count and running_total come from the events store in Rails). The seam
+    documents the gap in-code; do NOT fake count/running_total from the
+    cached units. This is the ONLY remaining contract red.
+
+13. ~~**BigDecimal string formatting (all 5).**~~ CLOSED:
+    `MoneyMath::toF` is the canonical Rails `to_s("F")` port (fixed notation,
+    trailing FRACTIONAL zeros trimmed, at least one decimal — "250" stays
+    "250.0"), used by the fee/coupon/applied-coupon serializers. Fee
+    `amount_details` values are formatted at jsonb-write time
+    (`ChargeService::serializeAmountDetails` — Rails' ActiveSupport encodes
+    BigDecimal values the same way on save), with integers (event counts,
+    range bounds, `per_package_size`) passing through untyped. The
+    `precise_unit_amount` final digit comes from BigDecimal division
+    semantics: `MoneyMath::fdiv` now ROUNDS at scale 15 (half away from
+    zero, like `BigDecimal#div`) instead of truncating — golden
+    "7.761904761904762", not "...761".
+
+Not red but load-bearing: `lago_subscription_id` (fees, billing_periods)
+now canonicalizes as a minted id in the Normalizer — the subscription is
+minted by manifest request #1, so each runtime echoes its own id (unit test:
+`NormalizerTest::test_minted_lago_subscription_ids_compare_as_uuids`).
+
+
 
 ### Normalizer slack (with unit tests in NormalizerTest)
 

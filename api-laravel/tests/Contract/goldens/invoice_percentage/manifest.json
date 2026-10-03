@@ -1,0 +1,33 @@
+{
+  "captured_at": "2025-05-02T12:00:00Z",
+  "requests": [
+    {
+      "method": "POST",
+      "path": "/api/v1/subscriptions",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-00000000007e"
+      },
+      "body": {
+        "subscription": {
+          "external_customer_id": "percentage-customer-1",
+          "plan_code": "percentage-plan",
+          "external_id": "percentage-sub-1",
+          "name": "Percentage Sub",
+          "billing_time": "calendar",
+          "subscription_at": "2025-05-01T00:00:00Z"
+        }
+      },
+      "required_headers": {}
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/invoices?external_customer_id=percentage-customer-1",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-00000000007e"
+      },
+      "body": null,
+      "required_headers": {}
+    }
+  ]
+}

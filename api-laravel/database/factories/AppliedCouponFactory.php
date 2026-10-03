@@ -50,6 +50,20 @@ class AppliedCouponFactory extends Factory
         return $this->state(fn () => ['percentage_rate' => $rate]);
     }
 
+    public function recurring(int $duration = 3): static
+    {
+        return $this->state(fn () => [
+            'frequency' => CouponFrequency::Recurring,
+            'frequency_duration' => $duration,
+            'frequency_duration_remaining' => $duration,
+        ]);
+    }
+
+    public function forever(): static
+    {
+        return $this->state(fn () => ['frequency' => CouponFrequency::Forever]);
+    }
+
     public function terminated(): static
     {
         return $this->state(fn () => [

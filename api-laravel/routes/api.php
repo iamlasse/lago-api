@@ -7,6 +7,7 @@ use App\Http\Middleware\SetBetaHeader;
 use App\Exceptions\Api\NotFoundException;
 use App\Http\Controllers\Api\V1\PlansController;
 use App\Http\Controllers\Api\V1\TaxesController;
+use App\Http\Controllers\Api\V1\EventsController;
 use App\Http\Controllers\Api\V1\InvoicesController;
 use App\Http\Controllers\Api\V1\CustomersController;
 use App\Http\Controllers\Api\V1\OrganizationsController;
@@ -32,7 +33,8 @@ use App\Http\Controllers\Api\V1\Plans\Charges\FiltersController;
 |
 | Not registered yet (dependencies out of scope):
 | - customers usage endpoints (current_usage/projected_usage/past_usage,
-|   checkout_url, portal_url) — the events store is a later milestone;
+|   checkout_url, portal_url) — the events store is ported (M2 groundwork),
+|   the usage/aggregation services are not yet;
 | - the customers nested subresources (invoices, subscriptions,
 |   applied_coupons, wallets, ...).
 */
@@ -193,6 +195,33 @@ $sharedApi = function (): void {
             Route::patch('{id}', [InvoicesController::class, 'update']);
             Route::delete('{id}', [InvoicesController::class, 'destroy']);
         });
+
+        // -- events -----------------------------------------------------------
+        // Keyed by transaction_id on the member route (Rails: resources
+        // :events; the default [^/]+ constraint applies — percent-encoded
+        // special characters survive). GET /events_enriched is a TOP-LEVEL
+        // path, not nested under events/ (Rails draws it separately); it is
+        // clickhouse-only (ensure_organization_uses_clickhouse -> 403
+        // endpoint_not_available for every postgres org).
+        //
+        // Not registered yet (dependencies do not exist): estimate_fees,
+        // estimate_instant_fees and batch_estimate_instant_fees
+        // (Fees::EstimateInstant::PayInAdvanceService family — the
+        // pay-in-advance metering slice).
+        Route::prefix('events')->as('events:')->group(function (): void {
+            Route::get('', [EventsController::class, 'index']);
+            Route::post('', [EventsController::class, 'create']);
+            Route::post('batch', [EventsController::class, 'batch']);
+
+            Route::get('{id}', [EventsController::class, 'show'])
+                // Rails constrains :id with the default [^/]+ on the RAW path
+                // (percent-encoded separators are part of the segment);
+                // Laravel decodes the path before matching, so the constraint
+                // is widened to keep encoded transaction_ids routable.
+                ->where('id', '.+');
+        });
+
+        Route::get('events_enriched', [EventsController::class, 'indexEnriched']);
 
         // customers and subscriptions are looked up by external_id, which
         // may contain dots. Rails constrains those params with /[^\/]+/ (a

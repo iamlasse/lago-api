@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Serializers\V1;
 
 use App\Support\Currency;
+use App\Support\MoneyMath;
 use App\Serializers\Base\ModelSerializer;
 use App\Serializers\Base\CollectionSerializer;
 use App\Serializers\V1\Concerns\FormatsDatetime;
@@ -47,12 +48,12 @@ class FeeSerializer extends ModelSerializer
                 'code' => $this->itemCode(),
                 'name' => $this->itemName(),
                 'description' => $this->itemDescription(),
-                'invoice_display_name' => $model->invoice_display_name,
+                'invoice_display_name' => $this->itemInvoiceDisplayName(),
                 'filters' => null,
                 'filter_invoice_display_name' => null,
                 'lago_item_id' => $this->itemId(),
                 'item_type' => $this->itemType(),
-                'grouped_by' => $model->grouped_by ?? (object) [],
+                'grouped_by' => $model->grouped_by ?: (object) [],
             ],
             'pay_in_advance' => $this->payInAdvance(),
             'invoiceable' => $model->isCharge() ? $model->charge?->invoiceableCharge() : true,
@@ -60,10 +61,10 @@ class FeeSerializer extends ModelSerializer
             'amount_currency' => $model->amount_currency,
             // Rails serializes BigDecimal attributes as fixed-notation
             // strings ("24.0", "28.8") — see decimalToF.
-            'precise_amount' => self::decimalToF(
+            'precise_amount' => MoneyMath::toF(
                 bcdiv((string) $model->precise_amount_cents, (string) $subunitToUnit, 10),
             ),
-            'precise_total_amount' => self::decimalToF(
+            'precise_total_amount' => MoneyMath::toF(
                 bcdiv(
                     bcadd((string) $model->precise_amount_cents, (string) $model->taxes_precise_amount_cents, 15),
                     (string) $subunitToUnit,
@@ -71,19 +72,21 @@ class FeeSerializer extends ModelSerializer
                 ),
             ),
             'taxes_amount_cents' => $model->taxes_amount_cents,
-            'taxes_precise_amount' => self::decimalToF(
+            'taxes_precise_amount' => MoneyMath::toF(
                 bcdiv((string) $model->taxes_precise_amount_cents, (string) $subunitToUnit, 10),
             ),
             'taxes_rate' => $model->taxes_rate,
-            'total_aggregated_units' => $model->total_aggregated_units,
+            'total_aggregated_units' => $model->total_aggregated_units === null
+                ? null
+                : MoneyMath::toF((string) $model->total_aggregated_units),
             'total_amount_cents' => (int) $model->amount_cents + (int) $model->taxes_amount_cents,
             'total_amount_currency' => $model->amount_currency,
-            'units' => self::decimalToF((string) $model->units),
+            'units' => MoneyMath::toF((string) $model->units),
             'description' => $model->description,
-            'precise_unit_amount' => self::decimalToF((string) $model->precise_unit_amount),
-            'precise_coupons_amount_cents' => self::decimalToF((string) $model->precise_coupons_amount_cents),
+            'precise_unit_amount' => MoneyMath::toF((string) $model->precise_unit_amount),
+            'precise_coupons_amount_cents' => MoneyMath::toF((string) $model->precise_coupons_amount_cents),
             'sub_total_excluding_taxes_amount_cents' => (int) round((float) $model->subTotalExcludingTaxesAmountCents()),
-            'sub_total_excluding_taxes_precise_amount_cents' => self::decimalToF(
+            'sub_total_excluding_taxes_precise_amount_cents' => MoneyMath::toF(
                 (string) $model->subTotalExcludingTaxesPreciseAmountCents(),
             ),
             'events_count' => $model->events_count,
@@ -117,26 +120,6 @@ class FeeSerializer extends ModelSerializer
         return $payload;
     }
 
-    /**
-     * Rails' BigDecimal JSON form (ActiveSupport emits `to_s("F")`): fixed
-     * notation with trailing zeros trimmed, at least one fractional digit —
-     * "2400" -> "2400.0", "28.8000000000" -> "28.8", "0.00000" -> "0.0".
-     */
-    private static function decimalToF(string $numeric): string
-    {
-        $trimmed = mb_rtrim(mb_rtrim($numeric, '0'), '.');
-
-        if ($trimmed === '' || $trimmed === '-') {
-            $trimmed = '0';
-        }
-
-        if (! str_contains($trimmed, '.')) {
-            $trimmed .= '.0';
-        }
-
-        return $trimmed;
-    }
-
     private function payInAdvance(): bool
     {
         $model = $this->model;
@@ -154,6 +137,28 @@ class FeeSerializer extends ModelSerializer
 
     // -- item accessors (port of Rails' Fee#item_*) ---------------------------
 
+    /**
+     * Port of Fee#invoice_name: the fee's own display name wins, then the
+     * billed item's (charge invoice_display_name || billable metric name on
+     * charges; the subscription's name, falling back to its plan, otherwise).
+     */
+    private function itemInvoiceDisplayName(): ?string
+    {
+        $model = $this->model;
+
+        if (($model->invoice_display_name ?? null) !== null && $model->invoice_display_name !== '') {
+            return $model->invoice_display_name;
+        }
+
+        return match ($model->typeEnum()?->label()) {
+            'charge' => ($model->charge?->invoice_display_name ?: null)
+                ?? $model->charge?->billableMetric?->name,
+            'add_on' => $model->addOn?->invoice_display_name ?: $model->addOn?->name,
+            'fixed_charge' => $model->fixedCharge?->invoice_display_name ?: null,
+            default => $model->subscription?->invoiceName(),
+        };
+    }
+
     private function itemCode(): ?string
     {
         return match ($this->model->typeEnum()?->label()) {
@@ -167,10 +172,13 @@ class FeeSerializer extends ModelSerializer
 
     private function itemName(): ?string
     {
+        // Rails' fallback chain: subscription fees carry the PLAN name (not
+        // its invoice_display_name); fixed charges carry the add-on's.
         return match ($this->model->typeEnum()?->label()) {
             'charge' => $this->model->charge?->billableMetric?->name,
             'add_on' => $this->model->addOn?->name,
-            'subscription' => $this->model->subscription?->plan?->invoiceName(),
+            'subscription' => $this->model->subscription?->plan?->name,
+            'fixed_charge' => $this->model->fixedCharge?->addOn?->name ?? null,
             default => null,
         };
     }
@@ -180,16 +188,19 @@ class FeeSerializer extends ModelSerializer
         return match ($this->model->typeEnum()?->label()) {
             'charge' => $this->model->charge?->billableMetric?->description,
             'add_on' => $this->model->addOn?->description,
+            'subscription' => $this->model->subscription?->plan?->description,
             default => null,
         };
     }
 
     private function itemId(): ?string
     {
+        // Rails Fee#item_id: billable metric id on charges (NOT the charge
+        // id), the subscription id on subscription fees (NOT the plan id).
         return match ($this->model->typeEnum()?->label()) {
-            'charge' => $this->model->charge?->id,
+            'charge' => $this->model->charge?->billableMetric?->id,
             'add_on' => $this->model->addOn?->id,
-            'subscription' => $this->model->subscription?->plan?->id,
+            'subscription' => $this->model->subscription_id,
             default => null,
         };
     }

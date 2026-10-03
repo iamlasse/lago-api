@@ -1,0 +1,125 @@
+{
+  "subscription": {
+    "lago_id": "c5cdc307-8c07-4521-8a41-c9f93e4f5aea",
+    "external_id": "graduated-sub-1",
+    "lago_customer_id": "0cc1ce24-21c2-4021-b226-4cb9ac1e94b7",
+    "external_customer_id": "graduated-customer-1",
+    "name": "Graduated Sub",
+    "plan_code": "graduated-plan",
+    "plan_amount_cents": 4900,
+    "plan_amount_currency": "EUR",
+    "status": "active",
+    "billing_time": "calendar",
+    "subscription_at": "2025-05-01T00:00:00Z",
+    "started_at": "2025-05-01T00:00:00.000Z",
+    "trial_ended_at": null,
+    "ending_at": null,
+    "terminated_at": null,
+    "canceled_at": null,
+    "created_at": "2025-05-02T12:00:00Z",
+    "previous_plan_code": null,
+    "next_plan_code": null,
+    "downgrade_plan_date": null,
+    "current_billing_period_started_at": "2025-05-01T00:00:00Z",
+    "current_billing_period_ending_at": "2025-05-31T23:59:59Z",
+    "on_termination_credit_note": null,
+    "on_termination_invoice": "generate",
+    "progressive_billing_disabled": false,
+    "consolidate_invoice": true,
+    "purchase_order_number": null,
+    "cancellation_reason": null,
+    "activated_at": "2025-05-01T00:00:00Z",
+    "entitlements": [],
+    "payment_method": {
+      "payment_method_id": null,
+      "payment_method_type": "provider"
+    },
+    "plan": {
+      "lago_id": "f3d0ead8-7295-4fed-b967-ad6f2203aa9c",
+      "name": "Graduated Plan",
+      "invoice_display_name": "Graduated Plan Display",
+      "created_at": "2025-05-02T11:00:00Z",
+      "code": "graduated-plan",
+      "interval": "monthly",
+      "description": "arrears plan with a graduated charge",
+      "amount_cents": 4900,
+      "amount_currency": "EUR",
+      "trial_period": null,
+      "pay_in_advance": false,
+      "bill_charges_monthly": null,
+      "bill_fixed_charges_monthly": false,
+      "customers_count": 0,
+      "active_subscriptions_count": 0,
+      "draft_invoices_count": 0,
+      "parent_id": null,
+      "pending_deletion": false,
+      "charges": [
+        {
+          "lago_id": "1a4a0d6e-0000-4000-8000-000000000053",
+          "lago_billable_metric_id": "1a4a0d6e-0000-4000-8000-000000000052",
+          "code": "graduated-charge",
+          "invoice_display_name": "Tiered API calls",
+          "billable_metric_code": "tiered_calls",
+          "created_at": "2025-05-02T11:00:00Z",
+          "charge_model": "graduated",
+          "invoiceable": true,
+          "regroup_paid_fees": null,
+          "pay_in_advance": false,
+          "prorated": false,
+          "min_amount_cents": 0,
+          "accepts_target_wallet": false,
+          "properties": {
+            "graduated_ranges": [
+              {
+                "to_value": 10,
+                "from_value": 0,
+                "flat_amount": "2",
+                "per_unit_amount": "10"
+              },
+              {
+                "to_value": 20,
+                "from_value": 11,
+                "flat_amount": "3",
+                "per_unit_amount": "5"
+              },
+              {
+                "to_value": null,
+                "from_value": 21,
+                "flat_amount": "3",
+                "per_unit_amount": "5"
+              }
+            ]
+          },
+          "applied_pricing_unit": null,
+          "lago_parent_id": null,
+          "filters": [],
+          "taxes": []
+        }
+      ],
+      "usage_thresholds": [],
+      "applicable_usage_thresholds": [],
+      "taxes": []
+    },
+    "applicable_usage_thresholds": [],
+    "applied_invoice_custom_sections": [],
+    "activation_rules": [],
+    "connections": {
+      "payment": {
+        "behavior": "inherit",
+        "code": null
+      },
+      "tax": {
+        "behavior": "inherit",
+        "code": null
+      },
+      "accounting": {
+        "behavior": "inherit",
+        "code": null
+      },
+      "crm": {
+        "behavior": "inherit",
+        "code": null
+      }
+    }
+  }
+}

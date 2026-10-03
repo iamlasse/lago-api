@@ -55,6 +55,31 @@ it('computes the package charge model with rounding up to full packages', functi
         ->and((float) $result->amountDetails['paid_units'])->toBe(17.0);
 });
 
+it('rounds a partial package UP, not half-up (Rails ceil)', function (): void {
+    // Rails: paid_units.fdiv(per_package_size).ceil — a group counts from its
+    // first unit. 111 paid units in packages of 10 bill 12 packages
+    // (half-up rounding would bill 11 — the invoice_package golden bug).
+    $result = applyChargeModel(ChargeModel::Package, [
+        'amount' => '1000',
+        'free_units' => 0,
+        'package_size' => 10,
+    ], new AggregationResult(aggregation: '111', count: 111));
+
+    expect((float) $result->amount)->toBe(12000.0)
+        ->and($result->amountDetails['per_package_size'])->toBe(10)
+        ->and((float) $result->unitAmount)->toBe(12000.0 / 111.0);
+});
+
+it('bills an exact multiple of the package size without an extra package', function (): void {
+    $result = applyChargeModel(ChargeModel::Package, [
+        'amount' => '10',
+        'free_units' => 0,
+        'package_size' => 10,
+    ], new AggregationResult(aggregation: '20', count: 20));
+
+    expect((float) $result->amount)->toBe(20.0);
+});
+
 it('computes zero for package usage below the free units', function (): void {
     $result = applyChargeModel(ChargeModel::Package, [
         'amount' => '10',
@@ -129,6 +154,28 @@ it('applies free events and free amount in the percentage model', function (): v
 
     // 3 paid events × 1 fixed = 3; percentage on 1000 - 200 (2 free events) = 80
     expect((float) $result->amount)->toBe(83.0);
+});
+
+it('replays the invoice_percentage golden math (fixed fee + event split)', function (): void {
+    // The captured scenario: rate 1.3%, fixed_amount 2.0, free_units_per_events
+    // 3, free_units_per_total_aggregation 250 — four events of 200 (running
+    // total limited to the first 3 per Rails' running_total_per_events).
+    // Rails golden: fee 1315c, free_events 1, paid_events 3,
+    // fixed_fee_total_amount "6.0", per_unit_total_amount "7.15".
+    $result = applyChargeModel(ChargeModel::Percentage, [
+        'rate' => '1.3',
+        'fixed_amount' => '2.0',
+        'free_units_per_events' => 3,
+        'free_units_per_total_aggregation' => '250.0',
+    ], new AggregationResult(aggregation: '800', count: 4, options: ['running_total' => ['200', '400', '600']]));
+
+    expect((float) $result->amount)->toBe(13.15)
+        ->and($result->amountDetails['free_events'])->toBe(1)
+        ->and($result->amountDetails['paid_events'])->toBe(3)
+        ->and((float) $result->amountDetails['fixed_fee_total_amount'])->toBe(6.0)
+        ->and((float) $result->amountDetails['per_unit_total_amount'])->toBe(7.15)
+        ->and((float) $result->amountDetails['fixed_fee_unit_amount'])->toBe(2.0)
+        ->and((float) $result->amountDetails['free_units'])->toBe(250.0);
 });
 
 // -- volume -------------------------------------------------------------------

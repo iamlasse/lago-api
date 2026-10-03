@@ -36,10 +36,6 @@ class PercentageService extends AbstractChargeModel
             $paidUnits = '0';
         }
 
-        $perUnitTotal = MoneyMath::compare($paidUnits, '0') === 0
-            ? '0'
-            : MoneyMath::fdiv($this->computePercentageAmount(), $paidUnits);
-
         $count = $this->aggregationResult->count ?? 0;
         $freeEvents = min($count, $this->freeUnitsCount());
         $paidEvents = $count - $freeEvents;
@@ -53,9 +49,13 @@ class PercentageService extends AbstractChargeModel
             'free_events' => $freeEvents,
             'paid_units' => $paidUnits,
             'rate' => $this->rate(),
-            'per_unit_total_amount' => $perUnitTotal,
+            // Rails emits compute_percentage_amount verbatim here (its
+            // `.fdiv(paid_units)` expression on the line above is dead code
+            // whose result is discarded).
+            'per_unit_total_amount' => $this->computePercentageAmount(),
             'paid_events' => $paidEvents,
-            'fixed_fee_unit_amount' => (MoneyMath::compare($paidUnits, '0') > 0 || $paidEvents > 0) ? $fixedAmount : '0',
+            // Rails: paid_events.positive? ? fixed_amount : BigDecimal(0).
+            'fixed_fee_unit_amount' => $paidEvents > 0 ? $fixedAmount : '0',
             'fixed_fee_total_amount' => $this->computeFixedAmount(),
             'min_max_adjustment_total_amount' => $minMaxAdjustment,
         ];

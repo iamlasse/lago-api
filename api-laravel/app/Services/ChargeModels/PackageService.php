@@ -19,7 +19,7 @@ class PackageService extends AbstractChargeModel
 
         // NOTE: Check how many packages (groups of units) are consumed.
         // It's rounded up, because a group counts from its first unit.
-        $packageCount = MoneyMath::round(MoneyMath::fdiv($this->paidUnits(), (string) $this->perPackageSize()));
+        $packageCount = MoneyMath::ceil(MoneyMath::fdiv($this->paidUnits(), (string) $this->perPackageSize()));
 
         return MoneyMath::mul((string) $packageCount, $this->perPackageUnitAmount());
     }
@@ -39,7 +39,7 @@ class PackageService extends AbstractChargeModel
         }
 
         // Calculate how many packages are needed for projected usage
-        $projPackageCount = MoneyMath::round(MoneyMath::fdiv($projPaidUnits, (string) $this->perPackageSize()));
+        $projPackageCount = MoneyMath::ceil(MoneyMath::fdiv($projPaidUnits, (string) $this->perPackageSize()));
 
         return MoneyMath::mul((string) $projPackageCount, $this->perPackageUnitAmount());
     }
@@ -59,6 +59,10 @@ class PackageService extends AbstractChargeModel
         $freeUnits = (string) ($this->properties()['free_units'] ?? 0);
         $units = $this->units();
 
+        // Rails emits the raw property (a JSON number in the golden) — keep
+        // the type through instead of string-casting.
+        $packageSize = $this->properties()['package_size'] ?? 0;
+
         if (MoneyMath::compare($units, '0') === 0) {
             return ['free_units' => '0.0', 'paid_units' => '0.0', 'per_package_size' => 0, 'per_package_unit_amount' => '0.0'];
         }
@@ -67,7 +71,7 @@ class PackageService extends AbstractChargeModel
             return [
                 'free_units' => $freeUnits,
                 'paid_units' => '0.0',
-                'per_package_size' => $this->perPackageSize(),
+                'per_package_size' => $packageSize,
                 'per_package_unit_amount' => $this->perPackageUnitAmount(),
             ];
         }
@@ -75,7 +79,7 @@ class PackageService extends AbstractChargeModel
         return [
             'free_units' => $freeUnits,
             'paid_units' => $this->paidUnits(),
-            'per_package_size' => $this->perPackageSize(),
+            'per_package_size' => $packageSize,
             'per_package_unit_amount' => $this->perPackageUnitAmount(),
         ];
     }

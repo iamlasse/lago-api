@@ -36,6 +36,16 @@ final class Aggregator
         // unique count carry-over, weighted sum breakdowns, custom scripts)
         // arrive with the M2 event store. Until then the latest cached value
         // is the pre-aggregated units contract.
+        //
+        // CONTRACT GAP (documented in scripts/contract/README.md findings 9/12):
+        // cached_aggregations rows carry NO events count and NO per-event
+        // running total, so `count` is hardcoded to 1 and `running_total`
+        // collapses to [units]. Fees therefore emit events_count: 1 and the
+        // percentage model cannot fire its per-event branches (paid_events,
+        // fixed_fee_total_amount) — Rails computes both from the events store
+        // (BillableMetrics::Aggregations::SumService#running_total). Do NOT
+        // fake these from the units value; they arrive with M2 live event
+        // aggregation.
         $units = $cached?->current_aggregation ?? '0';
 
         $count = (int) ($cached?->created_at === null ? 0 : 1);

@@ -253,7 +253,7 @@ class ChargeService extends \App\Services\BaseService
             'taxes_precise_amount_cents' => '0',
             'unit_amount_cents' => MoneyMath::round($unitAmountCents),
             'precise_unit_amount' => $preciseUnitAmount,
-            'amount_details' => $amountResult->amountDetails,
+            'amount_details' => $this->serializeAmountDetails($amountResult->amountDetails),
             'grouped_by' => $amountResult->groupedBy ?: [],
         ]);
 
@@ -280,8 +280,27 @@ class ChargeService extends \App\Services\BaseService
         return $newFee;
     }
 
-    private function feeUnits(
-        \App\Services\ChargeModels\ChargeModelResult $amountResult,
+    /**
+     * Port of the jsonb write of `amount_details`: Rails stores the charge
+     * models' BigDecimal values via ActiveSupport's `to_s("F")` (fixed
+     * notation, trailing fractional zeros trimmed, always one decimal —
+     * "125.000000000000000" -> "125.0"), while integers (event counts,
+     * range bounds, per_package_size) pass through untouched.
+     */
+    private function serializeAmountDetails(mixed $details): mixed
+    {
+        if (is_array($details)) {
+            return array_map($this->serializeAmountDetails(...), $details);
+        }
+
+        if (is_string($details) && is_numeric($details)) {
+            return MoneyMath::toF($details);
+        }
+
+        return $details;
+    }
+
+    private function feeUnits(\App\Services\ChargeModels\ChargeModelResult $amountResult,
         MeteredItem $meteredItem,
     ): string {
         if ($this->options()->currentUsage() && ($meteredItem->payInAdvance() || $meteredItem->prorated())) {

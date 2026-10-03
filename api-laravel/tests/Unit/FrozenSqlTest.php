@@ -69,8 +69,10 @@ test('parses the real frozen structure.sql without losing statements', function 
     $createTypes = collect($statements)
         ->filter(fn ($s) => preg_match('/^CREATE TYPE /m', $s))->count();
 
-    // Frozen file: 141 tables, 45 enum types (5 tables + all partman excluded).
-    expect($createTables)->toBe(141)
+    // Frozen file: 144 tables, 45 enum types (M2: the partman schema +
+    // pg_partman extension + the partitioned enriched_events table and its
+    // default partition are re-enabled verbatim — 141 + 3 tables).
+    expect($createTables)->toBe(144)
         ->and($createTypes)->toBe(45)
         // Every statement must end balanced-ish: no truncated dollar quotes.
         ->and(collect($statements)->every(fn ($s) => mb_substr_count($s, '$$') % 2 === 0))->toBeTrue();

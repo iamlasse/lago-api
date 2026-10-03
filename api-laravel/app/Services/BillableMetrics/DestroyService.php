@@ -18,7 +18,6 @@ use Illuminate\Support\Facades\DB;
  * Not ported (dependencies do not exist yet):
  * - TODO(port): product_filter_values guard (single_validation_failure
  *   "referenced_by_product_filter").
- * - TODO(port): BillableMetrics::ExpressionCacheService.expire_cache.
  * - TODO(port): UsageMonitoring::Alert soft deletes.
  * - TODO(port): BillableMetricFilters::DestroyAllJob.
  * - TODO(port): SendWebhookJob.perform_after_commit("billable_metric.deleted").
@@ -47,8 +46,10 @@ class DestroyService extends BaseService
         // :billable_metric, error_code: "referenced_by_product_filter")` when
         // metric.product_filter_values.exists?.
 
-        // TODO(port): BillableMetrics::ExpressionCacheService.expire_cache(
-        //   metric.organization.id, metric.code).
+        ExpressionCacheService::expireCache(
+            (string) $metric->organization_id,
+            (string) $metric->code,
+        );
 
         $draftInvoiceIds = $this->draftInvoiceIds($metric);
 

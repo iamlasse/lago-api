@@ -17,9 +17,8 @@ use App\Services\AppliedCoupons\AmountService;
  * (app/services/credits/applied_coupon_service.rb) — applies ONE applied
  * coupon to the invoice totals and weights the credit over the fees.
  *
- * TODO(port): coupon_targets (limited billable metrics / plans) are not
- * modeled yet — limited coupons fall back to all invoice fees, like
- * unlimited ones.
+ * Limited coupons (coupon_targets) scope the credited fees to the targeted
+ * billable metrics / plans — see fees().
  */
 class AppliedCouponService extends \App\Services\BaseService
 {
@@ -136,8 +135,8 @@ class AppliedCouponService extends \App\Services\BaseService
     }
 
     /**
-     * TODO: ensure targeted amount is right with BM/plan limitation —
-     * coupon_targets are not ported yet, so limited coupons use all fees.
+     * NOTE: the weighting base is the TARGETED fees' total for BM/plan-limited
+     * coupons (fees() is already scoped), the invoice total otherwise.
      *
      * @param  iterable<\App\Models\Fee>  $fees
      */
@@ -163,13 +162,19 @@ class AppliedCouponService extends \App\Services\BaseService
         $coupon = $this->appliedCoupon->coupon;
 
         if ($coupon->limited_billable_metrics) {
-            // TODO(port): coupon_targets — billable-metric limited coupons.
-            return $this->invoice->fees()->get();
+            // Rails: joins(charge: :billable_metric).where(billable_metric:
+            // {id: coupon.coupon_targets.select(:billable_metric_id)}).
+            return $this->invoice->fees()
+                ->join('charges', 'charges.id', '=', 'fees.charge_id')
+                ->join('billable_metrics', 'billable_metrics.id', '=', 'charges.billable_metric_id')
+                ->whereIn('billable_metrics.id', $coupon->couponTargets()->select('billable_metric_id'))
+                ->select('fees.*')
+                ->get();
         }
 
         if ($coupon->limited_plans) {
-            // TODO(port): coupon_targets — plan limited coupons (Rails joins
-            // fees through subscription → plan on parent_and_overriden_plans).
+            // Rails: joins(subscription: :plan).where(plan: {id:
+            // parent_and_overriden_plans.map(&:id)}).
             $planIds = $coupon->parentAndOverridenPlans()->modelKeys();
 
             if ($planIds === []) {

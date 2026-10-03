@@ -108,9 +108,12 @@ final class MoneyMath
     }
 
     /**
-     * Ruby's `.fdiv` — a/b as a (string of a) decimal with high precision.
-     * Ruby floats carry ~15-17 significant digits; we keep 15 fractional
-     * digits, matching the frozen numeric(40,15) columns.
+     * Ruby's `.fdiv` / BigDecimal division — a/b as a decimal string with
+     * high precision. Ruby floats carry ~15-17 significant digits; we keep
+     * 15 fractional digits, matching the frozen numeric(40,15) columns.
+     * BigDecimal#div ROUNDS at its precision limit (half away from zero —
+     * golden fee precise_unit_amount "10.810810810810811"), so the quotient
+     * is computed one digit past scale and rounded, never truncated.
      */
     public static function fdiv(string|int|float $a, string|int|float $b, int $scale = self::SCALE): string
     {
@@ -120,7 +123,33 @@ final class MoneyMath
             throw new InvalidArgumentException('Division by zero');
         }
 
-        return bcdiv(self::toDecimalString($a), $divisor, $scale);
+        return self::roundTo(bcdiv(self::toDecimalString($a), $divisor, $scale + 1), $scale);
+    }
+
+    /**
+     * Port of Rails' BigDecimal#to_s("F") — the JSON form ActiveSupport uses
+     * for BigDecimal in jsonb / API payloads: fixed notation, trailing
+     * FRACTIONAL zeros trimmed, at least one fractional digit.
+     * "2400" -> "2400.0", "28.8000000000" -> "28.8", "0.00000" -> "0.0".
+     * Integer input is never touched ("250" keeps its zero — "250.0").
+     */
+    public static function toF(string $numeric): string
+    {
+        $trimmed = $numeric;
+
+        if (str_contains($trimmed, '.')) {
+            $trimmed = mb_rtrim(mb_rtrim($trimmed, '0'), '.');
+        }
+
+        if ($trimmed === '' || $trimmed === '-') {
+            $trimmed = '0';
+        }
+
+        if (! str_contains($trimmed, '.')) {
+            $trimmed .= '.0';
+        }
+
+        return $trimmed;
     }
 
     /** Decimal comparison: -1, 0, 1. */

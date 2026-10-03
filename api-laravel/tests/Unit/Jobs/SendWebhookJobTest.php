@@ -115,5 +115,10 @@ it('registers the M1 webhook types', function (): void {
         'subscription.updated',
         'subscription.terminated',
         'subscription.canceled',
+        'wallet.created',
+        'wallet.updated',
+        'wallet.terminated',
+        'wallet_transaction.created',
+        'wallet_transaction.updated',
     ]);
 });

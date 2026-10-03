@@ -18,7 +18,6 @@ use function array_key_exists;
  *
  * Not ported (dependencies do not exist yet):
  * - TODO(port): filters params (BillableMetricFilters::CreateOrUpdateBatchService).
- * - TODO(port): BillableMetrics::ExpressionCacheService.expire_cache.
  * - TODO(port): SendWebhookJob.perform_after_commit("billable_metric.updated").
  * - TODO(port): activity log middleware (activity_loggable).
  */
@@ -93,8 +92,10 @@ class UpdateService extends BaseService
                     }
 
                     if (array_key_exists('expression', $params) || array_key_exists('field_name', $params)) {
-                        // TODO(port): BillableMetrics::ExpressionCacheService
-                        //   .expire_cache(organization.id, billable_metric.code).
+                        ExpressionCacheService::expireCache(
+                            (string) $metric->organization->id,
+                            (string) $locked->code,
+                        );
                     }
                 }
 
