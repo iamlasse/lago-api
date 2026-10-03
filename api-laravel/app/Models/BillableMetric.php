@@ -95,6 +95,12 @@ class BillableMetric extends BaseModel
         return $this->hasMany(Charge::class);
     }
 
+    /** Rails: `has_many :filters, -> { order(:key) }, dependent: :delete_all, class_name: "BillableMetricFilter"`. */
+    public function filters(): HasMany
+    {
+        return $this->hasMany(BillableMetricFilter::class);
+    }
+
     /** Rails: `has_many :plans, through: :charges`. */
     public function plans(): BelongsToMany
     {

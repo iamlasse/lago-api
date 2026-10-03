@@ -34,10 +34,15 @@ use InvalidArgumentException;
  *   captured request get a fresh SecureRandom.uuid on each side (Rails mints
  *   at capture, Laravel at replay — even two Rails runs would differ), so
  *   byte equality is unattainable by construction. A UUID under `lago_id`
- *   canonicalizes to "<uuid>"; anything else under that key (null, a slug,
- *   a foreign row's id format mismatch) still compares strictly, so a port
- *   that fails to mint or fails to echo an id is still a diff. Deterministic
- *   seeded ids are NOT protected by this rule when asserted in test bodies.
+ *   (and under `lago_invoice_id` / `lago_tax_id`, which reference rows
+ *   minted by an earlier captured request) canonicalizes to "<uuid>";
+ *   anything else under those keys (null, a slug, a foreign row's id format
+ *   mismatch) still compares strictly, so a port that fails to mint or fails
+ *   to echo an id is still a diff. Deterministic seeded ids are NOT
+ *   protected by this rule when asserted in test bodies.
+ * - URLs embedding minted row ids (`web_url`): every UUID segment in the
+ *   string canonicalizes to "<uuid>" (invoice#web_url contains the customer
+ *   and invoice uuids); the rest of the URL compares strictly.
  */
 class Normalizer
 {
@@ -56,8 +61,11 @@ class Normalizer
     /**
      * JSON keys whose UUID values are per-run minted row ids (rows created
      * by a captured request), compared as "a UUID" rather than by bytes.
+     * lago_invoice_id / lago_tax_id appear on applied taxes and fees that
+     * reference rows minted by an earlier captured request, so each runtime
+     * echoes its own fresh ids.
      */
-    public const MINTED_ID_FIELDS = ['lago_id'];
+    public const MINTED_ID_FIELDS = ['lago_id', 'lago_invoice_id', 'lago_tax_id'];
 
     /**
      * JSON keys whose numeric values are compared as rates (float tolerance).
@@ -69,7 +77,16 @@ class Normalizer
         'rate',
         'matches_rate',
         'fixed_charge_rate',
+        'taxes_rate',
+        'tax_rate',
     ];
+
+    /**
+     * URL fields embedding per-run minted row ids in their path (Rails'
+     * invoice#web_url contains the customer and invoice uuids): every UUID
+     * segment in the string canonicalizes to "<uuid>".
+     */
+    public const URL_FIELDS = ['web_url'];
 
     /**
      * Canonicalizes an ISO8601 datetime string, or returns null when the
@@ -167,6 +184,19 @@ class Normalizer
     }
 
     /**
+     * Canonicalizes a URL that embeds per-run minted row ids: every UUID
+     * segment becomes "<uuid>", the rest compares strictly.
+     */
+    public static function canonicalUrl(string $value): string
+    {
+        return (string) preg_replace(
+            '/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i',
+            '<uuid>',
+            $value,
+        );
+    }
+
+    /**
      * Recursively normalizes a decoded JSON document.
      */
     public static function normalizeValue(mixed $value, ?string $key = null): mixed
@@ -211,6 +241,10 @@ class Normalizer
             if ($minted !== null) {
                 return $minted;
             }
+        }
+
+        if ($key !== null && in_array(mb_strtolower($key), self::URL_FIELDS, true) && is_string($value)) {
+            return self::canonicalUrl($value);
         }
 
         return $value;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Serializers\V1;
 
+use App\Enums\InvoiceType;
 use App\Serializers\Base\ModelSerializer;
 use App\Serializers\Base\CollectionSerializer;
 use App\Serializers\V1\Concerns\FormatsDatetime;
@@ -55,7 +56,7 @@ class InvoiceSerializer extends ModelSerializer
             'prepaid_purchased_credit_amount_cents' => $model->prepaid_purchased_credit_amount_cents,
             'file_url' => null,
             'xml_url' => null,
-            'web_url' => null,
+            'web_url' => $model->webUrl(),
             'version_number' => $model->version_number,
             'self_billed' => $model->self_billed,
             'created_at' => $this->serializeDatetime($model->created_at),
@@ -92,6 +93,23 @@ class InvoiceSerializer extends ModelSerializer
             $payload = [...$payload, ...$this->appliedTaxes()];
         }
 
+        // Rails: payload.merge!(applied_usage_thresholds) if model.progressive_billing?
+        // (an invoice_type enum predicate — AppliedUsageThreshold unported,
+        // empty collection).
+        if ($model->typeEnum() === InvoiceType::ProgressiveBilling) {
+            $payload['applied_usage_thresholds'] = [];
+        }
+
+        if ($this->include('error_details')) {
+            // TODO(port): ErrorDetail models — empty collection.
+            $payload['error_details'] = [];
+        }
+
+        if ($this->include('applied_invoice_custom_sections')) {
+            // TODO(port): InvoiceCustomSection models — empty collection.
+            $payload['applied_invoice_custom_sections'] = [];
+        }
+
         return $payload;
     }
 
@@ -101,7 +119,7 @@ class InvoiceSerializer extends ModelSerializer
         return [
             'customer' => (new CustomerSerializer(
                 $this->model->customer,
-                $this->includedRelations('customer'),
+                ['includes' => $this->include('integration_customers') ? ['integration_customers'] : []],
             ))->serialize(),
         ];
     }
@@ -152,10 +170,10 @@ class InvoiceSerializer extends ModelSerializer
         ))->serialize();
     }
 
-    /** Rails `iso8601` on a date. */
+    /** Rails `iso8601` on a date — "2025-06-05" (Date, not Time, semantics). */
     private function serializeDateIso(mixed $date): ?string
     {
-        if ($date === null) {
+        if ($date === null || $date === '') {
             return null;
         }
 
@@ -163,6 +181,6 @@ class InvoiceSerializer extends ModelSerializer
             $date = \Carbon\CarbonImmutable::parse($date, 'UTC');
         }
 
-        return \Carbon\CarbonImmutable::instance($date)->toIso8601String();
+        return \Carbon\CarbonImmutable::instance($date)->format('Y-m-d');
     }
 }

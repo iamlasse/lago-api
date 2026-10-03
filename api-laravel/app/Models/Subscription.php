@@ -10,6 +10,7 @@ use Carbon\CarbonInterface;
 use App\Enums\SubscriptionStatus;
 use Illuminate\Database\Eloquent\Builder;
 use App\Services\Subscriptions\DatesService;
+use App\Models\Concerns\ConnectionResolvable;
 use App\Models\Concerns\BelongsToOrganization;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Attributes\Table;
@@ -72,6 +73,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 class Subscription extends BaseModel
 {
     use BelongsToOrganization;
+    use ConnectionResolvable;
     use HasFactory;
 
     /** Rails: Subscription::STATUSES — integer enum, see App\Enums\SubscriptionStatus. */
@@ -123,6 +125,17 @@ class Subscription extends BaseModel
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
+    }
+
+    /**
+     * Rails: `has_many :billing_object_connections, as: :owner`. The column
+     * stores the Rails class name, so the type constraint is railsName()
+     * rather than a Laravel morph map.
+     */
+    public function billingObjectConnections(): HasMany
+    {
+        return $this->hasMany(BillingObjectConnection::class, 'owner_id')
+            ->where('owner_type', $this->railsName());
     }
 
     /** Rails: `belongs_to :plan, -> { with_discarded }`. */

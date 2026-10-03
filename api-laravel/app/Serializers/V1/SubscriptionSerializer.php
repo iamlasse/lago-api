@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Serializers\V1;
 
-use stdClass;
 use LogicException;
 use App\Serializers\Base\ModelSerializer;
 use App\Services\Subscriptions\DatesService;
@@ -21,7 +20,6 @@ use App\Serializers\V1\Concerns\FormatsDatetime;
  * - TODO(port): applied_invoice_custom_sections include — empty collection.
  * - TODO(port): activation_rules collection (Subscription::ActivationRule) —
  *   emitted as an empty collection.
- * - TODO(port): connections (ConnectionResolvable) — emitted as an empty map.
  */
 class SubscriptionSerializer extends ModelSerializer
 {
@@ -105,8 +103,7 @@ class SubscriptionSerializer extends ModelSerializer
         // TODO(port): activation_rules collection serializer — empty collection.
         $payload['activation_rules'] = [];
 
-        // TODO(port): model.connection_routing (ConnectionResolvable) — empty map.
-        $payload['connections'] = new stdClass();
+        $payload['connections'] = $this->model->connectionRouting();
 
         return $payload;
     }

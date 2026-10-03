@@ -96,6 +96,40 @@ class Invoice extends BaseModel
     public const CREDIT_NOTES_MIN_VERSION = 2;
 
     /**
+     * Rails' ActiveRecord carries the schema's column defaults in every new
+     * instance; Eloquent does not, so the NOT NULL DEFAULT columns are
+     * declared here to keep reads (and the serializers) identical to Rails.
+     */
+    protected $attributes = [
+        'number' => '',
+        'timezone' => 'UTC',
+        'taxes_amount_cents' => 0,
+        'total_amount_cents' => 0,
+        'invoice_type' => 0,
+        'payment_status' => 0,
+        'taxes_rate' => 0.0,
+        'status' => 1,
+        'payment_attempts' => 0,
+        'ready_for_payment_processing' => true,
+        'version_number' => 4,
+        'fees_amount_cents' => 0,
+        'coupons_amount_cents' => 0,
+        'credit_notes_amount_cents' => 0,
+        'prepaid_credit_amount_cents' => 0,
+        'sub_total_excluding_taxes_amount_cents' => 0,
+        'sub_total_including_taxes_amount_cents' => 0,
+        'net_payment_term' => 0,
+        'organization_sequential_id' => 0,
+        'ready_to_be_refreshed' => false,
+        'skip_charges' => false,
+        'payment_overdue' => false,
+        'negative_amount_cents' => 0,
+        'progressive_billing_credit_amount_cents' => 0,
+        'total_paid_amount_cents' => 0,
+        'self_billed' => false,
+    ];
+
+    /**
      * Port of the RefreshSearchTermsService update_all — search_terms is a
      * computed concatenation of number, PO number and customer identity.
      */
@@ -442,6 +476,29 @@ class Invoice extends BaseModel
     public function isPaymentOverdue(): bool
     {
         return (bool) $this->payment_overdue;
+    }
+
+    /**
+     * Rails `web_url` — the front-app URL of the invoice; null while the
+     * status is one of the invisible ones (generating / open / closed /
+     * deleted). URI.join(front_url, "/{org.slug}/customer/{customer_id}/",
+     * "invoice/{id}/overview").
+     */
+    public function webUrl(): ?string
+    {
+        if (! $this->isVisible()) {
+            return null;
+        }
+
+        $frontUrl = mb_rtrim((string) config('lago.front_url'), '/');
+
+        return sprintf(
+            '%s/%s/customer/%s/invoice/%s/overview',
+            $frontUrl,
+            $this->organization?->slug,
+            $this->customer_id,
+            $this->id,
+        );
     }
 
     // -- Creditable / refundable amounts ---------------------------------------

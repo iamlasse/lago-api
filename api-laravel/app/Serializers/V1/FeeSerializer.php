@@ -40,9 +40,8 @@ class FeeSerializer extends ModelSerializer
             'lago_original_fee_id' => $model->original_fee_id,
             'lago_subscription_id' => $model->subscription_id,
             'external_subscription_id' => $model->subscription?->external_id,
-            'lago_customer_id' => $model->invoice?->customer_id ?? $model->subscription?->customer_id,
-            'external_customer_id' => $model->invoice?->customer?->external_id
-                ?? $model->subscription?->customer?->external_id,
+            'lago_customer_id' => $model->subscription?->customer_id,
+            'external_customer_id' => $model->subscription?->customer?->external_id,
             'item' => [
                 'type' => $model->typeEnum()?->label(),
                 'code' => $this->itemCode(),
@@ -59,24 +58,34 @@ class FeeSerializer extends ModelSerializer
             'invoiceable' => $model->isCharge() ? $model->charge?->invoiceableCharge() : true,
             'amount_cents' => $model->amount_cents,
             'amount_currency' => $model->amount_currency,
-            'precise_amount' => (float) bcdiv((string) $model->precise_amount_cents, (string) $subunitToUnit, 10),
-            'precise_total_amount' => (float) bcdiv(
-                bcadd((string) $model->precise_amount_cents, (string) $model->taxes_precise_amount_cents, 15),
-                (string) $subunitToUnit,
-                10,
+            // Rails serializes BigDecimal attributes as fixed-notation
+            // strings ("24.0", "28.8") — see decimalToF.
+            'precise_amount' => self::decimalToF(
+                bcdiv((string) $model->precise_amount_cents, (string) $subunitToUnit, 10),
+            ),
+            'precise_total_amount' => self::decimalToF(
+                bcdiv(
+                    bcadd((string) $model->precise_amount_cents, (string) $model->taxes_precise_amount_cents, 15),
+                    (string) $subunitToUnit,
+                    10,
+                ),
             ),
             'taxes_amount_cents' => $model->taxes_amount_cents,
-            'taxes_precise_amount' => (float) bcdiv((string) $model->taxes_precise_amount_cents, (string) $subunitToUnit, 10),
+            'taxes_precise_amount' => self::decimalToF(
+                bcdiv((string) $model->taxes_precise_amount_cents, (string) $subunitToUnit, 10),
+            ),
             'taxes_rate' => $model->taxes_rate,
             'total_aggregated_units' => $model->total_aggregated_units,
             'total_amount_cents' => (int) $model->amount_cents + (int) $model->taxes_amount_cents,
             'total_amount_currency' => $model->amount_currency,
-            'units' => (float) $model->units,
+            'units' => self::decimalToF((string) $model->units),
             'description' => $model->description,
-            'precise_unit_amount' => (float) bcdiv((string) $model->precise_unit_amount, '1', 10),
-            'precise_coupons_amount_cents' => (float) $model->precise_coupons_amount_cents,
+            'precise_unit_amount' => self::decimalToF((string) $model->precise_unit_amount),
+            'precise_coupons_amount_cents' => self::decimalToF((string) $model->precise_coupons_amount_cents),
             'sub_total_excluding_taxes_amount_cents' => (int) round((float) $model->subTotalExcludingTaxesAmountCents()),
-            'sub_total_excluding_taxes_precise_amount_cents' => (float) $model->subTotalExcludingTaxesPreciseAmountCents(),
+            'sub_total_excluding_taxes_precise_amount_cents' => self::decimalToF(
+                (string) $model->subTotalExcludingTaxesPreciseAmountCents(),
+            ),
             'events_count' => $model->events_count,
             'payment_status' => $model->paymentStatusEnum()?->label(),
             'created_at' => $this->serializeDatetime($model->created_at),
@@ -106,6 +115,26 @@ class FeeSerializer extends ModelSerializer
         }
 
         return $payload;
+    }
+
+    /**
+     * Rails' BigDecimal JSON form (ActiveSupport emits `to_s("F")`): fixed
+     * notation with trailing zeros trimmed, at least one fractional digit —
+     * "2400" -> "2400.0", "28.8000000000" -> "28.8", "0.00000" -> "0.0".
+     */
+    private static function decimalToF(string $numeric): string
+    {
+        $trimmed = mb_rtrim(mb_rtrim($numeric, '0'), '.');
+
+        if ($trimmed === '' || $trimmed === '-') {
+            $trimmed = '0';
+        }
+
+        if (! str_contains($trimmed, '.')) {
+            $trimmed .= '.0';
+        }
+
+        return $trimmed;
     }
 
     private function payInAdvance(): bool
@@ -167,44 +196,52 @@ class FeeSerializer extends ModelSerializer
 
     private function itemType(): ?string
     {
+        // Rails: the Rails CLASS NAME of the billed item type (default
+        // "Subscription", even for subscription fees).
         return match ($this->model->typeEnum()?->label()) {
-            'charge' => 'billable_metric',
-            'add_on' => 'add_on',
-            'subscription' => 'plan',
-            default => null,
+            'charge' => 'BillableMetric',
+            'add_on', 'fixed_charge' => 'AddOn',
+            'credit' => 'WalletTransaction',
+            'product' => 'Product',
+            default => 'Subscription',
         };
     }
 
     /**
-     * Port of Fee#date_boundaries — the fee `properties` boundary keys.
+     * Port of Fee#date_boundaries (default branch): from_date / to_date read
+     * the fee `properties` boundary for the fee type — charges_from_datetime
+     * on charges, fixed_charges_from_datetime on fixed charges, from_datetime
+     * otherwise. The two pay-in-advance charge interval branches are not
+     * ported (Subscriptions::DatesService.charge_pay_in_advance_interval) —
+     * TODO(port).
      *
-     * @return array<string, mixed>
+     * @return array{from_date: ?string, to_date: ?string}
      */
     private function dateBoundaries(): array
     {
         $properties = $this->model->properties ?? [];
 
-        $keys = [
-            'from_datetime',
-            'to_datetime',
-            'charges_from_datetime',
-            'charges_to_datetime',
-            'fixed_charges_from_datetime',
-            'fixed_charges_to_datetime',
+        $prefix = match ($this->model->typeEnum()?->label()) {
+            'charge' => 'charges',
+            'fixed_charge' => 'fixed_charges',
+            default => null,
+        };
+
+        return [
+            'from_date' => $this->boundaryDatetime($properties, ($prefix === null ? 'from' : $prefix.'_from').'_datetime'),
+            'to_date' => $this->boundaryDatetime($properties, ($prefix === null ? 'to' : $prefix.'_to').'_datetime'),
         ];
+    }
 
-        $out = [];
+    /** Rails: `properties[property]&.to_datetime&.iso8601`. */
+    private function boundaryDatetime(array $properties, string $key): ?string
+    {
+        $value = $properties[$key] ?? null;
 
-        foreach ($keys as $key) {
-            if (! array_key_exists($key, $properties)) {
-                continue;
-            }
-
-            $out[$key] = $properties[$key] === null
-                ? null
-                : \Carbon\CarbonImmutable::parse($properties[$key], 'UTC')->toIso8601String();
+        if ($value === null || $value === '') {
+            return null;
         }
 
-        return $out;
+        return \Carbon\CarbonImmutable::parse($value, 'UTC')->toIso8601String();
     }
 }

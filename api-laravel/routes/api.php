@@ -166,15 +166,17 @@ $sharedApi = function (): void {
         // rest.json: finalize/refresh are PUT (Rails' non-RESTful draw),
         // void/retry/lose_dispute/download_* are POST.
         //
-        // Not registered yet (dependencies do not exist): preview
-        // (Invoices::PreviewContextService/PreviewService), retry_payment
+        // Not registered yet (dependencies do not exist): retry_payment
         // (Invoices::Payments::RetryService), payment_url
         // (GeneratePaymentUrlService), resend_email (Emails::ResendService)
         // and sync_salesforce_id (SyncSalesforceIdService) — each has its
-        // ledger row and lands with its milestone.
+        // ledger row and lands with its milestone. Preview IS registered but
+        // premium-gated (Rails: PremiumFeatureOnly → 403 feature_unavailable
+        // in the OSS image).
         Route::prefix('invoices')->as('invoices:')->group(function () {
             Route::get('', [InvoicesController::class, 'index']);
             Route::post('', [InvoicesController::class, 'create']);
+            Route::post('preview', [InvoicesController::class, 'preview']);
 
             Route::put('{id}/finalize', [InvoicesController::class, 'finalize']);
             Route::put('{id}/refresh', [InvoicesController::class, 'refresh']);

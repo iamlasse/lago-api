@@ -5,16 +5,12 @@ declare(strict_types=1);
 namespace App\Serializers\V1;
 
 use App\Serializers\Base\ModelSerializer;
+use App\Serializers\Base\CollectionSerializer;
 use App\Serializers\V1\Concerns\FormatsDatetime;
 
 /**
  * Port of Rails' V1::BillableMetricSerializer
  * (app/serializers/v1/billable_metric_serializer.rb).
- *
- * Not ported (dependencies do not exist yet):
- * - TODO(port): filters — V1::BillableMetricFilterSerializer over
- *   model.filters (BillableMetricFilter model is a later slice); emitted as
- *   an empty collection.
  */
 class BillableMetricSerializer extends ModelSerializer
 {
@@ -57,8 +53,10 @@ class BillableMetricSerializer extends ModelSerializer
     /** @return array<string, mixed> */
     protected function filters(): array
     {
-        // TODO(port): CollectionSerializer over model.filters with
-        // V1::BillableMetricFilterSerializer (key + sorted values).
-        return ['filters' => []];
+        return (new CollectionSerializer(
+            $this->model->filters,
+            BillableMetricFilterSerializer::class,
+            ['collection_name' => 'filters'],
+        ))->serialize();
     }
 }

@@ -16,6 +16,7 @@ use App\Services\Invoices\DeleteService;
 use App\Services\Invoices\UpdateService;
 use App\Exceptions\Api\NotFoundException;
 use App\Serializers\V1\InvoiceSerializer;
+use App\Exceptions\Api\ForbiddenException;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\Concerns\Pagination;
 use App\Services\Invoices\LoseDisputeService;
@@ -33,8 +34,8 @@ use App\Services\Invoices\RefreshDraftAndFinalizeService;
  *
  * Not ported (dependencies out of scope): retry_payment
  * (Invoices::Payments::RetryService), resend_email (Emails::ResendService),
- * payment_url (GeneratePaymentUrlService), sync_salesforce_id and preview
- * (Invoices::PreviewContextService/PreviewService) — see routes/api.php.
+ * payment_url (GeneratePaymentUrlService) and sync_salesforce_id — see
+ * routes/api.php. Preview answers the premium feature_unavailable envelope.
  */
 class InvoicesController extends ApiController
 {
@@ -321,6 +322,16 @@ class InvoicesController extends ApiController
         }
 
         $this->renderErrorResponse($result);
+    }
+
+    /**
+     * Rails: `preview`, behind PremiumFeatureOnly — before_action
+     * `forbidden_error(code: "feature_unavailable") unless License.premium?`.
+     * The OSS port answers the same envelope without evaluating the license.
+     */
+    public function preview(): never
+    {
+        throw new ForbiddenException('feature_unavailable');
     }
 
     // -- Helpers ---------------------------------------------------------------------

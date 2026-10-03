@@ -199,6 +199,18 @@ class Customer extends BaseModel
         return $this->hasMany(AppliedCoupon::class);
     }
 
+    /** Rails: `has_many :payment_provider_customers, class_name: "PaymentProviderCustomers::BaseCustomer"`. */
+    public function paymentProviderCustomers(): HasMany
+    {
+        return $this->hasMany(PaymentProviderCustomer::class);
+    }
+
+    /** Rails: `has_many :integration_customers, class_name: "IntegrationCustomers::BaseCustomer"`. */
+    public function integrationCustomers(): HasMany
+    {
+        return $this->hasMany(IntegrationCustomer::class);
+    }
+
     // -- Domain methods (ports of the Rails instance methods) ------------------
 
     /** Rails: `partner_account?` (account_type enum suffix helper). */

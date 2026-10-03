@@ -18,8 +18,8 @@ use Illuminate\Support\Facades\Queue;
  * OSS image this answers the feature_unavailable envelope — premium-gated).
  *
  * Extra golden 10.json is the show of the invoice created by manifest
- * request #3; its lago_id is minted per runtime, so this test re-creates
- * the invoice and substitutes the id ITS request minted.
+ * request #3; its lago_id is minted per runtime, so the Normalizer compares
+ * ids as "<uuid>" and the show replays against its own minted invoice.
  */
 class InvoiceStandardTest extends ContractCase
 {
@@ -42,21 +42,27 @@ class InvoiceStandardTest extends ContractCase
 
     public function test_shows_the_invoice_the_replay_created(): void
     {
+        // The invoice's customer and tax are minted by the captured requests
+        // #1/#2 (they are not in the fixture dump), so the create in request
+        // #3 only resolves when its predecessors replay first.
+        $this->replay($this->manifest['requests'][0]);
+        $this->replay($this->manifest['requests'][1]);
+
         $created = $this->replay($this->manifest['requests'][2]);
 
         $invoiceId = $created->json('invoice.lago_id');
 
         if ($invoiceId === null) {
-            // The port does not register POST /api/v1/invoices yet (see the
-            // runScenario findings); without a replay-minted invoice there
-            // is nothing to show. The extra golden 10.json stays committed
-            // for when the route lands.
-            static::markTestSkipped('POST /api/v1/invoices is not ported yet — no replay-minted invoice id to show against golden 10.json.');
+            static::fail('POST /api/v1/invoices did not mint an invoice — status '
+                .$created->status().', body: '.mb_substr((string) $created->getContent(), 0, 400));
         }
 
         $response = $this->replay([
             'method' => 'GET',
             'path' => '/api/v1/invoices/'.$invoiceId,
+            // Same captured credential the manifest requests carry — the
+            // frozen JWT authenticates the extra show too.
+            'headers' => $this->manifest['requests'][2]['headers'] ?? [],
         ]);
 
         // Golden index 10 is outside the manifest on purpose — see the

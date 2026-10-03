@@ -42,6 +42,21 @@ it('serializes the billable metric', function (): void {
         ->and($result['billable_metric']['filters'])->toBe([]);
 });
 
+it('serializes the metric filters with sorted values', function (): void {
+    $organization = CurrentContext::$organization = Organization::factory()->create();
+
+    $metric = BillableMetric::factory()->for($organization)->create();
+    $metric->filters()->createMany([
+        ['organization_id' => $organization->id, 'key' => 'region', 'values' => ['us', 'eu']],
+    ]);
+
+    $result = (new BillableMetricSerializer($metric, ['root_name' => 'billable_metric']))->serialize();
+
+    expect($result['filters'])->toBe([
+        ['key' => 'region', 'values' => ['eu', 'us']],
+    ]);
+});
+
 it('omits the counters unless included and returns zero counts when included', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();
     $metric = BillableMetric::factory()->for($organization)->create();

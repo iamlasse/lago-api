@@ -94,30 +94,32 @@ it('serializes a charge fee with literal snake_case keys', function (): void {
             'filters' => null,
             'filter_invoice_display_name' => null,
             'lago_item_id' => $fee->charge_id,
-            'item_type' => 'billable_metric',
+            'item_type' => 'BillableMetric',
             'grouped_by' => [],
         ])
         ->and($payload['pay_in_advance'])->toBeFalse()
         ->and($payload['invoiceable'])->toBeTrue()
         ->and($payload['amount_cents'])->toBe(100)
         ->and($payload['amount_currency'])->toBe('EUR')
-        ->and($payload['precise_amount'])->toBe(1.005)
+        // Rails serializes BigDecimal attributes as fixed-notation strings.
+        ->and($payload['precise_amount'])->toBe('1.005')
         ->and($payload['taxes_amount_cents'])->toBe(20)
-        ->and($payload['taxes_precise_amount'])->toBe(0.205)
+        ->and($payload['taxes_precise_amount'])->toBe('0.205')
         ->and($payload['taxes_rate'])->toBe(20.0)
         // BcNumeric scale 0 — Rails emits the BigDecimal as a string.
         ->and($payload['total_aggregated_units'])->toBe('1')
         ->and($payload['total_amount_cents'])->toBe(120)
         ->and($payload['total_amount_currency'])->toBe('EUR')
-        ->and($payload['units'])->toBe(1.0)
+        ->and($payload['units'])->toBe('1.0')
         ->and($payload['events_count'])->toBe(4)
         ->and($payload['payment_status'])->toBe('pending')
         ->and($payload['self_billed'])->toBeFalse()
         ->and($payload['pricing_unit_details'])->toBeNull()
         ->and($payload['presentation_breakdowns'])->toBe([])
-        // date boundaries from the fee properties, ISO8601.
-        ->and($payload['from_datetime'])->toBe('2023-08-01T00:00:00+00:00')
-        ->and($payload['charges_to_datetime'])->toBe('2023-08-31T23:59:59+00:00')
+        // date boundaries from the fee properties (charges_* keys on a
+        // charge fee), ISO8601.
+        ->and($payload['from_date'])->toBe('2023-08-01T00:00:00+00:00')
+        ->and($payload['to_date'])->toBe('2023-08-31T23:59:59+00:00')
         ->and($payload['created_at'])->toMatch('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/')
         ->and(array_key_exists('applied_taxes', $payload))->toBeFalse();
 })->group('ledger:ser:V1.FeeSerializer');
@@ -154,7 +156,7 @@ it('serializes a subscription fee with the plan item', function (): void {
     expect($payload['item']['type'])->toBe('subscription')
         ->and($payload['item']['code'])->toBe('pro')
         ->and($payload['item']['name'])->toBe('Pro')
-        ->and($payload['item']['item_type'])->toBe('plan')
+        ->and($payload['item']['item_type'])->toBe('Subscription')
         ->and($payload['item']['lago_item_id'])->toBe($plan->id)
         // subscription fees carry the plan's pay_in_advance.
         ->and($payload['pay_in_advance'])->toBeTrue();
