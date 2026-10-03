@@ -6,18 +6,17 @@ use App\Models\Fee;
 use App\Models\Tax;
 use App\Models\Invoice;
 use App\Models\Customer;
-use App\Models\Organization;
 use App\Enums\InvoiceType;
 use App\Models\CreditNote;
-use App\Enums\CreditNoteStatus;
-use App\Enums\CreditNoteReason;
-use App\Enums\InvoicePaymentStatus;
+use App\Models\Organization;
 use App\Models\FeeAppliedTax;
+use App\Enums\CreditNoteReason;
+use App\Enums\CreditNoteStatus;
 use App\Models\InvoiceAppliedTax;
-use App\Services\Failures\FailedResult;
-use App\Services\CreditNotes\CreateService;
+use App\Enums\InvoicePaymentStatus;
 use App\Enums\CreditNoteCreditStatus;
 use App\Enums\CreditNoteRefundStatus;
+use App\Services\CreditNotes\CreateService;
 
 /**
  * Port of spec/services/credit_notes/create_service_spec.rb (the scenarios
@@ -26,7 +25,7 @@ use App\Enums\CreditNoteRefundStatus;
  */
 function creditNotesCreateSetup(array $invoiceOverrides = []): array
 {
-    $organization = \App\Models\Organization::factory()->create();
+    $organization = Organization::factory()->create();
     $customer = Customer::factory()->create(['organization_id' => $organization->id]);
 
     $invoice = Invoice::factory()->create(array_merge([

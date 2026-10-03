@@ -7,10 +7,10 @@ use App\Models\Invoice;
 use App\Models\Customer;
 use App\Models\CreditNote;
 use App\Models\CreditNoteItem;
-use App\Enums\CreditNoteStatus;
 use App\Enums\CreditNoteReason;
-use App\Enums\CreditNoteCreditStatus;
+use App\Enums\CreditNoteStatus;
 use Illuminate\Support\Facades\DB;
+use App\Enums\CreditNoteCreditStatus;
 
 /**
  * CreditNote model conventions: numbering (Sequenced + ensure_number),
@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\DB;
  */
 function creditNoteModelSetup(array $invoiceOverrides = []): array
 {
-    $organization = \App\Models\Organization::factory()->create();
+    $organization = App\Models\Organization::factory()->create();
     $customer = Customer::factory()->create(['organization_id' => $organization->id]);
 
     $invoice = Invoice::factory()->create(array_merge([
@@ -115,7 +115,7 @@ it('computes the sub-total and rounding helpers', function (): void {
         ->and((float) $creditNote->preciseTotal())->toBe(122.0)
         // 100.5 - 2.5 + 24 = 122
         ->and($creditNote->subTotalIncludingTaxesAmountCents())->toBe(122)
-        ->and($creditNote->taxesRoundingAdjustment())->toBe(0)
+        ->and((float) $creditNote->taxesRoundingAdjustment())->toBe(0.0)
         // 144 - 122 = 22
         ->and($creditNote->roundingAdjustment())->toBe(22);
 })->group('ledger:model:CreditNote');
@@ -158,7 +158,7 @@ it('exposes the rails conveniences', function (): void {
 it('lists the subscription ids of its fees', function (): void {
     [$invoice, $customer] = creditNoteModelSetup();
 
-    $subscription = \App\Models\Subscription::factory()->create(['customer_id' => $customer->id]);
+    $subscription = App\Models\Subscription::factory()->create(['customer_id' => $customer->id]);
     $fee1 = Fee::factory()->create([
         'invoice_id' => $invoice->id,
         'organization_id' => $invoice->organization_id,

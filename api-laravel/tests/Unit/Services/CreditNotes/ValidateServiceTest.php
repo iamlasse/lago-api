@@ -6,9 +6,8 @@ use App\Models\Fee;
 use App\Models\Invoice;
 use App\Models\Customer;
 use App\Models\CreditNote;
-use App\Models\CreditNoteItem;
-use App\Enums\InvoiceStatus;
 use App\Services\BaseResult;
+use App\Models\CreditNoteItem;
 use App\Enums\CreditNoteStatus;
 use App\Services\CreditNotes\ValidateService;
 
@@ -18,7 +17,7 @@ use App\Services\CreditNotes\ValidateService;
  */
 function creditNoteValidateSetup(array $invoiceOverrides = []): array
 {
-    $organization = \App\Models\Organization::factory()->create();
+    $organization = App\Models\Organization::factory()->create();
     $customer = Customer::factory()->create(['organization_id' => $organization->id]);
 
     $invoice = Invoice::factory()->create(array_merge([

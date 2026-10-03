@@ -27,7 +27,7 @@ use App\Enums\CreditNoteRefundStatus;
  * jobs (Stripe/Gocardless/Adyen — Stripe refunds are M4), the tax provider
  * report, the accounting-integration sync, and the Segment track.
  */
-class CreateService extends \App\Services\BaseService
+class CreateService extends BaseService
 {
     public function __construct(
         private readonly ?Invoice $invoice,

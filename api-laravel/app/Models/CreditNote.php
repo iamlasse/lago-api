@@ -6,9 +6,9 @@ namespace App\Models;
 
 use DateTimeInterface;
 use App\Support\MoneyMath;
-use App\Models\Casts\BcNumeric;
 use App\Enums\CreditNoteReason;
 use App\Enums\CreditNoteStatus;
+use App\Models\Casts\BcNumeric;
 use App\Models\Concerns\Sequenced;
 use App\Enums\CreditNoteCreditStatus;
 use App\Enums\CreditNoteRefundStatus;
@@ -284,13 +284,13 @@ class CreditNote extends BaseModel
         );
     }
 
-    /** Port of `taxes_rounding_adjustment`. */
-    public function taxesRoundingAdjustment(): int
+    /** Port of `taxes_rounding_adjustment` — a decimal (no rounding). */
+    public function taxesRoundingAdjustment(): string
     {
-        return MoneyMath::round(MoneyMath::sub(
+        return MoneyMath::sub(
             (string) ((int) $this->taxes_amount_cents),
             $this->preciseTaxesAmount(),
-        ));
+        );
     }
 
     /** Port of `rounding_adjustment`. */

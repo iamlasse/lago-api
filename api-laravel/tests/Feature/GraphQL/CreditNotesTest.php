@@ -10,11 +10,11 @@ use App\Models\Tax;
 use App\Models\Invoice;
 use App\Models\Customer;
 use App\Models\CreditNote;
-use App\Models\CreditNoteItem;
 use App\Models\BillingEntity;
-use App\Enums\InvoicePaymentStatus;
 use App\Models\FeeAppliedTax;
+use App\Models\CreditNoteItem;
 use App\Models\InvoiceAppliedTax;
+use App\Enums\InvoicePaymentStatus;
 
 /**
  * Ports of Rails' spec/graphql/resolvers/{credit_note_resolver,
@@ -321,8 +321,10 @@ it('creates a credit note', function (): void {
     gqlCreditNotesWithLicense(function (): void {
         [$organization, $user] = gqlCreditNotesSetup();
         $invoice = gqlCreditNotesInvoice($organization);
-        $fee = gqlCreditNotesFee($invoice);
-        gqlCreditNotesTaxes($invoice, $fee);
+        $fee1 = gqlCreditNotesFee($invoice);
+        $fee2 = gqlCreditNotesFee($invoice);
+        gqlCreditNotesTaxes($invoice, $fee1);
+        gqlCreditNotesTaxes($invoice, $fee2);
 
         $response = gqlPost(
             CREATE_CREDIT_NOTE_MUTATION,
@@ -331,7 +333,10 @@ it('creates a credit note', function (): void {
                 'reason' => 'duplicated_charge',
                 'creditAmountCents' => 12,
                 'refundAmountCents' => 6,
-                'items' => [['feeId' => $fee->id, 'amountCents' => 15]],
+                'items' => [
+                    ['feeId' => $fee1->id, 'amountCents' => 10],
+                    ['feeId' => $fee2->id, 'amountCents' => 5],
+                ],
             ]],
             gqlAuthHeaders($user, $organization->id),
         );
@@ -526,7 +531,7 @@ it('estimates the credit note amounts', function (): void {
             ->and($payload['maxCreditableAmountCents'])->toBe('12')
             ->and($payload['maxRefundableAmountCents'])->toBe('12')
             ->and($payload['subTotalExcludingTaxesAmountCents'])->toBe('10')
-            ->and($payload['appliedTaxes'][0]['taxCode'])->toBe(App\Models\Tax::query()->where('organization_id', $organization->id)->first()->code)
+            ->and($payload['appliedTaxes'][0]['taxCode'])->toBe(Tax::query()->where('organization_id', $organization->id)->first()->code)
             ->and($payload['items'][0]['fee']['id'])->toBe($fee->id);
     });
 })->group('ledger:gql:query:creditNoteEstimate');

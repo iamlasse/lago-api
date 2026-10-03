@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 use App\Models\CreditNote;
 use App\Enums\CreditNoteCreditStatus;
+use App\Services\CreditNotes\VoidService;
 use App\Services\Failures\NotFoundFailure;
 use App\Services\Failures\MethodNotAllowedFailure;
-use App\Services\CreditNotes\VoidService;
 
 /**
  * Port of spec/services/credit_notes/void_service_spec.rb.
@@ -40,7 +40,7 @@ it('returns not_found for a draft credit note', function (): void {
 
 it('rejects an already voided credit note', function (): void {
     $creditNote = CreditNote::factory()->create([
-        'credit_status' => App\Enums\CreditNoteCreditStatus::Voided,
+        'credit_status' => CreditNoteCreditStatus::Voided,
         'voided_at' => now(),
     ]);
 

@@ -6,12 +6,10 @@ use App\Models\Fee;
 use App\Models\Invoice;
 use App\Models\Customer;
 use App\Enums\InvoiceType;
-use App\Services\Failures\ForbiddenFailure;
-use App\Services\Failures\MethodNotAllowedFailure;
 use App\Services\Failures\NotFoundFailure;
+use App\Services\Failures\ForbiddenFailure;
 use App\Services\CreditNotes\EstimateService;
-use App\Enums\CreditNoteCreditStatus;
-use App\Enums\CreditNoteRefundStatus;
+use App\Services\Failures\MethodNotAllowedFailure;
 
 /**
  * Port of spec/services/credit_notes/estimate_service_spec.rb (the scenarios
@@ -19,7 +17,7 @@ use App\Enums\CreditNoteRefundStatus;
  */
 function creditNoteEstimateSetup(array $invoiceOverrides = []): array
 {
-    $organization = \App\Models\Organization::factory()->create();
+    $organization = App\Models\Organization::factory()->create();
     $customer = Customer::factory()->create(['organization_id' => $organization->id]);
 
     $invoice = Invoice::factory()->create(array_merge([

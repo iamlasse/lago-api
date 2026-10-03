@@ -501,7 +501,7 @@ it('returns unauthorized on a single invoice without a token', function (): void
         ->and($response->json('errors.0.extensions.status'))->toBe('unauthorized');
 })->group('ledger:gql:query:invoice');
 
-it('leaves invoiceCreditNotes on the null stub until the credit notes slice lands', function (): void {
+it('resolves invoiceCreditNotes on an invoice without credit notes (the stub is gone)', function (): void {
     [$organization, $user] = gqlInvoicesSetup();
 
     $invoice = gqlMakeInvoice($organization);
@@ -512,7 +512,10 @@ it('leaves invoiceCreditNotes on the null stub until the credit notes slice land
         gqlAuthHeaders($user, $organization->id),
     );
 
-    // The unimplemented root field resolves to null (the agreed stub — the
-    // CreditNote model/service ship with the credit-notes slice).
-    expect($response->json('data.invoiceCreditNotes'))->toBeNull();
+    // The real resolver (App\GraphQL\Queries\InvoiceCreditNotes) shipped with
+    // the credit-notes slice — an empty collection with kaminari metadata.
+    $payload = $response->json('data.invoiceCreditNotes');
+
+    expect($payload['collection'])->toHaveCount(0)
+        ->and($payload['metadata']['currentPage'])->toBe(1);
 })->group('ledger:gql:query:invoiceCreditNotes');

@@ -15,7 +15,7 @@ use App\Services\CreditNotes\AdjustAmountsWithRoundingService;
  */
 function creditNoteAdjustSetup(): array
 {
-    $organization = \App\Models\Organization::factory()->create();
+    $organization = App\Models\Organization::factory()->create();
     $customer = Customer::factory()->create(['organization_id' => $organization->id]);
 
     $invoice = Invoice::factory()->create([

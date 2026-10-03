@@ -18,7 +18,7 @@ use App\Models\CreditNoteItem;
  * credit note creation": builds an unpersisted credit note with the taxes
  * and the maximum creditable/refundable amounts.
  */
-class EstimateService extends \App\Services\BaseService
+class EstimateService extends BaseService
 {
     /** @param  list<array<string, mixed>>|mixed  $items */
     public function __construct(

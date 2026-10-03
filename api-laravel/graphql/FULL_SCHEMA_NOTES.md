@@ -155,9 +155,11 @@ mutation root fields, 1 subscription field):
 
 0. **Invoice surface — blocked pieces** (all still on the null stub, each
    waiting on its feature slice):
-   - Queries: `invoiceCreditNotes` (needs the CreditNote model + the
-     `credit_notes` relation; Rails resolver = invoice.credit_notes.finalized
-     ordered/paginated).
+   - Queries: ~~`invoiceCreditNotes`~~ — RESOLVED by the credit-notes slice
+     (App\GraphQL\Queries\InvoiceCreditNotes; invoice.credit_notes.finalized,
+     newest first, kaminari-paginated). The `Invoice.creditNotes` TYPE field
+     is still a null stub (needs the credit_notes relation on the read-only
+     Invoice model — coordination item).
    - Mutations: `createInvoice`/`updateInvoice`/`deleteInvoice` (one-off
      invoice slice — `Invoices::CreateOneOffService`, `UpdateService`,
      `DeleteService` are unported; update/delete additionally reuse the
@@ -175,7 +177,10 @@ mutation root fields, 1 subscription field):
      and the external*/integration* ids + integrationSyncable booleans
      (integration resources unported), availableToCreditAmountCents/
      creditableAmountCents/offsettableAmountCents/refundableAmountCents
-     (non-null — null violation WHEN SELECTED, until credit notes land).
+     (non-null — null violation WHEN SELECTED. The credit-notes slice
+     shipped the computation behind them —
+     App\Services\CreditNotes\InvoiceCreditableAmounts — wiring it into the
+     `Invoice` type class is up to the invoice slice).
    - The `settlements` filter validates (only `credit_note` reaches the
      wire) but is NOT applied — the `invoice_settlements` table ships with
      the credit-notes slice; the `metadata` filter never arrives from the
