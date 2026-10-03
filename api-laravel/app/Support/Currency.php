@@ -20,13 +20,28 @@ final class Currency
         'RWF', 'UGX', 'VND', 'VUV', 'XAF', 'XOF', 'XPF',
     ];
 
+    /** Currencies with a three-decimal subunit (exponent 3). */
+    private const THREE_EXPONENT = ['BHD', 'KWD', 'OMR', 'TND'];
+
     public static function subunitToUnit(string $currency): int
     {
-        return in_array(mb_strtoupper($currency), self::ZERO_EXPONENT, true) ? 1 : 100;
+        $currency = mb_strtoupper($currency);
+
+        if (in_array($currency, self::ZERO_EXPONENT, true)) {
+            return 1;
+        }
+
+        return in_array($currency, self::THREE_EXPONENT, true) ? 1000 : 100;
     }
 
     public static function exponent(string $currency): int
     {
-        return in_array(mb_strtoupper($currency), self::ZERO_EXPONENT, true) ? 0 : 2;
+        $currency = mb_strtoupper($currency);
+
+        if (in_array($currency, self::ZERO_EXPONENT, true)) {
+            return 0;
+        }
+
+        return in_array($currency, self::THREE_EXPONENT, true) ? 3 : 2;
     }
 }

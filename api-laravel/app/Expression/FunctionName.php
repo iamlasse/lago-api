@@ -18,15 +18,6 @@ enum FunctionName
     case Least;
     case Greatest;
 
-    /** round/ceil/floor take 1..2 arguments; the rest are variadic. */
-    public function hasOptionalSecondArgument(): bool
-    {
-        return match ($this) {
-            self::Ceil, self::Round, self::Floor => true,
-            self::Concat, self::Least, self::Greatest => false,
-        };
-    }
-
     public static function fromSpelling(string $spelling): ?self
     {
         return match ($spelling) {
@@ -37,6 +28,15 @@ enum FunctionName
             'least', 'LEAST', 'Least' => self::Least,
             'greatest', 'GREATEST', 'Greatest' => self::Greatest,
             default => null,
+        };
+    }
+
+    /** round/ceil/floor take 1..2 arguments; the rest are variadic. */
+    public function hasOptionalSecondArgument(): bool
+    {
+        return match ($this) {
+            self::Ceil, self::Round, self::Floor => true,
+            self::Concat, self::Least, self::Greatest => false,
         };
     }
 }

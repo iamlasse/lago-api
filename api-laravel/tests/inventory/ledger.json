@@ -8150,11 +8150,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\InvoicesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/InvoicesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9658,11 +9660,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\InvoicesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/InvoicesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9670,11 +9674,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\InvoicesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/InvoicesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -12190,11 +12196,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\InvoicesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/InvoicesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -13228,11 +13236,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\InvoicesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/InvoicesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -13240,11 +13250,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\InvoicesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/InvoicesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -13252,11 +13264,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\InvoicesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/InvoicesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -13264,11 +13278,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\InvoicesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/InvoicesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -13276,11 +13292,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\InvoicesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/InvoicesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -13312,11 +13330,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\InvoicesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/InvoicesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -13336,11 +13356,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\InvoicesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/InvoicesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -14790,11 +14812,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\InvoicesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/InvoicesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -14802,11 +14826,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\InvoicesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/InvoicesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -14814,11 +14840,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\InvoicesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/InvoicesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -21638,11 +21666,13 @@
             "source": "app/services/fees/amounts_service.rb",
             "laravel": "App\\Services\\Fees\\AmountsService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Fees/AmountsServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -21924,11 +21954,13 @@
             "source": "app/services/fees/one_off_service.rb",
             "laravel": "App\\Services\\Fees\\OneOffService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Invoices/CreateOneOffServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -24208,11 +24240,13 @@
             "source": "app/services/invoices/create_one_off_service.rb",
             "laravel": "App\\Services\\Invoices\\CreateOneOffService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Invoices/CreateOneOffServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -24256,11 +24290,13 @@
             "source": "app/services/invoices/delete_service.rb",
             "laravel": "App\\Services\\Invoices\\DeleteService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Invoices/DeleteServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -24369,11 +24405,13 @@
             "source": "app/services/invoices/lose_dispute_service.rb",
             "laravel": "App\\Services\\Invoices\\LoseDisputeService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/InvoicesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -24741,11 +24779,13 @@
             "source": "app/services/invoices/refresh_draft_and_finalize_service.rb",
             "laravel": "App\\Services\\Invoices\\RefreshDraftAndFinalizeService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/InvoicesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -24753,11 +24793,13 @@
             "source": "app/services/invoices/refresh_draft_service.rb",
             "laravel": "App\\Services\\Invoices\\RefreshDraftService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Invoices/RefreshDraftServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -24801,11 +24843,13 @@
             "source": "app/services/invoices/retry_service.rb",
             "laravel": "App\\Services\\Invoices\\RetryService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Invoices/RetryServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -24878,11 +24922,13 @@
             "source": "app/services/invoices/update_service.rb",
             "laravel": "App\\Services\\Invoices\\UpdateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Invoices/UpdateServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -24890,11 +24936,13 @@
             "source": "app/services/invoices/void_service.rb",
             "laravel": "App\\Services\\Invoices\\VoidService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Invoices/VoidServiceTest.php"
+            ],
             "notes": ""
         },
         {

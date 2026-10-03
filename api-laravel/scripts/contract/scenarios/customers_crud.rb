@@ -19,6 +19,10 @@ API_KEY_VALUE = "1a4a0d6e-0000-4000-8000-0000000000bb"
 SEEDED_EXTERNAL_ID = "seed-customer-1"
 CAPTURED_EXTERNAL_ID = "captured-customer-1"
 CAPTURED_AT = Time.utc(2025, 6, 2, 12, 0, 0)
+# Seeds run one frozen hour BEFORE the requests: the customers index sorts
+# by created_at with a minted-id tie-break, and the seeded + request-created
+# customers must not tie (that ordering is unstable across runtimes).
+SEEDED_AT = CAPTURED_AT - 3600
 
 Dir.mkdir(GOLDENS) unless Dir.exist?(GOLDENS)
 
@@ -44,7 +48,7 @@ end
 
 extend ActiveSupport::Testing::TimeHelpers
 
-travel_to(CAPTURED_AT) do
+travel_to(SEEDED_AT) do
   organization = FactoryBot.create(
     :organization,
     id: ORG_ID,
@@ -81,7 +85,9 @@ travel_to(CAPTURED_AT) do
     legal_number: nil,
     currency: "EUR"
   )
+end
 
+travel_to(CAPTURED_AT) do
   # ---- SEED STATE IS FROZEN HERE ------------------------------------------
   dump = IO.popen(
     ["pg_dump", "--data-only", "--inserts",

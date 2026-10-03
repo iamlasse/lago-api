@@ -23,7 +23,7 @@ final class Lexer
     public function tokenize(): array
     {
         $tokens = [];
-        $length = strlen($this->input);
+        $length = mb_strlen($this->input, '8bit');
         $position = 0;
 
         while ($position < $length) {
@@ -58,7 +58,7 @@ final class Lexer
                 preg_match('/\d+(?:\.\d+)?/A', $this->input, $matches, 0, $position);
                 $text = $matches[0];
                 $tokens[] = new Token(TokenType::Number, $text, $position);
-                $position += strlen($text);
+                $position += mb_strlen($text);
 
                 continue;
             }
@@ -67,13 +67,13 @@ final class Lexer
                 preg_match('/[A-Za-z][A-Za-z0-9_]*/A', $this->input, $matches, 0, $position);
                 $text = $matches[0];
                 $tokens[] = new Token(TokenType::Identifier, $text, $position);
-                $position += strlen($text);
+                $position += mb_strlen($text);
 
                 continue;
             }
 
             if ($char === "'") {
-                $end = strpos($this->input, "'", $position + 1);
+                $end = mb_strpos($this->input, "'", $position + 1, '8bit');
 
                 if ($end === false) {
                     throw new ExpressionParseException(
@@ -81,7 +81,7 @@ final class Lexer
                     );
                 }
 
-                $contents = substr($this->input, $position + 1, $end - $position - 1);
+                $contents = mb_substr($this->input, $position + 1, $end - $position - 1, '8bit');
                 $tokens[] = new Token(TokenType::String, $contents, $position);
                 $position = $end + 1;
 

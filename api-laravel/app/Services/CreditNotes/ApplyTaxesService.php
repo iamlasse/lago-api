@@ -8,8 +8,8 @@ use App\Models\Fee;
 use App\Models\Invoice;
 use App\Support\MoneyMath;
 use App\Services\BaseResult;
-use App\Models\CreditNoteItem;
 use App\Models\FeeAppliedTax;
+use App\Models\CreditNoteItem;
 use App\Models\InvoiceAppliedTax;
 use App\Models\CreditNoteAppliedTax as CreditNoteAppliedTaxModel;
 
@@ -46,8 +46,8 @@ class ApplyTaxesService extends \App\Services\BaseService
             'precise_tax_amounts',
         );
 
-        $result->applied_taxes = [];
-        $result->precise_tax_amounts = [];
+        $appliedTaxes = [];
+        $preciseTaxAmounts = [];
         $result->coupons_adjustment_amount_cents = $this->couponsAdjustmentAmountCents();
 
         $preciseTaxesAmountCents = '0';
@@ -70,17 +70,19 @@ class ApplyTaxesService extends \App\Services\BaseService
 
             $appliedTax = $this->buildAppliedTax($invoiceAppliedTax, $preciseBaseAmountCents, $preciseTaxAmountCents);
 
-            $result->applied_taxes[] = $appliedTax;
-            $result->precise_tax_amounts[] = $preciseTaxAmountCents;
+            $appliedTaxes[] = $appliedTax;
+            $preciseTaxAmounts[] = $preciseTaxAmountCents;
 
             $preciseTaxesAmountCents = MoneyMath::add($preciseTaxesAmountCents, $preciseTaxAmountCents);
             $taxesRate += $this->proRatedTaxesRate($appliedTax, $result);
         }
 
+        $result->applied_taxes = $appliedTaxes;
+        $result->precise_tax_amounts = $preciseTaxAmounts;
         $result->precise_taxes_amount_cents = $preciseTaxesAmountCents;
         $result->taxes_amount_cents = array_sum(array_map(
-            fn (InvoiceAppliedTax $tax): int => (int) $tax->amount_cents,
-            $result->applied_taxes,
+            fn (CreditNoteAppliedTaxModel $tax): int => (int) $tax->amount_cents,
+            $appliedTaxes,
         ));
         $result->taxes_rate = MoneyMath::roundTo((string) $taxesRate, 5);
 

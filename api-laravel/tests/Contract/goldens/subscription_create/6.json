@@ -1,8 +1,8 @@
 {
   "subscription": {
-    "lago_id": "1b0c4d22-464f-4765-82b3-b6f18669d54c",
+    "lago_id": "2f8dd2ac-6b38-48be-9799-861418a502d2",
     "external_id": "sub-advance-1",
-    "lago_customer_id": "ccaaec54-66d5-4e76-ba08-be4c5c7b3efe",
+    "lago_customer_id": "67d8ef12-dcfe-4ec6-ab9c-62e3862448fa",
     "external_customer_id": "seed-customer-1",
     "name": "Advance Sub",
     "plan_code": "plan-advance",
@@ -34,7 +34,7 @@
       "payment_method_type": "provider"
     },
     "plan": {
-      "lago_id": "8fa103ba-f1c1-428b-b130-60875ef7f7cd",
+      "lago_id": "76dfb9ea-f3bd-4622-afa2-ee191fcacbfc",
       "name": "Advance Plan",
       "invoice_display_name": "Advance Plan Display",
       "created_at": "2025-06-04T11:00:00Z",

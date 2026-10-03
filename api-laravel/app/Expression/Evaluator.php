@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Expression;
 
+use LogicException;
+use InvalidArgumentException;
+
 /**
  * Port of the gem's evaluation semantics (expression-core/src/evaluate.rs):
  *   - arithmetic operators require decimals on both sides (a String raises
@@ -46,7 +49,7 @@ final class Evaluator
             return $this->evaluateBinaryOperation($expression, $event);
         }
 
-        throw new \LogicException('Unknown expression node '.get_class($expression));
+        throw new LogicException('Unknown expression node '.get_class($expression));
     }
 
     private function evaluateEventAttribute(EventAttributeNode $node, ExpressionEvent $event): ExpressionValue
@@ -153,7 +156,7 @@ final class Evaluator
     {
         try {
             return Decimal::divide($lhs, $rhs);
-        } catch (\InvalidArgumentException $exception) {
+        } catch (InvalidArgumentException $exception) {
             throw new ExpressionEvaluationException($exception->getMessage(), previous: $exception);
         }
     }
@@ -162,7 +165,7 @@ final class Evaluator
     {
         try {
             return Decimal::withScaleRound($value, $digits, $mode);
-        } catch (\InvalidArgumentException $exception) {
+        } catch (InvalidArgumentException $exception) {
             throw new ExpressionEvaluationException($exception->getMessage(), previous: $exception);
         }
     }

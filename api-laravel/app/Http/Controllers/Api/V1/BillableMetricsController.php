@@ -25,11 +25,10 @@ use App\Serializers\V1\BillableMetricExpressionResultSerializer;
  *
  * Not ported (dependencies do not exist yet):
  * - TODO(port): the filters param (the BillableMetricFilters slice — the
- *   create/update services mark the hook);
- * - TODO(port): evaluate_expression's Lago::ExpressionParser — the parser
- *   gem is not ported, so EvaluateExpressionService accepts the
- *   blank-expression branch verbatim and answers Rails' invalid_expression
- *   envelope for every non-blank expression instead of evaluating it.
+ *   create/update services mark the hook).
+ *
+ * evaluate_expression runs on the App\Expression parser port of the
+ * lago-expression gem (see EvaluateExpressionService).
  */
 class BillableMetricsController extends ApiController
 {

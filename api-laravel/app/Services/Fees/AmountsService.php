@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Fees;
 
-use App\Support\MoneyMath;
 use App\Support\Currency;
+use App\Support\MoneyMath;
 use App\Services\BaseResult;
 use App\Services\ChargeModels\ChargeModelResult;
 
@@ -62,14 +62,15 @@ class AmountsService extends \App\Services\BaseService
         $result = BaseResult::of('amount', 'true_up_amount');
 
         // An empty model result means no base fee, not a zero-valued fee.
-        // (Rails: charge_model_result.amount.nil? — the Laravel result object
-        // keeps amount/unit_amount/units uninitialized in that case, and
-        // isset() is false on an uninitialized typed property.)
+        // (Rails: charge_model_result.amount.nil?. The Laravel result object
+        // types amount as string with a '0' default, so nil-ability is
+        // carried by `units` — a fresh result has units === null, and every
+        // charge model that writes an amount also writes units.)
         $amount = isset($this->chargeModelResult->amount) ? (string) $this->chargeModelResult->amount : null;
-        $unitAmount = isset($this->chargeModelResult->unit_amount) ? (string) $this->chargeModelResult->unit_amount : null;
+        $unitAmount = isset($this->chargeModelResult->unitAmount) ? (string) $this->chargeModelResult->unitAmount : null;
         $units = isset($this->chargeModelResult->units) ? (string) $this->chargeModelResult->units : null;
 
-        if ($amount !== null) {
+        if ($amount !== null && $units !== null) {
             if ($this->isAdvanceResult()) {
                 $result->amount = $this->advanceAmount($amount, $unitAmount ?? '0');
             } elseif ($this->negative($units) || $this->negative($amount)) {
@@ -78,7 +79,7 @@ class AmountsService extends \App\Services\BaseService
                 $result->amount = $this->buildAmount($amount, $unitAmount ?? '0');
             }
 
-            if ($result->amount !== null && ! $this->deduction->none()) {
+            if ($result->amount !== null && ! $this->deduction->isNone()) {
                 $result->amount = $result->amount->withDeduction($this->deduction->proratedAmountCents());
             }
         }
@@ -112,7 +113,7 @@ class AmountsService extends \App\Services\BaseService
      */
     private function advanceAmount(string $amount, string $unitAmount): Amount
     {
-        if (! $this->appliedPricingUnit->none()) {
+        if (! $this->appliedPricingUnit->isNone()) {
             return $this->buildAmount(
                 MoneyMath::fdiv($amount, $this->appliedPricingUnit->subunitToUnit()),
                 $unitAmount,
@@ -132,7 +133,7 @@ class AmountsService extends \App\Services\BaseService
     /** @param  Amount|null  $baseAmount  the computed base amount (null when the model result was empty) */
     private function trueUpAmount(?Amount $baseAmount): ?Amount
     {
-        if ($this->trueUp->none()) {
+        if ($this->trueUp->isNone()) {
             return null;
         }
 
@@ -156,7 +157,7 @@ class AmountsService extends \App\Services\BaseService
         $difference = MoneyMath::sub($minimum, $used);
         $preciseDifference = MoneyMath::sub($minimum, $preciseUsed);
 
-        if (! $this->appliedPricingUnit->none()) {
+        if (! $this->appliedPricingUnit->isNone()) {
             // Minimum and used totals are in pricing-unit cents, not fiat cents.
             $subunit = $this->appliedPricingUnit->subunitToUnit();
 
@@ -208,9 +209,9 @@ final class Amount
 {
     public function __construct(
         public readonly int $amountCents,
-        public readonly string $preciseAmountCents,
-        public readonly string $unitAmountCents,
-        public readonly string $preciseUnitAmount,
+        public string $preciseAmountCents,
+        public string $unitAmountCents,
+        public string $preciseUnitAmount,
     ) {
         // bcmath returns fixed-scale strings ("33.330000000000000") — keep
         // the normalized decimal form the Ruby BigDecimal carries.
@@ -261,7 +262,7 @@ final class Deduction
         return new self(amountCents: null);
     }
 
-    public function none(): bool
+    public function isNone(): bool
     {
         return $this->amountCents === null;
     }
@@ -295,7 +296,7 @@ final class TrueUp
         return new self(minimumAmountCents: null);
     }
 
-    public function none(): bool
+    public function isNone(): bool
     {
         return $this->minimumAmountCents === null;
     }
@@ -336,7 +337,7 @@ final class AppliedPricingUnit
         return new self(pricingUnit: $pricingUnit, conversionRate: $conversionRate);
     }
 
-    public function none(): bool
+    public function isNone(): bool
     {
         return $this->pricingUnit === null;
     }

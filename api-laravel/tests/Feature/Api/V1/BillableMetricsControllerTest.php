@@ -25,10 +25,8 @@ use Illuminate\Support\Facades\DB;
  *   create service drops the permitted filters param for now, so the
  *   response carries filters: []).
  *
- * TODO(port): the evaluate_expression scenarios exercise the documented
- * divergence until Lago::ExpressionParser lands — a non-blank expression
- * currently gets Rails' invalid_expression envelope instead of being
- * evaluated (the Rails expectation "2.0" is noted inline).
+ * The evaluate_expression scenarios run on the App\Expression parser port
+ * (the lago-expression gem).
  */
 function metricOrganization(array $attributes = []): array
 {
@@ -371,16 +369,26 @@ it('requires the expression on evaluate_expression', function (): void {
         ]);
 });
 
-// TODO(port): the Rails expectation is
-//   ['expression_result' => ['value' => '2.0']]
-// for expression "round(event.properties.value)" with properties {value: "2.4"}
-// — unreachable until Lago::ExpressionParser is ported; the documented
-// divergence answers invalid_expression instead.
-it('rejects a non-blank expression while the expression parser is not ported', function (): void {
+it('evaluates the expression', function (): void {
     [$organization, $apiKey] = metricOrganization();
 
     $this->postJson('/api/v1/billable_metrics/evaluate_expression', [
         'expression' => 'round(event.properties.value)',
+        'event' => [
+            'code' => 'bm_code',
+            'timestamp' => now()->getTimestamp(),
+            'properties' => ['value' => '2.4'],
+        ],
+    ], ['Authorization' => 'Bearer '.$apiKey->value])
+        ->assertOk()
+        ->assertExactJson(['expression_result' => ['value' => '2.0']]);
+});
+
+it('rejects a malformed expression with invalid_expression', function (): void {
+    [$organization, $apiKey] = metricOrganization();
+
+    $this->postJson('/api/v1/billable_metrics/evaluate_expression', [
+        'expression' => '1 +',
         'event' => [
             'code' => 'bm_code',
             'timestamp' => now()->getTimestamp(),
@@ -393,6 +401,26 @@ it('rejects a non-blank expression while the expression parser is not ported', f
             'error' => 'Unprocessable Entity',
             'code' => 'validation_errors',
             'error_details' => ['expression' => ['invalid_expression']],
+        ]);
+});
+
+it('rejects an event that fails evaluation with invalid_event', function (): void {
+    [$organization, $apiKey] = metricOrganization();
+
+    $this->postJson('/api/v1/billable_metrics/evaluate_expression', [
+        'expression' => 'event.properties.value',
+        'event' => [
+            'code' => 'bm_code',
+            'timestamp' => now()->getTimestamp(),
+            'properties' => [],
+        ],
+    ], ['Authorization' => 'Bearer '.$apiKey->value])
+        ->assertUnprocessable()
+        ->assertExactJson([
+            'status' => 422,
+            'error' => 'Unprocessable Entity',
+            'code' => 'validation_errors',
+            'error_details' => ['event' => ['invalid_event']],
         ]);
 });
 

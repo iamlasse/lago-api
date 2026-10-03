@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Services\BillableMetrics;
 
-use App\Expression\ExpressionEvaluationException;
-use App\Expression\ExpressionEvent;
-use App\Expression\ExpressionParseException;
-use App\Expression\ExpressionValue;
-use App\Expression\Evaluator;
 use App\Expression\Parser;
 use App\Services\BaseResult;
+use App\Expression\Evaluator;
 use App\Services\BaseService;
+use App\Expression\ExpressionEvent;
+use App\Expression\ExpressionValue;
+use App\Expression\ExpressionParseException;
+use App\Expression\ExpressionEvaluationException;
 
 /**
  * Port of Rails' BillableMetrics::EvaluateExpressionService
@@ -31,7 +31,7 @@ class EvaluateExpressionService extends BaseService
     {
         $result = static::makeResult('evaluation_result');
 
-        if ($this->expression === null || trim($this->expression) === '') {
+        if ($this->expression === null || mb_trim($this->expression) === '') {
             return $result->singleValidationFailure('value_is_mandatory', 'expression');
         }
 

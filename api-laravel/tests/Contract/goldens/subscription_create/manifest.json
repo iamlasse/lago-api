@@ -31,7 +31,8 @@
           "external_customer_id": "seed-customer-1",
           "plan_code": "plan-arrears",
           "external_id": "sub-arrears-1",
-          "name": "Arrears Sub"
+          "name": "Arrears Sub",
+          "subscription_at": "2025-06-04T11:00:00Z"
         }
       },
       "required_headers": {}

@@ -130,8 +130,12 @@ class ApplyTaxesService extends \App\Services\BaseService
             return $customer->taxes()->get();
         }
 
-        // billing_entity.taxes — the default taxes applied on the billing entity
+        // billing_entity.taxes — the default taxes applied on the billing entity.
+        // NOTE: select('taxes.*') — both joined tables carry an `id` column
+        // and PDO keeps the last one, which would shadow the tax id with the
+        // join row id (BUGFIX(port), Rails: billing_entity.default_taxes).
         return Tax::query()
+            ->select('taxes.*')
             ->join('billing_entities_taxes', 'billing_entities_taxes.tax_id', '=', 'taxes.id')
             ->where('billing_entities_taxes.billing_entity_id', $customer->billing_entity_id)
             ->get();

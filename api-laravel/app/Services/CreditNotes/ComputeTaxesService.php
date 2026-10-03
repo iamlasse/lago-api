@@ -40,8 +40,11 @@ class ComputeTaxesService extends \App\Services\BaseService
 
         if ($this->adjustRounding) {
             $roundingAdjustments = '0';
-            foreach ($this->creditNote->invoice->creditNotes()->get() as $creditNote) {
-                $roundingAdjustments = MoneyMath::add($roundingAdjustments, (string) $creditNote->taxesRoundingAdjustment());
+            $creditNotes = \App\Models\CreditNote::query()
+                ->where('invoice_id', $this->creditNote->invoice_id)
+                ->get();
+            foreach ($creditNotes as $previousCreditNote) {
+                $roundingAdjustments = MoneyMath::add($roundingAdjustments, (string) $previousCreditNote->taxesRoundingAdjustment());
             }
             $this->creditNote->precise_taxes_amount_cents = MoneyMath::sub(
                 (string) $this->creditNote->precise_taxes_amount_cents,

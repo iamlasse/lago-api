@@ -58,17 +58,17 @@ final class Decimal
 
         if ($exponent !== 0) {
             $digits = $int.$frac;
-            $point = strlen($int) + $exponent;
+            $point = mb_strlen($int) + $exponent;
 
             if ($point <= 0) {
                 $int = '0';
                 $frac = str_repeat('0', -$point).$digits;
-            } elseif ($point >= strlen($digits)) {
-                $int = $digits.str_repeat('0', $point - strlen($digits));
+            } elseif ($point >= mb_strlen($digits)) {
+                $int = $digits.str_repeat('0', $point - mb_strlen($digits));
                 $frac = '';
             } else {
-                $int = substr($digits, 0, $point);
-                $frac = substr($digits, $point);
+                $int = mb_substr($digits, 0, $point);
+                $frac = mb_substr($digits, $point);
             }
         }
 
@@ -78,9 +78,9 @@ final class Decimal
     /** The scale (fractional digit count) of a canonical decimal string. */
     public static function scaleOf(string $dec): int
     {
-        $dot = strpos($dec, '.');
+        $dot = mb_strpos($dec, '.');
 
-        return $dot === false ? 0 : strlen($dec) - $dot - 1;
+        return $dot === false ? 0 : mb_strlen($dec) - $dot - 1;
     }
 
     /**
@@ -111,13 +111,13 @@ final class Decimal
         }
 
         $dec = self::display($dec);
-        $dot = strpos($dec, '.');
+        $dot = mb_strpos($dec, '.');
 
         if ($dot === false) {
             return $dec.'.0';
         }
 
-        $trimmed = rtrim($dec, '0');
+        $trimmed = mb_rtrim($dec, '0');
 
         return str_ends_with($trimmed, '.') ? $trimmed.'0' : $trimmed;
     }
@@ -144,7 +144,7 @@ final class Decimal
 
     public static function negate(string $a): string
     {
-        return self::isZero($a) ? $a : (str_starts_with($a, '-') ? substr($a, 1) : '-'.$a);
+        return self::isZero($a) ? $a : (str_starts_with($a, '-') ? mb_substr($a, 1) : '-'.$a);
     }
 
     /**
@@ -186,18 +186,6 @@ final class Decimal
         $scale = max(0, $digits - 1 - $log10);
 
         return self::display(self::trimFraction(self::roundHalfUpAt(bcdiv($a, $b, $scale + 9), $scale)));
-    }
-
-    /**
-     * Drops redundant fractional trailing zeros ("0.500...0" of a
-     * terminating quotient becomes "0.5"); non-terminating expansions are
-     * unaffected.
-     */
-    private static function trimFraction(string $dec): string
-    {
-        [$negative, $int, $frac] = self::parts($dec);
-
-        return self::build($negative, $int, rtrim($frac, '0'));
     }
 
     /**
@@ -251,26 +239,38 @@ final class Decimal
         [$negative, $int, $frac] = self::parts($dec);
 
         if ($places >= 0) {
-            if (strlen($frac) <= $places) {
-                $int = $int.$frac.str_repeat('0', $places - strlen($frac));
+            if (mb_strlen($frac) <= $places) {
+                $int = $int.$frac.str_repeat('0', $places - mb_strlen($frac));
                 $frac = '';
             } else {
-                $int = $int.substr($frac, 0, $places);
-                $frac = substr($frac, $places);
+                $int = $int.mb_substr($frac, 0, $places);
+                $frac = mb_substr($frac, $places);
             }
         } else {
             $places = -$places;
 
-            if (strlen($int) <= $places) {
-                $frac = str_repeat('0', $places - strlen($int)).$int.$frac;
+            if (mb_strlen($int) <= $places) {
+                $frac = str_repeat('0', $places - mb_strlen($int)).$int.$frac;
                 $int = '0';
             } else {
-                $frac = substr($int, -$places).$frac;
-                $int = substr($int, 0, -$places);
+                $frac = mb_substr($int, -$places).$frac;
+                $int = mb_substr($int, 0, -$places);
             }
         }
 
         return self::build($negative, $int, $frac);
+    }
+
+    /**
+     * Drops redundant fractional trailing zeros ("0.500...0" of a
+     * terminating quotient becomes "0.5"); non-terminating expansions are
+     * unaffected.
+     */
+    private static function trimFraction(string $dec): string
+    {
+        [$negative, $int, $frac] = self::parts($dec);
+
+        return self::build($negative, $int, mb_rtrim($frac, '0'));
     }
 
     /**
@@ -279,7 +279,7 @@ final class Decimal
     private static function parts(string $dec): array
     {
         $negative = str_starts_with($dec, '-');
-        $dec = $negative ? substr($dec, 1) : $dec;
+        $dec = $negative ? mb_substr($dec, 1) : $dec;
 
         [$int, $frac] = array_pad(explode('.', $dec, 2), 2, '');
 
@@ -288,7 +288,7 @@ final class Decimal
 
     private static function build(bool $negative, string $int, string $frac): string
     {
-        $int = ltrim($int, '0');
+        $int = mb_ltrim($int, '0');
 
         if ($int === '') {
             $int = '0';
@@ -301,7 +301,7 @@ final class Decimal
 
     private static function digitsAreZero(string $int, string $frac): bool
     {
-        return trim($int.$frac, '0') === '';
+        return mb_trim($int.$frac, '0') === '';
     }
 
     /**
@@ -312,7 +312,7 @@ final class Decimal
     private static function roundToInt(string $dec, RoundingMode $mode): string
     {
         [$negative, $int, $frac] = self::parts($dec);
-        $hasFraction = trim($frac, '0') !== '';
+        $hasFraction = mb_trim($frac, '0') !== '';
 
         $roundUp = match ($mode) {
             RoundingMode::HalfUp => $frac !== '' && $frac[0] >= '5',
@@ -342,12 +342,15 @@ final class Decimal
         [$negative, $int, $frac] = self::parts($dec);
 
         if ($frac[$scale] >= '5') {
-            $increment = ($negative ? '-' : '').($scale === 0 ? '1' : '0.'.str_repeat('0', $scale).'1');
+            // One unit at the $scale-th fractional digit (1e-1 when $scale
+            // is 0, 1e-101 when $scale is 100, ...).
+            $increment = ($negative ? '-' : '')
+                .($scale === 0 ? '1' : '0.'.str_repeat('0', $scale - 1).'1');
             $dec = bcadd($dec, $increment, $guard);
             [$negative, $int, $frac] = self::parts($dec);
         }
 
-        return self::build($negative, $int, substr($frac, 0, $scale));
+        return self::build($negative, $int, mb_substr($frac, 0, $scale));
     }
 
     /**
@@ -357,14 +360,14 @@ final class Decimal
     private static function insertPoint(string $integer, int $places): string
     {
         $negative = str_starts_with($integer, '-');
-        $integer = $negative ? substr($integer, 1) : $integer;
+        $integer = $negative ? mb_substr($integer, 1) : $integer;
 
-        if (strlen($integer) <= $places) {
-            $integer = str_repeat('0', $places - strlen($integer) + 1).$integer;
+        if (mb_strlen($integer) <= $places) {
+            $integer = str_repeat('0', $places - mb_strlen($integer) + 1).$integer;
         }
 
-        $int = substr($integer, 0, -$places);
-        $frac = substr($integer, -$places);
+        $int = mb_substr($integer, 0, -$places);
+        $frac = mb_substr($integer, -$places);
 
         return self::build($negative, $int, $frac);
     }
@@ -374,17 +377,17 @@ final class Decimal
      */
     private static function floorLog10(string $dec): int
     {
-        $dec = ltrim($dec, '-');
+        $dec = mb_ltrim($dec, '-');
 
         if (str_starts_with($dec, '0.')) {
-            $fraction = substr($dec, 2);
-            $zeros = strlen($fraction) - strlen(ltrim($fraction, '0'));
+            $fraction = mb_substr($dec, 2);
+            $zeros = mb_strlen($fraction) - mb_strlen(mb_ltrim($fraction, '0'));
 
             return -($zeros + 1);
         }
 
         // Canonical decimals never carry leading zeros or exponents, so the
         // digit count before the point is floor(log10) + 1.
-        return strlen(explode('.', $dec, 2)[0]) - 1;
+        return mb_strlen(explode('.', $dec, 2)[0]) - 1;
     }
 }

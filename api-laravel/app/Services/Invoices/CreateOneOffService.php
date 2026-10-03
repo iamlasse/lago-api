@@ -6,11 +6,11 @@ namespace App\Services\Invoices;
 
 use App\Models\Invoice;
 use App\Models\Customer;
-use App\Enums\InvoicePaymentStatus;
-use App\Services\BaseResult;
 use App\Jobs\SendWebhookJob;
-use App\Services\Customers\UpdateCurrencyService;
+use App\Services\BaseResult;
 use Illuminate\Support\Facades\DB;
+use App\Enums\InvoicePaymentStatus;
+use App\Services\Customers\UpdateCurrencyService;
 
 /**
  * Port of Rails' Invoices::CreateOneOffService
@@ -67,6 +67,14 @@ class CreateOneOffService extends \App\Services\BaseService
             return $result->notFoundFailure('fees');
         }
 
+        // Rails: CreateGeneratingService#save! runs the invoice presence
+        // validation (currency value_is_mandatory) — validated before the
+        // service call since the ported CreateGeneratingService types the
+        // currency as a non-null string.
+        if ($this->currency === null || $this->currency === '') {
+            return $result->singleValidationFailure('value_is_mandatory', 'currency');
+        }
+
         if (count($this->addOns()) !== count($this->addOnIdentifiers())) {
             return $result->notFoundFailure('add_on');
         }
@@ -85,54 +93,54 @@ class CreateOneOffService extends \App\Services\BaseService
 
         return $this->rescueFailures(function () use ($result, &$taxDeferred): BaseResult {
             DB::transaction(function () use ($result, &$taxDeferred): void {
-            UpdateCurrencyService::call(
-                customer: $this->customer,
-                currency: $this->currency,
-            )->raiseIfError();
+                UpdateCurrencyService::call(
+                    customer: $this->customer,
+                    currency: $this->currency,
+                )->raiseIfError();
 
-            $this->createGeneratingInvoice();
+                $this->createGeneratingInvoice();
 
-            $result->invoice = $this->invoice;
+                $result->invoice = $this->invoice;
 
-            $this->createOneOffFees();
+                $this->createOneOffFees();
 
-            $this->invoice->fees_amount_cents = (int) $this->invoice->fees()->sum('amount_cents');
-            $this->invoice->sub_total_excluding_taxes_amount_cents = $this->invoice->fees_amount_cents;
+                $this->invoice->fees_amount_cents = (int) $this->invoice->fees()->sum('amount_cents');
+                $this->invoice->sub_total_excluding_taxes_amount_cents = $this->invoice->fees_amount_cents;
 
-            $this->invoice->payment_method_id = $this->paymentMethod?->id ?? null;
-            $this->invoice->skip_automatic_payment = $this->skipPsp;
+                $this->invoice->payment_method_id = $this->paymentMethod?->id ?? null;
+                $this->invoice->skip_automatic_payment = $this->skipPsp;
 
-            // NOTE: Custom sections are applied before computing taxes so
-            // they are persisted even when tax computation is deferred to a
-            // tax provider. TODO(port): Invoices::ApplyInvoiceCustomSectionsService
-            // (invoice custom sections are a later milestone).
+                // NOTE: Custom sections are applied before computing taxes so
+                // they are persisted even when tax computation is deferred to a
+                // tax provider. TODO(port): Invoices::ApplyInvoiceCustomSectionsService
+                // (invoice custom sections are a later milestone).
 
-            $totalsResult = ComputeTaxesAndTotalsService::call(invoice: $this->invoice);
+                $totalsResult = ComputeTaxesAndTotalsService::call(invoice: $this->invoice);
 
-            // TODO(port): provider taxation — Rails defers finalization when
-            // the totals fail with BaseService::UnknownTaxFailure; the local
-            // taxes pipeline never raises that failure.
-            if ($totalsResult->failure()
-                && $totalsResult->getError() instanceof \App\Services\Failures\UnknownTaxFailure) {
-                $taxDeferred = true;
+                // TODO(port): provider taxation — Rails defers finalization when
+                // the totals fail with BaseService::UnknownTaxFailure; the local
+                // taxes pipeline never raises that failure.
+                if ($totalsResult->failure()
+                    && $totalsResult->getError() instanceof \App\Services\Failures\UnknownTaxFailure) {
+                    $taxDeferred = true;
 
-                return;
-            }
+                    return;
+                }
 
-            $totalsResult->raiseIfError();
+                $totalsResult->raiseIfError();
 
-            $this->invoice->payment_status = $this->invoice->total_amount_cents > 0
-                ? InvoicePaymentStatus::Pending
-                : InvoicePaymentStatus::Succeeded;
+                $this->invoice->payment_status = $this->invoice->total_amount_cents > 0
+                    ? InvoicePaymentStatus::Pending
+                    : InvoicePaymentStatus::Succeeded;
 
-            TransitionToFinalStatusService::call(invoice: $this->invoice);
+                TransitionToFinalStatusService::call(invoice: $this->invoice);
 
-            if ($this->voidedInvoiceId !== null) {
-                $this->invoice->voided_invoice_id = $this->voidedInvoiceId;
-            }
+                if ($this->voidedInvoiceId !== null) {
+                    $this->invoice->voided_invoice_id = $this->voidedInvoiceId;
+                }
 
-            $this->invoice->save();
-        });
+                $this->invoice->save();
+            });
 
             if ($taxDeferred) {
                 return $result;
@@ -159,12 +167,12 @@ class CreateOneOffService extends \App\Services\BaseService
     {
         $invoiceResult = CreateGeneratingService::callBang(
             customer: $this->customer,
-            invoiceType: 'one_off',
+            invoiceType: \App\Enums\InvoiceType::OneOff,
             currency: $this->currency,
             datetime: \Illuminate\Support\Carbon::createFromTimestamp($this->timestamp, 'UTC'),
             billingEntity: $this->billingEntity,
             purchaseOrderNumber: $this->purchaseOrderNumber !== null
-                ? trim($this->purchaseOrderNumber)
+                ? mb_trim($this->purchaseOrderNumber)
                 : null,
         );
 

@@ -6,8 +6,8 @@ namespace App\Services\Invoices;
 
 use App\Models\Invoice;
 use App\Enums\InvoiceStatus;
-use App\Services\BaseResult;
 use App\Jobs\SendWebhookJob;
+use App\Services\BaseResult;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -38,9 +38,11 @@ class DeleteService extends \App\Services\BaseService
 
         $rolledBack = false;
 
+        $deleted = null;
+
         // Rails: invoice.with_lock(requires_new: true) — a savepoint so a
         // rollback only impacts this block, not any outer transaction.
-        DB::transaction(function () use ($result, &$rolledBack): void {
+        DB::transaction(function () use ($result, &$rolledBack, &$deleted): void {
             $invoice = Invoice::query()
                 ->whereKey($this->invoice->id)
                 ->lockForUpdate()
@@ -67,13 +69,15 @@ class DeleteService extends \App\Services\BaseService
 
             $invoice->status = InvoiceStatus::Deleted;
             $invoice->save();
+
+            $deleted = $invoice;
         });
 
         if ($rolledBack || $result->failure()) {
             return $result;
         }
 
-        $result->invoice = $this->invoice;
+        $result->invoice = $deleted ?? $this->invoice;
 
         SendWebhookJob::performLater('invoice.deleted', $result->invoice);
 

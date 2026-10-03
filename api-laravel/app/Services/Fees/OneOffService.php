@@ -6,10 +6,10 @@ namespace App\Services\Fees;
 
 use App\Models\Fee;
 use App\Models\AddOn;
-use App\Models\Invoice;
-use App\Support\MoneyMath;
-use App\Support\Currency;
 use App\Enums\FeeType;
+use App\Models\Invoice;
+use App\Support\Currency;
+use App\Support\MoneyMath;
 use App\Services\BaseResult;
 use App\Support\Utils\Datetime;
 use Illuminate\Support\Facades\DB;
@@ -37,13 +37,11 @@ class OneOffService extends \App\Services\BaseService
     {
         $result = BaseResult::of('fees');
 
-        $feesResult = $this->rescueFailures(function () use ($result): BaseResult {
+        return $this->rescueFailures(function () use ($result): BaseResult {
             $result->fees = DB::transaction(fn (): array => $this->createFees());
 
             return $result;
         }, $result);
-
-        return $feesResult;
     }
 
     /** @return list<Fee> */
@@ -86,6 +84,9 @@ class OneOffService extends \App\Services\BaseService
                 'payment_status' => \App\Enums\FeePaymentStatus::Pending,
                 'taxes_amount_cents' => 0,
                 'taxes_precise_amount_cents' => '0',
+                // DB default 0 — set explicitly so the unsaved fee's
+                // sub_total math (precise_coupons substraction) sees a number.
+                'precise_coupons_amount_cents' => '0',
                 'properties' => [
                     'from_datetime' => $this->fromDatetime($feeParams)?->toIso8601String(),
                     'to_datetime' => $this->toDatetime($feeParams)?->toIso8601String(),
@@ -109,6 +110,16 @@ class OneOffService extends \App\Services\BaseService
             }
 
             $fee->save();
+
+            // Rails autosaves the built fee.applied_taxes with fee.save! —
+            // Eloquent does not cascade hasMany creates, so persist the
+            // payload-applied taxes here.
+            foreach ($fee->appliedTaxes as $appliedTax) {
+                if (! $appliedTax->exists) {
+                    $appliedTax->fee_id = $fee->id;
+                    $appliedTax->save();
+                }
+            }
 
             $feesResult[] = $fee;
         }

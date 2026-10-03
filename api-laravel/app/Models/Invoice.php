@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\DB;
 use App\Enums\InvoicePaymentStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Attributes\Boot;
-use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -416,33 +416,6 @@ class Invoice extends BaseModel
         return $errors;
     }
 
-    // -- Rails scopes ----------------------------------------------------------
-
-    /** Rails: `scope :visible, -> { where(status: VISIBLE_STATUS.keys) }`. */
-    #[Scope]
-    protected function visible(Builder $query): Builder
-    {
-        return $query->whereIn('status', [
-            InvoiceStatus::Draft->value,
-            InvoiceStatus::Finalized->value,
-            InvoiceStatus::Voided->value,
-            InvoiceStatus::Failed->value,
-            InvoiceStatus::Pending->value,
-        ]);
-    }
-
-    /** Rails: `scope :invisible, -> { where(status: INVISIBLE_STATUS.keys) }`. */
-    #[Scope]
-    protected function invisible(Builder $query): Builder
-    {
-        return $query->whereIn('status', [
-            InvoiceStatus::Generating->value,
-            InvoiceStatus::Open->value,
-            InvoiceStatus::Closed->value,
-            InvoiceStatus::Deleted->value,
-        ]);
-    }
-
     /** Rails `visible?` — the status is not one of the invisible ones. */
     public function isVisible(): bool
     {
@@ -534,6 +507,33 @@ class Invoice extends BaseModel
             $invoice->ensureNumber();
             $invoice->setFinalizedAt();
         });
+    }
+
+    // -- Rails scopes ----------------------------------------------------------
+
+    /** Rails: `scope :visible, -> { where(status: VISIBLE_STATUS.keys) }`. */
+    #[Scope]
+    protected function visible(Builder $query): Builder
+    {
+        return $query->whereIn('status', [
+            InvoiceStatus::Draft->value,
+            InvoiceStatus::Finalized->value,
+            InvoiceStatus::Voided->value,
+            InvoiceStatus::Failed->value,
+            InvoiceStatus::Pending->value,
+        ]);
+    }
+
+    /** Rails: `scope :invisible, -> { where(status: INVISIBLE_STATUS.keys) }`. */
+    #[Scope]
+    protected function invisible(Builder $query): Builder
+    {
+        return $query->whereIn('status', [
+            InvoiceStatus::Generating->value,
+            InvoiceStatus::Open->value,
+            InvoiceStatus::Closed->value,
+            InvoiceStatus::Deleted->value,
+        ]);
     }
 
     /**

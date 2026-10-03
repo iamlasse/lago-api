@@ -236,6 +236,12 @@ class Organization extends BaseModel
         return $this->hasMany(BillingEntity::class);
     }
 
+    /** Rails: `has_many :add_ons` (the one-off invoice payload resolves fees by code). */
+    public function addOns(): HasMany
+    {
+        return $this->hasMany(AddOn::class);
+    }
+
     /** Rails: `has_one :default_billing_entity, -> { active.order(created_at: :asc) }`. */
     public function defaultBillingEntity(): HasOne
     {

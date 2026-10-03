@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\CreditNotes;
 
-use App\Models\CreditNote;
 use App\Enums\InvoiceType;
+use App\Models\CreditNote;
 use App\Support\MoneyMath;
 use App\Services\BaseResult;
 
@@ -87,7 +87,7 @@ class ValidateService extends BaseValidator
         ));
     }
 
-    /** @return \Illuminate\Database\Eloquent\Builder<\App\Models\CreditNote> */
+    /** @return \Illuminate\Database\Eloquent\Builder<CreditNote> */
     private function otherCreditNotes(): \Illuminate\Database\Eloquent\Builder
     {
         return CreditNote::query()

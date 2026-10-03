@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace App\Services\CreditNotes;
 
-use App\Models\CreditNote;
-use App\Models\CreditNoteItem;
 use App\Enums\InvoiceType;
-use App\Enums\InvoicePaymentStatus;
-use App\Support\MoneyMath;
+use App\Models\CreditNote;
 use App\Services\BaseResult;
+use App\Models\CreditNoteItem;
+use App\Enums\InvoicePaymentStatus;
 
 /**
  * Port of Rails' CreditNotes::ValidateItemService
@@ -85,7 +84,7 @@ class ValidateItemService extends BaseValidator
         return (int) round($withTaxes);
     }
 
-    /** @return \Illuminate\Database\Eloquent\Builder<\App\Models\CreditNote> */
+    /** @return \Illuminate\Database\Eloquent\Builder<CreditNote> */
     private function otherCreditNotes(): \Illuminate\Database\Eloquent\Builder
     {
         return CreditNote::query()

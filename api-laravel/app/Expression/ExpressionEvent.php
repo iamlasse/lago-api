@@ -27,7 +27,7 @@ final class ExpressionEvent
      * Events::CalculateExpressionService does
      * (`Lago::Event.new(event.code, event.timestamp.to_i, event.properties)`).
      *
-     * @param array<string, mixed> $payload
+     * @param  array<string, mixed>  $payload
      */
     public static function fromPayload(array $payload): self
     {

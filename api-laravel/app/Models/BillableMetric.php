@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Expression\Parser;
 use App\Enums\AggregationType;
 use App\Enums\RoundingFunction;
 use App\Enums\WeightedInterval;
@@ -349,19 +350,17 @@ class BillableMetric extends BaseModel
     /**
      * Rails: `validate_expression` — Lago::ExpressionParser.validate returns
      * the parse errors; blank expressions always pass.
-     *
-     * TODO(port): Lago::ExpressionParser (the expression DSL gem) is not
-     * ported yet — expressions are currently treated as valid.
      */
     protected function validateExpression(array &$errors): void
     {
         $expression = $this->expression;
 
-        if ($expression === null || $expression === '') {
+        if ($expression === null || mb_trim((string) $expression) === '') {
             return;
         }
 
-        // TODO(port): add 'expression' => ['invalid_expression'] when the
-        // Lago::ExpressionParser port lands.
+        if (Parser::validate((string) $expression) !== null) {
+            $errors['expression'] = ['invalid_expression'];
+        }
     }
 }

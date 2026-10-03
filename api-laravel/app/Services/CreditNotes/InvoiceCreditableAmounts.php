@@ -6,15 +6,14 @@ namespace App\Services\CreditNotes;
 
 use App\Models\Fee;
 use App\Models\Invoice;
-use App\Enums\InvoiceStatus;
 use App\Enums\InvoiceType;
+use App\Models\CreditNote;
 use App\Support\MoneyMath;
 use App\Support\Allocation;
-use App\Models\CreditNote;
-use App\Models\CreditNoteItem;
 use App\Models\FeeAppliedTax;
-use App\Enums\InvoicePaymentStatus;
+use App\Models\CreditNoteItem;
 use App\Models\InvoiceAppliedTax;
+use App\Enums\InvoicePaymentStatus;
 
 /**
  * The invoice-side amounts the credit-note services need
@@ -197,7 +196,7 @@ class InvoiceCreditableAmounts
             }
         }
 
-        return $booked;
+        return ['units' => $units, 'booked' => $booked];
     }
 
     /**
@@ -360,10 +359,30 @@ class InvoiceCreditableAmounts
         return MoneyMath::fdiv((string) $this->feeCreditableAmountCents($fee), (string) $fee->amount_cents);
     }
 
+    // -- Applied-tax helpers ----------------------------------------------------
+
+    /** Rails: Invoice::AppliedTax#provider_tax?. */
+    public function appliedTaxIsProviderTax(InvoiceAppliedTax $appliedTax): bool
+    {
+        return $appliedTax->tax_id === null && (int) $appliedTax->taxable_base_amount_cents > 0;
+    }
+
+    /** Rails: Invoice::AppliedTax#taxable_amount_cents. */
+    public function appliedTaxTaxableAmountCents(InvoiceAppliedTax $appliedTax): int
+    {
+        $baseAmount = (int) $appliedTax->taxable_base_amount_cents;
+
+        if ($baseAmount === 0) {
+            return (int) $appliedTax->fees_amount_cents;
+        }
+
+        return $baseAmount;
+    }
+
     // -- Booked-tax internals (Invoice private methods) ------------------------
 
     /** Rails: ordered_fees_for_booked_tax — created_at, id, original order. */
-    private function orderedFees(): Collection
+    private function orderedFees(): \Illuminate\Database\Eloquent\Collection
     {
         return $this->invoice->fees
             ->sortBy([['created_at', 'asc'], ['id', 'asc']])
@@ -421,25 +440,5 @@ class InvoiceCreditableAmounts
         }
 
         return 1;
-    }
-
-    // -- Applied-tax helpers ----------------------------------------------------
-
-    /** Rails: Invoice::AppliedTax#provider_tax?. */
-    public function appliedTaxIsProviderTax(InvoiceAppliedTax $appliedTax): bool
-    {
-        return $appliedTax->tax_id === null && (int) $appliedTax->taxable_base_amount_cents > 0;
-    }
-
-    /** Rails: Invoice::AppliedTax#taxable_amount_cents. */
-    public function appliedTaxTaxableAmountCents(InvoiceAppliedTax $appliedTax): int
-    {
-        $baseAmount = (int) $appliedTax->taxable_base_amount_cents;
-
-        if ($baseAmount === 0) {
-            return (int) $appliedTax->fees_amount_cents;
-        }
-
-        return $baseAmount;
     }
 }

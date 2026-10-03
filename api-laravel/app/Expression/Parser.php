@@ -16,6 +16,21 @@ namespace App\Expression;
  * Parse errors raise ExpressionParseException, matching where the gem's
  * pest parse fails; the gem's WrongNumberOfArguments quirk (the message
  * always names "round", even for ceil/floor) is preserved verbatim.
+ *
+ * Rails consumes the gem in three places; the first two are wired, the
+ * third is the documented integration call for the fee/event pipeline:
+ *
+ *   1. BillableMetric::validateExpression — wired (app/Models/BillableMetric.php);
+ *   2. BillableMetrics::EvaluateExpressionService — wired (evaluate_expression API);
+ *   3. Events::CalculateExpressionService (app/services/events/
+ *      calculate_expression_service.rb, consumed by event ingestion and the
+ *      fee estimate services) — for a custom-aggregation charge:
+ *
+ *      $value = (new Evaluator)->evaluate(
+ *          Parser::parse($metric->expression),   // saved metrics always parse
+ *          ExpressionEvent::fromPayload($payload),
+ *      );
+ *      $payload['properties'][$metric->field_name] = $value->display();
  */
 final class Parser
 {
@@ -36,20 +51,15 @@ final class Parser
      */
     public static function parse(string $input): Expression
     {
-        $parser = new self($input);
-        $expression = $parser->parseExpression();
-
-        $end = $parser->peek();
-
-        if ($end->type !== TokenType::End) {
-            throw new ExpressionParseException(sprintf(
-                "expected the end of the expression at position %d, found '%s'",
-                $end->position,
-                $end->value,
-            ));
+        try {
+            return (new self($input))->doParse();
+        } catch (ExpressionParseException $exception) {
+            // The gem's pest errors quote the offending input; keep the
+            // excerpt in the message ("expected ... in `1+`").
+            throw new ExpressionParseException(
+                $exception->getMessage().' in `'.$input.'`',
+            );
         }
-
-        return $expression;
     }
 
     /**
@@ -78,6 +88,23 @@ final class Parser
         }
 
         return null;
+    }
+
+    private function doParse(): Expression
+    {
+        $expression = $this->parseExpression();
+
+        $end = $this->peek();
+
+        if ($end->type !== TokenType::End) {
+            throw new ExpressionParseException(sprintf(
+                "expected the end of the expression at position %d, found '%s'",
+                $end->position,
+                $end->value,
+            ));
+        }
+
+        return $expression;
     }
 
     private function parseExpression(int $minPrecedence = 1): Expression

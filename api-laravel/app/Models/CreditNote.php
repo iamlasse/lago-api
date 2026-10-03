@@ -4,21 +4,23 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\CreditNoteStatus;
-use App\Enums\CreditNoteReason;
+use DateTimeInterface;
 use App\Support\MoneyMath;
+use App\Models\Casts\BcNumeric;
+use App\Enums\CreditNoteReason;
+use App\Enums\CreditNoteStatus;
 use App\Models\Concerns\Sequenced;
 use App\Enums\CreditNoteCreditStatus;
 use App\Enums\CreditNoteRefundStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Attributes\Boot;
 use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
 /**
  * Port of Rails' CreditNote (app/models/credit_note.rb) for the credit
@@ -164,18 +166,6 @@ class CreditNote extends BaseModel
         return $this->creditStatusEnum() === CreditNoteCreditStatus::Voided;
     }
 
-    // -- Scopes (Rails enum scopes) --------------------------------------------
-
-    protected function scopeFinalized(Builder $query): Builder
-    {
-        return $query->where('status', CreditNoteStatus::Finalized->value);
-    }
-
-    protected function scopeDraft(Builder $query): Builder
-    {
-        return $query->where('status', CreditNoteStatus::Draft->value);
-    }
-
     // -- Rails domain methods ---------------------------------------------------
 
     /** Port of `delegate :purchase_order_number, to: :invoice`. */
@@ -239,7 +229,7 @@ class CreditNote extends BaseModel
     }
 
     /** Port of `mark_as_voided!`. */
-    public function markAsVoided(?\DateTimeInterface $timestamp = null): bool
+    public function markAsVoided(?DateTimeInterface $timestamp = null): bool
     {
         return $this->update([
             'credit_status' => CreditNoteCreditStatus::Voided->value,
@@ -257,6 +247,20 @@ class CreditNote extends BaseModel
         ));
     }
 
+    /**
+     * The precise decimal attributes as decimal strings — an unsaved model
+     * carries no value yet, which Rails would default to 0.
+     */
+    public function preciseCouponsAdjustment(): string
+    {
+        return (string) ($this->precise_coupons_adjustment_amount_cents ?? '0');
+    }
+
+    public function preciseTaxesAmount(): string
+    {
+        return (string) ($this->precise_taxes_amount_cents ?? '0');
+    }
+
     /** Port of `sub_total_excluding_taxes_amount_cents` (rounds the precise sum). */
     public function subTotalExcludingTaxesAmountCents(): int
     {
@@ -264,7 +268,7 @@ class CreditNote extends BaseModel
             fn (CreditNoteItem $item): string => (string) $item->precise_amount_cents,
         );
 
-        return MoneyMath::round(MoneyMath::sub($itemsPrecise, (string) $this->precise_coupons_adjustment_amount_cents));
+        return MoneyMath::round(MoneyMath::sub($itemsPrecise, $this->preciseCouponsAdjustment()));
     }
 
     /** Port of `precise_total`. */
@@ -275,8 +279,8 @@ class CreditNote extends BaseModel
         );
 
         return MoneyMath::sub(
-            MoneyMath::add($itemsPrecise, (string) $this->precise_taxes_amount_cents),
-            (string) $this->precise_coupons_adjustment_amount_cents,
+            MoneyMath::add($itemsPrecise, $this->preciseTaxesAmount()),
+            $this->preciseCouponsAdjustment(),
         );
     }
 
@@ -285,7 +289,7 @@ class CreditNote extends BaseModel
     {
         return MoneyMath::round(MoneyMath::sub(
             (string) ((int) $this->taxes_amount_cents),
-            (string) $this->precise_taxes_amount_cents,
+            $this->preciseTaxesAmount(),
         ));
     }
 
@@ -304,22 +308,17 @@ class CreditNote extends BaseModel
         return $this->invoice->typeEnum() === \App\Enums\InvoiceType::Credit;
     }
 
-    // -- Rails before_save hooks ------------------------------------------------
-
-    #[Boot]
-    protected static function bootCreditNote(): void
-    {
-        static::saving(function (self $creditNote): void {
-            $creditNote->ensureNumber();
-        });
-    }
-
     /** Port of `ensure_number` — "<invoice number>-CN<%03d sequential_id>". */
     public function ensureNumber(): void
     {
         if ($this->number !== null && ! $this->statusChangedToFinalized()) {
             return;
         }
+
+        // NOTE: Rails runs Sequenced's before_save before the model's own
+        // hook; the port's saving-hook order is not guaranteed, so make the
+        // sequential id available explicitly (no-op when already assigned).
+        $this->sequential_id ??= $this->generateSequentialId();
 
         $formattedSequentialId = sprintf('%03d', (int) $this->sequential_id);
 
@@ -349,6 +348,28 @@ class CreditNote extends BaseModel
         return $originalEnum === CreditNoteStatus::Draft;
     }
 
+    // -- Rails before_save hooks ------------------------------------------------
+
+    #[Boot]
+    protected static function bootCreditNote(): void
+    {
+        static::saving(function (self $creditNote): void {
+            $creditNote->ensureNumber();
+        });
+    }
+
+    // -- Scopes (Rails enum scopes) --------------------------------------------
+
+    protected function scopeFinalized(Builder $query): Builder
+    {
+        return $query->where('status', CreditNoteStatus::Finalized->value);
+    }
+
+    protected function scopeDraft(Builder $query): Builder
+    {
+        return $query->where('status', CreditNoteStatus::Draft->value);
+    }
+
     /**
      * Port of: sequenced scope: ->(credit_note) { CreditNote.where(invoice_id: credit_note.invoice_id) },
      *          lock_key: ->(credit_note) { credit_note.invoice_id }
@@ -368,12 +389,12 @@ class CreditNote extends BaseModel
         return [
             'sequential_id' => 'integer',
             'credit_amount_cents' => 'integer',
-            'credit_status' => 'integer',
+            'credit_status' => CreditNoteCreditStatus::class,
             'balance_amount_cents' => 'integer',
-            'reason' => 'integer',
+            'reason' => CreditNoteReason::class,
             'total_amount_cents' => 'integer',
             'refund_amount_cents' => 'integer',
-            'refund_status' => 'integer',
+            'refund_status' => CreditNoteRefundStatus::class,
             'voided_at' => 'datetime',
             'taxes_amount_cents' => 'integer',
             'refunded_at' => 'datetime',

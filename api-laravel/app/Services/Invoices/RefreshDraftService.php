@@ -7,9 +7,9 @@ namespace App\Services\Invoices;
 use App\Models\Fee;
 use App\Models\Invoice;
 use App\Services\BaseResult;
-use App\Enums\SubscriptionInvoicingReason;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use App\Enums\SubscriptionInvoicingReason;
 
 /**
  * Port of Rails' Invoices::RefreshDraftService
@@ -24,6 +24,15 @@ use Illuminate\Support\Facades\DB;
  */
 class RefreshDraftService extends \App\Services\BaseService
 {
+    private \Illuminate\Support\Collection $invoiceSubscriptions;
+
+    /** @var list<string> */
+    private array $subscriptionIds;
+
+    private bool $recurring;
+
+    private string $invoicingReason;
+
     public function __construct(
         private readonly Invoice $invoice,
         private readonly string $context = 'refresh',
@@ -39,22 +48,15 @@ class RefreshDraftService extends \App\Services\BaseService
         $this->recurring = (bool) ($this->invoiceSubscriptions->first()?->recurring ?? false);
 
         // NOTE: upgrading is used as a not persisted reason as it means
-        // one subscription starting and a second one terminating.
+        // one subscription starting and a second one terminating (it is not
+        // a SubscriptionInvoicingReason enum value — Rails passes :upgrading
+        // straight through).
         $this->invoicingReason = $this->recurring
             ? SubscriptionInvoicingReason::SubscriptionPeriodic->value
             : ($this->invoiceSubscriptions->count() === 1
-                ? ($this->invoiceSubscriptions->first()?->invoicingReason() ?? SubscriptionInvoicingReason::Upgrading->value)
-                : SubscriptionInvoicingReason::Upgrading->value);
+                ? ($this->invoiceSubscriptions->first()?->invoicingReason() ?? 'upgrading')
+                : 'upgrading');
     }
-
-    private \Illuminate\Support\Collection $invoiceSubscriptions;
-
-    /** @var list<string> */
-    private array $subscriptionIds;
-
-    private bool $recurring;
-
-    private string $invoicingReason;
 
     public function execute(): BaseResult
     {

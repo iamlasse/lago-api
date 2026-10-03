@@ -7,6 +7,7 @@ use App\Http\Middleware\SetBetaHeader;
 use App\Exceptions\Api\NotFoundException;
 use App\Http\Controllers\Api\V1\PlansController;
 use App\Http\Controllers\Api\V1\TaxesController;
+use App\Http\Controllers\Api\V1\InvoicesController;
 use App\Http\Controllers\Api\V1\CustomersController;
 use App\Http\Controllers\Api\V1\OrganizationsController;
 use App\Http\Controllers\Api\V1\Plans\ChargesController;
@@ -157,6 +158,38 @@ $sharedApi = function (): void {
                 ->where('external_id', '.+');
             Route::delete('{external_id}', [SubscriptionsController::class, 'terminate'])
                 ->where('external_id', '.+');
+        });
+
+        // -- invoices ---------------------------------------------------------
+        // Keyed by uuid id (Rails: resources :invoices — the default param
+        // constraint applies; uuids contain no dots). Member actions per
+        // rest.json: finalize/refresh are PUT (Rails' non-RESTful draw),
+        // void/retry/lose_dispute/download_* are POST.
+        //
+        // Not registered yet (dependencies do not exist): preview
+        // (Invoices::PreviewContextService/PreviewService), retry_payment
+        // (Invoices::Payments::RetryService), payment_url
+        // (GeneratePaymentUrlService), resend_email (Emails::ResendService)
+        // and sync_salesforce_id (SyncSalesforceIdService) — each has its
+        // ledger row and lands with its milestone.
+        Route::prefix('invoices')->as('invoices:')->group(function () {
+            Route::get('', [InvoicesController::class, 'index']);
+            Route::post('', [InvoicesController::class, 'create']);
+
+            Route::put('{id}/finalize', [InvoicesController::class, 'finalize']);
+            Route::put('{id}/refresh', [InvoicesController::class, 'refresh']);
+
+            Route::post('{id}/void', [InvoicesController::class, 'void']);
+            Route::post('{id}/retry', [InvoicesController::class, 'retry']);
+            Route::post('{id}/lose_dispute', [InvoicesController::class, 'loseDispute']);
+            Route::post('{id}/download', [InvoicesController::class, 'downloadPdf']);
+            Route::post('{id}/download_pdf', [InvoicesController::class, 'downloadPdf']);
+            Route::post('{id}/download_xml', [InvoicesController::class, 'downloadXml']);
+
+            Route::get('{id}', [InvoicesController::class, 'show']);
+            Route::put('{id}', [InvoicesController::class, 'update']);
+            Route::patch('{id}', [InvoicesController::class, 'update']);
+            Route::delete('{id}', [InvoicesController::class, 'destroy']);
         });
 
         // customers and subscriptions are looked up by external_id, which

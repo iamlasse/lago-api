@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Services\Invoices;
 
 use App\Models\Invoice;
-use App\Enums\InvoicePaymentStatus;
-use App\Services\BaseResult;
 use App\Jobs\SendWebhookJob;
+use App\Services\BaseResult;
 use Illuminate\Support\Facades\DB;
+use App\Enums\InvoicePaymentStatus;
 
 /**
  * Port of Rails' Invoices::UpdateService
@@ -80,7 +80,7 @@ class UpdateService extends \App\Services\BaseService
         }
 
         return $this->rescueFailures(function () use ($result, $params, $oldPaymentStatus): BaseResult {
-            DB::transaction(function () use ($params, $oldPaymentStatus): void {
+            DB::transaction(function (): void {
                 if ($this->invoice->isPaymentOverdue() && $this->invoice->paymentSucceeded()) {
                     $this->invoice->payment_overdue = false;
 

@@ -4,20 +4,18 @@ declare(strict_types=1);
 
 namespace App\Services\CreditNotes;
 
-use App\Models\Fee;
 use App\Models\Invoice;
-use App\Enums\InvoiceStatus;
 use App\Enums\InvoiceType;
-use App\Enums\CreditNoteStatus;
-use App\Enums\CreditNoteReason;
-use App\Enums\CreditNoteCreditStatus;
-use App\Enums\CreditNoteRefundStatus;
-use App\Enums\InvoicePaymentStatus;
-use Illuminate\Support\Facades\DB;
+use App\Models\CreditNote;
 use App\Services\BaseResult;
 use App\Services\BaseService;
-use App\Models\CreditNote;
 use App\Models\CreditNoteItem;
+use App\Enums\CreditNoteReason;
+use App\Enums\CreditNoteStatus;
+use Illuminate\Support\Facades\DB;
+use App\Enums\InvoicePaymentStatus;
+use App\Enums\CreditNoteCreditStatus;
+use App\Enums\CreditNoteRefundStatus;
 
 /**
  * Port of Rails' CreditNotes::CreateService
@@ -29,7 +27,7 @@ use App\Models\CreditNoteItem;
  * jobs (Stripe/Gocardless/Adyen — Stripe refunds are M4), the tax provider
  * report, the accounting-integration sync, and the Segment track.
  */
-class CreateService extends BaseService
+class CreateService extends \App\Services\BaseService
 {
     public function __construct(
         private readonly ?Invoice $invoice,
@@ -96,6 +94,8 @@ class CreateService extends BaseService
 
                 $this->createItems($result);
 
+                $result->raiseIfError();
+
                 $this->computeAmountsAndTaxes($result)->raiseIfError();
 
                 $this->validCreditNote($result);
@@ -122,6 +122,15 @@ class CreateService extends BaseService
                 }
 
                 $creditNote->save();
+
+                // Rails: the applied taxes were pushed onto the association —
+                // autosave persists them with the credit note's final save.
+                foreach ($creditNote->appliedTaxes as $appliedTax) {
+                    if (! $appliedTax->exists) {
+                        $appliedTax->credit_note_id = $creditNote->id;
+                        $appliedTax->save();
+                    }
+                }
 
                 if ((int) $creditNote->offset_amount_cents > 0) {
                     // TODO(port): InvoiceSettlements::CreateService — the
@@ -224,7 +233,8 @@ class CreateService extends BaseService
                 'amount_currency' => $this->invoice->currency,
             ]);
             $item->setRelation('fee', $fee);
-            $item->credit_note_id = $creditNoteId($result);
+            $item->setRelation('creditNote', $result->credit_note);
+            $item->credit_note_id = $result->credit_note->id;
 
             // Keep the item on the in-memory relation — Rails pushes items
             // onto the association, preview included.
@@ -272,14 +282,5 @@ class CreateService extends BaseService
         $creditableAmounts = new InvoiceCreditableAmounts($this->invoice);
 
         return $creditableAmounts->creditableAmountCents() === 0;
-    }
-
-    /**
-     * The Sequenced trait needs the credit note's id-less identity — helper
-     * for item attribution before the credit note has been saved.
-     */
-    private function creditNoteId(BaseResult $result): ?string
-    {
-        return $result->credit_note->id;
     }
 }

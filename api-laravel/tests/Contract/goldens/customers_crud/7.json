@@ -1,7 +1,7 @@
 {
   "customer": {
-    "lago_id": "85d10c0d-364e-423a-959c-f6f754435a31",
-    "billing_entity_code": "entity_9e398b39-167b-4cb0-8778-95c83c55e3d6",
+    "lago_id": "8af51d46-70a9-4694-94ee-e85b970acba9",
+    "billing_entity_code": "entity_322f696f-bf0b-47f7-b5dd-aa7a3e001f6c",
     "external_id": "captured-customer-1",
     "account_type": "customer",
     "name": "Captured Customer Renamed",
@@ -50,7 +50,7 @@
     "skip_invoice_custom_sections": false,
     "metadata": [
       {
-        "lago_id": "82423005-b784-4956-8081-bdf6252e332b",
+        "lago_id": "cbac3cfc-5f8d-46ef-a3e3-975b4c84e894",
         "key": "channel",
         "value": "contract",
         "display_in_invoice": false,

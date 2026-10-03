@@ -6,8 +6,8 @@ namespace App\Services\Invoices;
 
 use App\Models\Invoice;
 use App\Enums\InvoiceStatus;
-use App\Services\BaseResult;
 use App\Jobs\SendWebhookJob;
+use App\Services\BaseResult;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -25,6 +25,12 @@ use Illuminate\Support\Facades\DB;
  */
 class VoidService extends \App\Services\BaseService
 {
+    private bool $generateCreditNote;
+
+    private int $refundAmount;
+
+    private int $creditAmount;
+
     public function __construct(
         private readonly ?Invoice $invoice,
         private readonly array $params = [],
@@ -35,12 +41,6 @@ class VoidService extends \App\Services\BaseService
         $this->refundAmount = (int) ($params['refund_amount'] ?? 0);
         $this->creditAmount = (int) ($params['credit_amount'] ?? 0);
     }
-
-    private bool $generateCreditNote;
-
-    private int $refundAmount;
-
-    private int $creditAmount;
 
     public function execute(): BaseResult
     {
@@ -60,7 +60,7 @@ class VoidService extends \App\Services\BaseService
 
         $notVoidable = false;
 
-        DB::transaction(function () use ($result, &$notVoidable): void {
+        DB::transaction(function () use (&$notVoidable): void {
             $invoice = Invoice::query()
                 ->whereKey($this->invoice->id)
                 ->lockForUpdate()
@@ -97,11 +97,11 @@ class VoidService extends \App\Services\BaseService
                 // so we don't need to recredit the wallet.
                 // TODO(port): create_credit_notes! — CreditNotes::CreateService /
                 // EstimateService / VoidService are unported (credit-notes slice).
-            } else {
-                // Rails: invoice.wallet_transactions.outbound.each { |wt| recredit
-                // if wt.wallet.active? } — TODO(port): wallet transactions and
-                // WalletTransactions::RecreditService (wallets milestone).
             }
+            // Rails: invoice.wallet_transactions.outbound.each { |wt| recredit
+            // if wt.wallet.active? } — TODO(port): wallet transactions and
+            // WalletTransactions::RecreditService (wallets milestone).
+
         });
 
         if ($notVoidable) {

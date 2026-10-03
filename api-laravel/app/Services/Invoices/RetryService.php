@@ -6,8 +6,8 @@ namespace App\Services\Invoices;
 
 use App\Models\Invoice;
 use App\Enums\InvoiceStatus;
-use App\Enums\InvoiceTaxStatus;
 use App\Services\BaseResult;
+use App\Enums\InvoiceTaxStatus;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -34,11 +34,12 @@ class RetryService extends \App\Services\BaseService
         }
 
         $invalidStatus = false;
+        $updated = null;
 
         // Cancelling a payment-gated subscription closes this invoice under
         // the same row lock, so the status is read again here rather than
         // trusted from before the lock was taken.
-        DB::transaction(function () use (&$invalidStatus): void {
+        DB::transaction(function () use (&$invalidStatus, &$updated): void {
             $invoice = Invoice::query()
                 ->whereKey($this->invoice->id)
                 ->lockForUpdate()
@@ -53,6 +54,8 @@ class RetryService extends \App\Services\BaseService
                     : InvoiceStatus::Pending;
                 $invoice->tax_status = InvoiceTaxStatus::Pending->value;
                 $invoice->save();
+
+                $updated = $invoice;
             } else {
                 $invalidStatus = true;
             }
@@ -65,7 +68,7 @@ class RetryService extends \App\Services\BaseService
         // TODO(port): Invoices::ProviderTaxes::PullTaxesAndApplyJob
         // .perform_later(invoice:).
 
-        $result->invoice = $this->invoice;
+        $result->invoice = $updated ?? $this->invoice;
 
         return $result;
     }

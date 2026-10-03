@@ -137,14 +137,18 @@ travel_to(CAPTURED_AT) do
       billing_time: "calendar"
     }})
 
-  # 2. create on the arrears plan (default billing_time).
+  # 2. create on the arrears plan (default billing_time), explicitly started
+  #    one frozen hour earlier: the index sorts by subscription_at DESC and
+  #    both creates would otherwise tie on created_at, leaving the order to
+  #    the minted-id tie-break (unstable across runtimes).
   capture!(:post, "/api/v1/subscriptions",
     headers: json,
     body: {subscription: {
       external_customer_id: CUSTOMER_EXTERNAL_ID,
       plan_code: "plan-arrears",
       external_id: "sub-arrears-1",
-      name: "Arrears Sub"
+      name: "Arrears Sub",
+      subscription_at: SEEDED_AT.iso8601
     }})
 
   # 3. show the advance subscription.

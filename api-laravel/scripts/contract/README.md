@@ -83,6 +83,21 @@ PAO_DISABLE=1 DB_DATABASE=lago_laravel_golden ./vendor/bin/pest tests/Contract
   poisons the shared PDO session — loadFixture resets `SET search_path TO
   public` afterwards, do not remove that line.
 
+## Captured scenarios
+
+| scenario | requests | replay | notes |
+| --- | --- | --- | --- |
+| `auth_org` | 4 | green | + 2 cross-language JWT side-assertions |
+| `customers_crud` | 8 | green | create/upsert, show, index, 404, destroy |
+| `plans_metrics_crud` | 13 | 9 green / 4 red | red = finding 3 below |
+| `subscription_create` | 8 | 1 green / 7 red | red = finding 4 below (only `connections`) |
+| `invoice_standard` | 5 + extra `10.json` | 2 green / 3 red | red = finding 5 below |
+
+Replay DBs: each scenario test self-migrates, so any disposable DB works.
+Dedicated `lago_golden_<scenario>` databases exist on `lago-laravel-pg`;
+running the whole suite sequentially on the shared `lago_laravel_golden`
+also works (every test truncates + reloads its fixture in setUp).
+
 ## Cross-language JWT (auth_org)
 
 Both runtimes sign HS256 with the SAME `SECRET_KEY_BASE` (read from this
@@ -143,6 +158,33 @@ match exactly — exp matches because both sides mint under the frozen clock.
 - The Rails image's pg_dump runs inside the capture container against
   `host.docker.internal:5433` (the frozen `lago-laravel-pg`). Keeping the
   dump inside the scenario is what lets it snapshot the PRE-request state.
+- Seeds that later index responses will list should be created at a DIFFERENT
+  frozen instant than the requests (`travel_to(CAPTURED_AT - 3600) { seed }`
+  then `travel_to(CAPTURED_AT) { dump + requests }`): several list endpoints
+  sort by `created_at desc` without an id tie-break (plans/charges index in
+  particular — BaseQuery's `apply_consistent_ordering` DOES add
+  `.order(id: :asc)`, but not every controller goes through it).
+- Rows created by the requests THEMSELVES can also tie: two rows minted in
+  the same frozen instant share created_at, and ordering falls to a
+  minted-uuid tie-break that differs per runtime. When a list may hold two
+  request-created rows, make the later one deterministic — e.g. an explicit
+  `subscription_at` on the second subscription create (see
+  subscription_create.rb). This bit for real: customers_crud flaked on the
+  shared-DB full-suite run before the seed-hour fix.
+- Request bodies that reference seeded rows by UUID (e.g. plan create's
+  `billable_metric_id`) must reference DETERMINISTIC ids set on the seed:
+  the replay sends the manifest body verbatim, so the referenced UUID has to
+  exist in the fixture on both sides.
+- Anything a request MINTS (created row ids, minted tokens) cannot be
+  compared by bytes: see Normalizer TOKEN_FIELDS / MINTED_ID_FIELDS. An id
+  keyed to a minted row cannot even appear in the manifest path — capture it
+  as an EXTRA golden outside the manifest numbering and have the test
+  substitute the id its own replay minted (see invoice_standard's `10.json`
+  + InvoiceStandardTest::test_shows_the_invoice_the_replay_created).
+- Rails' invoice preview is premium-gated in the OSS image —
+  `POST /api/v1/invoices/preview` answers 403
+  `{"status":403,"error":"Forbidden","code":"feature_unavailable"}`. That
+  envelope IS the contract for the OSS capture stack; keep it.
 
 ## Current findings (Laravel deviations, intentionally not fixed)
 
@@ -156,6 +198,7 @@ red on purpose (rules: capture, don't fix):
    appends it. Laravel's `app/Http/Controllers/Api/V1/OrganizationsController.php`
    passes `['includes' => ['taxes']]` on BOTH paths (line 31 = show).
    Diff: `$.organization.taxes` — golden: absent, Laravel: `[]`.
+   (FIXED since this was first captured — auth_org replays green now.)
 
 2. **`PUT /api/v1/organizations` echoes a fresh webhook endpoint; Rails
    echoes the stale association.** With no pre-existing endpoint, Rails'
@@ -165,3 +208,54 @@ red on purpose (rules: capture, don't fix):
    `webhook_url: ""`, `webhook_urls: []`. Laravel shows the new URL.
    Diff: `$.organization.webhook_url` — golden `""`, Laravel the URL;
    `$.organization.webhook_urls` — golden `[]`, Laravel 1 item.
+   (FIXED since this was first captured — auth_org replays green now.)
+
+3. **`plans_metrics_crud` — billable metric `filters` always `[]`.**
+   Rails serializes the metric's billable_metric_filters
+   (`[{key: "region", values: ["eu", "us"]}]`); Laravel's
+   `app/Serializers/V1/BillableMetricSerializer.php::filters()` hardcodes
+   `return ['filters' => []];` (marked TODO(port): BillableMetricFilter
+   serializer). Affects show / update / destroy / index of any metric that
+   has filter keys.
+   Diff: `$.billable_metric.filters` (4 requests) — golden: 1 item
+   `{key:"region", values:["eu","us"]}`, Laravel: `[]`.
+
+4. **`subscription_create` — `connections` emitted as `{}`.** Rails
+   serializes `model.connection_routing` (default rows: payment / tax /
+   accounting / crm, each `{behavior: "inherit", code: null}`); Laravel's
+   `app/Serializers/V1/SubscriptionSerializer.php` emits an empty map
+   (marked TODO(port): ConnectionResolvable). Affects every response that
+   embeds a subscription (create, show, index, update, terminate).
+   Diff: `$.subscription.connections.{payment,tax,accounting,crm}` —
+   golden `{behavior:"inherit", code:null}`, Laravel: `null` (7 requests;
+   only show-after-terminate 404 matches).
+
+5. **`invoice_standard` — the whole REST invoice surface is unregistered.**
+   - `POST /api/v1/invoices` (one-off invoice, Invoices::CreateOneOffService):
+     Laravel answers 405 MethodNotAllowed (only GET index-style routes are
+     absent too — the fallback returns `resource_not_found`). Rails: 200 with
+     the full invoice — `fees_amount_cents: 2400, taxes_amount_cents: 480,
+     total_amount_cents: 2880` on a 1200c x 2 add-on fee with 20% VAT, plus
+     `fees[]`, `applied_taxes[]`, `number: "WAL-5C0D-002-001"`.
+     Diff: `$.invoice` — golden: full object, Laravel: `null` (+405 envelope).
+   - `GET /api/v1/invoices?external_customer_id=…`: Laravel 404
+     `resource_not_found` (route not registered). Diff: `$.invoices`/`$.meta`.
+   - `POST /api/v1/invoices/preview`: Rails (OSS image) 403
+     `feature_unavailable`; Laravel 405 (route not registered).
+   Extra golden `10.json` (invoice show) is committed but skipped in replay
+   until POST /invoices lands (InvoiceStandardTest skips with that reason).
+
+6. **Laravel error responses leak debug payloads.** On unmatched routes the
+   replay returns `message`, `exception`, `file`, `line` and a full `trace[]`
+   alongside the envelope (APP_DEBUG on in the test env); Rails never emits
+   these keys. Every 404/405 diff above includes them. Decide whether the
+   test env should render production-shaped errors or the Normalizer should
+   drop debug keys — but today the Laravel test stack answers differently
+   from production Laravel too.
+
+### Normalizer slack (with unit tests in NormalizerTest)
+
+- `token` fields → decoded JWT claims (both sides mint at the frozen clock).
+- `lago_id` fields holding a UUID → `<uuid>`: rows created BY a captured
+  request get a fresh uuid per runtime; everything else under `lago_id`
+  (null, non-UUID) still compares strictly.
