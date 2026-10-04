@@ -29,8 +29,9 @@ use App\Services\ChargeModels\Factory as ChargeModelFactory;
  * - charge filters: Rails creates one fee per ChargeFilter plus a fallback
  *   fee for unfiltered events; filters need the events store (M2). Only the
  *   unfiltered fee is created.
- * - Subscriptions::ChargeCacheMiddleware / live aggregation: replaced by
- *   Fees\ChargeService\Aggregator (pre-aggregated / cached contract).
+ * - Subscriptions::ChargeCacheMiddleware is not ported; aggregation runs
+ *   live via Fees\ChargeService\Aggregator → the BillableMetrics
+ *   aggregation services (M2).
  * - presentation breakdowns and pricing units are not ported.
  */
 class ChargeService extends \App\Services\BaseService
@@ -406,7 +407,7 @@ class ChargeService extends \App\Services\BaseService
 
     private function aggregator(MeteredItem $meteredItem): Aggregator
     {
-        return new Aggregator($meteredItem, $this->subscription->external_id);
+        return new Aggregator($meteredItem, $this->subscription, $this->options());
     }
 
     /**

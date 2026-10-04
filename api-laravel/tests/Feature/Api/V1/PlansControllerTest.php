@@ -7,6 +7,8 @@ uses()->group(
     'ledger:rest:GET:/api/v1/plans',
     'ledger:rest:GET:/api/v1/plans/:code',
     'ledger:rest:PUT:/api/v1/plans/:code',
+    'ledger:rest:PATCH:/api/v1/plans/:code',
+    'ledger:rest:PATCH:/api/v2/plans/:code',
     'ledger:rest:DELETE:/api/v1/plans/:code',
 );
 
@@ -331,6 +333,61 @@ it('returns unprocessable_entity error when plan code already exists in organiza
                 ->has('error_details.code')
                 ->etc();
         });
+});
+
+// -- PATCH /api/v1/plans/:code -------------------------------------------------
+// Rails routes PATCH and PUT to the same PlansController#update (resources
+// :plans draws both verbs; no PATCH-specific branch exists), so the scenarios
+// below port the PUT section's expectations to the PATCH verb.
+
+it('updates a plan via PATCH', function (): void {
+    [$organization, $apiKey] = planOrganization();
+    $plan = Plan::factory()->create(['organization_id' => $organization->id, 'code' => 'plan_code']);
+
+    $this->patchJson('/api/v1/plans/plan_code', ['plan' => [
+        'name' => 'P1 updated',
+        'code' => 'plan_code',
+        'interval' => 'monthly',
+        'amount_cents' => 200,
+        'amount_currency' => 'EUR',
+        'pay_in_advance' => false,
+    ]], ['Authorization' => 'Bearer '.$apiKey->value])
+        ->assertOk()
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($plan): void {
+            $json->where('plan.lago_id', (string) $plan->id)
+                ->where('plan.name', 'P1 updated')
+                ->where('plan.amount_cents', 200)
+                ->etc();
+        });
+});
+
+it('returns not_found error when the plan updated via PATCH does not exist', function (): void {
+    [, $apiKey] = planOrganization();
+
+    $this->patchJson('/api/v1/plans/'.Str::uuid(), ['plan' => [
+        'name' => 'P1',
+        'interval' => 'monthly',
+    ]], ['Authorization' => 'Bearer '.$apiKey->value])
+        ->assertNotFound()
+        ->assertExactJson(['status' => 404, 'error' => 'Not Found', 'code' => 'plan_not_found']);
+});
+
+it('mirrors the plan update via PATCH at v2 with the beta header', function (): void {
+    [$organization, $apiKey] = planOrganization();
+    $plan = Plan::factory()->create(['organization_id' => $organization->id, 'code' => 'plan_code']);
+
+    $this->patchJson('/api/v2/plans/plan_code', ['plan' => [
+        'name' => 'P1 updated',
+        'code' => 'plan_code',
+        'interval' => 'monthly',
+        'amount_cents' => 200,
+        'amount_currency' => 'EUR',
+        'pay_in_advance' => false,
+    ]], ['Authorization' => 'Bearer '.$apiKey->value])
+        ->assertOk()
+        ->assertHeader('X-Lago-Endpoint-Status', 'beta')
+        ->assertJsonPath('plan.lago_id', (string) $plan->id)
+        ->assertJsonPath('plan.name', 'P1 updated');
 });
 
 // -- GET /api/v1/plans/:code --------------------------------------------------

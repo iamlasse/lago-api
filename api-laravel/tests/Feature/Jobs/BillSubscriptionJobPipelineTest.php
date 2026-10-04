@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use App\Models\Invoice;
 use App\Jobs\BillSubscriptionJob;
-use App\Models\CachedAggregation;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Cache;
 use App\Services\Failures\FailedResult;
@@ -63,6 +62,24 @@ function billJobFixture(array $customerOverrides = [], array $planOverrides = []
     return compact('organization', 'customer', 'plan', 'metric', 'charge', 'subscription');
 }
 
+/**
+ * Seeds the metered input for the pipeline: events inside the billed
+ * September period summing to 10 over the metric's field name. Since
+ * finding 12 closed the fee engine aggregates the events LIVE —
+ * cached_aggregations rows are ignored on the arrears periodic path.
+ */
+function billJobEvents(array $f, int $sum = 10): void
+{
+    App\Models\Event::factory()->create([
+        'organization_id' => $f['organization']->id,
+        'external_subscription_id' => 'sub-job-1',
+        'transaction_id' => 'tr-job-1',
+        'code' => $f['metric']->code,
+        'timestamp' => '2026-09-15 00:00:00',
+        'properties' => ['value' => $sum],
+    ]);
+}
+
 function billJobTimestamp(): int
 {
     // 2026-10-01 12:00:00 UTC — a monthly calendar billing day.
@@ -82,15 +99,7 @@ function billJobRun(array $f, ?string $invoiceId = null): void
 it('runs the full pipeline: generating invoice, fees, totals, then finalizes', function (): void {
     $f = billJobFixture();
 
-    CachedAggregation::query()->create([
-        'organization_id' => $f['organization']->id,
-        'charge_id' => $f['charge']->id,
-        'external_subscription_id' => 'sub-job-1',
-        'timestamp' => '2026-10-01 00:00:00',
-        'current_aggregation' => '10',
-        'grouped_by' => [],
-        'presentation_breakdowns' => [],
-    ]);
+    billJobEvents($f);
 
     Bus::fake([BillSubscriptionJob::class]);
     billJobRun($f);
@@ -120,15 +129,7 @@ it('runs the full pipeline: generating invoice, fees, totals, then finalizes', f
 it('keeps the invoice in draft when the customer has an invoice grace period', function (): void {
     $f = billJobFixture(customerOverrides: ['invoice_grace_period' => 3]);
 
-    CachedAggregation::query()->create([
-        'organization_id' => $f['organization']->id,
-        'charge_id' => $f['charge']->id,
-        'external_subscription_id' => 'sub-job-1',
-        'timestamp' => '2026-10-01 00:00:00',
-        'current_aggregation' => '10',
-        'grouped_by' => [],
-        'presentation_breakdowns' => [],
-    ]);
+    billJobEvents($f);
 
     Bus::fake([BillSubscriptionJob::class]);
     billJobRun($f);

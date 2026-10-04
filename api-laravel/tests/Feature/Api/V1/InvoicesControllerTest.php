@@ -17,6 +17,8 @@ uses()->group(
     'ledger:rest:GET:/api/v1/invoices',
     'ledger:rest:GET:/api/v1/invoices/:id',
     'ledger:rest:PUT:/api/v1/invoices/:id',
+    'ledger:rest:PATCH:/api/v1/invoices/:id',
+    'ledger:rest:PATCH:/api/v2/invoices/:id',
     'ledger:rest:DELETE:/api/v1/invoices/:id',
     'ledger:rest:PUT:/api/v1/invoices/:id/finalize',
     'ledger:rest:PUT:/api/v1/invoices/:id/refresh',
@@ -210,6 +212,42 @@ it('returns method_not_allowed when the updated invoice is voided', function ():
     ]);
 
     $this->putJson("/api/v1/invoices/{$invoice->id}", [
+        'invoice' => ['payment_status' => 'succeeded'],
+    ], ['Authorization' => 'Bearer '.$apiKey->value])
+        ->assertStatus(405)
+        ->assertJsonPath('code', 'update_on_voided_invoice');
+
+    expect($invoice->refresh()->paymentStatusEnum())->toBe(InvoicePaymentStatus::Pending);
+});
+
+// -- PATCH /api/v1/invoices/:id ---------------------------------------------------
+// Rails routes PATCH and PUT to the same InvoicesController#update (resources
+// :invoices draws both verbs; no PATCH-specific branch exists), so the
+// scenarios below port the PUT section's expectations to the PATCH verb.
+
+it('updates an invoice payment status via PATCH', function (): void {
+    [$organization, $apiKey] = invoicesOrganization();
+    $customer = Customer::factory()->create(['organization_id' => $organization->id]);
+    $invoice = Invoice::factory()->create(['customer_id' => $customer->id, 'organization_id' => $organization->id]);
+
+    $this->patchJson("/api/v1/invoices/{$invoice->id}", [
+        'invoice' => ['payment_status' => 'succeeded'],
+    ], ['Authorization' => 'Bearer '.$apiKey->value])
+        ->assertOk()
+        ->assertJsonPath('invoice.lago_id', $invoice->id)
+        ->assertJsonPath('invoice.payment_status', 'succeeded');
+});
+
+it('returns method_not_allowed when the invoice updated via PATCH is voided', function (): void {
+    [$organization, $apiKey] = invoicesOrganization();
+    $customer = Customer::factory()->create(['organization_id' => $organization->id]);
+    $invoice = Invoice::factory()->create([
+        'customer_id' => $customer->id,
+        'organization_id' => $organization->id,
+        'status' => InvoiceStatus::Voided,
+    ]);
+
+    $this->patchJson("/api/v1/invoices/{$invoice->id}", [
         'invoice' => ['payment_status' => 'succeeded'],
     ], ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertStatus(405)
@@ -616,4 +654,18 @@ it('mirrors the invoice endpoints under v2 with the beta header', function (): v
     $this->postJson('/api/v2/invoices/'.Illuminate\Support\Str::uuid().'/void', [], ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertNotFound()
         ->assertHeader('X-Lago-Endpoint-Status', 'beta');
+});
+
+it('mirrors the invoice update via PATCH at v2 with the beta header', function (): void {
+    [$organization, $apiKey] = invoicesOrganization();
+    $customer = Customer::factory()->create(['organization_id' => $organization->id]);
+    $invoice = Invoice::factory()->create(['customer_id' => $customer->id, 'organization_id' => $organization->id]);
+
+    $this->patchJson("/api/v2/invoices/{$invoice->id}", [
+        'invoice' => ['payment_status' => 'succeeded'],
+    ], ['Authorization' => 'Bearer '.$apiKey->value])
+        ->assertOk()
+        ->assertHeader('X-Lago-Endpoint-Status', 'beta')
+        ->assertJsonPath('invoice.lago_id', $invoice->id)
+        ->assertJsonPath('invoice.payment_status', 'succeeded');
 });

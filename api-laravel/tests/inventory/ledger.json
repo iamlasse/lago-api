@@ -12076,11 +12076,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\BillableMetricsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/BillableMetricsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -12210,11 +12212,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\PlansController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/PlansControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -12282,11 +12286,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\SubscriptionsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/SubscriptionsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -12366,11 +12372,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\TaxesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/TaxesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -12414,11 +12422,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\WebhookEndpointsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/WebhookEndpointsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -12438,11 +12448,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\BillableMetricsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/BillableMetricsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -12594,11 +12606,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\InvoicesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/InvoicesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -12606,11 +12620,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V2\\PlansController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/PlansControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -12762,11 +12778,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\SubscriptionsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/SubscriptionsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -12846,11 +12864,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\TaxesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/TaxesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -12894,11 +12914,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\WebhookEndpointsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/WebhookEndpointsControllerTest.php"
+            ],
             "notes": ""
         },
         {

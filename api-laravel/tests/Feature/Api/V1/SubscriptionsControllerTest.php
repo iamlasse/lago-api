@@ -7,6 +7,8 @@ uses()->group(
     'ledger:rest:GET:/api/v1/subscriptions',
     'ledger:rest:GET:/api/v1/subscriptions/:external_id',
     'ledger:rest:PUT:/api/v1/subscriptions/:external_id',
+    'ledger:rest:PATCH:/api/v1/subscriptions/:external_id',
+    'ledger:rest:PATCH:/api/v2/subscriptions/:external_id',
     'ledger:rest:DELETE:/api/v1/subscriptions/:external_id',
 );
 
@@ -624,6 +626,62 @@ it('returns not_found when the updated subscription does not exist', function ()
     ]], ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertNotFound()
         ->assertJsonPath('code', 'subscription_not_found');
+});
+
+// -- PATCH /api/v1/subscriptions/:external_id -----------------------------------------
+// Rails routes PATCH and PUT to the same SubscriptionsController#update
+// (resources :subscriptions draws both verbs; no PATCH-specific branch
+// exists), so the scenarios below port the PUT section's expectations to the
+// PATCH verb.
+
+it('updates a subscription via PATCH', function (): void {
+    [$organization, $apiKey] = subscriptionOrganization();
+    $plan = Plan::factory()->create(['organization_id' => $organization->id]);
+    $customer = Customer::factory()->forOrganization($organization)->create();
+    $subscription = makePendingSubscription($customer, $plan);
+
+    $this->patchJson('/api/v1/subscriptions/'.$subscription->external_id, ['subscription' => [
+        'name' => 'subscription name new',
+        'subscription_at' => '2022-09-05T12:23:12Z',
+    ]], ['Authorization' => 'Bearer '.$apiKey->value])
+        ->assertOk()
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($subscription) {
+            $json->where('subscription.lago_id', (string) $subscription->id)
+                ->where('subscription.name', 'subscription name new')
+                ->where('subscription.subscription_at', '2022-09-05T12:23:12Z')
+                ->etc();
+        });
+
+    expect($subscription->fresh()->name)->toBe('subscription name new');
+});
+
+it('updates a subscription whose external_id contains dots via PATCH', function (): void {
+    [$organization, $apiKey] = subscriptionOrganization();
+    $plan = Plan::factory()->create(['organization_id' => $organization->id]);
+    $customer = Customer::factory()->forOrganization($organization)->create();
+    $subscription = makePendingSubscription($customer, $plan, ['external_id' => 'coker.com']);
+
+    $this->patchJson('/api/v1/subscriptions/coker.com', ['subscription' => [
+        'name' => 'subscription name new',
+    ]], ['Authorization' => 'Bearer '.$apiKey->value])
+        ->assertOk()
+        ->assertJsonPath('subscription.external_id', 'coker.com')
+        ->assertJsonPath('subscription.name', 'subscription name new');
+});
+
+it('mirrors the subscription update via PATCH at v2 with the beta header', function (): void {
+    [$organization, $apiKey] = subscriptionOrganization();
+    $plan = Plan::factory()->create(['organization_id' => $organization->id]);
+    $customer = Customer::factory()->forOrganization($organization)->create();
+    $subscription = makePendingSubscription($customer, $plan);
+
+    $this->patchJson('/api/v2/subscriptions/'.$subscription->external_id, ['subscription' => [
+        'name' => 'subscription name new',
+    ]], ['Authorization' => 'Bearer '.$apiKey->value])
+        ->assertOk()
+        ->assertHeader('X-Lago-Endpoint-Status', 'beta')
+        ->assertJsonPath('subscription.lago_id', (string) $subscription->id)
+        ->assertJsonPath('subscription.name', 'subscription name new');
 });
 
 // -- GET /api/v1/subscriptions/:external_id ------------------------------------------

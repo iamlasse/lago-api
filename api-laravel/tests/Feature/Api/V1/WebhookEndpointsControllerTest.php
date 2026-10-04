@@ -7,6 +7,8 @@ uses()->group(
     'ledger:rest:GET:/api/v1/webhook_endpoints',
     'ledger:rest:GET:/api/v1/webhook_endpoints/:id',
     'ledger:rest:PUT:/api/v1/webhook_endpoints/:id',
+    'ledger:rest:PATCH:/api/v1/webhook_endpoints/:id',
+    'ledger:rest:PATCH:/api/v2/webhook_endpoints/:id',
     'ledger:rest:DELETE:/api/v1/webhook_endpoints/:id',
 );
 
@@ -364,6 +366,46 @@ it('returns not_found when updating a webhook endpoint that does not exist', fun
         ->assertNotFound();
 });
 
+// -- PATCH /api/v1/webhook_endpoints/:id ------------------------------------------------
+// Rails routes PATCH and PUT to the same WebhookEndpointsController#update
+// (resources :webhook_endpoints draws both verbs; no PATCH-specific branch
+// exists), so the scenarios below port the PUT section's expectations to the
+// PATCH verb.
+
+it('updates a webhook endpoint via PATCH', function (): void {
+    [$organization, $apiKey] = webhookOrganization();
+
+    $webhookEndpoint = WebhookEndpoint::factory()->create(['organization_id' => $organization->id]);
+
+    $this->patchJson('/api/v1/webhook_endpoints/'.$webhookEndpoint->id, ['webhook_endpoint' => [
+        'webhook_url' => 'http://foo.bar',
+        'signature_algo' => 'hmac',
+        'name' => 'Updated Webhook',
+        'event_types' => ['invoice.created', 'invoice.voided'],
+    ]], ['Authorization' => 'Bearer '.$apiKey->value])
+        ->assertOk()
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json): void {
+            $json->where('webhook_endpoint.webhook_url', 'http://foo.bar')
+                ->where('webhook_endpoint.signature_algo', 'hmac')
+                ->where('webhook_endpoint.name', 'Updated Webhook')
+                ->where('webhook_endpoint.event_types', ['invoice.created', 'invoice.voided'])
+                ->etc();
+        });
+});
+
+it('updates a webhook endpoint with event_types explicitly set to null via PATCH', function (): void {
+    [$organization, $apiKey] = webhookOrganization();
+
+    $webhookEndpoint = WebhookEndpoint::factory()->eventTypes(['customer.created'])
+        ->create(['organization_id' => $organization->id]);
+
+    $this->patchJson('/api/v1/webhook_endpoints/'.$webhookEndpoint->id, ['webhook_endpoint' => [
+        'event_types' => null,
+    ]], ['Authorization' => 'Bearer '.$apiKey->value])
+        ->assertOk()
+        ->assertJsonPath('webhook_endpoint.event_types', null);
+});
+
 // -- v2 mirror ---------------------------------------------------------------------------
 
 it('mirrors the webhook endpoint endpoints at v2 with the beta header', function (): void {
@@ -385,6 +427,20 @@ it('mirrors the webhook endpoint endpoints at v2 with the beta header', function
     $this->getJson('/api/v2/webhook_endpoints/'.Illuminate\Support\Str::uuid(), [
         'Authorization' => 'Bearer '.$apiKey->value,
     ])->assertNotFound()->assertHeader('X-Lago-Endpoint-Status', 'beta');
+});
+
+it('mirrors the webhook endpoint update via PATCH at v2 with the beta header', function (): void {
+    [$organization, $apiKey] = webhookOrganization();
+
+    $webhookEndpoint = WebhookEndpoint::factory()->create(['organization_id' => $organization->id]);
+
+    $this->patchJson('/api/v2/webhook_endpoints/'.$webhookEndpoint->id, ['webhook_endpoint' => [
+        'webhook_url' => 'https://example.com/v2-patch',
+    ]], ['Authorization' => 'Bearer '.$apiKey->value])
+        ->assertOk()
+        ->assertHeader('X-Lago-Endpoint-Status', 'beta')
+        ->assertJsonPath('webhook_endpoint.lago_id', $webhookEndpoint->id)
+        ->assertJsonPath('webhook_endpoint.webhook_url', 'https://example.com/v2-patch');
 });
 
 // -- api permissions ------------------------------------------------------------------------

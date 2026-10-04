@@ -4,12 +4,29 @@ declare(strict_types=1);
 
 use App\Models\Fee;
 use App\Enums\InvoiceStatus;
-use App\Models\CachedAggregation;
 use App\Services\Fees\ChargeService;
 use App\Models\BillingPeriodBoundaries;
 use App\Services\Fees\CreateTrueUpService;
 use App\Services\Fees\ChargeService\Options;
 use App\Services\Fees\ChargeService\MeteredItem;
+
+/**
+ * Seeds the metered input for the true-up fixture: one event inside the
+ * billed August period carrying `$sum` units over the metric's field name.
+ * Since finding 12 closed, Fees\ChargeService aggregates the events LIVE —
+ * cached_aggregations rows are ignored on the arrears periodic path.
+ */
+function trueUpEvents(array $f, int $sum): void
+{
+    App\Models\Event::factory()->create([
+        'organization_id' => $f['organization']->id,
+        'external_subscription_id' => 'sub-trueup-1',
+        'transaction_id' => 'tr-trueup-1',
+        'code' => $f['metric']->code,
+        'timestamp' => '2023-08-15 00:00:00',
+        'properties' => ['value' => $sum],
+    ]);
+}
 
 /**
  * Port of spec/services/fees/create_true_up_service_spec.rb — the minimum
@@ -181,15 +198,7 @@ it('bills the true-up fee through the charge service', function (): void {
     ]);
 
     // 7 units x amount 1 EUR = 700 cents — below the 1000 minimum.
-    CachedAggregation::query()->create([
-        'organization_id' => $f['organization']->id,
-        'charge_id' => $f['charge']->id,
-        'external_subscription_id' => 'sub-trueup-1',
-        'timestamp' => '2023-08-01 00:00:00',
-        'current_aggregation' => '7',
-        'grouped_by' => [],
-        'presentation_breakdowns' => [],
-    ]);
+    trueUpEvents($f, 7);
 
     $boundaries = new BillingPeriodBoundaries(
         fromDatetime: Carbon\CarbonImmutable::parse('2023-08-01 00:00:00', 'UTC'),
@@ -236,15 +245,7 @@ it('does not bill a true-up through the charge service when the minimum is met',
     ]);
 
     // 12 units x 1 EUR = 1200 cents — above the 1000 minimum.
-    CachedAggregation::query()->create([
-        'organization_id' => $f['organization']->id,
-        'charge_id' => $f['charge']->id,
-        'external_subscription_id' => 'sub-trueup-1',
-        'timestamp' => '2023-08-01 00:00:00',
-        'current_aggregation' => '12',
-        'grouped_by' => [],
-        'presentation_breakdowns' => [],
-    ]);
+    trueUpEvents($f, 12);
 
     $boundaries = new BillingPeriodBoundaries(
         fromDatetime: Carbon\CarbonImmutable::parse('2023-08-01 00:00:00', 'UTC'),

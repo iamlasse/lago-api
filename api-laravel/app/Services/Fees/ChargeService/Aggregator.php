@@ -4,73 +4,79 @@ declare(strict_types=1);
 
 namespace App\Services\Fees\ChargeService;
 
-use App\Models\CachedAggregation;
+use App\Models\Subscription;
 use App\Services\ChargeModels\AggregationResult;
+use App\Models\Billing\Context as BillingContext;
+use App\Services\BillableMetrics\AggregationFactory;
+use App\Services\BillableMetrics\Aggregations\BaseService;
 
 /**
- * The M1 aggregation seam.
+ * The fee engine's aggregation seam — resolves the BillableMetrics
+ * aggregation service for this charge / period and runs it against the
+ * events store (M2: live event aggregation).
  *
- * Rails resolves a BillableMetrics::AggregationFactory service that queries
- * the events store (ClickHouse in production Rails) per charge / period.
- * Events are NOT ported (M2): this provider builds the same
- * AggregationResult contract from pre-aggregated state —
- * the frozen `cached_aggregations` rows written for recurring metrics —
- * and from values handed in by callers/tests.
- *
- * TODO(port): live event aggregation (BillableMetrics::Aggregations::*,
- * Events::Stores::*, Events::BillingPeriodFilterService) replaces the
- * cached-row lookup in M2.
+ * Rails resolves `BillableMetrics::AggregationFactory.new_instance` with
+ * the metered item's aggregation boundaries and options
+ * (MeteredItem#aggregation_boundaries / #aggregation_options) and calls
+ * `aggregate`. The cache-vs-live decision lives inside the aggregation
+ * services: periodic in-arrears billing aggregates the events LIVE and
+ * never reads cached_aggregations; cached rows are only consulted on the
+ * pay-in-advance current-usage paths (Aggregations::BaseService) and for
+ * the recurring weighted-sum carry-over (WeightedSumService).
  */
 final class Aggregator
 {
     public function __construct(
         private readonly MeteredItem $meteredItem,
-        private readonly string $externalSubscriptionId,
+        private readonly Subscription $subscription,
+        private readonly Options $options,
     ) {}
 
     public function aggregate(): AggregationResult
     {
-        $cached = $this->latestCachedAggregation();
-
-        // TODO(port): correct per-aggregation-type semantics (max aggregation,
-        // unique count carry-over, weighted sum breakdowns, custom scripts)
-        // arrive with the M2 event store. Until then the latest cached value
-        // is the pre-aggregated units contract.
-        //
-        // CONTRACT GAP (documented in scripts/contract/README.md findings 9/12):
-        // cached_aggregations rows carry NO events count and NO per-event
-        // running total, so `count` is hardcoded to 1 and `running_total`
-        // collapses to [units]. Fees therefore emit events_count: 1 and the
-        // percentage model cannot fire its per-event branches (paid_events,
-        // fixed_fee_total_amount) — Rails computes both from the events store
-        // (BillableMetrics::Aggregations::SumService#running_total). Do NOT
-        // fake these from the units value; they arrive with M2 live event
-        // aggregation.
-        $units = $cached?->current_aggregation ?? '0';
-
-        $count = (int) ($cached?->created_at === null ? 0 : 1);
-
-        return new AggregationResult(
-            aggregation: (string) $units,
-            count: max(0, $count),
-            options: ['running_total' => [(string) $units]],
-        );
+        return $this->aggregationService()->aggregate();
     }
 
     /** Zero-unit result — port of the aggregations' `empty_results`. */
     public function emptyResults(): AggregationResult
     {
-        return AggregationResult::empty();
+        return $this->aggregationService()->emptyResults();
     }
 
-    private function latestCachedAggregation(): ?CachedAggregation
+    /** Rails: Fees::ChargeService#build_aggregator + AggregationFactory. */
+    private function aggregationService(): BaseService
     {
-        return CachedAggregation::query()
-            ->where('external_subscription_id', $this->externalSubscriptionId)
-            ->where('charge_id', $this->meteredItem->chargeId())
-            ->whereNull('charge_filter_id')
-            ->latest('timestamp')
-            ->latest()
-            ->first();
+        $meteredItem = $this->meteredItem;
+        $billingContext = BillingContext::fromSubscription($this->subscription);
+
+        // Port of MeteredItem#aggregation_boundaries — the window an
+        // aggregation runs on.
+        $boundaries = [
+            'from_datetime' => $meteredItem->boundaries->chargesFromDatetime,
+            'to_datetime' => $meteredItem->boundaries->chargesToDatetimeValue(),
+            'charges_duration' => $meteredItem->boundaries->chargesDuration,
+            'max_timestamp' => $meteredItem->boundaries->maxTimestamp,
+        ];
+
+        // Port of Fees::ChargeService#aggregation_filters for the unfiltered
+        // bucket (charge filters / pricing group keys arrive with M2).
+        $filters = ['charge_id' => $meteredItem->chargeId()];
+
+        // Port of MeteredItem#aggregation_options.
+        $aggregationOptions = [
+            'free_units_per_events' => (int) ($meteredItem->properties()['free_units_per_events'] ?? 0),
+            'free_units_per_total_aggregation' => (string) ($meteredItem->properties()['free_units_per_total_aggregation'] ?? '0'),
+            'is_current_usage' => $this->options->currentUsage(),
+            'is_pay_in_advance' => $meteredItem->payInAdvance(),
+        ];
+
+        return AggregationFactory::newInstance(
+            meteredItem: $meteredItem,
+            billingContext: $billingContext,
+            currentUsage: $this->options->currentUsage(),
+            boundaries: $boundaries,
+            filters: $filters,
+            aggregationOptions: $aggregationOptions,
+        );
     }
 }

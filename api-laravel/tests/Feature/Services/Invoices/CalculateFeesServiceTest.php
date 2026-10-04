@@ -12,8 +12,8 @@ use App\Services\Invoices\ComputeTaxesAndTotalsService;
 /**
  * Port of spec/services/invoices/calculate_fees_service_spec.rb +
  * compute_taxes_and_totals_service_spec.rb core scenarios: subscription and
- * charge fees from the cached aggregation seam, coupon credit, the
- * invoice-level tax rollup, and finalization.
+ * charge fees from the live event aggregation (finding 12), coupon credit,
+ * the invoice-level tax rollup, and finalization.
  */
 function invoicePipelineFixture(array $overrides = []): array
 {
@@ -86,19 +86,31 @@ function invoicePipelineFixture(array $overrides = []): array
     return compact('organization', 'customer', 'plan', 'metric', 'charge', 'subscription', 'invoice', 'boundaries');
 }
 
-it('creates the charge fee from the cached aggregation and rolls up totals', function (): void {
+/**
+ * Seeds the metered input for the pipeline fixture: events inside the
+ * billed October period summing `$values` over the metric's field name.
+ * Since finding 12 closed, the fee engine aggregates the events LIVE —
+ * cached_aggregations rows are ignored on the arrears periodic path.
+ */
+function invoicePipelineEvents(array $f, array $values): void
+{
+    foreach ($values as $index => $value) {
+        App\Models\Event::factory()->create([
+            'organization_id' => $f['organization']->id,
+            'external_subscription_id' => $f['subscription']->external_id,
+            'transaction_id' => 'tr-pipeline-'.($index + 1),
+            'code' => $f['metric']->code,
+            'timestamp' => '2026-10-'.mb_str_pad((string) ($index + 2), 2, '0', STR_PAD_LEFT).' 00:00:00',
+            'properties' => ['value' => $value],
+        ]);
+    }
+}
+
+it('creates the charge fee from the live event aggregation and rolls up totals', function (): void {
     $f = invoicePipelineFixture();
 
-    // Pre-aggregated units for the standard charge: 10 × 100 cents = 1000
-    App\Models\CachedAggregation::query()->create([
-        'organization_id' => $f['organization']->id,
-        'charge_id' => $f['charge']->id,
-        'external_subscription_id' => 'sub-pipeline-1',
-        'timestamp' => '2026-10-01 00:00:00',
-        'current_aggregation' => '10',
-        'grouped_by' => [],
-        'presentation_breakdowns' => [],
-    ]);
+    // Metered units for the standard charge: 10 × 100 cents = 1000
+    invoicePipelineEvents($f, [4, 6]);
 
     $result = CalculateFeesService::call(invoice: $f['invoice'], recurring: true, context: 'finalize');
 
@@ -120,15 +132,7 @@ it('creates the charge fee from the cached aggregation and rolls up totals', fun
 it('applies taxes through the chain and writes the invoice snapshot rows', function (): void {
     $f = invoicePipelineFixture();
 
-    App\Models\CachedAggregation::query()->create([
-        'organization_id' => $f['organization']->id,
-        'charge_id' => $f['charge']->id,
-        'external_subscription_id' => 'sub-pipeline-1',
-        'timestamp' => '2026-10-01 00:00:00',
-        'current_aggregation' => '10',
-        'grouped_by' => [],
-        'presentation_breakdowns' => [],
-    ]);
+    invoicePipelineEvents($f, [4, 6]);
 
     $tax = App\Models\Tax::factory()->create([
         'organization_id' => $f['organization']->id,
@@ -171,15 +175,7 @@ it('applies taxes through the chain and writes the invoice snapshot rows', funct
 it('applies a percentage coupon before VAT', function (): void {
     $f = invoicePipelineFixture();
 
-    App\Models\CachedAggregation::query()->create([
-        'organization_id' => $f['organization']->id,
-        'charge_id' => $f['charge']->id,
-        'external_subscription_id' => 'sub-pipeline-1',
-        'timestamp' => '2026-10-01 00:00:00',
-        'current_aggregation' => '10',
-        'grouped_by' => [],
-        'presentation_breakdowns' => [],
-    ]);
+    invoicePipelineEvents($f, [4, 6]);
 
     $coupon = App\Models\Coupon::factory()->percentage('20')->create([
         'organization_id' => $f['organization']->id,

@@ -82,7 +82,17 @@ class ValidateService extends BaseValidator
 
     private function validWallet(): bool
     {
-        $walletQuery = Wallet::query()->where('id', $this->args['wallet_id'] ?? null);
+        $walletId = $this->args['wallet_id'] ?? null;
+
+        // Rails' find_by on a uuid column answers nil (wallet_not_found) for
+        // a non-uuid id instead of raising a PG cast error.
+        if (is_string($walletId) && preg_match('/\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\z/i', $walletId) !== 1) {
+            $this->result->current_wallet = null;
+
+            return $this->addError('wallet_id', 'wallet_not_found');
+        }
+
+        $walletQuery = Wallet::query()->where('id', $walletId);
 
         if (($this->args['customer'] ?? null) instanceof Customer) {
             $walletQuery->where('customer_id', $this->args['customer']->id);

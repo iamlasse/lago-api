@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\Organization;
+use App\Services\Events\Stores\BaseStore;
 use App\Services\Events\Stores\StoreFactory;
 use App\Services\Events\Stores\PostgresStore;
 use App\Services\Events\Stores\ClickHouseStore;
@@ -55,8 +56,19 @@ it('refuses a nested override', function (): void {
     });
 })->throws(RuntimeException::class, 'Events::Stores::StoreFactory override already active');
 
-it('throws from the aggregation entry points until the usage slice', function (): void {
+it('throws from the clickhouse store aggregation entry points (TODO(port))', function (): void {
+    $organization = storeFactoryOrganization();
+
+    StoreFactory::withOverride(ClickHouseStore::class, false, function () use ($organization): void {
+        $store = StoreFactory::newInstance($organization, billingContext: new stdClass());
+
+        expect(fn (): mixed => $store->count())->toThrow(LogicException::class);
+    });
+});
+
+it('resolves the postgres store with a live aggregation API (finding 12)', function (): void {
     $store = StoreFactory::newInstance(storeFactoryOrganization(), billingContext: new stdClass());
 
-    expect(fn (): mixed => $store->count())->toThrow(LogicException::class);
+    expect($store)->toBeInstanceOf(PostgresStore::class)
+        ->and($store)->toBeInstanceOf(BaseStore::class);
 });

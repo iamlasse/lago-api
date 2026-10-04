@@ -8,6 +8,8 @@ uses()->group(
     'ledger:rest:GET:/api/v1/billable_metrics',
     'ledger:rest:GET:/api/v1/billable_metrics/:code',
     'ledger:rest:PUT:/api/v1/billable_metrics/:code',
+    'ledger:rest:PATCH:/api/v1/billable_metrics/:code',
+    'ledger:rest:PATCH:/api/v2/billable_metrics/:code',
     'ledger:rest:DELETE:/api/v1/billable_metrics/:code',
 );
 
@@ -243,6 +245,88 @@ it('only updates name and description when the billable metric is attached to a 
         });
 
     expect($billableMetric->refresh()->code)->toBe('locked_code');
+});
+
+// -- PATCH /api/v1/billable_metrics/:code -----------------------------------------
+// Rails routes PATCH and PUT to the same BillableMetricsController#update
+// (resources :billable_metrics draws both verbs; no PATCH-specific branch
+// exists), so the scenarios below port the PUT section's expectations to the
+// PATCH verb.
+
+it('updates a billable metric via PATCH', function (): void {
+    [$organization, $apiKey] = metricOrganization();
+
+    $billableMetric = BillableMetric::factory()->create(['organization_id' => $organization->id, 'aggregation_type' => 0, 'field_name' => null]);
+
+    $this->patchJson('/api/v1/billable_metrics/'.$billableMetric->code, ['billable_metric' => [
+        'name' => 'BM1',
+        'code' => 'BM1_code',
+        'description' => 'description',
+        'aggregation_type' => 'sum_agg',
+        'field_name' => 'amount_sum',
+    ]], ['Authorization' => 'Bearer '.$apiKey->value])
+        ->assertOk()
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($billableMetric): void {
+            $json->where('billable_metric.lago_id', $billableMetric->id)
+                ->where('billable_metric.code', 'BM1_code')
+                ->where('billable_metric.filters', [])
+                ->etc();
+        });
+});
+
+it('only updates name and description via PATCH when the billable metric is attached to a plan', function (): void {
+    [$organization, $apiKey] = metricOrganization();
+
+    $billableMetric = BillableMetric::factory()->create([
+        'organization_id' => $organization->id,
+        'aggregation_type' => 0,
+        'field_name' => null,
+        'code' => 'locked_code',
+    ]);
+
+    $plan = Plan::factory()->create(['organization_id' => $organization->id]);
+    Charge::factory()->create([
+        'plan_id' => $plan->id,
+        'billable_metric_id' => $billableMetric->id,
+        'organization_id' => $organization->id,
+    ]);
+
+    $this->patchJson('/api/v1/billable_metrics/locked_code', ['billable_metric' => [
+        'name' => 'Renamed',
+        'description' => 'New description',
+        'code' => 'hacked_code',
+        'aggregation_type' => 'sum_agg',
+        'field_name' => 'hacked_field',
+    ]], ['Authorization' => 'Bearer '.$apiKey->value])
+        ->assertOk()
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json): void {
+            $json->where('billable_metric.name', 'Renamed')
+                ->where('billable_metric.description', 'New description')
+                // Only name and description are editable when attached.
+                ->where('billable_metric.code', 'locked_code')
+                ->where('billable_metric.aggregation_type', 'count_agg')
+                ->where('billable_metric.field_name', null)
+                ->etc();
+        });
+
+    expect($billableMetric->refresh()->code)->toBe('locked_code');
+});
+
+it('mirrors the billable metric update via PATCH at v2 with the beta header', function (): void {
+    [$organization, $apiKey] = metricOrganization();
+
+    $billableMetric = BillableMetric::factory()->create(['organization_id' => $organization->id, 'aggregation_type' => 0, 'field_name' => null]);
+
+    $this->patchJson('/api/v2/billable_metrics/'.$billableMetric->code, ['billable_metric' => [
+        'name' => 'BM1',
+        'code' => 'BM1_code',
+        'aggregation_type' => 'sum_agg',
+        'field_name' => 'amount_sum',
+    ]], ['Authorization' => 'Bearer '.$apiKey->value])
+        ->assertOk()
+        ->assertHeader('X-Lago-Endpoint-Status', 'beta')
+        ->assertJsonPath('billable_metric.lago_id', $billableMetric->id)
+        ->assertJsonPath('billable_metric.code', 'BM1_code');
 });
 
 // -- GET /api/v1/billable_metrics/:code -------------------------------------------

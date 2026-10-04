@@ -10,6 +10,7 @@ use Carbon\CarbonImmutable;
 use App\Models\Organization;
 use App\Models\Subscription;
 use App\Services\BaseResult;
+use App\Services\BaseService;
 use App\Enums\SubscriptionStatus;
 use App\Jobs\BillSubscriptionJob;
 use Illuminate\Support\Collection;
@@ -28,7 +29,7 @@ use App\Jobs\Subscriptions\TerminateJob;
  *
  * TODO(port): BillNonInvoiceableFeesJob (recurring non-invoiceable fees).
  */
-class BillingService extends \App\Services\BaseService
+class BillingService extends BaseService
 {
     private CarbonImmutable $today;
 

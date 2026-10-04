@@ -92,10 +92,10 @@ PAO_DISABLE=1 DB_DATABASE=lago_laravel_golden ./vendor/bin/pest tests/Contract
 | `plans_metrics_crud` | 13 | green | finding 3 closed (metric filters) |
 | `subscription_create` | 8 | green | finding 4 closed (`connections`) |
 | `invoice_standard` | 5 + extra `10.json` | green | one-off invoice surface + show |
-| `invoice_graduated` | 2 + extra `10.json` | show red on `events_count` | finding 12 (seam) |
-| `invoice_package` | 2 + extra `10.json` | show red on `events_count` | finding 12 (seam) |
-| `invoice_percentage` | 2 + extra `10.json` | index red (totals), show blocked | finding 12 (seam) — see finding 9 |
-| `invoice_volume` | 2 + extra `10.json` | show red on `events_count` | finding 12 (seam) |
+| `invoice_graduated` | 2 + extra `10.json` | green | finding 12 CLOSED (live aggregation) |
+| `invoice_package` | 2 + extra `10.json` | green | finding 12 CLOSED (live aggregation) |
+| `invoice_percentage` | 2 + extra `10.json` | green | finding 12 CLOSED (count + running_total live) |
+| `invoice_volume` | 2 + extra `10.json` | green | finding 12 CLOSED (live aggregation) |
 | `invoice_graduated_percentage` | 2 + extra `10.json` | green | premium flip, gotcha below |
 
 The five per-charge-model scenarios (`invoice_graduated`, `invoice_package`,
@@ -114,16 +114,14 @@ substitutes the id its own billing minted, like `invoice_standard`).
 **How the metered input is seeded (both sides must aggregate the same):**
 three `:event` rows (deterministic transaction ids, `timestamp` inside the
 billed May period) ride `fixture.sql`; PLUS one `:cached_aggregation` row
-with the same sum for the same charge/subscription. The cached row exists
-because the Laravel aggregation seam
-(`app/Services/Fees/ChargeService/Aggregator.php`) reads
-`cached_aggregations` and NOT `events` (live event aggregation is M2
-there), while Rails ignores cached rows on the arrears periodic path
-(they are only read for pay-in-advance event billing) — so the row is the
-honest carrier of the seam's input and invisible to the Rails capture.
-Everything downstream (tiering math, amount_details) still has to match.
-The seam cannot carry the event COUNT or per-event running_total — those
-gaps are findings 9/12 below.
+with the same sum for the same charge/subscription. The events are the
+aggregation input on BOTH sides (the fee engine aggregates them live since
+finding 12 closed). The cached row stays seeded as a negative control: the
+Laravel Aggregator — like Rails — must IGNORE cached rows on the arrears
+periodic path (they are only read for pay-in-advance current usage and the
+recurring weighted-sum carry-over), so the replay stays green only while
+the live events path is honored. Everything downstream (tiering math,
+amount_details) still has to match.
 
 Replay DBs: each scenario test self-migrates, so any disposable DB works.
 Dedicated `lago_golden_<scenario>` databases exist on `lago-laravel-pg`;
@@ -310,12 +308,13 @@ red on purpose (rules: capture, don't fix):
    drop debug keys — but today the Laravel test stack answers differently
    from production Laravel too.
 
-The five per-charge-model scenarios replay their index requests green and
-their shows green except for the aggregation-seam gap (finding 12):
-`events_count` on graduated/package/volume/percentage, and the percentage
-index totals (the per-event fixed fee — finding 9's data dependency).
-Findings 7–11 and 13 are CLOSED; the history is kept below with their root
-causes, since the tests that pinned the bugs travel with the fixes.
+The five per-charge-model scenarios replay green end to end: finding 12 is
+CLOSED — the fee engine's Aggregator aggregates the seeded `events` LIVE
+(`events_count` and the percentage per-event running_total come from the
+events store, like Rails), and the seeded `cached_aggregations` row is
+correctly ignored on the arrears periodic path. Findings 7–11 and 13 are
+CLOSED too; the history is kept below with their root causes, since the
+tests that pinned the bugs travel with the fixes.
 
 7. ~~**Invoice show: `billing_periods` is `[]` (all 5 scenarios).**~~ CLOSED:
    `app/Serializers/V1/Invoices/BillingPeriodSerializer.php` ports
@@ -328,18 +327,20 @@ causes, since the tests that pinned the bugs travel with the fixes.
    10 bill 12 packages (120000c). Unit test:
    `rounds a partial package UP, not half-up (Rails ceil)`.
 
-9. **Percentage charge: per-event branches (CLOSED at the model level; the
-   CONTRACT replay stays red on the seam).** Two port bugs were fixed:
-   `per_unit_total_amount` emitted Rails' DEAD-CODE expression
-   (`compute_percentage_amount.fdiv(paid_units)` — result discarded in Ruby,
-   so the golden value is `compute_percentage_amount` verbatim), and
-   `fixed_fee_unit_amount` keyed on `paid_units > 0` instead of Rails'
-   `paid_events.positive?`. The full golden math (fee 1315c, free_events 1,
-   paid_events 3, fixed_fee_total "6.0", per_unit_total "7.15") is pinned by
-   the unit test `replays the invoice_percentage golden math` with
-   Rails-shaped inputs (count 4, running_total limited to the first
-   free_units_per_events values per SumService#running_total_per_events).
-   The contract replay cannot feed those inputs — see finding 12.
+9. ~~**Percentage charge: per-event branches (CLOSED at the model level; the
+   CONTRACT replay stays red on the seam).**~~ CLOSED end to end (finding 12
+   fixed): two port bugs were fixed — `per_unit_total_amount` emitted Rails'
+   DEAD-CODE expression (`compute_percentage_amount.fdiv(paid_units)` —
+   result discarded in Ruby, so the golden value is
+   `compute_percentage_amount` verbatim), and `fixed_fee_unit_amount` keyed
+   on `paid_units > 0` instead of Rails' `paid_events.positive?`. The full
+   golden math (fee 1315c, free_events 1, paid_events 3, fixed_fee_total
+   "6.0", per_unit_total "7.15") is pinned by the unit test
+   `replays the invoice_percentage golden math` with Rails-shaped inputs
+   (count 4, running_total limited to the first free_units_per_events
+   values per SumService#running_total_per_events) — and since finding 12
+   closed, the live aggregation feeds the same inputs from the seeded
+   events and the contract replay matches the goldens.
 
 10. ~~**Fee-level `units` off by 10x for volume and percentage.**~~ CLOSED —
     and the cause was NOT a scale bug: the fee's stored units were correct
@@ -356,17 +357,25 @@ causes, since the tests that pinned the bugs travel with the fixes.
     strictly; unit test
     `test_minted_subscription_item_ids_compare_as_uuids`).
 
-12. **Aggregation seam starves the fee metadata (OPEN — M2).** The Aggregator
-    (app/Services/Fees/ChargeService/Aggregator.php) reads the frozen
-    `cached_aggregations` rows, which carry NO events count and NO per-event
-    running total, so it reports `count = 1` and `running_total = [units]`:
-    every fee shows `events_count: 1` (golden: 3 for graduated/package/volume,
-    4 for percentage) and the percentage model's per-event branches cannot
-    fire (paid_events 0, fixed fee 0 → invoice totals 5615 vs 6215). This is
-    the M2 live-aggregation seam (BillableMetrics::Aggregations::* — sum,
-    count and running_total come from the events store in Rails). The seam
-    documents the gap in-code; do NOT fake count/running_total from the
-    cached units. This is the ONLY remaining contract red.
+12. ~~**Aggregation seam starves the fee metadata (OPEN — M2).**~~ CLOSED:
+    `app/Services/Events/Stores/PostgresStore.php` ports Rails'
+    Events::Stores::PostgresStore aggregation API (sum / count / max / last /
+    unique_count / weighted_sum + grouped & prorated variants, boundary and
+    property filters) over the frozen `events` table, and
+    `app/Services/BillableMetrics/AggregationFactory.php` +
+    `Aggregations/*Service` port the Rails aggregation services. The fee
+    engine's Aggregator now resolves the aggregation service from the
+    charge's billable metric and aggregates the events LIVE: fees carry the
+    real `events_count` (3 for graduated/package/volume, 4 for percentage)
+    and the percentage model gets SumService's per-event `running_total`.
+    The cached-aggregations decision matches Rails: periodic in-arrears
+    billing NEVER reads `cached_aggregations` (the seeded row is ignored);
+    cached rows are only consulted on the pay-in-advance current-usage
+    paths and for the recurring weighted-sum carry-over. Unit tests:
+    `tests/Unit/Services/Events/PostgresStoreTest.php` (store SQL vs the
+    Rails store spec expectations) and
+    `tests/Unit/Services/Fees/ChargeService/AggregatorTest.php` (the
+    cache-vs-live decision).
 
 13. ~~**BigDecimal string formatting (all 5).**~~ CLOSED:
     `MoneyMath::toF` is the canonical Rails `to_s("F")` port (fixed notation,

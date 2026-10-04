@@ -60,6 +60,8 @@ class WalletSerializer extends ModelSerializer
         }
 
         if ($this->include('limitations')) {
+            // Rails: payload.merge!(limitations) where the limitations method
+            // returns { applies_to: { fee_types:, billable_metric_codes: } }.
             $payload['limitations'] = [
                 'applies_to' => [
                     'fee_types' => (array) ($wallet->allowed_fee_types ?? []),

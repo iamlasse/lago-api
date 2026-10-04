@@ -8,15 +8,21 @@ use App\Exceptions\Api\NotFoundException;
 use App\Http\Controllers\Api\V1\PlansController;
 use App\Http\Controllers\Api\V1\TaxesController;
 use App\Http\Controllers\Api\V1\EventsController;
+use App\Http\Controllers\Api\V1\CouponsController;
+use App\Http\Controllers\Api\V1\WalletsController;
 use App\Http\Controllers\Api\V1\InvoicesController;
 use App\Http\Controllers\Api\V1\CustomersController;
 use App\Http\Controllers\Api\V1\OrganizationsController;
 use App\Http\Controllers\Api\V1\Plans\ChargesController;
 use App\Http\Controllers\Api\V1\SubscriptionsController;
+use App\Http\Controllers\Api\V1\AppliedCouponsController;
 use App\Http\Controllers\Api\V1\BillableMetricsController;
 use App\Http\Controllers\Api\V1\WebhookEndpointsController;
 use App\Http\Controllers\Api\V1\Plans\FixedChargesController;
+use App\Http\Controllers\Api\V1\WalletTransactionsController;
 use App\Http\Controllers\Api\V1\Plans\Charges\FiltersController;
+use App\Http\Controllers\Api\V1\Customers\WalletsController as CustomerWalletsController;
+use App\Http\Controllers\Api\V1\Customers\AppliedCouponsController as CustomerAppliedCouponsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,8 +41,9 @@ use App\Http\Controllers\Api\V1\Plans\Charges\FiltersController;
 | - customers usage endpoints (current_usage/projected_usage/past_usage,
 |   checkout_url, portal_url) — the events store is ported (M2 groundwork),
 |   the usage/aggregation services are not yet;
-| - the customers nested subresources (invoices, subscriptions,
-|   applied_coupons, wallets, ...).
+| - the remaining customers nested subresources (invoices, subscriptions,
+|   credit_notes, payments, payment_requests, payment_methods, and the
+|   wallets alerts/metadata subresources).
 */
 
 $sharedApi = function (): void {
@@ -222,6 +229,80 @@ $sharedApi = function (): void {
         });
 
         Route::get('events_enriched', [EventsController::class, 'indexEnriched']);
+
+        // -- coupons / applied coupons ----------------------------------------
+        // Registered here per the rest.json rows; the CONTROLLERS land in the
+        // coupons slice (same class names) — the routes resolve as soon as
+        // those classes exist. Coupons are keyed by code, which may contain
+        // dots (Rails: `resources :coupons, param: :code, code: /.*/`).
+        Route::prefix('coupons')->as('coupons:')->group(function (): void {
+            Route::get('', [CouponsController::class, 'index']);
+            Route::post('', [CouponsController::class, 'create']);
+
+            Route::get('{code}', [CouponsController::class, 'show'])->where('code', '.+');
+            Route::put('{code}', [CouponsController::class, 'update'])->where('code', '.+');
+            Route::patch('{code}', [CouponsController::class, 'update'])->where('code', '.+');
+            Route::delete('{code}', [CouponsController::class, 'destroy'])->where('code', '.+');
+        });
+
+        Route::get('applied_coupons', [AppliedCouponsController::class, 'index']);
+        Route::post('applied_coupons', [AppliedCouponsController::class, 'create']);
+
+        // -- wallets ------------------------------------------------------------
+        // Keyed by uuid id on the top-level resource; DELETE never destroys —
+        // it terminates (Wallets\TerminateService). The nested
+        // wallet_transactions index belongs to the top-level
+        // WalletTransactionsController (Rails: a standalone draw
+        // `get "/wallets/:id/wallet_transactions"`).
+        //
+        // Not registered yet (dependencies do not exist): the wallets/:id/
+        // metadata subresource (Metadata::ItemMetadata controller slice).
+        Route::prefix('wallets')->as('wallets:')->group(function (): void {
+            Route::get('', [WalletsController::class, 'index']);
+            Route::post('', [WalletsController::class, 'create']);
+            Route::get('{id}/wallet_transactions', [WalletTransactionsController::class, 'index']);
+
+            Route::get('{id}', [WalletsController::class, 'show']);
+            Route::put('{id}', [WalletsController::class, 'update']);
+            Route::patch('{id}', [WalletsController::class, 'update']);
+            Route::delete('{id}', [WalletsController::class, 'terminate']);
+        });
+
+        // POST /wallet_transactions creates paid/granted/voided transactions
+        // in one call; GET /wallet_transactions/:id reads one back.
+        Route::post('wallet_transactions', [WalletTransactionsController::class, 'create']);
+        Route::get('wallet_transactions/{id}', [WalletTransactionsController::class, 'show']);
+
+        // Not registered yet (dependencies do not exist): payment_url
+        // (GeneratePaymentUrlService), consumptions / fundings
+        // (WalletTransactionConsumptionsQuery + serializers).
+
+        // -- customers nested subresources --------------------------------------
+        // The external_id segment carries the `.+` constraint (see the
+        // customers show/destroy routes below); wallets are keyed by CODE,
+        // which is only unique among active wallets.
+        //
+        // Not registered yet (dependencies do not exist): the invoices,
+        // subscriptions, credit_notes, payments, payment_requests,
+        // payment_methods subresources, the wallets alerts/metadata
+        // subresources, and the applied_coupons destroy route's controller
+        // actions beyond index/destroy themselves (coupons slice).
+        Route::prefix('customers/{external_id}')
+            ->where(['external_id' => '.+'])
+            ->as('customers:')->group(function (): void {
+                Route::prefix('wallets')->as('wallets:')->group(function (): void {
+                    Route::get('', [CustomerWalletsController::class, 'index']);
+                    Route::post('', [CustomerWalletsController::class, 'create']);
+
+                    Route::get('{code}', [CustomerWalletsController::class, 'show']);
+                    Route::put('{code}', [CustomerWalletsController::class, 'update']);
+                    Route::patch('{code}', [CustomerWalletsController::class, 'update']);
+                    Route::delete('{code}', [CustomerWalletsController::class, 'terminate']);
+                });
+
+                Route::get('applied_coupons', [CustomerAppliedCouponsController::class, 'index']);
+                Route::delete('applied_coupons/{id}', [CustomerAppliedCouponsController::class, 'destroy']);
+            });
 
         // customers and subscriptions are looked up by external_id, which
         // may contain dots. Rails constrains those params with /[^\/]+/ (a

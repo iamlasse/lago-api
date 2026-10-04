@@ -7,6 +7,8 @@ uses()->group(
     'ledger:rest:GET:/api/v1/taxes',
     'ledger:rest:GET:/api/v1/taxes/:code',
     'ledger:rest:PUT:/api/v1/taxes/:code',
+    'ledger:rest:PATCH:/api/v1/taxes/:code',
+    'ledger:rest:PATCH:/api/v2/taxes/:code',
     'ledger:rest:DELETE:/api/v1/taxes/:code',
 );
 
@@ -148,6 +150,50 @@ it('rejects a tax code that already exists in the organization', function (): vo
             'error' => 'Unprocessable Entity',
             'code' => 'validation_errors',
             'error_details' => ['code' => ['value_already_exist']],
+        ]);
+});
+
+// -- PATCH /api/v1/taxes/:code -----------------------------------------------------
+// Rails routes PATCH and PUT to the same TaxesController#update (resources
+// :taxes draws both verbs; no PATCH-specific branch exists), so the scenarios
+// below port the PUT section's expectations to the PATCH verb.
+
+it('updates a tax via PATCH', function (): void {
+    [$organization, $apiKey] = taxEndpointOrganization();
+
+    $tax = Tax::factory()->create(['organization_id' => $organization->id]);
+
+    $updateParams = [
+        'code' => 'code_updated',
+        'name' => 'name_updated',
+        'rate' => 15.0,
+        'applied_to_organization' => false,
+    ];
+
+    $this->patchJson('/api/v1/taxes/'.$tax->code, ['tax' => $updateParams], [
+        'Authorization' => 'Bearer '.$apiKey->value,
+    ])->assertOk()->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($tax): void {
+        $json->where('tax.lago_id', $tax->id)
+            ->where('tax.code', 'code_updated')
+            ->where('tax.name', 'name_updated')
+            // See the create test — PHP json-encodes the float 15.0 as 15.
+            ->where('tax.rate', 15)
+            ->where('tax.applied_to_organization', false)
+            ->etc();
+    });
+});
+
+it('returns not_found when the tax updated via PATCH does not exist', function (): void {
+    [$organization, $apiKey] = taxEndpointOrganization();
+
+    $this->patchJson('/api/v1/taxes/'.Illuminate\Support\Str::uuid(), ['tax' => [
+        'name' => 'tax',
+    ]], ['Authorization' => 'Bearer '.$apiKey->value])
+        ->assertNotFound()
+        ->assertExactJson([
+            'status' => 404,
+            'error' => 'Not Found',
+            'code' => 'tax_not_found',
         ]);
 });
 
@@ -298,6 +344,22 @@ it('mirrors the tax endpoints at v2 with the beta header', function (): void {
     $this->getJson('/api/v2/taxes/not_a_tax', ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertNotFound()
         ->assertHeader('X-Lago-Endpoint-Status', 'beta');
+});
+
+it('mirrors the tax update via PATCH at v2 with the beta header', function (): void {
+    [$organization, $apiKey] = taxEndpointOrganization();
+
+    $tax = Tax::factory()->create(['organization_id' => $organization->id]);
+
+    $this->patchJson('/api/v2/taxes/'.$tax->code, ['tax' => [
+        'name' => 'name_updated',
+        'rate' => 15.0,
+    ]], ['Authorization' => 'Bearer '.$apiKey->value])
+        ->assertOk()
+        ->assertHeader('X-Lago-Endpoint-Status', 'beta')
+        ->assertJsonPath('tax.lago_id', $tax->id)
+        ->assertJsonPath('tax.name', 'name_updated')
+        ->assertJsonPath('tax.rate', 15);
 });
 
 // -- api permissions ---------------------------------------------------------------------
