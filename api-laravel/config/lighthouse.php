@@ -34,6 +34,8 @@ return [
     'route' => [
         /*
          * The URI the endpoint responds to, e.g. mydomain.com/graphql.
+         * Rails parity: the front calls the API's GraphQL engine at
+         * Rails mounts the GraphQL engine at the root (config/routes.rb).
          */
         'uri' => '/graphql',
 

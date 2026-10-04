@@ -8,6 +8,7 @@ use Closure;
 use App\Models\Fee;
 use App\Models\Wallet;
 use App\Models\Customer;
+use App\Support\License;
 use App\Services\BaseResult;
 use App\Services\BaseService;
 use Illuminate\Support\Collection;
@@ -266,7 +267,7 @@ class AllocateOngoingUsageByWalletsService extends BaseService
     {
         $integrations = $this->customer->organization?->premium_integrations ?? [];
 
-        return env('LAGO_LICENSE') !== null && env('LAGO_LICENSE') !== ''
+        return License::premium()
             && in_array('events_targeting_wallets', (array) $integrations, true);
     }
 }

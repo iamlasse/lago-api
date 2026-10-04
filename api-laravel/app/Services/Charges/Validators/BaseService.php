@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Charges\Validators;
 
 use App\Models\Charge;
+use App\Support\License;
 use App\Models\FixedCharge;
 use App\Models\ChargeFilter;
 use App\Services\BaseResult;
@@ -48,7 +49,7 @@ abstract class BaseService extends BaseValidator
     /** Rails: License.premium? (see App\Services\BaseService::premium). */
     protected function premium(): bool
     {
-        return env('LAGO_LICENSE') !== null && env('LAGO_LICENSE') !== '';
+        return License::premium();
     }
 
     protected function pricingGroupKeys(): mixed

@@ -14,8 +14,8 @@ use App\Models\WalletTransaction;
  * Port of Rails' Wallets::Balance::DecreaseService
  * (app/services/wallets/balance/decrease_service.rb).
  *
- * TODO(port): Rails re-enqueues Customers::RefreshWalletJob and
- * UsageMonitoring::ProcessWalletAlertsJob after commit — later slices.
+ * TODO(port): UsageMonitoring::ProcessWalletAlertsJob after commit — the
+ * usage-monitoring slice.
  */
 class DecreaseService extends BaseService
 {
@@ -52,6 +52,9 @@ class DecreaseService extends BaseService
 
         if (! $this->skipRefresh) {
             $wallet->customer->flagWalletsForRefresh();
+
+            // Rails: Customers::RefreshWalletJob.perform_after_commit(wallet.customer)
+            \App\Jobs\Customers\RefreshWalletJob::dispatch($wallet->customer);
         }
 
         // Rails: SendWebhookJob.perform_after_commit("wallet.updated", wallet)

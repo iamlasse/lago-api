@@ -118,9 +118,14 @@ abstract class ContractCase extends BaseTestCase
             content: isset($request['body']) ? json_encode($request['body']) : null,
         );
 
+        // Convert BEFORE the kernel handle: the container instances the raw
+        // request into 'request', and a Symfony instance there breaks
+        // Laravel 13's strict-typed UrlGenerator rebinding.
+        $illuminateRequest = Request::createFromBase($symfonyRequest);
+
         $kernel = $this->app->make(HttpKernel::class);
 
-        return new \Illuminate\Testing\TestResponse($kernel->handle(Request::createFromBase($symfonyRequest)));
+        return new \Illuminate\Testing\TestResponse($kernel->handle($illuminateRequest));
     }
 
     /**
@@ -154,6 +159,21 @@ abstract class ContractCase extends BaseTestCase
     }
 
     /**
+     * Per-request value substitution hook. The manifest carries the values
+     * Rails captured (ids/tokens minted at capture time); requests whose
+     * inputs derive from EARLIER replayed responses must use this run's
+     * freshly minted values instead. Scenarios override as needed.
+     *
+     * @param  array<string, mixed>  $request
+     * @param  array<int, \Illuminate\Testing\TestResponse>  $responses
+     * @return array<string, mixed>
+     */
+    protected function substituteRequestValues(array $request, int $oneBasedIndex, array $responses): array
+    {
+        return $request;
+    }
+
+    /**
      * Replays every request in the manifest, asserting each against its
      * numbered golden. All mismatches are collected so one run reports the
      * full contract diff instead of stopping at the first failing request.
@@ -163,9 +183,11 @@ abstract class ContractCase extends BaseTestCase
     protected function runScenario(array $ledgerRowIds = []): void
     {
         $failures = [];
+        $responses = [];
 
         foreach ($this->manifest['requests'] ?? [] as $index => $request) {
-            $response = $this->replay($request);
+            $request = $this->substituteRequestValues($request, $index + 1, $responses);
+            $response = $responses[$index + 1] = $this->replay($request);
 
             try {
                 $this->assertMatchesGolden($response, $index + 1, $ledgerRowIds[$index + 1] ?? null);

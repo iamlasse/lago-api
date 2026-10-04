@@ -117,8 +117,7 @@ it('voids exactly once under concurrent calls', function (): void {
 });
 
 it('rejects generate_credit_note with amounts above the creditable amount', function (): void {
-    putenv('LAGO_LICENSE=premium-license-token');
-    $_ENV['LAGO_LICENSE'] = 'premium-license-token';
+    config(['lago.license' => 'premium-license-token']);
 
     try {
         $invoice = Invoice::factory()->create([
@@ -137,7 +136,7 @@ it('rejects generate_credit_note with amounts above the creditable amount', func
         expect($result->getError())->toBeInstanceOf(App\Services\Failures\ValidationFailure::class);
         expect($result->getError()->messages)->toHaveKey('credit_refund_amount');
     } finally {
-        putenv('LAGO_LICENSE');
-        unset($_ENV['LAGO_LICENSE']);
+        config(['lago.license' => null]);
+
     }
 });

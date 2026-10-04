@@ -175,7 +175,7 @@ it('is not allowed below the credit notes invoice version', function (): void {
     [, , $invoice] = creditNotesCreateSetup(['version_number' => 1]);
 
     // Rails specs stub License.premium?; the port reads LAGO_LICENSE.
-    putenv('LAGO_LICENSE=premium');
+    config(['lago.license' => 'premium']);
     try {
         $result = CreateService::call(invoice: $invoice, items: []);
 
@@ -183,7 +183,7 @@ it('is not allowed below the credit notes invoice version', function (): void {
             ->and($result->getError())->toBeInstanceOf(App\Services\Failures\MethodNotAllowedFailure::class)
             ->and($result->getError()->code)->toBe('invalid_type_or_status');
     } finally {
-        putenv('LAGO_LICENSE=');
+        config(['lago.license' => null]);
     }
 })->group('ledger:svc:CreditNotes.CreateService');
 
@@ -194,7 +194,7 @@ it('rejects non-offset amounts on unpaid prepaid credit invoices', function (): 
     ]);
 
     // Rails specs stub License.premium?; the port reads LAGO_LICENSE.
-    putenv('LAGO_LICENSE=premium');
+    config(['lago.license' => 'premium']);
     try {
         $result = CreateService::call(
             invoice: $invoice,
@@ -206,7 +206,7 @@ it('rejects non-offset amounts on unpaid prepaid credit invoices', function (): 
             ->and($result->getError())->toBeInstanceOf(App\Services\Failures\MethodNotAllowedFailure::class)
             ->and($result->getError()->code)->toBe('invalid_type_or_status');
     } finally {
-        putenv('LAGO_LICENSE=');
+        config(['lago.license' => null]);
     }
 })->group('ledger:svc:CreditNotes.CreateService');
 

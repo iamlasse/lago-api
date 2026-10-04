@@ -38,6 +38,58 @@ class PaymentProviderCustomer extends BaseModel
         return $this->belongsTo(Customer::class);
     }
 
+    // -- Settings accessors (Rails: SettingsStorable on BaseCustomer) --------
+
+    public function getFromSettings(string $key): mixed
+    {
+        return $this->settings[$key] ?? null;
+    }
+
+    public function pushToSettings(string $key, mixed $value): void
+    {
+        $settings = $this->settings ?? [];
+        $settings[$key] = $value;
+        $this->settings = $settings;
+    }
+
+    /** Rails: StripeCustomer#provider_payment_methods. */
+    public function providerPaymentMethods(): ?array
+    {
+        $methods = $this->getFromSettings('provider_payment_methods');
+
+        return is_array($methods) ? $methods : null;
+    }
+
+    /** Rails: StripeCustomer#provider_payment_methods_with_setup. */
+    public function providerPaymentMethodsWithSetup(): array
+    {
+        $methods = $this->providerPaymentMethods() ?? [];
+
+        return array_values(array_intersect(
+            $methods,
+            ['card', 'sepa_debit', 'us_bank_account', 'bacs_debit', 'link', 'boleto'],
+        ));
+    }
+
+    /** Rails: StripeCustomer#provider_payment_methods_require_setup?. */
+    public function providerPaymentMethodsRequireSetup(): bool
+    {
+        return $this->providerPaymentMethodsWithSetup() !== [];
+    }
+
+    /** Rails: legacy_provider_method_id (settings payment_method_id / provider_mandate_id). */
+    public function legacyProviderMethodId(): ?string
+    {
+        return $this->getFromSettings('payment_method_id')
+            ?? $this->getFromSettings('provider_mandate_id');
+    }
+
+    /** Rails: belongs_to :payment_provider (BaseCustomer). */
+    public function paymentProvider(): BelongsTo
+    {
+        return $this->belongsTo(PaymentProvider::class);
+    }
+
     protected function casts(): array
     {
         return [

@@ -309,11 +309,11 @@ GQL;
 
 function gqlCreditNotesWithLicense(callable $body): void
 {
-    putenv('LAGO_LICENSE=premium');
+    config(['lago.license' => 'premium']);
     try {
         $body();
     } finally {
-        putenv('LAGO_LICENSE=');
+        config(['lago.license' => null]);
     }
 }
 

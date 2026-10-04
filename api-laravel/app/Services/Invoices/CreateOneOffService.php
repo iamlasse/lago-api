@@ -10,6 +10,7 @@ use App\Jobs\SendWebhookJob;
 use App\Services\BaseResult;
 use Illuminate\Support\Facades\DB;
 use App\Enums\InvoicePaymentStatus;
+use App\Jobs\Invoices\GenerateDocumentsJob;
 use App\Services\Customers\UpdateCurrencyService;
 
 /**
@@ -18,13 +19,13 @@ use App\Services\Customers\UpdateCurrencyService;
  * a one-off invoice from payload add-on fees.
  *
  * TODO(port) emission points left at their exact Rails positions:
- * SegmentTrack.invoice_created, GenerateDocumentsJob,
+ * SegmentTrack.invoice_created,
  * Integrations::Aggregator::Invoices::* jobs, Invoices::Payments::CreateService
  * (payments are a later milestone), activity_loggable
  * (invoice.one_off_created), invoice custom sections
  * (Invoices::ApplyInvoiceCustomSectionsService) and the provider-tax
  * deferral branch (totals never fail with UnknownTaxFailure while provider
- * taxation is unported).
+ * taxation is unported). GenerateDocumentsJob (documents + email) is wired.
  */
 class CreateOneOffService extends \App\Services\BaseService
 {
@@ -149,12 +150,17 @@ class CreateOneOffService extends \App\Services\BaseService
             if (! $this->invoice->isClosed()) {
                 // TODO(port): Utils::SegmentTrack.invoice_created after commit.
                 SendWebhookJob::performLater('invoice.one_off_created', $this->invoice);
-                // TODO(port): GenerateDocumentsJob (notify: premium +
-                // billing_entity.email_settings include "invoice.finalized").
+                // Rails: GenerateDocumentsJob.perform_after_commit(invoice:,
+                // notify: should_deliver_email?) — this code runs after the
+                // transaction block closes (the Laravel equivalent of the
+                // after-commit position).
+                GenerateDocumentsJob::dispatch($this->invoice, $this->shouldDeliverEmail());
                 // TODO(port): Integrations::Aggregator::Invoices::CreateJob /
                 // Hubspot::CreateJob when invoice.should_sync_invoice?.
-                // TODO(port): Invoices::Payments::CreateService.call_async unless
-                // invoice.skip_automatic_payment? (payments milestone).
+                if (! $this->invoice->skip_automatic_payment) {
+                    // Rails: Invoices::Payments::CreateService.call_async.
+                    (new Payments\CreateService(invoice: $this->invoice))->callAsync();
+                }
             }
 
             $result->invoice = $this->invoice;
@@ -309,5 +315,19 @@ class CreateOneOffService extends \App\Services\BaseService
         // TODO(port): customer.payment_methods.find_by(id:) — payment
         // methods are a later milestone.
         return $this->paymentMethod = null;
+    }
+
+    /**
+     * Rails: should_deliver_email? — License.premium? && the billing
+     * entity's email settings include "invoice.finalized".
+     */
+    private function shouldDeliverEmail(): bool
+    {
+        return \App\Support\License::premium()
+            && in_array(
+                'invoice.finalized',
+                (array) ($this->billingEntity?->email_settings ?? []),
+                true,
+            );
     }
 }

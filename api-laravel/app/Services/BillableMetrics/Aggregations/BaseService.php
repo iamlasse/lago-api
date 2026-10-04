@@ -137,13 +137,20 @@ abstract class BaseService
         $to = \Carbon\Carbon::parse($withToDatetime);
         $to->microsecond = 0;
 
+        // NOTE: second-precision column comparison — the model bindings
+        // truncate microseconds, so a raw `<=` would silently exclude a
+        // cached row written in the same second as the boundary.
+
         $query = CachedAggregation::query()
             ->where('organization_id', $this->billableMetric()->organization_id)
             ->where('external_subscription_id', $this->billingContext->externalId())
             ->where('charge_id', $this->meteredItem->chargeId())
             ->where('timestamp', '>=', $from)
-            ->where('timestamp', '<=', $to)
-            ->where('grouped_by', $groupedBy !== null && $groupedBy !== [] ? $groupedBy : [])
+            ->whereRaw('date_trunc(\'second\', timestamp) <= ?::timestamp', [$to])
+            // BUGFIX(port): an array binding never matches the jsonb column
+            // (the [] is bound as an empty string) — bind the encoded JSON
+            // string instead.
+            ->where('grouped_by', json_encode($groupedBy !== null && $groupedBy !== [] ? $groupedBy : []))
             ->orderByDesc('timestamp')
             ->orderByDesc('created_at');
 
@@ -176,10 +183,12 @@ abstract class BaseService
 
         $aggregation = $cachedAggregation === null
             ? $totalAggregation
-            : \App\Support\MoneyMath::add(
+            // NOTE: re-normalized — bcadd/bcsub keep the fixed 15-decimal
+            // scale, while the raw store aggregation stays trimmed.
+            : \App\Support\MoneyMath::toDecimalString(\App\Support\MoneyMath::add(
                 \App\Support\MoneyMath::sub($totalAggregation, (string) $cachedAggregation->current_aggregation),
                 (string) $cachedAggregation->max_aggregation,
-            );
+            ));
 
         if (\App\Support\MoneyMath::compare($aggregation, '0') < 0) {
             $aggregation = '0';

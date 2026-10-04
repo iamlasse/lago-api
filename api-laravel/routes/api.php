@@ -11,18 +11,27 @@ use App\Http\Controllers\Api\V1\EventsController;
 use App\Http\Controllers\Api\V1\CouponsController;
 use App\Http\Controllers\Api\V1\WalletsController;
 use App\Http\Controllers\Api\V1\InvoicesController;
+use App\Http\Controllers\Api\V1\PaymentsController;
 use App\Http\Controllers\Api\V1\CustomersController;
+use App\Http\Controllers\Api\V1\CreditNotesController;
 use App\Http\Controllers\Api\V1\OrganizationsController;
 use App\Http\Controllers\Api\V1\Plans\ChargesController;
 use App\Http\Controllers\Api\V1\SubscriptionsController;
 use App\Http\Controllers\Api\V1\AppliedCouponsController;
 use App\Http\Controllers\Api\V1\BillableMetricsController;
+use App\Http\Controllers\Api\V1\PaymentRequestsController;
 use App\Http\Controllers\Api\V1\WebhookEndpointsController;
 use App\Http\Controllers\Api\V1\Plans\FixedChargesController;
 use App\Http\Controllers\Api\V1\WalletTransactionsController;
 use App\Http\Controllers\Api\V1\Plans\Charges\FiltersController;
+use App\Http\Controllers\Api\V1\Customers\UsageController as CustomerUsageController;
 use App\Http\Controllers\Api\V1\Customers\WalletsController as CustomerWalletsController;
+use App\Http\Controllers\Api\V1\Customers\PaymentsController as CustomerPaymentsController;
+use App\Http\Controllers\Api\V1\Customers\CreditNotesController as CustomerCreditNotesController;
 use App\Http\Controllers\Api\V1\Customers\AppliedCouponsController as CustomerAppliedCouponsController;
+use App\Http\Controllers\Api\V1\Customers\PaymentMethodsController as CustomerPaymentMethodsController;
+use App\Http\Controllers\Api\V1\Customers\ProjectedUsageController as CustomerProjectedUsageController;
+use App\Http\Controllers\Api\V1\Customers\PaymentRequestsController as CustomerPaymentRequestsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,12 +47,12 @@ use App\Http\Controllers\Api\V1\Customers\AppliedCouponsController as CustomerAp
 | responses).
 |
 | Not registered yet (dependencies out of scope):
-| - customers usage endpoints (current_usage/projected_usage/past_usage,
-|   checkout_url, portal_url) — the events store is ported (M2 groundwork),
-|   the usage/aggregation services are not yet;
+| - customers usage endpoints (past_usage, checkout_url, portal_url) —
+|   current_usage / projected_usage are registered (the events store +
+|   aggregation services landed); past_usage waits on PastUsageQuery;
 | - the remaining customers nested subresources (invoices, subscriptions,
-|   credit_notes, payments, payment_requests, payment_methods, and the
-|   wallets alerts/metadata subresources).
+|   payments, payment_requests, payment_methods, and the wallets
+|   alerts/metadata subresources).
 */
 
 $sharedApi = function (): void {
@@ -277,16 +286,42 @@ $sharedApi = function (): void {
         // (GeneratePaymentUrlService), consumptions / fundings
         // (WalletTransactionConsumptionsQuery + serializers).
 
+        // -- credit notes -------------------------------------------------------
+        // Keyed by uuid id (Rails: resources :credit_notes — the default
+        // param constraint applies; uuids contain no dots). Member actions
+        // per rest.json: void is PUT (Rails' non-RESTful draw),
+        // download/download_pdf/download_xml are POST; estimate is a
+        // collection POST drawn before the member routes.
+        //
+        // Not registered yet (dependencies do not exist): resend_email
+        // (Emails::ResendService) and the :id/metadata subresource
+        // (Metadata::ItemMetadata is not attached to credit notes yet —
+        // CreditNotes::Create/UpdateService carry TODO(port)s).
+        Route::prefix('credit_notes')->as('credit_notes:')->group(function (): void {
+            Route::get('', [CreditNotesController::class, 'index']);
+            Route::post('', [CreditNotesController::class, 'create']);
+            Route::post('estimate', [CreditNotesController::class, 'estimate']);
+
+            Route::put('{id}/void', [CreditNotesController::class, 'void']);
+            Route::post('{id}/download', [CreditNotesController::class, 'downloadPdf']);
+            Route::post('{id}/download_pdf', [CreditNotesController::class, 'downloadPdf']);
+            Route::post('{id}/download_xml', [CreditNotesController::class, 'downloadXml']);
+
+            Route::get('{id}', [CreditNotesController::class, 'show']);
+            Route::put('{id}', [CreditNotesController::class, 'update']);
+            Route::patch('{id}', [CreditNotesController::class, 'update']);
+        });
+
         // -- customers nested subresources --------------------------------------
         // The external_id segment carries the `.+` constraint (see the
         // customers show/destroy routes below); wallets are keyed by CODE,
         // which is only unique among active wallets.
         //
         // Not registered yet (dependencies do not exist): the invoices,
-        // subscriptions, credit_notes, payments, payment_requests,
-        // payment_methods subresources, the wallets alerts/metadata
-        // subresources, and the applied_coupons destroy route's controller
-        // actions beyond index/destroy themselves (coupons slice).
+        // subscriptions, payments, payment_requests, payment_methods
+        // subresources, the wallets alerts/metadata subresources, and the
+        // applied_coupons destroy route's controller actions beyond
+        // index/destroy themselves (coupons slice).
         Route::prefix('customers/{external_id}')
             ->where(['external_id' => '.+'])
             ->as('customers:')->group(function (): void {
@@ -302,8 +337,49 @@ $sharedApi = function (): void {
 
                 Route::get('applied_coupons', [CustomerAppliedCouponsController::class, 'index']);
                 Route::delete('applied_coupons/{id}', [CustomerAppliedCouponsController::class, 'destroy']);
+
+                Route::get('credit_notes', [CustomerCreditNotesController::class, 'index']);
+
+                // -- customers usage (events store consumers) ----------------------
+                // Rails: get :current_usage / :projected_usage under the
+                // customers nested draw (customers/usage#current and
+                // customers/projected_usage#current). past_usage stays
+                // unregistered (PastUsageQuery — later slice).
+                Route::get('current_usage', [CustomerUsageController::class, 'current']);
+                Route::get('projected_usage', [CustomerProjectedUsageController::class, 'current']);
             });
 
+        // -- payments / payment_requests / payment_methods -----------------------
+        // (Rails: shared_api `resources :payments, only: %i[create index show]`,
+        // `resources :payment_requests, only: %i[create index show]`, and the
+        // customers-nested payments / payment_requests / payment_methods
+        // subresources.) Registered as a distinct appended block; payment
+        // receipts / invoices payment_url / retry_payment / wallet
+        // transactions payment_url live with their own slices.
+        Route::prefix('payments')->as('payments:')->group(function (): void {
+            Route::post('', [PaymentsController::class, 'create']);
+            Route::get('', [PaymentsController::class, 'index']);
+            Route::get('{id}', [PaymentsController::class, 'show']);
+        });
+
+        Route::prefix('payment_requests')->as('payment_requests:')->group(function (): void {
+            Route::post('', [PaymentRequestsController::class, 'create']);
+            Route::get('', [PaymentRequestsController::class, 'index']);
+            Route::get('{id}', [PaymentRequestsController::class, 'show']);
+        });
+
+        Route::prefix('customers/{external_id}')
+            ->where(['external_id' => '.+'])
+            ->as('customers.payments:')->group(function (): void {
+                Route::get('payments', [CustomerPaymentsController::class, 'index']);
+                Route::get('payment_requests', [CustomerPaymentRequestsController::class, 'index']);
+
+                Route::prefix('payment_methods')->as('payment_methods:')->group(function (): void {
+                    Route::get('', [CustomerPaymentMethodsController::class, 'index']);
+                    Route::delete('{id}', [CustomerPaymentMethodsController::class, 'destroy']);
+                    Route::put('{id}/set_as_default', [CustomerPaymentMethodsController::class, 'setAsDefault']);
+                });
+            });
         // customers and subscriptions are looked up by external_id, which
         // may contain dots. Rails constrains those params with /[^\/]+/ (a
         // bare :external_id would truncate the value at the format
@@ -312,6 +388,7 @@ $sharedApi = function (): void {
             ->where('external_id', '.+');
         Route::delete('customers/{external_id}', [CustomersController::class, 'destroy'])
             ->where('external_id', '.+');
+
     });
 };
 

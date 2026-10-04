@@ -139,10 +139,8 @@ class UpdateService extends \App\Services\BaseService
 
     /**
      * When the invoice is settled, cancel any still-open hosted checkout
-     * session.
-     *
-     * TODO(port): PaymentIntents::ExpireJob (payment intents are unported —
-     * no open session can exist).
+     * session (Rails: PaymentIntents::ExpireJob.perform_after_commit when a
+     * active intent exists).
      */
     private function expireOpenCheckoutUrls(?InvoicePaymentStatus $oldPaymentStatus, ?InvoicePaymentStatus $paymentStatus): void
     {
@@ -154,8 +152,11 @@ class UpdateService extends \App\Services\BaseService
             return;
         }
 
-        // TODO(port): PaymentIntent.active.exists?(invoice:) ->
-        // PaymentIntents::ExpireJob.perform_after_commit(invoice).
+        if (! \App\Models\PaymentIntent::query()->where('status', 0)->where('invoice_id', $this->invoice->id)->exists()) {
+            return;
+        }
+
+        \App\Jobs\PaymentIntentsExpireJob::dispatch($this->invoice);
     }
 
     /** TODO(port): Invoices::UpdateFeesPaymentStatusJob. */

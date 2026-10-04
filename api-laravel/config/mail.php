@@ -16,7 +16,10 @@ return [
     |
     */
 
-    'default' => env('MAIL_MAILER', 'log'),
+    'default' => env(
+        'MAIL_MAILER',
+        filled(env('LAGO_SMTP_ADDRESS')) ? 'lago_smtp' : 'log',
+    ),
 
     /*
     |--------------------------------------------------------------------------
@@ -38,6 +41,35 @@ return [
     */
 
     'mailers' => [
+
+        /*
+        |----------------------------------------------------------------------
+        | Lago SMTP — the LAGO_SMTP_* env contract
+        |----------------------------------------------------------------------
+        |
+        | Port of the ActionMailer SMTP configuration Rails applies when
+        | LAGO_SMTP_ADDRESS is present (config/environments/*.rb +
+        | Lago::SmtpConfig): LAGO_SMTP_PORT / _DOMAIN / _USERNAME / _PASSWORD /
+        | _AUTHENTICATION (login by default; none/disabled drop auth) /
+        | _ENABLE_STARTTLS_AUTO. Selected as the default mailer when
+        | LAGO_SMTP_ADDRESS is set and MAIL_MAILER is not.
+        */
+
+        'lago_smtp' => [
+            'transport' => 'smtp',
+            'host' => env('LAGO_SMTP_ADDRESS'),
+            'port' => env('LAGO_SMTP_PORT', 587),
+            'username' => filled(env('LAGO_SMTP_AUTHENTICATION'))
+                && in_array(mb_strtolower((string) env('LAGO_SMTP_AUTHENTICATION')), ['none', 'disabled'], true)
+                ? null
+                : env('LAGO_SMTP_USERNAME'),
+            'password' => filled(env('LAGO_SMTP_AUTHENTICATION'))
+                && in_array(mb_strtolower((string) env('LAGO_SMTP_AUTHENTICATION')), ['none', 'disabled'], true)
+                ? null
+                : env('LAGO_SMTP_PASSWORD'),
+            'timeout' => null,
+            'local_domain' => env('LAGO_SMTP_DOMAIN', parse_url((string) env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
+        ],
 
         'smtp' => [
             'transport' => 'smtp',

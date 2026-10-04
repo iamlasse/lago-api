@@ -67,8 +67,7 @@ it('creates a customer', function (): void {
 });
 
 it('creates a customer with premium features', function (): void {
-    putenv('LAGO_LICENSE=premium-license-token');
-    $_ENV['LAGO_LICENSE'] = 'premium-license-token';
+    config(['lago.license' => 'premium-license-token']);
 
     try {
         [$organization, $apiKey] = customerOrganization();
@@ -81,8 +80,8 @@ it('creates a customer with premium features', function (): void {
             ->assertOk()
             ->assertJsonPath('customer.timezone', 'America/New_York');
     } finally {
-        putenv('LAGO_LICENSE');
-        unset($_ENV['LAGO_LICENSE']);
+        config(['lago.license' => null]);
+
     }
 });
 
@@ -98,8 +97,7 @@ it('creates a customer with finalize_zero_amount_invoice', function (): void {
 });
 
 it('creates a customer with account_type partner when premium revenue_share', function (): void {
-    putenv('LAGO_LICENSE=premium-license-token');
-    $_ENV['LAGO_LICENSE'] = 'premium-license-token';
+    config(['lago.license' => 'premium-license-token']);
 
     try {
         [$organization, $apiKey] = customerOrganization();
@@ -124,8 +122,8 @@ it('creates a customer with account_type partner when premium revenue_share', fu
                     ->etc();
             });
     } finally {
-        putenv('LAGO_LICENSE');
-        unset($_ENV['LAGO_LICENSE']);
+        config(['lago.license' => null]);
+
     }
 });
 

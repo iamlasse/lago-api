@@ -55,7 +55,7 @@
       "method": "POST",
       "path": "/graphql",
       "headers": {
-        "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxYTRhMGQ2ZS0wMDAwLTQwMDAtODAwMC0wMDAwMDAwMDAwMDIiLCJleHAiOjE3NDg3OTAwMDB9.iVxkLZ1puVJ4TpCmVD-OqUpEy28VIKDtOcub2JMxXk0",
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxYTRhMGQ2ZS0wMDAwLTQwMDAtODAwMC0wMDAwMDAwMDAwMDIiLCJleHAiOjE3NDg3OTAwMDB9.-0eZuy2tPNaN1IgAnOAqy1TWv2bMEeIs-I82jc8gsHo",
         "Content-Type": "application/json"
       },
       "body": {

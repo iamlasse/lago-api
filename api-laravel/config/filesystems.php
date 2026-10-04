@@ -62,6 +62,62 @@ return [
             'report' => false,
         ],
 
+        /*
+        |----------------------------------------------------------------------
+        | Lago document storage — the ActiveStorage service adapters
+        |----------------------------------------------------------------------
+        |
+        | Port of Rails' config/storage.yml services and the per-environment
+        | selection (LAGO_USE_AWS_S3 / LAGO_AWS_S3_ENDPOINT / LAGO_USE_GCS,
+        | resolved in App\Support\ActiveStorage::diskName()). Rails' local
+        | service roots at Rails.root/storage; the test service at tmp/storage.
+        */
+
+        'lago_local' => [
+            'driver' => 'local',
+            'root' => storage_path('app/active-storage'),
+            'throw' => false,
+            'report' => false,
+        ],
+
+        'lago_test' => [
+            'driver' => 'local',
+            'root' => storage_path('app/lago-test-storage'),
+            'throw' => false,
+            'report' => false,
+        ],
+
+        'lago_s3' => [
+            'driver' => 's3',
+            'key' => env('LAGO_AWS_S3_ACCESS_KEY_ID'),
+            'secret' => env('LAGO_AWS_S3_SECRET_ACCESS_KEY'),
+            'region' => env('LAGO_AWS_S3_REGION'),
+            'bucket' => env('LAGO_AWS_S3_BUCKET'),
+            'throw' => false,
+            'report' => false,
+        ],
+
+        'lago_s3_compatible' => [
+            'driver' => 's3',
+            'key' => env('LAGO_AWS_S3_ACCESS_KEY_ID'),
+            'secret' => env('LAGO_AWS_S3_SECRET_ACCESS_KEY'),
+            'region' => env('LAGO_AWS_S3_REGION'),
+            'bucket' => env('LAGO_AWS_S3_BUCKET'),
+            'endpoint' => env('LAGO_AWS_S3_ENDPOINT'),
+            'use_path_style_endpoint' => env('LAGO_AWS_S3_PATH_STYLE', false),
+            'throw' => false,
+            'report' => false,
+        ],
+
+        'lago_gcs' => [
+            'driver' => 'gcs',
+            'key_file_path' => env('LAGO_GCS_KEYFILE_JSON_PATH', base_path('gcs_keyfile.json')),
+            'project_id' => env('LAGO_GCS_PROJECT'),
+            'bucket' => env('LAGO_GCS_BUCKET'),
+            'throw' => false,
+            'report' => false,
+        ],
+
     ],
 
     /*

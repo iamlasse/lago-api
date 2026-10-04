@@ -10,6 +10,7 @@ use App\Enums\InvoiceStatus;
 use Illuminate\Http\Request;
 use App\Services\Invoices\Query;
 use Illuminate\Http\JsonResponse;
+use App\Jobs\Invoices\GeneratePdfJob;
 use App\Services\Invoices\VoidService;
 use App\Services\Invoices\RetryService;
 use App\Services\Invoices\DeleteService;
@@ -195,13 +196,12 @@ class InvoicesController extends ApiController
             throw new NotFoundException('invoice');
         }
 
-        if ($invoice->file !== null && $invoice->file !== '') {
+        if ($invoice->hasFile()) {
             return $this->renderInvoice($invoice);
         }
 
-        // TODO(port): Invoices::GeneratePdfJob (Gotenberg) then head(:ok) —
-        // the PDF pipeline is a later milestone; answer head(:ok) without
-        // enqueueing.
+        // Rails: Invoices::GeneratePdfJob.perform_later(invoice) then head(:ok).
+        GeneratePdfJob::dispatch($invoice);
 
         return response()->json(null, 200);
     }
@@ -214,12 +214,14 @@ class InvoicesController extends ApiController
             throw new NotFoundException('invoice');
         }
 
-        if ($invoice->xml_file !== null && $invoice->xml_file !== '') {
+        if ($invoice->hasXmlFile()) {
             return $this->renderInvoice($invoice);
         }
 
-        // TODO(port): Invoices::GenerateXmlJob then head(:ok) — the XML
-        // pipeline is a later milestone.
+        // Rails: Invoices::GenerateXmlJob.perform_later(invoice) then
+        // head(:ok). TODO(port): the XML renderer (EInvoices UBL) is not
+        // ported, so nothing is enqueued yet — the endpoint keeps answering
+        // the ok-without-file shape Rails answers while the file is missing.
 
         return response()->json(null, 200);
     }

@@ -126,7 +126,9 @@ class SubscriptionService extends \App\Services\BaseService
         }
 
         if ($this->subscriptionGated()) {
-            // TODO(port): Invoices::Payments::CreateService.call_async.
+            // Rails: Invoices::Payments::CreateService.call_async — payment
+            // attempts stay gated until the subscription activates.
+            (new Payments\CreateService(invoice: $invoice))->callAsync();
         } elseif ($this->gracePeriod($invoice)) {
             // TODO(port): SendWebhookJob "invoice.drafted" + activity log
             // + notify_ready_to_finalize when not tax pending.
@@ -134,7 +136,8 @@ class SubscriptionService extends \App\Services\BaseService
             // We don't need to send the webhooks if the invoice was closed
             // (skip 0 invoice setting).
             // TODO(port): SendWebhookJob "invoice.created" + activity log +
-            // GenerateDocumentsJob + integrations syncs + payments + Segment.
+            // GenerateDocumentsJob + integrations syncs + Segment.
+            (new Payments\CreateService(invoice: $invoice))->callAsync();
         }
 
         return $result;

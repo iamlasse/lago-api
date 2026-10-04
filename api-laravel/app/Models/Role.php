@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Casts\PostgresArray;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -29,7 +30,9 @@ class Role extends BaseModel
     {
         return [
             'admin' => 'boolean',
-            'permissions' => 'array',
+            // Frozen column is varchar[] — the JSON 'array' cast writes a
+            // malformed array literal.
+            'permissions' => PostgresArray::class,
         ];
     }
 }

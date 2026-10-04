@@ -30,16 +30,9 @@ use function array_key_exists;
  *   slice).
  * - BillingObjectConnections::AttachToResourceService — the
  *   multi_connection forbidden check and connection attach are skipped.
- * - schedule_top_up: Rails enqueues WalletTransactions::CreateJob with
- *   paid_credits / granted_credits after commit (the initial top-up of the
- *   wallet, and the recurring rule's first grant). THE INTEGRATION SEAM:
- *   once WalletTransactions::CreateJob exists, call it here with
- *   transaction_params = {wallet_id, paid_credits, granted_credits,
- *   source: manual, metadata: params[transaction_metadata],
- *   name: params[transaction_name], priority: params[transaction_priority],
- *   ignore_paid_top_up_limits:
- *   params[ignore_paid_top_up_limits_on_creation], purchase_order_number:
- *   rule&.resolved_purchase_order_number || wallet.purchase_order_number}.
+ * - schedule_top_up: wired — WalletTransactions\CreateJob carries the
+ *   initial paid_credits / granted_credits after commit (the recurring
+ *   rule's first grant waits on RecurringTransactionRules::CreateService).
  * - activity_loggable middleware.
  */
 class CreateService extends BaseService
@@ -187,8 +180,11 @@ class CreateService extends BaseService
             // (same as the other ported services).
             \App\Jobs\SendWebhookJob::performLater('wallet.created', $wallet);
 
-            // TODO(port): schedule_top_up — see the class docblock (THE
-            // INTEGRATION SEAM for the wallet-creation top-up).
+            // Rails: schedule_top_up — WalletTransactions::CreateJob
+            // .perform_after_commit(organization_id:, params:) with the
+            // initial paid/granted credits (the recurring rule's first grant
+            // waits on RecurringTransactionRules::CreateService).
+            $this->scheduleTopUp($wallet);
 
             return $result;
         } catch (\App\Services\Failures\FailedResult $e) {
@@ -204,6 +200,37 @@ class CreateService extends BaseService
         }
 
         return Str::slug($name, '_');
+    }
+
+    /** Rails: `schedule_top_up` — enqueues the wallet's initial top-up. */
+    private function scheduleTopUp(Wallet $wallet): void
+    {
+        $paidCredits = $this->paidCredits();
+        $grantedCredits = $this->grantedCredits();
+
+        $positive = fn (mixed $amount): bool => $amount !== null
+            && $amount !== ''
+            && bccomp((string) $amount, '0', 5) === 1;
+
+        if (! $positive($paidCredits) && ! $positive($grantedCredits)) {
+            return;
+        }
+
+        \App\Jobs\WalletTransactions\CreateJob::dispatch(
+            organizationId: (string) $this->params['organization_id'],
+            params: [
+                'wallet_id' => $wallet->id,
+                'paid_credits' => $paidCredits,
+                'granted_credits' => $grantedCredits,
+                'source' => 'manual',
+                'metadata' => $this->params['transaction_metadata'] ?? null,
+                'name' => $this->params['transaction_name'] ?? null,
+                'priority' => $this->params['transaction_priority'] ?? null,
+                'ignore_paid_top_up_limits' => $this->params['ignore_paid_top_up_limits_on_creation'] ?? null,
+                // TODO(port): recurring_transaction_rule&.resolved_purchase_order_number.
+                'purchase_order_number' => $wallet->purchase_order_number,
+            ],
+        );
     }
 
     private function valid(BaseResult $result): bool

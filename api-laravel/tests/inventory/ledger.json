@@ -4760,11 +4760,13 @@
             "source": "app/jobs/bill_paid_credit_job.rb",
             "laravel": "App\\Jobs\\BillPaidCreditJob",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Invoices/PaidCreditServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -5220,11 +5222,13 @@
             "source": "app/jobs/clock/refresh_wallets_ongoing_balance_job.rb",
             "laravel": "App\\Jobs\\Clock\\RefreshWalletsOngoingBalanceJob",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Jobs/RefreshWalletsChainTest.php"
+            ],
             "notes": ""
         },
         {
@@ -5486,11 +5490,13 @@
             "source": "app/jobs/customers/refresh_wallet_job.rb",
             "laravel": "App\\Jobs\\Customers\\RefreshWalletJob",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Jobs/RefreshWalletsChainTest.php"
+            ],
             "notes": ""
         },
         {
@@ -6434,11 +6440,13 @@
             "source": "app/jobs/events/pay_in_advance_job.rb",
             "laravel": "App\\Jobs\\Events\\PayInAdvanceJob",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Events/PayInAdvanceServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -6482,11 +6490,13 @@
             "source": "app/jobs/fees/create_pay_in_advance_job.rb",
             "laravel": "App\\Jobs\\Fees\\CreatePayInAdvanceJob",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Events/PayInAdvanceServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -6866,11 +6876,13 @@
             "source": "app/jobs/invoices/create_pay_in_advance_charge_job.rb",
             "laravel": "App\\Jobs\\Invoices\\CreatePayInAdvanceChargeJob",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Events/PayInAdvanceServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -7918,11 +7930,13 @@
             "source": "app/jobs/wallet_transactions/create_job.rb",
             "laravel": "App\\Jobs\\WalletTransactions\\CreateJob",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Jobs/WalletTransactionsCreateJobTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9420,11 +9434,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Customers\\UsageController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/CustomersUsageControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9504,11 +9520,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Customers\\ProjectedUsageController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/CustomersUsageControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -16522,11 +16540,14 @@
             "source": "app/serializers/v1/customers/charge_usage_serializer.rb",
             "laravel": "App\\Serializers\\V1\\Customers\\ChargeUsageSerializer",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Invoices/CustomerUsageServiceTest.php",
+                "tests/Feature/Api/V1/CustomersUsageControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -16584,11 +16605,14 @@
             "source": "app/serializers/v1/customers/projected_usage_serializer.rb",
             "laravel": "App\\Serializers\\V1\\Customers\\ProjectedUsageSerializer",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Invoices/CustomerUsageServiceTest.php",
+                "tests/Feature/Api/V1/CustomersUsageControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -16596,11 +16620,14 @@
             "source": "app/serializers/v1/customers/usage_serializer.rb",
             "laravel": "App\\Serializers\\V1\\Customers\\UsageSerializer",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Invoices/CustomerUsageServiceTest.php",
+                "tests/Feature/Api/V1/CustomersUsageControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -20352,11 +20379,13 @@
             "source": "app/services/customers/refresh_wallets_service.rb",
             "laravel": "App\\Services\\Customers\\RefreshWalletsService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Jobs/RefreshWalletsChainTest.php"
+            ],
             "notes": ""
         },
         {
@@ -21388,11 +21417,13 @@
             "source": "app/services/events/pay_in_advance_service.rb",
             "laravel": "App\\Services\\Events\\PayInAdvanceService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Events/PayInAdvanceServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -21854,11 +21885,13 @@
             "source": "app/services/fees/create_pay_in_advance_service.rb",
             "laravel": "App\\Services\\Fees\\CreatePayInAdvanceService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Events/PayInAdvanceServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -21990,11 +22023,13 @@
             "source": "app/services/fees/paid_credit_service.rb",
             "laravel": "App\\Services\\Fees\\PaidCreditService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Invoices/PaidCreditServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -22002,11 +22037,13 @@
             "source": "app/services/fees/projection_service.rb",
             "laravel": "App\\Services\\Fees\\ProjectionService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Invoices/CustomerUsageServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -24276,11 +24313,13 @@
             "source": "app/services/invoices/create_pay_in_advance_charge_service.rb",
             "laravel": "App\\Services\\Invoices\\CreatePayInAdvanceChargeService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Events/PayInAdvanceServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -24300,11 +24339,13 @@
             "source": "app/services/invoices/customer_usage_service.rb",
             "laravel": "App\\Services\\Invoices\\CustomerUsageService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Invoices/CustomerUsageServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -24453,11 +24494,13 @@
             "source": "app/services/invoices/paid_credit_service.rb",
             "laravel": "App\\Services\\Invoices\\PaidCreditService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Invoices/PaidCreditServiceTest.php"
+            ],
             "notes": ""
         },
         {

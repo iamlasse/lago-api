@@ -50,6 +50,9 @@ class AuthOrgTest extends ContractCase
     {
         // The manifest's request #4 carries the token Rails minted under the
         // frozen clock; Laravel must decode it with the shared SECRET_KEY_BASE.
+        // The captured token is expired in wall-clock time — rewind first.
+        $this->rewindTime();
+
         $request = $this->manifest['requests'][3];
         $header = $request['headers']['Authorization'] ?? '';
 
@@ -105,6 +108,25 @@ class AuthOrgTest extends ContractCase
             self::ORGANIZATION_ID,
             $decoded['data']['currentUser']['organizations'][0]['id'] ?? null
         );
+    }
+
+    /**
+     * The manifest's request #4 carries the Authorization header Rails
+     * captured — a token minted at capture time under the then-current
+     * SECRET_KEY_BASE and frozen clock. The replay must use the token THIS
+     * run's request #3 (loginUser) minted instead.
+     */
+    protected function substituteRequestValues(array $request, int $oneBasedIndex, array $responses): array
+    {
+        if ($oneBasedIndex === 4) {
+            $login = $responses[3]?->json('data.loginUser.token');
+
+            if (is_string($login) && $login !== '') {
+                $request['headers']['Authorization'] = 'Bearer '.$login;
+            }
+        }
+
+        return $request;
     }
 
     /**

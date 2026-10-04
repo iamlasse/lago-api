@@ -11,6 +11,7 @@ use App\Models\Organization;
 use Illuminate\Support\Facades\DB;
 use App\Enums\InvoicePaymentStatus;
 use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Storage;
 
 uses()->group(
     'ledger:rest:POST:/api/v1/invoices',
@@ -617,14 +618,49 @@ it('returns method_not_allowed with invalid_status when retrying a non-failed in
 
 // -- POST /api/v1/invoices/:id/download_pdf (+ /download alias) and /download_xml
 
-it('answers ok and does not regenerate when the pdf is missing (TODO(port) Gotenberg)', function (string $route): void {
+it('answers ok and enqueues GeneratePdfJob when the pdf is missing', function (string $route): void {
+    Queue::fake();
+
     [$organization, $apiKey] = invoicesOrganization();
     $customer = Customer::factory()->create(['organization_id' => $organization->id]);
     $invoice = Invoice::factory()->create(['customer_id' => $customer->id, 'organization_id' => $organization->id]);
 
     $this->postJson("/api/v1/invoices/{$invoice->id}/{$route}", [], ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk();
+
+    Queue::assertPushed(App\Jobs\Invoices\GeneratePdfJob::class, fn ($job) => $job->invoice->is($invoice));
 })->with(['download', 'download_pdf']);
+
+it('returns the invoice with file_url when the pdf is attached', function (): void {
+    [$organization, $apiKey] = invoicesOrganization();
+    $customer = Customer::factory()->create(['organization_id' => $organization->id]);
+    $invoice = Invoice::factory()->create(['customer_id' => $customer->id, 'organization_id' => $organization->id]);
+
+    Storage::fake('lago_test');
+    App\Support\ActiveStorage::attach($invoice, 'file', '%PDF-fake', $invoice->number.'.pdf', 'application/pdf');
+
+    Queue::fake();
+
+    $this->postJson("/api/v1/invoices/{$invoice->id}/download_pdf", [], ['Authorization' => 'Bearer '.$apiKey->value])
+        ->assertOk()
+        ->assertJsonPath('invoice.lago_id', $invoice->id)
+        ->assertJsonPath('invoice.file_url', $invoice->fileUrl());
+
+    Queue::assertNothingPushed();
+});
+
+it('answers ok without enqueueing for download_xml while the XML renderer is unported', function (): void {
+    Queue::fake();
+
+    [$organization, $apiKey] = invoicesOrganization();
+    $customer = Customer::factory()->create(['organization_id' => $organization->id]);
+    $invoice = Invoice::factory()->create(['customer_id' => $customer->id, 'organization_id' => $organization->id]);
+
+    $this->postJson("/api/v1/invoices/{$invoice->id}/download_xml", [], ['Authorization' => 'Bearer '.$apiKey->value])
+        ->assertOk();
+
+    Queue::assertNothingPushed();
+});
 
 it('returns not_found for a draft invoice pdf download', function (): void {
     [$organization, $apiKey] = invoicesOrganization();

@@ -41,7 +41,7 @@ final class UniqueCountService extends BaseService
         $aggregation = $this->ceilTo5((string) $this->eventStore->uniqueCount()->value);
 
         $currentUsageUnits = null;
-        if ($this->options()['is_pay_in_advance'] && $this->options()['is_current_usage']) {
+        if (($this->options()['is_pay_in_advance'] ?? false) && ($this->options()['is_current_usage'] ?? false)) {
             $adjusted = $this->handleInAdvanceCurrentUsage($aggregation);
             $aggregation = $adjusted->aggregation;
             $currentUsageUnits = $adjusted->currentUsageUnits;

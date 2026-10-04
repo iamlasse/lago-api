@@ -32,5 +32,7 @@ function gqlCreateMembership(User $user, Organization $organization, int $status
 
 function gqlPost(string $query, array $variables = [], array $headers = []): Illuminate\Testing\TestResponse
 {
+    // Rails parity: the GraphQL engine answers at /graphql
+    // (config/routes.rb: post '/graphql').
     return test()->postJson('/graphql', ['query' => $query, 'variables' => $variables], $headers);
 }

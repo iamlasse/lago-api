@@ -8,6 +8,7 @@ use App\Models\Invoice;
 use App\Jobs\SendWebhookJob;
 use App\Services\BaseResult;
 use Illuminate\Support\Facades\DB;
+use App\Jobs\Invoices\GenerateDocumentsJob;
 
 /**
  * Port of Rails' Invoices::RefreshDraftAndFinalizeService
@@ -17,9 +18,9 @@ use Illuminate\Support\Facades\DB;
  *
  * TODO(port) emission points left at their exact Rails positions:
  * credit-note finalization + webhooks (credit notes unported),
- * GenerateDocumentsJob, Integrations::Aggregator jobs,
- * Invoices::Payments::CreateService, Utils::SegmentTrack /
- * ActivityLog and error-details cleanup.
+ * Integrations::Aggregator jobs, Invoices::Payments::CreateService,
+ * Utils::SegmentTrack / ActivityLog and error-details cleanup.
+ * GenerateDocumentsJob (documents + email) is wired.
  */
 class RefreshDraftAndFinalizeService extends \App\Services\BaseService
 {
@@ -115,9 +116,12 @@ class RefreshDraftAndFinalizeService extends \App\Services\BaseService
         if ($invoice !== null && ! $invoice->isClosed()) {
             // TODO(port): clear_invoice_generation_errors.
             SendWebhookJob::performLater('invoice.created', $invoice);
+            // Rails: GenerateDocumentsJob.perform_later(invoice:, notify:
+            // should_deliver_email?) — premium license + the billing entity's
+            // "invoice.finalized" email setting.
+            GenerateDocumentsJob::dispatch($invoice, $this->shouldDeliverEmail($invoice));
             // TODO(port): Utils::ActivityLog.produce(invoice, "invoice.created"),
-            // GenerateDocumentsJob (notify: premium + billing entity email
-            // settings), aggregator create jobs,
+            // aggregator create jobs,
             // Invoices::Payments::CreateService.call_async and
             // Utils::SegmentTrack.invoice_created.
         }
@@ -126,6 +130,20 @@ class RefreshDraftAndFinalizeService extends \App\Services\BaseService
         // finalized credit note.
 
         return $result;
+    }
+
+    /**
+     * Rails: should_deliver_email? — License.premium? && the billing
+     * entity's email settings include "invoice.finalized".
+     */
+    private function shouldDeliverEmail(Invoice $invoice): bool
+    {
+        return \App\Support\License::premium()
+            && in_array(
+                'invoice.finalized',
+                (array) ($invoice->billingEntity?->email_settings ?? []),
+                true,
+            );
     }
 
     /**

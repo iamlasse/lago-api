@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Enums\InvoiceType;
 use App\Enums\InvoiceStatus;
 use App\Enums\InvoiceTaxStatus;
+use App\Enums\SubscriptionStatus;
 use App\Models\Concerns\Sequenced;
 use Illuminate\Support\Facades\DB;
 use App\Enums\InvoicePaymentStatus;
@@ -23,7 +24,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 /**
  * Port of Rails' Invoice (app/models/invoice.rb) for the billing pipeline.
  *
- * Not ported (TODO(port)): attachments (file/xml_file), PaperTrail trace,
+ * Attachments (file / xml_file) go through App\Support\ActiveStorage (the
+ * ActiveStorage blobs/attachments rows + a filesystem disk), mirroring
+ * Rails' has_one_attached. Not ported (TODO(port)): PaperTrail trace,
  * Ransack search, credit-note offsets precalculation, payment requests,
  * usage thresholds, invoice custom sections, error details, activity logs.
  */
@@ -189,6 +192,36 @@ class Invoice extends BaseModel
     public function taxes(): BelongsToMany
     {
         return $this->belongsToMany(Tax::class, 'invoices_taxes', 'invoice_id', 'tax_id');
+    }
+
+    // -- ActiveStorage attachments (file / xml_file) --------------------------
+
+    /** Rails: `invoice.file.attached?`. */
+    public function hasFile(): bool
+    {
+        return \App\Support\ActiveStorage::blob($this, \App\Support\ActiveStorage::FILE) !== null;
+    }
+
+    /** Rails: `invoice.xml_file.attached?`. */
+    public function hasXmlFile(): bool
+    {
+        return \App\Support\ActiveStorage::blob($this, \App\Support\ActiveStorage::XML_FILE) !== null;
+    }
+
+    /** Port of Invoice#file_url. */
+    public function fileUrl(): ?string
+    {
+        return \App\Support\ActiveStorage::url(
+            \App\Support\ActiveStorage::blob($this, \App\Support\ActiveStorage::FILE),
+        );
+    }
+
+    /** Port of Invoice#xml_url. */
+    public function xmlUrl(): ?string
+    {
+        return \App\Support\ActiveStorage::url(
+            \App\Support\ActiveStorage::blob($this, \App\Support\ActiveStorage::XML_FILE),
+        );
     }
 
     // -- Status helpers (Rails enum predicates) -------------------------------
@@ -591,6 +624,41 @@ class Invoice extends BaseModel
             InvoiceStatus::Closed->value,
             InvoiceStatus::Deleted->value,
         ]);
+    }
+
+    /** Rails: `scope :ready_to_be_refreshed, -> { draft.where(ready_to_be_refreshed: true) }`. */
+    #[Scope]
+    protected function readyToBeRefreshed(Builder $query): Builder
+    {
+        return $query
+            ->where('status', InvoiceStatus::Draft->value)
+            ->where('ready_to_be_refreshed', true);
+    }
+
+    /**
+     * Rails: `scope :ready_to_be_finalized,
+     *   -> { draft.where("COALESCE(expected_finalization_date, issuing_date) <= ?", Time.current.to_date) }`.
+     */
+    #[Scope]
+    protected function readyToBeFinalized(Builder $query): Builder
+    {
+        return $query
+            ->where('status', InvoiceStatus::Draft->value)
+            ->whereRaw('coalesce(expected_finalization_date, issuing_date) <= ?', [now()->toDateString()]);
+    }
+
+    /**
+     * Rails: `scope :with_active_subscriptions, -> { joins(:subscriptions)
+     *   .where(subscriptions: {status: "active"}).distinct }` — the EXISTS
+     * shape filters identically without clobbering the invoice columns a
+     * join would.
+     */
+    #[Scope]
+    protected function withActiveSubscriptions(Builder $query): Builder
+    {
+        return $query->whereHas('subscriptions', function (Builder $query): void {
+            $query->where('subscriptions.status', SubscriptionStatus::Active->value);
+        });
     }
 
     /**

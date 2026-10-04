@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Support\License;
 use App\Support\CurrentContext;
 use App\Services\Failures\FailedResult;
 
@@ -83,7 +84,7 @@ abstract class BaseService
      */
     protected function premium(): bool
     {
-        return env('LAGO_LICENSE') !== null && env('LAGO_LICENSE') !== '';
+        return License::premium();
     }
 
     /**

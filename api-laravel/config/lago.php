@@ -51,8 +51,20 @@ return [
     // LagoUtils::License — premium feature gate (api_permissions etc.)
     'license' => env('LAGO_LICENSE'),
 
+    // ENV.fetch("LAGO_DISABLE_SIGNUP", "false") == "true" gate in
+    // UsersService#register (app/services/users_service.rb).
+    'signup_disabled' => env('LAGO_DISABLE_SIGNUP', 'false') === 'true',
+
     // app/services/utils/pdf_generator.rb (Gotenberg)
     'pdf_url' => env('LAGO_PDF_URL'),
+
+    // app/mailers/invoice_mailer.rb (from_email_address fallback) and the
+    // LAGO_FROM_EMAIL-anchored mailers (organization/api_key/password_reset).
+    'from_email' => env('LAGO_FROM_EMAIL'),
+
+    // Invoices::GeneratePdfService#should_generate_pdf? /
+    // ApplicationMailer#set_shared_variables (@pdfs_enabled).
+    'disable_pdf_generation' => env('LAGO_DISABLE_PDF_GENERATION', false),
 
     'webhook' => [
         // app/services/webhooks/send_http_service.rb

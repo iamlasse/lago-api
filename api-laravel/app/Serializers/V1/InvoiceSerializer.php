@@ -14,7 +14,8 @@ use App\Serializers\V1\Concerns\FormatsDatetime;
  *
  * TODO(port) includes, waiting on models not yet in the Laravel port:
  * metadata (Metadata::InvoiceMetadata), error_details, applied_usage_thresholds,
- * applied_invoice_custom_sections, payments; file_url / xml_url (ActiveStorage).
+ * applied_invoice_custom_sections, payments. file_url / xml_url go through
+ * the ActiveStorage port (App\Support\ActiveStorage).
  */
 class InvoiceSerializer extends ModelSerializer
 {
@@ -54,8 +55,8 @@ class InvoiceSerializer extends ModelSerializer
             'prepaid_credit_amount_cents' => $model->prepaid_credit_amount_cents,
             'prepaid_granted_credit_amount_cents' => $model->prepaid_granted_credit_amount_cents,
             'prepaid_purchased_credit_amount_cents' => $model->prepaid_purchased_credit_amount_cents,
-            'file_url' => null,
-            'xml_url' => null,
+            'file_url' => $model->fileUrl(),
+            'xml_url' => $model->xmlUrl(),
             'web_url' => $model->webUrl(),
             'version_number' => $model->version_number,
             'self_billed' => $model->self_billed,

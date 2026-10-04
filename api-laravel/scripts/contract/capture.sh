@@ -69,6 +69,10 @@ PG_USER="${PG_USER:-postgres}"
 PG_HOST_PORT="${PG_HOST_PORT:-5433}"
 REDIS_URL="${REDIS_URL:-redis://host.docker.internal:6379/9}"
 
+# The replay runs under phpunit, whose env pins SECRET_KEY_BASE to a fixed
+# test value — Rails must sign with THAT so captured tokens verify in the
+# Laravel test env. Falls back to .env for out-of-phpunit replays.
+SECRET_KEY_BASE="${SECRET_KEY_BASE:-$(grep -oE 'SECRET_KEY_BASE" value="[^"]+"' "${API_LARAVEL_DIR}/phpunit.xml" 2>/dev/null | head -1 | sed -E 's/.*value="([^"]+)".*/\1/')}"
 SECRET_KEY_BASE="${SECRET_KEY_BASE:-$(grep -E '^SECRET_KEY_BASE=' "${API_LARAVEL_DIR}/.env" | head -1 | cut -d= -f2)}"
 if [[ -z "${SECRET_KEY_BASE}" ]]; then
   echo "SECRET_KEY_BASE missing (set it in ${API_LARAVEL_DIR}/.env or env)" >&2

@@ -29,9 +29,9 @@ use function array_key_exists;
  * present but nil.
  *
  * Not ported (dependencies do not exist yet):
- * - TODO(port): payment provider billing configuration
- *   (handle_api_billing_configuration) — provider customers are a later
- *   milestone; the issuing-date settings service is ported.
+ * - The payment-provider branch of handle_api_billing_configuration is
+ *   ported (PaymentBillingConfigurationService); PaymentProviderCustomers::UpdateService
+ *   and the non-stripe provider legs remain TODO(port) inside it.
  * - TODO(port): IntegrationCustomers::CreateOrUpdateBatchService.
  * - TODO(port): RefreshInvoicesSearchTermsJob + error_details tax cleanup.
  * - TODO(port): ManageInvoiceCustomSectionsService.
@@ -193,13 +193,17 @@ class UpsertFromApiService extends BaseService
             });
 
             // Rails: handle_api_billing_configuration always runs the issuing
-            // date settings service first.
-            // TODO(port): the payment-provider branch of
-            // handle_api_billing_configuration (provider customers are a
-            // later milestone).
+            // date settings service first, then the payment-provider branch
+            // (document_locale assignment + provider customer sync).
             UpdateInvoiceIssuingDateSettingsService::call(
                 customer: $customer,
                 params: $params,
+            )->raiseIfError();
+
+            PaymentBillingConfigurationService::call(
+                customer: $customer,
+                params: $params,
+                newCustomer: $newCustomer,
             )->raiseIfError();
 
             // TODO(port): IntegrationCustomers::CreateOrUpdateBatchService.

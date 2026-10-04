@@ -129,6 +129,21 @@ class BillingEntity extends BaseModel
         return $this->einvoicing && in_array(mb_strtoupper((string) $this->country), self::EINVOICING_COUNTRIES, true);
     }
 
+    /**
+     * Port of BillingEntity#from_email_address (app/models/billing_entity.rb)
+     * — the organization's own email when its from-email override is
+     * enabled, LAGO_FROM_EMAIL otherwise.
+     *
+     * TODO(port): Organization#from_email_enabled? is not defined in the
+     * Rails source snapshot (premium billing-entity email settings slice) —
+     * the port treats the override as disabled and always answers
+     * LAGO_FROM_EMAIL.
+     */
+    public function fromEmailAddress(): ?string
+    {
+        return config('lago.from_email');
+    }
+
     // -- Relationships --------------------------------------------------------
 
     public function organization(): BelongsTo

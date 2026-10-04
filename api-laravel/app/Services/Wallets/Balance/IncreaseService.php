@@ -13,11 +13,8 @@ use App\Models\WalletTransaction;
  * Port of Rails' Wallets::Balance::IncreaseService
  * (app/services/wallets/balance/increase_service.rb).
  *
- * TODO(port): Rails re-enqueues Customers::RefreshWalletJob and
- * UsageMonitoring::ProcessWalletAlertsJob after commit — the refresh
- * pipeline (Customers::RefreshWalletsService → Invoices::CustomerUsageService)
- * and usage monitoring are later slices. Only the awaiting_wallet_refresh
- * flag is set here.
+ * TODO(port): UsageMonitoring::ProcessWalletAlertsJob after commit — the
+ * usage-monitoring slice.
  */
 class IncreaseService extends BaseService
 {
@@ -75,6 +72,11 @@ class IncreaseService extends BaseService
 
         // we only need to update all wallets when there is usage applied.
         $wallet->customer->flagWalletsForRefresh();
+
+        // Rails: Customers::RefreshWalletJob.perform_after_commit(customer,
+        // wallet_ids: [wallet.id]) — the explicit wallet_ids marks the
+        // requested refresh and bypasses the customer-wide flag.
+        \App\Jobs\Customers\RefreshWalletJob::dispatch($wallet->customer, [(string) $wallet->id]);
 
         // Rails: SendWebhookJob.perform_after_commit("wallet.updated", wallet)
         \App\Jobs\SendWebhookJob::performLater('wallet.updated', $wallet);

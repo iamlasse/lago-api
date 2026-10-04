@@ -18,19 +18,16 @@ use App\Models\Organization;
  */
 
 /**
- * BaseService#premium reads env('LAGO_LICENSE') at call time.
+ * BaseService#premium reads config('lago.license').
  */
 function gqlActAsPremiumOrganization(Organization $organization): void
 {
-    $_ENV['LAGO_LICENSE'] = 'test-license';
+    config(['lago.license' => 'test-license']);
     $organization->premium_integrations = ['api_permissions'];
     $organization->save();
 }
 
-function gqlReleasePremiumLicense(): void
-{
-    unset($_ENV['LAGO_LICENSE']);
-}
+function gqlReleasePremiumLicense(): void {}
 
 it('refuses to create an api key without a premium license', function (): void {
     [$organization, $user] = gqlApiKeysSetup();
@@ -82,7 +79,7 @@ it('creates an api key with a premium license', function (): void {
 it('refuses permissions without the api_permissions premium integration', function (): void {
     [$organization, $user] = gqlApiKeysSetup();
     // Premium license, but the organization lacks the integration.
-    $_ENV['LAGO_LICENSE'] = 'test-license';
+    config(['lago.license' => 'test-license']);
 
     try {
         $response = gqlPost(

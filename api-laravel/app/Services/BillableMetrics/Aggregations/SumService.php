@@ -45,7 +45,7 @@ final class SumService extends BaseService
         // Rails: `options[:is_pay_in_advance] && options[:is_current_usage]` —
         // the ONLY path that reads cached_aggregations here. Periodic
         // in-arrears billing aggregates the events live.
-        if ($this->options()['is_pay_in_advance'] && $this->options()['is_current_usage']) {
+        if (($this->options()['is_pay_in_advance'] ?? false) && ($this->options()['is_current_usage'] ?? false)) {
             $adjusted = $this->handleInAdvanceCurrentUsage($aggregation);
             $aggregation = $adjusted->aggregation;
             $currentUsageUnits = $adjusted->currentUsageUnits;

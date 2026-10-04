@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Wallets;
 
 use App\Models\Customer;
+use App\Support\License;
 use App\Services\BaseResult;
 use App\Services\Validators\Metadata;
 use App\Services\Validators\DecimalAmount;
@@ -134,7 +135,7 @@ class ValidateService extends BaseValidator
 
     private function isPremium(): bool
     {
-        return env('LAGO_LICENSE') !== null && env('LAGO_LICENSE') !== '';
+        return License::premium();
     }
 
     private function validCustomer(): bool

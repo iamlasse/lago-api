@@ -26,9 +26,6 @@ use function array_key_exists;
  *
  * Not ported (TODO(port)):
  * - InvoiceCustomSections::AttachToResourceService.
- * - BillPaidCreditJob (the paid-credit settlement job — payment providers
- *   slice). Rails enqueues it after commit for pending purchased
- *   transactions; the wallet transaction is created here either way.
  * - Utils::ActivityLog.produce.
  */
 class CreateFromParamsService extends BaseService
@@ -199,7 +196,7 @@ class CreateFromParamsService extends BaseService
 
         $walletCredit = new WalletCredit(wallet: $wallet, creditAmount: $creditsAmount);
 
-        return CreateService::callBang(
+        $walletTransaction = CreateService::callBang(
             wallet: $wallet,
             walletCredit: $walletCredit,
             transactionParams: [
@@ -216,9 +213,14 @@ class CreateFromParamsService extends BaseService
             ],
         )->wallet_transaction;
 
-        // TODO(port): Rails enqueues BillPaidCreditJob
-        // .perform_after_commit(wallet_transaction, Time.current.to_i) — the
-        // settlement runs through the payment-provider slice.
+        // Rails: BillPaidCreditJob.perform_after_commit(wallet_transaction,
+        // Time.current.to_i) — the settlement bills the purchased credits
+        // onto their invoice. The provider callbacks that enqueue this in
+        // production are an M-later slice; the job itself is ported and
+        // settles the transaction here.
+        \App\Jobs\BillPaidCreditJob::dispatch($walletTransaction, now()->getTimestamp());
+
+        return $walletTransaction;
     }
 
     /** Rails: `handle_granted_credits`. */

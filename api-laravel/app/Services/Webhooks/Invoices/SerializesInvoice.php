@@ -62,10 +62,13 @@ trait SerializesInvoice
             'prepaid_credit_amount_cents' => $invoice->prepaid_credit_amount_cents,
             'prepaid_granted_credit_amount_cents' => $invoice->prepaid_granted_credit_amount_cents,
             'prepaid_purchased_credit_amount_cents' => $invoice->prepaid_purchased_credit_amount_cents,
-            // TODO(port): file_url / xml_url / web_url need the invoice file
-            // storage and front URL helpers.
-            'file_url' => null,
-            'xml_url' => null,
+            // Port of Invoice#file_url / #xml_url — the ActiveStorage
+            // attachment URLs (LAGO_API_URL + the blob path), null while the
+            // attachment is absent.
+            'file_url' => $invoice->fileUrl(),
+            'xml_url' => $invoice->xmlUrl(),
+            // TODO(port): web_url (the front-app URL helper on the webhook
+            // slice that owns SerializesInvoice's includes).
             'web_url' => null,
             'version_number' => $invoice->version_number,
             'self_billed' => $invoice->self_billed,

@@ -65,7 +65,7 @@ function creditNoteEstimateSetup(array $invoiceOverrides = []): array
 }
 
 it('estimates the credit note amounts', function (): void {
-    putenv('LAGO_LICENSE=premium');
+    config(['lago.license' => 'premium']);
     try {
         [$invoice, , $fee] = creditNoteEstimateSetup();
 
@@ -93,7 +93,7 @@ it('estimates the credit note amounts', function (): void {
             ->and($estimate->currency())->toBe('EUR')
             ->and($estimate->appliedTaxes)->toHaveCount(1);
     } finally {
-        putenv('LAGO_LICENSE=');
+        config(['lago.license' => null]);
     }
 })->group('ledger:svc:CreditNotes.EstimateService');
 
@@ -114,7 +114,7 @@ it('is forbidden without a premium license', function (): void {
 })->group('ledger:svc:CreditNotes.EstimateService');
 
 it('is not allowed below the credit notes invoice version', function (): void {
-    putenv('LAGO_LICENSE=premium');
+    config(['lago.license' => 'premium']);
     try {
         [$invoice] = creditNoteEstimateSetup(['version_number' => 1]);
 
@@ -124,12 +124,12 @@ it('is not allowed below the credit notes invoice version', function (): void {
             ->and($result->getError())->toBeInstanceOf(MethodNotAllowedFailure::class)
             ->and($result->getError()->code)->toBe('invalid_type_or_status');
     } finally {
-        putenv('LAGO_LICENSE=');
+        config(['lago.license' => null]);
     }
 })->group('ledger:svc:CreditNotes.EstimateService');
 
 it('is not allowed on credit invoices while wallets are unported', function (): void {
-    putenv('LAGO_LICENSE=premium');
+    config(['lago.license' => 'premium']);
     try {
         [$invoice] = creditNoteEstimateSetup(['invoice_type' => InvoiceType::Credit]);
 
@@ -139,12 +139,12 @@ it('is not allowed on credit invoices while wallets are unported', function (): 
             ->and($result->getError())->toBeInstanceOf(MethodNotAllowedFailure::class)
             ->and($result->getError()->code)->toBe('invalid_type_or_status');
     } finally {
-        putenv('LAGO_LICENSE=');
+        config(['lago.license' => null]);
     }
 })->group('ledger:svc:CreditNotes.EstimateService');
 
 it('rejects items that are not an array', function (): void {
-    putenv('LAGO_LICENSE=premium');
+    config(['lago.license' => 'premium']);
     try {
         [$invoice] = creditNoteEstimateSetup();
 
@@ -153,6 +153,6 @@ it('rejects items that are not an array', function (): void {
         expect($result->failure())->toBeTrue()
             ->and($result->getError()->messages)->toBe(['items' => ['must_be_an_array']]);
     } finally {
-        putenv('LAGO_LICENSE=');
+        config(['lago.license' => null]);
     }
 })->group('ledger:svc:CreditNotes.EstimateService');

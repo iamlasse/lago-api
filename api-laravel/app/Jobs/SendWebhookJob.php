@@ -15,6 +15,7 @@ use App\Services\Webhooks\Invoices\CreatedService as InvoiceCreatedService;
 use App\Services\Webhooks\Invoices\DraftedService as InvoiceDraftedService;
 use App\Services\Webhooks\Customers\CreatedService as CustomerCreatedService;
 use App\Services\Webhooks\Customers\UpdatedService as CustomerUpdatedService;
+use App\Services\Webhooks\Invoices\GeneratedService as InvoiceGeneratedService;
 use App\Services\Webhooks\Wallets\TerminatedService as WalletTerminatedService;
 use App\Services\Webhooks\Subscriptions\StartedService as SubscriptionStartedService;
 use App\Services\Webhooks\Subscriptions\UpdatedService as SubscriptionUpdatedService;
@@ -22,6 +23,7 @@ use App\Services\Webhooks\Subscriptions\CanceledService as SubscriptionCanceledS
 use App\Services\Webhooks\Subscriptions\TerminatedService as SubscriptionTerminatedService;
 use App\Services\Webhooks\WalletTransactions\CreatedService as WalletTransactionCreatedService;
 use App\Services\Webhooks\WalletTransactions\UpdatedService as WalletTransactionUpdatedService;
+use App\Services\Webhooks\Wallets\DepletedOngoingBalanceService as WalletDepletedOngoingBalanceService;
 
 /**
  * Port of Rails' SendWebhookJob (app/jobs/send_webhook_job.rb).
@@ -53,7 +55,8 @@ class SendWebhookJob implements ShouldQueue
         // payment-provider customer types — later slices.
         'invoice.created' => InvoiceCreatedService::class,
         'invoice.drafted' => InvoiceDraftedService::class,
-        // "invoice.generated", "invoice.voided", ... — later slices.
+        'invoice.generated' => InvoiceGeneratedService::class,
+        // "invoice.voided", ... — later slices.
         'subscription.started' => SubscriptionStartedService::class,
         'subscription.updated' => SubscriptionUpdatedService::class,
         'subscription.terminated' => SubscriptionTerminatedService::class,
@@ -64,7 +67,7 @@ class SendWebhookJob implements ShouldQueue
         'wallet.terminated' => WalletTerminatedService::class,
         'wallet_transaction.created' => WalletTransactionCreatedService::class,
         'wallet_transaction.updated' => WalletTransactionUpdatedService::class,
-        // "wallet.depleted_ongoing_balance" — ongoing-balance slice.
+        'wallet.depleted_ongoing_balance' => WalletDepletedOngoingBalanceService::class,
     ];
 
     /** Rails: HIGH_PRIORITY_WEBHOOK_TYPES. */

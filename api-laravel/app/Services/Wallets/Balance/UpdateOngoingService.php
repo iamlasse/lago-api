@@ -12,8 +12,8 @@ use App\Services\BaseService;
  * Port of Rails' Wallets::Balance::UpdateOngoingService
  * (app/services/wallets/balance/update_ongoing_service.rb).
  *
- * TODO(port): the after_commit block enqueues
- * "wallet.depleted_ongoing_balance" webhook, ThresholdTopUpService and
+ * TODO(port): the after_commit block also enqueues ThresholdTopUpService
+ * (RecurringTransactionRule — no model yet) and
  * UsageMonitoring::ProcessWalletAlertsJob — later slices.
  */
 class UpdateOngoingService extends BaseService
@@ -53,8 +53,7 @@ class UpdateOngoingService extends BaseService
 
         if (($updateParams['depleted_ongoing_balance'] ?? null) === true) {
             // Rails: SendWebhookJob.perform_later("wallet.depleted_ongoing_balance", wallet)
-            // — the webhook service is a later slice (see SendWebhookJob
-            // WEBHOOK_SERVICES).
+            \App\Jobs\SendWebhookJob::performLater('wallet.depleted_ongoing_balance', $wallet);
         }
 
         $result->wallet = $wallet;

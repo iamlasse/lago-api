@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\GraphQL\Types;
 
+use App\Support\License;
 use App\GraphQL\Support\LagoContext;
 use App\GraphQL\Support\TimezoneWire;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
@@ -82,6 +83,6 @@ class Organization
     /** Rails: `License.premium?` (see BaseService#premium). */
     protected static function premiumLicense(): bool
     {
-        return env('LAGO_LICENSE') !== null && env('LAGO_LICENSE') !== '';
+        return License::premium();
     }
 }

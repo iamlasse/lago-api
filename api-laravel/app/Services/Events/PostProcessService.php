@@ -11,6 +11,7 @@ use App\Services\BaseService;
 use App\Models\BillableMetric;
 use App\Enums\SubscriptionStatus;
 use Illuminate\Support\Collection;
+use App\Jobs\Events\PayInAdvanceJob;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
@@ -28,11 +29,11 @@ use Illuminate\Database\Eloquent\Builder;
  *   now in the frozen schema but the enrichment pipeline is not ported);
  * - TODO(port): track_subscription_activity
  *   (UsageMonitoring::TrackSubscriptionActivityService);
- * - TODO(port): customer.flag_wallets_for_refresh (wallets slice);
+ * - flag_wallets_for_refresh — WIRED (the wallet refresh chain landed:
+ *   Clock\RefreshWalletsOngoingBalanceJob picks the flag up);
  * - TODO(port): check_targeted_wallets (wallets slice — events targeting
  *   wallets + the event.error webhook);
- * - TODO(port): handle_pay_in_advance (Events::PayInAdvanceJob — the
- *   pay-in-advance metering slice);
+ * - handle_pay_in_advance — WIRED (Events\PayInAdvanceJob);
  * - TODO(port): the RecordNotUnique rescue delivering the event.error
  *   webhook (fires from the enriched-events insert today).
  */
@@ -51,8 +52,11 @@ class PostProcessService extends BaseService
         $result = static::makeResult('event');
 
         // create_enriched_events / track_subscription_activity /
-        // flag_wallets_for_refresh / check_targeted_wallets /
-        // handle_pay_in_advance — TODO(port), see the class docblock.
+        // check_targeted_wallets — TODO(port), see the class docblock.
+
+        $this->customer()?->flagWalletsForRefresh();
+
+        $this->handlePayInAdvance();
 
         $result->event = $this->event;
 
@@ -138,5 +142,29 @@ class PostProcessService extends BaseService
             ->billableMetrics()
             ->where('code', $this->event->code)
             ->first();
+    }
+
+    /**
+     * Rails: `handle_pay_in_advance` — enqueue the per-event billing when
+     * the event's billable metric carries pay-in-advance charges.
+     */
+    private function handlePayInAdvance(): void
+    {
+        $billableMetric = $this->billableMetric();
+
+        if ($billableMetric === null) {
+            return;
+        }
+
+        $hasPayInAdvanceCharges = $billableMetric
+            ->charges()
+            ->where('charges.pay_in_advance', true)
+            ->exists();
+
+        if (! $hasPayInAdvanceCharges) {
+            return;
+        }
+
+        PayInAdvanceJob::dispatch($this->event);
     }
 }

@@ -205,6 +205,12 @@ class Customer extends BaseModel
         return $this->hasMany(PaymentProviderCustomer::class);
     }
 
+    /** Rails: `has_many :payment_methods` (discarded methods are hidden). */
+    public function paymentMethods(): HasMany
+    {
+        return $this->hasMany(PaymentMethod::class);
+    }
+
     /** Rails: `has_many :integration_customers, class_name: "IntegrationCustomers::BaseCustomer"`. */
     public function integrationCustomers(): HasMany
     {

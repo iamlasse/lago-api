@@ -46,14 +46,13 @@ function webhookOrganization(array $attributes = []): array
  */
 function withWebhookPremiumLicense(callable $scenario): void
 {
-    putenv('LAGO_LICENSE=premium-license-token');
-    $_ENV['LAGO_LICENSE'] = 'premium-license-token';
+    config(['lago.license' => 'premium-license-token']);
 
     try {
         $scenario();
     } finally {
-        putenv('LAGO_LICENSE');
-        unset($_ENV['LAGO_LICENSE']);
+        config(['lago.license' => null]);
+
     }
 }
 

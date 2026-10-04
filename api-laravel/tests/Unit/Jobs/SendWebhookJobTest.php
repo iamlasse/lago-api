@@ -111,6 +111,7 @@ it('registers the M1 webhook types', function (): void {
         'customer.updated',
         'invoice.created',
         'invoice.drafted',
+        'invoice.generated',
         'subscription.started',
         'subscription.updated',
         'subscription.terminated',
@@ -120,5 +121,6 @@ it('registers the M1 webhook types', function (): void {
         'wallet.terminated',
         'wallet_transaction.created',
         'wallet_transaction.updated',
+        'wallet.depleted_ongoing_balance',
     ]);
 });
