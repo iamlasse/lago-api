@@ -7991,12 +7991,14 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\AddOnsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Api/V1/AddOnsControllerTest.php"
+            ],
+            "notes": "Port of Rails' spec/requests/api/v1/add_ons_controller_spec.rb."
         },
         {
             "id": "rest:DELETE:/api/v1/billable_metrics/:code",
@@ -8005,12 +8007,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/BillableMetricsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via plans_metrics_crud."
         },
         {
             "id": "rest:DELETE:/api/v1/coupons/:code",
@@ -8019,12 +8021,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/CouponsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via coupons_lifecycle."
         },
         {
             "id": "rest:DELETE:/api/v1/credit_notes/:id/metadata",
@@ -8057,12 +8059,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/CustomersControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via customers_crud."
         },
         {
             "id": "rest:DELETE:/api/v1/customers/:external_id/applied_coupons/:id",
@@ -8071,12 +8073,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/Customers/AppliedCouponsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via coupons_lifecycle."
         },
         {
             "id": "rest:DELETE:/api/v1/customers/:external_id/payment_methods/:id",
@@ -8255,12 +8257,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/Plans/EntitlementsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via entitlements_crud."
         },
         {
             "id": "rest:DELETE:/api/v1/plans/:code/entitlements/:code/privileges/:code",
@@ -8321,12 +8323,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/SubscriptionsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via subscription_create."
         },
         {
             "id": "rest:DELETE:/api/v1/subscriptions/:external_id/alerts",
@@ -8371,12 +8373,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/Subscriptions/EntitlementsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via entitlements_crud."
         },
         {
             "id": "rest:DELETE:/api/v1/subscriptions/:external_id/entitlements/:code/privileges/:code",
@@ -8425,12 +8427,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/WalletsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via wallets_lifecycle."
         },
         {
             "id": "rest:DELETE:/api/v1/wallets/:id/metadata",
@@ -9131,24 +9133,28 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\AddOnsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Api/V1/AddOnsControllerTest.php"
+            ],
+            "notes": "Port of Rails' spec/requests/api/v1/add_ons_controller_spec.rb."
         },
         {
             "id": "rest:GET:/api/v1/add_ons/:code",
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\AddOnsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Api/V1/AddOnsControllerTest.php"
+            ],
+            "notes": "Port of Rails' spec/requests/api/v1/add_ons_controller_spec.rb."
         },
         {
             "id": "rest:GET:/api/v1/add_ons/:code/edit",
@@ -9179,60 +9185,70 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Analytics\\GrossRevenuesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Api/V1/AnalyticsControllersTest.php"
+            ],
+            "notes": "Port of Rails' spec/requests/api/v1/analytics/gross_revenues_controller_spec.rb."
         },
         {
             "id": "rest:GET:/api/v1/analytics/invoice_collection",
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Analytics\\InvoiceCollectionsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Api/V1/AnalyticsControllersTest.php"
+            ],
+            "notes": "Port of Rails' spec/requests/api/v1/analytics/invoice_collections_controller_spec.rb."
         },
         {
             "id": "rest:GET:/api/v1/analytics/invoiced_usage",
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Analytics\\InvoicedUsagesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Api/V1/AnalyticsControllersTest.php"
+            ],
+            "notes": "Port of Rails' spec/requests/api/v1/analytics/invoiced_usages_controller_spec.rb."
         },
         {
             "id": "rest:GET:/api/v1/analytics/mrr",
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Analytics\\MrrsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Api/V1/AnalyticsControllersTest.php"
+            ],
+            "notes": "Port of Rails' spec/requests/api/v1/analytics/mrrs_controller_spec.rb."
         },
         {
             "id": "rest:GET:/api/v1/analytics/overdue_balance",
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Analytics\\OverdueBalancesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Api/V1/AnalyticsControllersTest.php"
+            ],
+            "notes": "Port of Rails' spec/requests/api/v1/analytics/overdue_balances_controller_spec.rb."
         },
         {
             "id": "rest:GET:/api/v1/analytics/usage",
@@ -9279,12 +9295,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/AppliedCouponsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via coupons_lifecycle."
         },
         {
             "id": "rest:GET:/api/v1/billable_metrics",
@@ -9293,12 +9309,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/BillableMetricsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via plans_metrics_crud."
         },
         {
             "id": "rest:GET:/api/v1/billable_metrics/:code",
@@ -9307,12 +9323,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/BillableMetricsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via plans_metrics_crud."
         },
         {
             "id": "rest:GET:/api/v1/billable_metrics/:code/edit",
@@ -9369,12 +9385,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/CouponsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via coupons_lifecycle."
         },
         {
             "id": "rest:GET:/api/v1/coupons/:code",
@@ -9383,12 +9399,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/CouponsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via coupons_lifecycle."
         },
         {
             "id": "rest:GET:/api/v1/coupons/:code/edit",
@@ -9421,12 +9437,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/CreditNotesControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via credit_notes_lifecycle."
         },
         {
             "id": "rest:GET:/api/v1/credit_notes/:id",
@@ -9435,12 +9451,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/CreditNotesControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via credit_notes_lifecycle."
         },
         {
             "id": "rest:GET:/api/v1/customers",
@@ -9449,12 +9465,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/CustomersControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via customers_crud."
         },
         {
             "id": "rest:GET:/api/v1/customers/:external_id",
@@ -9463,12 +9479,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/CustomersControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via customers_crud."
         },
         {
             "id": "rest:GET:/api/v1/customers/:external_id/applied_coupons",
@@ -9675,12 +9691,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/EventsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via events_ingestion."
         },
         {
             "id": "rest:GET:/api/v1/events/:id",
@@ -9689,12 +9705,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/EventsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via events_ingestion."
         },
         {
             "id": "rest:GET:/api/v1/events_enriched",
@@ -9717,12 +9733,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/FeaturesControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via entitlements_crud."
         },
         {
             "id": "rest:GET:/api/v1/features/:code",
@@ -9731,12 +9747,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/FeaturesControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via entitlements_crud."
         },
         {
             "id": "rest:GET:/api/v1/fees",
@@ -9769,12 +9785,12 @@
             "status": {
                 "code": "done",
                 "test": "written",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/InvoicesControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via invoice_graduated, invoice_graduated_percentage, invoice_package, invoice_percentage, invoice_standard, invoice_volume."
         },
         {
             "id": "rest:GET:/api/v1/invoices/:id",
@@ -9819,24 +9835,28 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\OrdersController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Api/V1/OrdersControllerTest.php"
+            ],
+            "notes": "Port of Rails' spec/requests/api/v1/orders_controller_spec.rb."
         },
         {
             "id": "rest:GET:/api/v1/orders/:id",
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\OrdersController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Api/V1/OrdersControllerTest.php"
+            ],
+            "notes": "Port of Rails' spec/requests/api/v1/orders_controller_spec.rb."
         },
         {
             "id": "rest:GET:/api/v1/organizations",
@@ -9845,12 +9865,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/OrganizationsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via auth_org."
         },
         {
             "id": "rest:GET:/api/v1/organizations/grpc_token",
@@ -9871,24 +9891,28 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\PaymentReceiptsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Api/V1/PaymentReceiptsControllerTest.php"
+            ],
+            "notes": "Port of Rails' spec/requests/api/v1/payment_receipts_controller_spec.rb."
         },
         {
             "id": "rest:GET:/api/v1/payment_receipts/:id",
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\PaymentReceiptsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Api/V1/PaymentReceiptsControllerTest.php"
+            ],
+            "notes": "Port of Rails' spec/requests/api/v1/payment_receipts_controller_spec.rb."
         },
         {
             "id": "rest:GET:/api/v1/payment_requests",
@@ -9953,12 +9977,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/PlansControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via plans_metrics_crud."
         },
         {
             "id": "rest:GET:/api/v1/plans/:code",
@@ -9967,12 +9991,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/PlansControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via plans_metrics_crud."
         },
         {
             "id": "rest:GET:/api/v1/plans/:code/charges",
@@ -9981,12 +10005,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/Plans/ChargesControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via plans_metrics_crud."
         },
         {
             "id": "rest:GET:/api/v1/plans/:code/charges/:code",
@@ -9995,12 +10019,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/Plans/ChargesControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via plans_metrics_crud."
         },
         {
             "id": "rest:GET:/api/v1/plans/:code/charges/:code/filters",
@@ -10009,12 +10033,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/Plans/ChargesControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via plans_metrics_crud."
         },
         {
             "id": "rest:GET:/api/v1/plans/:code/charges/:code/filters/:id",
@@ -10049,12 +10073,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/Plans/EntitlementsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via entitlements_crud."
         },
         {
             "id": "rest:GET:/api/v1/plans/:code/entitlements/:code",
@@ -10063,12 +10087,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/Plans/EntitlementsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via entitlements_crud."
         },
         {
             "id": "rest:GET:/api/v1/plans/:code/fixed_charges",
@@ -10189,12 +10213,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/SubscriptionsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via subscription_create."
         },
         {
             "id": "rest:GET:/api/v1/subscriptions/:external_id",
@@ -10203,12 +10227,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/SubscriptionsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via subscription_create."
         },
         {
             "id": "rest:GET:/api/v1/subscriptions/:external_id/alerts",
@@ -10289,12 +10313,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/Subscriptions/EntitlementsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via entitlements_crud."
         },
         {
             "id": "rest:GET:/api/v1/subscriptions/:external_id/fixed_charges",
@@ -10415,12 +10439,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/WalletTransactionsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via wallets_lifecycle."
         },
         {
             "id": "rest:GET:/api/v1/wallet_transactions/:id/consumptions",
@@ -10453,12 +10477,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/WalletsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via wallets_lifecycle."
         },
         {
             "id": "rest:GET:/api/v1/wallets/:id",
@@ -10467,12 +10491,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/WalletsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via wallets_lifecycle."
         },
         {
             "id": "rest:GET:/api/v1/wallets/:id/wallet_transactions",
@@ -10481,12 +10505,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/WalletTransactionsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via wallets_lifecycle."
         },
         {
             "id": "rest:GET:/api/v1/webhook_endpoints",
@@ -10617,60 +10641,70 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Analytics\\GrossRevenuesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Api/V1/AnalyticsControllersTest.php"
+            ],
+            "notes": "Port of Rails' spec/requests/api/v1/analytics/gross_revenues_controller_spec.rb. The v2 mirror rides the same controller."
         },
         {
             "id": "rest:GET:/api/v2/analytics/invoice_collection",
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Analytics\\InvoiceCollectionsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Api/V1/AnalyticsControllersTest.php"
+            ],
+            "notes": "Port of Rails' spec/requests/api/v1/analytics/invoice_collections_controller_spec.rb. The v2 mirror rides the same controller."
         },
         {
             "id": "rest:GET:/api/v2/analytics/invoiced_usage",
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Analytics\\InvoicedUsagesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Api/V1/AnalyticsControllersTest.php"
+            ],
+            "notes": "Port of Rails' spec/requests/api/v1/analytics/invoiced_usages_controller_spec.rb. The v2 mirror rides the same controller."
         },
         {
             "id": "rest:GET:/api/v2/analytics/mrr",
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Analytics\\MrrsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Api/V1/AnalyticsControllersTest.php"
+            ],
+            "notes": "Port of Rails' spec/requests/api/v1/analytics/mrrs_controller_spec.rb. The v2 mirror rides the same controller."
         },
         {
             "id": "rest:GET:/api/v2/analytics/overdue_balance",
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Analytics\\OverdueBalancesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Api/V1/AnalyticsControllersTest.php"
+            ],
+            "notes": "Port of Rails' spec/requests/api/v1/analytics/overdue_balances_controller_spec.rb. The v2 mirror rides the same controller."
         },
         {
             "id": "rest:GET:/api/v2/analytics/usage",
@@ -11287,24 +11321,28 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\OrdersController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Api/V1/OrdersControllerTest.php"
+            ],
+            "notes": "Port of Rails' spec/requests/api/v1/orders_controller_spec.rb. The v2 mirror rides the same controller."
         },
         {
             "id": "rest:GET:/api/v2/orders/:id",
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\OrdersController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Api/V1/OrdersControllerTest.php"
+            ],
+            "notes": "Port of Rails' spec/requests/api/v1/orders_controller_spec.rb. The v2 mirror rides the same controller."
         },
         {
             "id": "rest:GET:/api/v2/organizations",
@@ -12415,12 +12453,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/Plans/EntitlementsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via entitlements_crud."
         },
         {
             "id": "rest:PATCH:/api/v1/plans/:code/fixed_charges/:code",
@@ -12503,12 +12541,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/Subscriptions/EntitlementsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via entitlements_crud."
         },
         {
             "id": "rest:PATCH:/api/v1/subscriptions/:external_id/fixed_charges/:code",
@@ -12603,12 +12641,14 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\AddOnsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Api/V1/AddOnsControllerTest.php"
+            ],
+            "notes": "Port of Rails' spec/requests/api/v1/add_ons_controller_spec.rb. The v2 mirror rides the same controller."
         },
         {
             "id": "rest:PATCH:/api/v2/billable_metrics/:code",
@@ -13143,12 +13183,14 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\AddOnsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Api/V1/AddOnsControllerTest.php"
+            ],
+            "notes": "Port of Rails' spec/requests/api/v1/add_ons_controller_spec.rb."
         },
         {
             "id": "rest:POST:/api/v1/applied_coupons",
@@ -13157,12 +13199,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/AppliedCouponsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via coupons_lifecycle."
         },
         {
             "id": "rest:POST:/api/v1/billable_metrics",
@@ -13171,12 +13213,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/BillableMetricsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via plans_metrics_crud."
         },
         {
             "id": "rest:POST:/api/v1/billable_metrics/evaluate_expression",
@@ -13211,12 +13253,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/CouponsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via coupons_lifecycle."
         },
         {
             "id": "rest:POST:/api/v1/credit_notes",
@@ -13225,12 +13267,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/CreditNotesControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via credit_notes_lifecycle."
         },
         {
             "id": "rest:POST:/api/v1/credit_notes/:id/download",
@@ -13305,12 +13347,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/CreditNotesControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via credit_notes_lifecycle."
         },
         {
             "id": "rest:POST:/api/v1/customers",
@@ -13319,12 +13361,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/CustomersControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via customers_crud, invoice_standard."
         },
         {
             "id": "rest:POST:/api/v1/customers/:external_id/checkout_url",
@@ -13383,12 +13425,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/EventsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via events_ingestion."
         },
         {
             "id": "rest:POST:/api/v1/events/batch",
@@ -13397,12 +13439,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/EventsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via events_ingestion."
         },
         {
             "id": "rest:POST:/api/v1/events/batch_estimate_instant_fees",
@@ -13447,12 +13489,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/FeaturesControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via entitlements_crud."
         },
         {
             "id": "rest:POST:/api/v1/invoices",
@@ -13461,12 +13503,12 @@
             "status": {
                 "code": "done",
                 "test": "written",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/InvoicesControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via invoice_standard."
         },
         {
             "id": "rest:POST:/api/v1/invoices/:id/download",
@@ -13595,10 +13637,10 @@
             "status": {
                 "code": "todo",
                 "test": "todo",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [],
-            "notes": ""
+            "notes": "Contract: replayed green via invoice_standard."
         },
         {
             "id": "rest:POST:/api/v1/order_forms/:id/mark_as_signed",
@@ -13629,24 +13671,28 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\OrdersController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Api/V1/OrdersControllerTest.php"
+            ],
+            "notes": "Port of Rails' spec/requests/api/v1/orders_controller_spec.rb."
         },
         {
             "id": "rest:POST:/api/v1/payment_receipts/:id/resend_email",
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\PaymentReceiptsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Api/V1/PaymentReceiptsControllerTest.php"
+            ],
+            "notes": "Port of Rails' spec/requests/api/v1/payment_receipts_controller_spec.rb."
         },
         {
             "id": "rest:POST:/api/v1/payment_requests",
@@ -13683,12 +13729,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/PlansControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via plans_metrics_crud."
         },
         {
             "id": "rest:POST:/api/v1/plans/:code/charges",
@@ -13723,12 +13769,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/Plans/EntitlementsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via entitlements_crud."
         },
         {
             "id": "rest:POST:/api/v1/plans/:code/fixed_charges",
@@ -13799,12 +13845,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/SubscriptionsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via invoice_graduated, invoice_graduated_percentage, invoice_package, invoice_percentage, invoice_volume, subscription_create."
         },
         {
             "id": "rest:POST:/api/v1/subscriptions/:external_id/alerts",
@@ -13837,12 +13883,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/TaxesControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via invoice_standard."
         },
         {
             "id": "rest:POST:/api/v1/usage_attribution_types",
@@ -13863,12 +13909,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/WalletTransactionsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via wallets_lifecycle."
         },
         {
             "id": "rest:POST:/api/v1/wallet_transactions/:id/payment_url",
@@ -13889,12 +13935,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/WalletsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via wallets_lifecycle."
         },
         {
             "id": "rest:POST:/api/v1/wallets/:id/metadata",
@@ -14425,12 +14471,14 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\OrdersController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Api/V1/OrdersControllerTest.php"
+            ],
+            "notes": "Port of Rails' spec/requests/api/v1/orders_controller_spec.rb. The v2 mirror rides the same controller."
         },
         {
             "id": "rest:POST:/api/v2/payment_receipts/:id/resend_email",
@@ -14909,12 +14957,14 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\AddOnsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Api/V1/AddOnsControllerTest.php"
+            ],
+            "notes": "Port of Rails' spec/requests/api/v1/add_ons_controller_spec.rb."
         },
         {
             "id": "rest:PUT:/api/v1/billable_metrics/:code",
@@ -14923,12 +14973,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/BillableMetricsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via plans_metrics_crud."
         },
         {
             "id": "rest:PUT:/api/v1/billing_entities/:code",
@@ -14949,12 +14999,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/CouponsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via coupons_lifecycle."
         },
         {
             "id": "rest:PUT:/api/v1/credit_notes/:id",
@@ -14963,12 +15013,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/CreditNotesControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via credit_notes_lifecycle."
         },
         {
             "id": "rest:PUT:/api/v1/credit_notes/:id/metadata",
@@ -14989,12 +15039,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/CreditNotesControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via credit_notes_lifecycle."
         },
         {
             "id": "rest:PUT:/api/v1/customers/:external_id/payment_methods/:id/set_as_default",
@@ -15055,12 +15105,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/FeaturesControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via entitlements_crud."
         },
         {
             "id": "rest:PUT:/api/v1/fees/:id",
@@ -15135,12 +15185,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/OrganizationsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via auth_org."
         },
         {
             "id": "rest:PUT:/api/v1/plans/:code",
@@ -15149,12 +15199,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/PlansControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via plans_metrics_crud."
         },
         {
             "id": "rest:PUT:/api/v1/plans/:code/charges/:code",
@@ -15215,12 +15265,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/SubscriptionsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via subscription_create."
         },
         {
             "id": "rest:PUT:/api/v1/subscriptions/:external_id/alerts/:code",
@@ -15315,12 +15365,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/WalletsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via wallets_lifecycle."
         },
         {
             "id": "rest:PUT:/api/v1/wallets/:id/metadata",
@@ -17804,48 +17854,56 @@
             "source": "app/services/add_ons/apply_taxes_service.rb",
             "laravel": "App\\Services\\AddOns\\ApplyTaxesService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/AddOns/AddOnServicesTest.php"
+            ],
+            "notes": "Port of Rails' spec/services/add_ons/apply_taxes_service_spec.rb."
         },
         {
             "id": "svc:AddOns.CreateService",
             "source": "app/services/add_ons/create_service.rb",
             "laravel": "App\\Services\\AddOns\\CreateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/AddOns/AddOnServicesTest.php"
+            ],
+            "notes": "Port of Rails' spec/services/add_ons/create_service_spec.rb."
         },
         {
             "id": "svc:AddOns.DestroyService",
             "source": "app/services/add_ons/destroy_service.rb",
             "laravel": "App\\Services\\AddOns\\DestroyService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/AddOns/AddOnServicesTest.php"
+            ],
+            "notes": "Port of Rails' spec/services/add_ons/destroy_service_spec.rb."
         },
         {
             "id": "svc:AddOns.UpdateService",
             "source": "app/services/add_ons/update_service.rb",
             "laravel": "App\\Services\\AddOns\\UpdateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/AddOns/AddOnServicesTest.php"
+            ],
+            "notes": "Port of Rails' spec/services/add_ons/update_service_spec.rb."
         },
         {
             "id": "svc:AdjustedFees.CreateService",
@@ -25642,12 +25700,14 @@
             "source": "app/services/orders/execute_service.rb",
             "laravel": "App\\Services\\Orders\\ExecuteService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Orders/OrderServicesTest.php"
+            ],
+            "notes": "Port of Rails' spec/services/orders/execute_service_spec.rb."
         },
         {
             "id": "svc:Orders.OneOff.ExecuteService",
@@ -25690,12 +25750,14 @@
             "source": "app/services/orders/update_service.rb",
             "laravel": "App\\Services\\Orders\\UpdateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Orders/OrderServicesTest.php"
+            ],
+            "notes": "Port of Rails' spec/services/orders/update_service_spec.rb."
         },
         {
             "id": "svc:Organizations.CreateService",
