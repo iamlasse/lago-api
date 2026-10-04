@@ -46,11 +46,12 @@ it('serializes the wallet transaction payload statement for statement', function
         ->and($payload['source'])->toBe('manual')
         ->and($payload['transaction_status'])->toBe('granted')
         ->and($payload['transaction_type'])->toBe('inbound')
-        ->and($payload['amount'])->toBe('10.00000')
-        ->and($payload['credit_amount'])->toBe('10.00000')
+        // Rails renders the BigDecimal attributes with to_s("F").
+        ->and($payload['amount'])->toBe('10.0')
+        ->and($payload['credit_amount'])->toBe('10.0')
         ->and($payload['remaining_amount_cents'])->toBe(400)
         // remaining_amount_cents / subunit / rate_amount
-        ->and($payload['remaining_credit_amount'])->toBe('4.000000000000000')
+        ->and($payload['remaining_credit_amount'])->toBe('4.0')
         ->and($payload['priority'])->toBe(50)
         // Falls back to the wallet's purchase order number.
         ->and($payload['purchase_order_number'])->toBe('WALLET-PO')

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Serializers\V1;
 
 use App\Models\Wallet;
+use App\Support\MoneyMath;
 use App\Serializers\Base\ModelSerializer;
 use App\Serializers\V1\Concerns\FormatsDatetime;
 
@@ -32,14 +33,16 @@ class WalletSerializer extends ModelSerializer
             'name' => $wallet->name,
             'code' => $wallet->code,
             'purchase_order_number' => $wallet->purchase_order_number,
-            'rate_amount' => $wallet->rate_amount,
-            'credits_balance' => $wallet->credits_balance,
-            'credits_ongoing_balance' => $wallet->credits_ongoing_balance,
-            'credits_ongoing_usage_balance' => $wallet->credits_ongoing_usage_balance,
+            // Rails' ActiveSupport JSON encoder renders BigDecimal attributes
+            // with to_s("F") (fixed notation, fractional zeros trimmed).
+            'rate_amount' => MoneyMath::toF((string) $wallet->rate_amount),
+            'credits_balance' => MoneyMath::toF((string) $wallet->credits_balance),
+            'credits_ongoing_balance' => MoneyMath::toF((string) $wallet->credits_ongoing_balance),
+            'credits_ongoing_usage_balance' => MoneyMath::toF((string) $wallet->credits_ongoing_usage_balance),
             'balance_cents' => $wallet->balance_cents,
             'ongoing_balance_cents' => $wallet->ongoing_balance_cents,
             'ongoing_usage_balance_cents' => $wallet->ongoing_usage_balance_cents,
-            'consumed_credits' => $wallet->consumed_credits,
+            'consumed_credits' => MoneyMath::toF((string) $wallet->consumed_credits),
             'created_at' => $this->serializeDatetime($wallet->created_at),
             'expiration_at' => $this->serializeDatetime($wallet->expiration_at),
             'last_balance_sync_at' => $this->serializeDatetime($wallet->last_balance_sync_at),
@@ -60,13 +63,14 @@ class WalletSerializer extends ModelSerializer
         }
 
         if ($this->include('limitations')) {
-            // Rails: payload.merge!(limitations) where the limitations method
-            // returns { applies_to: { fee_types:, billable_metric_codes: } }.
-            $payload['limitations'] = [
-                'applies_to' => [
-                    'fee_types' => (array) ($wallet->allowed_fee_types ?? []),
-                    'billable_metric_codes' => $wallet->billableMetrics()->pluck('code')->all(),
-                ],
+            // Rails: payload.merge!(limitations) where the private `limitations`
+            // method returns { applies_to: { fee_types:, billable_metric_codes: } }.
+            // The merge puts `applies_to` at the TOP level — there is no
+            // `limitations` key in the emitted payload (Rails
+            // wallet_serializer.rb:63-67).
+            $payload['applies_to'] = [
+                'fee_types' => (array) ($wallet->allowed_fee_types ?? []),
+                'billable_metric_codes' => $wallet->billableMetrics()->pluck('code')->all(),
             ];
         }
 
@@ -85,9 +89,12 @@ class WalletSerializer extends ModelSerializer
         $payload['connections'] = $wallet->connectionRouting();
 
         if ($wallet->metadata()->exists()) {
-            // TODO(port): V1::MetadataSerializer (Metadata::ItemMetadata
-            // slice) — the raw value hash is emitted for now.
-            $payload['metadata'] = ['metadata' => $wallet->metadata()->first()?->value];
+            // Rails: payload.merge!(metadata) where the private `metadata`
+            // method returns { metadata: V1::MetadataSerializer.new(...).serialize }
+            // and that serializer returns model&.value — the flat value hash.
+            // The merge therefore yields payload["metadata"] = value hash
+            // (Rails wallet_serializer.rb:88-90).
+            $payload['metadata'] = $wallet->metadata()->first()?->value;
         }
 
         return $payload;

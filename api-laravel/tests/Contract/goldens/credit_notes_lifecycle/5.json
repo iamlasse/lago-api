@@ -1,0 +1,10 @@
+{
+  "status": 422,
+  "error": "Unprocessable Entity",
+  "code": "validation_errors",
+  "error_details": {
+    "refund_status": [
+      "value_is_invalid"
+    ]
+  }
+}

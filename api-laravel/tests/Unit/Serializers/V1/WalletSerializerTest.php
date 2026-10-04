@@ -40,14 +40,15 @@ it('serializes the wallet payload statement for statement', function (): void {
         ->and($payload['name'])->toBe('Promo')
         ->and($payload['code'])->toBe('promo')
         ->and($payload['purchase_order_number'])->toBe('PO-1')
-        ->and($payload['rate_amount'])->toBe('1.50000')
-        ->and($payload['credits_balance'])->toBe('12.34000')
-        ->and($payload['credits_ongoing_balance'])->toBe('11.00000')
-        ->and($payload['credits_ongoing_usage_balance'])->toBe('1.34000')
+        // Rails renders the BigDecimal attributes with to_s("F").
+        ->and($payload['rate_amount'])->toBe('1.5')
+        ->and($payload['credits_balance'])->toBe('12.34')
+        ->and($payload['credits_ongoing_balance'])->toBe('11.0')
+        ->and($payload['credits_ongoing_usage_balance'])->toBe('1.34')
         ->and($payload['balance_cents'])->toBe(1234)
         ->and($payload['ongoing_balance_cents'])->toBe(1100)
         ->and($payload['ongoing_usage_balance_cents'])->toBe(134)
-        ->and($payload['consumed_credits'])->toBe('0.66000')
+        ->and($payload['consumed_credits'])->toBe('0.66')
         ->and($payload['created_at'])->toMatch('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/')
         ->and($payload['expiration_at'])->toBeNull()
         ->and($payload['terminated_at'])->toBeNull()
@@ -73,16 +74,16 @@ it('includes the limitations payload when requested', function (): void {
 
     $payload = (new WalletSerializer($wallet, ['includes' => ['limitations']]))->serialize();
 
-    expect($payload['limitations'])->toBe([
-        'applies_to' => [
-            'fee_types' => ['charge', 'add_on'],
-            'billable_metric_codes' => ['api_calls'],
-        ],
+    // Rails merges the limitations hash at the TOP level — the payload
+    // carries `applies_to`, no `limitations` key.
+    expect($payload['applies_to'])->toBe([
+        'fee_types' => ['charge', 'add_on'],
+        'billable_metric_codes' => ['api_calls'],
     ]);
 
     $without = (new WalletSerializer($wallet))->serialize();
 
-    expect($without)->not->toHaveKey('limitations');
+    expect($without)->not->toHaveKey('applies_to');
 })->group('ledger:ser:V1.WalletSerializer');
 
 it('serializes the terminated status and exposes the metadata when present', function (): void {
@@ -103,5 +104,5 @@ it('serializes the terminated status and exposes the metadata when present', fun
 
     $withMetadata = (new WalletSerializer($wallet->refresh()))->serialize();
 
-    expect($withMetadata['metadata'])->toBe(['metadata' => ['env' => 'prod']]);
+    expect($withMetadata['metadata'])->toBe(['env' => 'prod']);
 })->group('ledger:ser:V1.WalletSerializer');

@@ -30,10 +30,11 @@ trait FormatsDatetime
     }
 
     /**
-     * Rails: `iso8601` on a date — midnight of the day, UTC, "Z" suffix.
-     * Model columns surface as Carbon instances, but plain 'Y-m-d' strings
-     * reach the trait from aggregations (e.g. contract applied rate card
-     * anchors selected outside Eloquent casting), so parse those too.
+     * Rails: `iso8601` on a date — ActiveRecord surfaces DATE columns as
+     * Ruby Date objects, whose iso8601 is the plain "Y-m-d" (no time part).
+     * Model columns surface as Carbon instances here, but plain 'Y-m-d'
+     * strings reach the trait from aggregations (e.g. contract applied rate
+     * card anchors selected outside Eloquent casting), so parse those too.
      */
     protected function serializeDate(mixed $date): ?string
     {
@@ -42,9 +43,9 @@ trait FormatsDatetime
         }
 
         if ($date instanceof DateTimeInterface) {
-            return \Carbon\CarbonImmutable::instance($date)->utc()->format('Y-m-d\TH:i:s\Z');
+            return \Carbon\CarbonImmutable::instance($date)->utc()->format('Y-m-d');
         }
 
-        return \Carbon\CarbonImmutable::parse((string) $date, 'UTC')->format('Y-m-d\TH:i:s\Z');
+        return \Carbon\CarbonImmutable::parse((string) $date, 'UTC')->format('Y-m-d');
     }
 }

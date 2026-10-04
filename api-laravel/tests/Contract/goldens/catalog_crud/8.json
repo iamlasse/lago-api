@@ -1,0 +1,36 @@
+{
+  "rate_card": {
+    "lago_id": "ff43adad-4e92-402d-8b52-671d8029c373",
+    "product_code": "keyboard",
+    "product_filter_code": null,
+    "name": "Keyboard Card",
+    "code": "kb-card",
+    "description": "keyboard rate card",
+    "currency": "EUR",
+    "billing_timing": "arrears",
+    "proration": false,
+    "display_on_invoice": true,
+    "regroup_paid_fees": null,
+    "applied_pricing_unit_code": null,
+    "rates_count": 1,
+    "created_at": "2025-06-11T12:00:02Z",
+    "updated_at": "2025-06-11T12:00:02Z",
+    "active_rate": {
+      "lago_id": "f4099d85-78f2-4a5b-b8ec-ccc12e8828ec",
+      "code": "kb-rate",
+      "effective_from": "2025-06-11T00:00:00Z",
+      "status": "active",
+      "rate_model": "standard",
+      "rate_properties": {
+        "amount": "0.50"
+      },
+      "min_amount_cents": 0,
+      "billing_interval_count": 1,
+      "billing_interval_unit": "month",
+      "applied_pricing_unit_conversion_rate": null,
+      "created_at": "2025-06-11T12:00:02Z",
+      "updated_at": "2025-06-11T12:00:02Z"
+    },
+    "taxes": []
+  }
+}

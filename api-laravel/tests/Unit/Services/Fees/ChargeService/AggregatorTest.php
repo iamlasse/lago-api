@@ -266,7 +266,7 @@ it('bypasses the aggregation for non-recurring metrics when asked', function ():
         ->and($empty->options['running_total'])->toBe([]);
 });
 
-it('keeps the store API throwing for the clickhouse stub', function (): void {
+it('runs the clickhouse store through the faked HTTP interface', function (): void {
     $metric = aggregatorMetric();
     $subscription = aggregatorSubscription(aggregatorCustomer($metric));
 
@@ -279,11 +279,24 @@ it('keeps the store API throwing for the clickhouse stub', function (): void {
     // The store implements the full aggregation API (no placeholders left).
     expect($store->precomputed())->toBeFalse();
 
+    // The ClickHouseStore queries the ClickHouse HTTP interface; fake it so
+    // the full sum() path (CTE build, FORMAT JSON decode, result mapping)
+    // runs without a live server. The real-container smoke lives in
+    // ClickHouseStoreTest (skipped without LAGO_CLICKHOUSE_TEST_HOST).
+    Illuminate\Support\Facades\Http::fake([
+        '*' => Illuminate\Support\Facades\Http::response([
+            'data' => [['value' => '21', 'events_count' => '3']],
+        ]),
+    ]);
+
     $clickhouse = new App\Services\Events\Stores\ClickHouseStore(
         billingContext: BillingContext::fromSubscription($subscription),
         boundaries: [],
         code: 'metered_calls',
     );
 
-    $clickhouse->sum();
-})->throws(LogicException::class);
+    $result = $clickhouse->sum();
+
+    expect($result->value)->toBe('21')
+        ->and($result->eventsCount)->toBe(3);
+});

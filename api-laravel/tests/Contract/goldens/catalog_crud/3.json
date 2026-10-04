@@ -1,0 +1,24 @@
+{
+  "products": [
+    {
+      "lago_id": "df949280-8169-42f4-b175-635248ef4ff3",
+      "product_category_code": "hardware",
+      "billable_metric_code": null,
+      "name": "Keyboard",
+      "code": "keyboard",
+      "description": "mechanical keyboard",
+      "invoice_display_name": "Keyboard",
+      "product_type": "fixed",
+      "filters_count": 0,
+      "created_at": "2025-06-11T12:00:01Z",
+      "updated_at": "2025-06-11T12:00:01Z"
+    }
+  ],
+  "meta": {
+    "current_page": 1,
+    "next_page": null,
+    "prev_page": null,
+    "total_pages": 1,
+    "total_count": 1
+  }
+}

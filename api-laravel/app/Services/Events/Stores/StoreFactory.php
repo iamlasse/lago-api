@@ -13,9 +13,10 @@ use App\Models\Organization;
  * class — ClickHouse when LAGO_CLICKHOUSE_ENABLED is set AND the
  * organization opted into the clickhouse events store, Postgres otherwise.
  *
- * TODO(port): clickhouse store — LAGO_CLICKHOUSE_ENABLED is not set in this
- * environment, so the PostgresStore path is the active one; the
- * ClickHouseStore is a throwing stub (see its docblock).
+ * TODO(port): clickhouse store — the store is now ported
+ * (App\Services\Events\Stores\ClickHouseStore over
+ * App\Services\ClickHouse\Client), but without LAGO_CLICKHOUSE_ENABLED (and
+ * a running ClickHouse) the PostgresStore path stays the active one.
  */
 class StoreFactory
 {
@@ -25,13 +26,19 @@ class StoreFactory
     final public function __construct() {}
 
     /**
-     * Port of `ENV["LAGO_CLICKHOUSE_ENABLED"].present?`.
+     * Port of `ENV["LAGO_CLICKHOUSE_ENABLED"].present?` — read through the
+     * config (LAGO_CLICKHOUSE_ENABLED) so tests can flip the decision with
+     * config([...]) instead of putenv.
      */
     public static function supportsClickhouse(): bool
     {
-        $value = getenv('LAGO_CLICKHOUSE_ENABLED');
+        $value = config('lago.clickhouse.enabled');
 
-        return $value !== false && $value !== '';
+        if ($value === null) {
+            $value = getenv('LAGO_CLICKHOUSE_ENABLED');
+        }
+
+        return $value !== null && $value !== false && $value !== '';
     }
 
     /**

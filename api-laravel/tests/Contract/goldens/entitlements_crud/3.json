@@ -1,0 +1,22 @@
+{
+  "feature": {
+    "code": "seats",
+    "name": "Seat Management",
+    "description": "control the seat count",
+    "privileges": [
+      {
+        "code": "max_seats",
+        "name": "Maximum seats",
+        "value_type": "integer",
+        "config": {}
+      },
+      {
+        "code": "premium_support",
+        "name": "Premium support",
+        "value_type": "boolean",
+        "config": {}
+      }
+    ],
+    "created_at": "2025-06-10T12:00:00Z"
+  }
+}

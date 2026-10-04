@@ -31,6 +31,7 @@ class CreateService extends BaseService
     public function __construct(
         private readonly object $organization,
         private readonly array $params,
+        private readonly ?object $dunningCampaign = null,
     ) {
         parent::__construct();
     }
@@ -83,6 +84,9 @@ class CreateService extends BaseService
                 'amount_cents' => $totalAmountCents,
                 'amount_currency' => $currency,
                 'email' => $email,
+                // Rails: the dunning attempt that created the request
+                // (DunningCampaigns::ProcessAttemptService slice).
+                'dunning_campaign_id' => $this->dunningCampaign?->id,
             ]);
             $request->save();
 

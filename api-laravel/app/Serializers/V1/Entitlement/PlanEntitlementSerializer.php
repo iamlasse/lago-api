@@ -28,7 +28,16 @@ class PlanEntitlementSerializer extends ModelSerializer
     {
         $out = [];
 
-        foreach ($this->model->values as $entitlementValue) {
+        // Rails' `has_many :values` has no ORDER BY — its response order is
+        // the DB's heap order, effectively creation order. Pin that
+        // deterministically: value creation time, then the privilege code as
+        // the tiebreak for values minted in the same request (matches every
+        // captured golden; see scripts/contract/README.md finding 22).
+        $values = $this->model->values
+            ->sortBy([['created_at', 'asc'], ['privilege.code', 'asc']])
+            ->values();
+
+        foreach ($values as $entitlementValue) {
             $privilege = $entitlementValue->privilege;
 
             if ($privilege === null) {

@@ -152,7 +152,11 @@ class CreateService extends BaseService
 
     /**
      * Rails: Event's presence validations raise RecordInvalid from save! —
-     * reproduced as the same validation messages hash.
+     * reproduced as the same validation messages hash. Lago's en.yml
+     * overrides the ActiveRecord "blank" message with the error code
+     * "value_is_mandatory" (config/locales/en.yml:7), which is what
+     * `record.errors.messages` carries when the RecordInvalid detail is
+     * rendered.
      *
      * @throws EventValidation
      */
@@ -161,11 +165,11 @@ class CreateService extends BaseService
         $messages = [];
 
         if (($event->transaction_id ?? '') === '') {
-            $messages['transaction_id'] = ["can't be blank"];
+            $messages['transaction_id'] = ['value_is_mandatory'];
         }
 
         if (($event->code ?? '') === '') {
-            $messages['code'] = ["can't be blank"];
+            $messages['code'] = ['value_is_mandatory'];
         }
 
         if ($messages !== []) {

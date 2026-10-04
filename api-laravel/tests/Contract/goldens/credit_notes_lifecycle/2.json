@@ -1,0 +1,22 @@
+{
+  "estimated_credit_note": {
+    "lago_invoice_id": "1b9a5bcf-b3cd-434c-bce9-1eb144b13d24",
+    "invoice_number": "BUC-A934-001-001",
+    "currency": "EUR",
+    "taxes_amount_cents": 0,
+    "precise_taxes_amount_cents": "0.0",
+    "sub_total_excluding_taxes_amount_cents": 1000,
+    "max_creditable_amount_cents": 1000,
+    "max_refundable_amount_cents": 0,
+    "coupons_adjustment_amount_cents": 0,
+    "precise_coupons_adjustment_amount_cents": "0.0",
+    "taxes_rate": 0.0,
+    "items": [
+      {
+        "lago_fee_id": "80f1dab4-abb7-4156-8ee2-4176a7f786fc",
+        "amount_cents": 1000
+      }
+    ],
+    "applied_taxes": []
+  }
+}

@@ -6,8 +6,10 @@ namespace App\Support;
 
 use RuntimeException;
 use App\Models\Invoice;
+use App\Models\PaymentReceipt;
 use Illuminate\Support\Facades\Http;
 use App\Support\Documents\InvoicePdf;
+use App\Support\Documents\PaymentReceiptPdf;
 
 /**
  * Port of Rails' Utils::PdfGenerator
@@ -16,6 +18,10 @@ use App\Support\Documents\InvoicePdf;
  * (LAGO_PDF_URL + /forms/chromium/convert/html), passing the rendered
  * document, the Lago PDF logo and the page footer as multipart files with
  * the same scale/margins.
+ *
+ * The document context is the invoice — or, since the payment-receipts
+ * slice, a PaymentReceipt (Rails passes any context:
+ * `Utils::PdfGenerator.new(template:, context:)`).
  */
 final class PdfGenerator
 {
@@ -24,19 +30,24 @@ final class PdfGenerator
 
     public function __construct(
         private readonly string $template,
-        private readonly Invoice $invoice,
+        private readonly Invoice|PaymentReceipt $invoice,
     ) {}
 
-    /** Rails: `render_html` — the template rendered for the invoice context. */
+    /** Rails: `render_html` — the template rendered for the document context. */
     public function renderHtml(): string
     {
-        return InvoicePdf::render($this->template, $this->invoice);
+        return $this->invoice instanceof Invoice
+            ? InvoicePdf::render($this->template, $this->invoice)
+            : PaymentReceiptPdf::render($this->template, $this->invoice);
     }
 
     /** Rails: footer partial (templates/documents/footer). */
     public function renderFooter(): string
     {
-        return view('documents.footer', InvoicePdf::sharedViewData($this->invoice))->render();
+        return view('documents.footer', $this->invoice instanceof Invoice
+            ? InvoicePdf::sharedViewData($this->invoice)
+            : PaymentReceiptPdf::sharedViewData($this->invoice)
+        )->render();
     }
 
     /**

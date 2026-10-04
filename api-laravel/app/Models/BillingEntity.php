@@ -156,6 +156,39 @@ class BillingEntity extends BaseModel
         return $this->hasMany(Customer::class);
     }
 
+    /**
+     * Rails: belongs_to :applied_dunning_campaign, optional: true
+     * (dunning-campaigns slice).
+     */
+    public function appliedDunningCampaign(): BelongsTo
+    {
+        return $this->belongsTo(DunningCampaign::class, 'applied_dunning_campaign_id');
+    }
+
+    /**
+     * Port of BillingEntity#reset_customers_last_dunning_campaign_attempt
+     * (app/models/billing_entity.rb) — clear the dunning attempt
+     * bookkeeping of the entity's customers.
+     */
+    public function resetCustomersLastDunningCampaignAttempt(): void
+    {
+        // Rails: customers.update_all(...) — no validations/touches.
+        $this->customers()->toBase()->update([
+            'dunning_currency_attempts' => '{}',
+            'last_dunning_campaign_attempt' => 0,
+            'last_dunning_campaign_attempt_at' => null,
+        ]);
+    }
+
+    /**
+     * Rails: BillingEntity::EMAIL_SETTINGS.include?("payment_receipt.created")
+     * — email_settings is a varchar[] cast through PostgresArray.
+     */
+    public function emailSettingsInclude(string $setting): bool
+    {
+        return in_array($setting, (array) ($this->email_settings ?? []), true);
+    }
+
     // -- Validations ----------------------------------------------------------
 
     /**

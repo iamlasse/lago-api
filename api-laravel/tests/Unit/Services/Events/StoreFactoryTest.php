@@ -56,15 +56,20 @@ it('refuses a nested override', function (): void {
     });
 })->throws(RuntimeException::class, 'Events::Stores::StoreFactory override already active');
 
-it('throws from the clickhouse store aggregation entry points (TODO(port))', function (): void {
+it('instantiates the (now ported) clickhouse store under an override', function (): void {
     $organization = storeFactoryOrganization();
 
     StoreFactory::withOverride(ClickHouseStore::class, false, function () use ($organization): void {
         $store = StoreFactory::newInstance($organization, billingContext: new stdClass());
 
-        expect(fn (): mixed => $store->count())->toThrow(LogicException::class);
+        // The store is implemented (aggregations POST to the ClickHouse
+        // HTTP interface — see ClickHouseStoreTest for the SQL shapes);
+        // without a configured server a call surfaces the client's
+        // connection error rather than a stub throw.
+        expect($store)->toBeInstanceOf(ClickHouseStore::class)
+            ->and(fn (): mixed => $store->count())->toThrow(Error::class);
     });
-});
+})->group('clickhouse-store');
 
 it('resolves the postgres store with a live aggregation API (finding 12)', function (): void {
     $store = StoreFactory::newInstance(storeFactoryOrganization(), billingContext: new stdClass());

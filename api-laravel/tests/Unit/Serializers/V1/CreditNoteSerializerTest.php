@@ -92,7 +92,8 @@ it('serializes the credit note with literal snake_case keys', function (): void 
         ->and($payload['currency'])->toBe('EUR')
         ->and($payload['total_amount_cents'])->toBe(144)
         ->and($payload['taxes_amount_cents'])->toBe(24)
-        ->and($payload['precise_taxes_amount_cents'])->toBe('24.00000')
+        // Rails renders the BigDecimal with to_s("F").
+        ->and($payload['precise_taxes_amount_cents'])->toBe('24.0')
         ->and($payload['sub_total_excluding_taxes_amount_cents'])->toBe(98)
         ->and($payload['balance_amount_cents'])->toBe(120)
         ->and($payload['credit_amount_cents'])->toBe(120)
@@ -116,7 +117,8 @@ it('serializes the credit note items with their fee', function (): void {
 
     expect($payload['lago_id'])->toBe($item->id)
         ->and($payload['amount_cents'])->toBe(100)
-        ->and($payload['precise_amount_cents'])->toBe('100.50000')
+        // Rails renders the BigDecimal with to_s("F").
+        ->and($payload['precise_amount_cents'])->toBe('100.5')
         ->and($payload['amount_currency'])->toBe('EUR')
         ->and($payload['fee']['lago_id'])->toBe($fee->id);
 })->group('ledger:ser:V1.CreditNoteItemSerializer');

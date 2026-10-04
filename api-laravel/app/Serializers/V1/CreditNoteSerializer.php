@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Serializers\V1;
 
+use App\Support\MoneyMath;
 use App\Serializers\Base\ModelSerializer;
 use App\Serializers\Base\CollectionSerializer;
 use App\Serializers\V1\Concerns\FormatsDatetime;
@@ -41,9 +42,11 @@ class CreditNoteSerializer extends ModelSerializer
             'description' => $model->description,
             'currency' => $model->currency(),
             'total_amount_cents' => $model->total_amount_cents,
-            'precise_total_amount_cents' => (string) $model->preciseTotal(),
+            // Rails leaves these as BigDecimal; the ActiveSupport JSON encoder
+            // renders them with to_s("F") — MoneyMath::toF here.
+            'precise_total_amount_cents' => MoneyMath::toF((string) $model->preciseTotal()),
             'taxes_amount_cents' => $model->taxes_amount_cents,
-            'precise_taxes_amount_cents' => (string) $model->precise_taxes_amount_cents,
+            'precise_taxes_amount_cents' => MoneyMath::toF((string) $model->precise_taxes_amount_cents),
             'sub_total_excluding_taxes_amount_cents' => $model->subTotalExcludingTaxesAmountCents(),
             'balance_amount_cents' => $model->balance_amount_cents,
             'credit_amount_cents' => $model->credit_amount_cents,
@@ -89,7 +92,11 @@ class CreditNoteSerializer extends ModelSerializer
         return [
             'customer' => (new CustomerSerializer(
                 $this->model->customer,
-                $this->includedRelations('customer'),
+                // Rails: includes: included_relations(:customer, default: []) —
+                // the sub-includes land under the `includes` option key, so the
+                // nested customer emits `integration_customers: []` (Rails'
+                // CollectionSerializer renders empty collections as []).
+                ['includes' => $this->includedRelations('customer')],
             ))->serialize(),
         ];
     }

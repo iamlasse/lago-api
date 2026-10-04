@@ -72,6 +72,23 @@ return [
     'data_api_url' => env('LAGO_DATA_API_URL'),
     'data_api_bearer_token' => env('LAGO_DATA_API_BEARER_TOKEN'),
 
+    // Rails' config/database.yml `clickhouse` entry (LAGO_CLICKHOUSE_* env)
+    // + the `ENV["LAGO_CLICKHOUSE_ENABLED"].present?` store switch in
+    // Events::Stores::StoreFactory. Ported as the connection contract of
+    // App\Services\ClickHouse\Client (HTTP on :8123, no composer adapter).
+    'clickhouse' => [
+        'enabled' => env('LAGO_CLICKHOUSE_ENABLED'),
+        // database.yml: host LAGO_CLICKHOUSE_HOST, port 8123, database
+        // LAGO_CLICKHOUSE_DATABASE, username/password, ssl (production
+        // entry only — LAGO_CLICKHOUSE_SSL).
+        'host' => env('LAGO_CLICKHOUSE_HOST', 'localhost'),
+        'port' => (int) env('LAGO_CLICKHOUSE_PORT', 8123),
+        'database' => env('LAGO_CLICKHOUSE_DATABASE', 'default'),
+        'username' => env('LAGO_CLICKHOUSE_USERNAME', 'default'),
+        'password' => env('LAGO_CLICKHOUSE_PASSWORD', ''),
+        'ssl' => (bool) env('LAGO_CLICKHOUSE_SSL', false),
+    ],
+
     'webhook' => [
         // app/services/webhooks/send_http_service.rb
         'timeout_seconds' => (int) env('LAGO_WEBHOOK_TIMEOUT_SECONDS', 30),

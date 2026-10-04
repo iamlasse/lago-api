@@ -307,7 +307,9 @@ class CreateBatchService extends BaseService
 
     /**
      * Rails: `event.errors.messages` — the presence validations on
-     * transaction_id/code, with ActiveRecord's "can't be blank".
+     * transaction_id/code. Lago's en.yml overrides the ActiveRecord "blank"
+     * message with the error code "value_is_mandatory"
+     * (config/locales/en.yml:7), same mapping as the single-event path.
      *
      * @return array<string, list<string>>
      */
@@ -316,11 +318,11 @@ class CreateBatchService extends BaseService
         $messages = [];
 
         if (($event->transaction_id ?? '') === '') {
-            $messages['transaction_id'] = ["can't be blank"];
+            $messages['transaction_id'] = ['value_is_mandatory'];
         }
 
         if (($event->code ?? '') === '') {
-            $messages['code'] = ["can't be blank"];
+            $messages['code'] = ['value_is_mandatory'];
         }
 
         return $messages;

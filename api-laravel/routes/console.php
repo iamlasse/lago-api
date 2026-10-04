@@ -6,6 +6,7 @@ use App\Jobs\Clock\FinalizeInvoicesJob;
 use Illuminate\Support\Facades\Schedule;
 use App\Jobs\Clock\SubscriptionsBillerJob;
 use App\Jobs\Clock\RefreshDraftInvoicesJob;
+use App\Jobs\Clock\ProcessDunningCampaignsJob;
 use App\Jobs\Clock\MarkInvoicesAsPaymentOverdueJob;
 use App\Jobs\Clock\RetryGeneratingSubscriptionInvoicesJob;
 
@@ -34,3 +35,6 @@ Schedule::job(new MarkInvoicesAsPaymentOverdueJob)->hourlyAt(25);
 
 // every(1.hour, "schedule:retry_generating_subscription_invoices", at: "*:30") — "30 */1 * * *"
 Schedule::job(new RetryGeneratingSubscriptionInvoicesJob)->hourlyAt(30);
+
+// every(1.hour, "schedule:process_dunning_campaigns", at: "*:45") — "45 */1 * * *"
+Schedule::job(new ProcessDunningCampaignsJob)->hourlyAt(45);

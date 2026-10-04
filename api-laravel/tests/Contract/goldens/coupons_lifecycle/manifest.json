@@ -1,0 +1,200 @@
+{
+  "captured_at": "2025-06-07T12:00:00Z",
+  "requests": [
+    {
+      "method": "POST",
+      "path": "/api/v1/coupons",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001cc",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "coupon": {
+          "name": "Fixed Coupon",
+          "code": "fixed-10",
+          "description": "ten euros off",
+          "coupon_type": "fixed_amount",
+          "amount_cents": 1000,
+          "amount_currency": "EUR",
+          "frequency": "once",
+          "expiration": "time_limit",
+          "expiration_at": "2025-09-07T00:00:00Z",
+          "reusable": false
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-07T12:00:00Z"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/coupons",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001cc",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "coupon": {
+          "name": "Percentage Coupon",
+          "code": "pct-25",
+          "description": "25 percent off",
+          "coupon_type": "percentage",
+          "percentage_rate": "25.0",
+          "frequency": "recurring",
+          "frequency_duration": 3,
+          "expiration": "no_expiration"
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-07T12:00:01Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/coupons",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001cc"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-07T12:00:00Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/coupons/fixed-10",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001cc"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-07T12:00:00Z"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/coupons/fixed-10",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001cc",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "coupon": {
+          "name": "Fixed Coupon Renamed",
+          "description": "still ten euros off",
+          "amount_cents": 1200,
+          "expiration_at": "2025-09-07T00:00:00Z"
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-07T12:00:00Z"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/applied_coupons",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001cc",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "applied_coupon": {
+          "external_customer_id": "coupon-customer-1",
+          "coupon_code": "fixed-10"
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-07T12:00:00Z"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/applied_coupons",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001cc",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "applied_coupon": {
+          "external_customer_id": "coupon-customer-1",
+          "coupon_code": "pct-25"
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-07T12:00:02Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/applied_coupons",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001cc"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-07T12:00:00Z"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/coupons/fixed-10",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001cc",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "coupon": {
+          "name": "Fixed Coupon After Apply",
+          "amount_cents": 9999,
+          "code": "renamed-after-apply",
+          "frequency": "recurring",
+          "frequency_duration": 7
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-07T12:00:00Z"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/customers/coupon-customer-1/applied_coupons/FIXED_APPLIED_COUPON_ID",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001cc"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-07T12:00:03Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/applied_coupons",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001cc"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-07T12:00:04Z"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/coupons/fixed-10",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001cc"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-07T12:00:00Z"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/coupons/pct-25",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001cc"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-07T12:00:00Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/applied_coupons",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001cc"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-07T12:00:00Z"
+    }
+  ]
+}

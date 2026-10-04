@@ -67,6 +67,18 @@ class UpdateService extends BaseService
             //   "feature.updated", feature) — after commit, even when nothing
             //   changed.
 
+            // Rails reaches for `feature.privileges` through the loaded
+            // association target — `feature.privileges.new` appends to it and
+            // `privilege.discard!` marks in-memory records, so the serializer
+            // sees the post-update collection. Eloquent's make() + child
+            // save() and the deleteMissingPrivileges bulk delete leave the
+            // loaded collection stale, so reload it after commit (same
+            // stale-association shape as the auth_org webhook_url fix).
+            $feature->setRelation(
+                'privileges',
+                $feature->privileges()->orderBy('created_at')->orderBy('code')->get(),
+            );
+
             $result->feature = $feature;
 
             return $result;

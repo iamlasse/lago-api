@@ -76,6 +76,15 @@ x-laravel-backend-env: &laravel-backend-env
   "LAGO_LICENSE": ${LAGO_LICENSE:-}
   "LAGO_API_URL": ${LAGO_API_URL:-http://localhost:3000}
   "LAGO_FRONT_URL": ${LAGO_FRONT_URL:-http://localhost}
+  # --- ClickHouse events store (LAGO_CLICKHOUSE_ENABLED opts the factory in;
+  # the organization still needs clickhouse_events_store, like Rails) -------
+  "LAGO_CLICKHOUSE_ENABLED": ${LAGO_CLICKHOUSE_ENABLED:-}
+  "LAGO_CLICKHOUSE_HOST": ${LAGO_CLICKHOUSE_HOST:-clickhouse-laravel}
+  "LAGO_CLICKHOUSE_PORT": ${LAGO_CLICKHOUSE_PORT:-8123}
+  "LAGO_CLICKHOUSE_DATABASE": ${LAGO_CLICKHOUSE_DATABASE:-default}
+  "LAGO_CLICKHOUSE_USERNAME": ${LAGO_CLICKHOUSE_USERNAME:-default}
+  "LAGO_CLICKHOUSE_PASSWORD": ${LAGO_CLICKHOUSE_PASSWORD:-default}
+  "LAGO_CLICKHOUSE_SSL": ${LAGO_CLICKHOUSE_SSL:-false}
   # --- Sidekiq queue-split flags (job routing, per the Rails comments) -----
   "SIDEKIQ_EVENTS": ${SIDEKIQ_EVENTS:-false}
   "SIDEKIQ_PDFS": ${SIDEKIQ_PDFS:-false}
@@ -99,6 +108,29 @@ x-laravel-image: &laravel-image
     <<: *laravel-backend-env
 
 services:
+  # ClickHouse for the clickhouse events-store path (LAGO_CLICKHOUSE_ENABLED
+  # + org clickhouse_events_store). Same image as the base file's `clickhouse`
+  # service; EPHEMERAL data dir (no volume) — it holds derived, re-enrichable
+  # data only. Schema: scripts/clickhouse/init.sql in api-laravel (documented,
+  # not auto-run):
+  #   docker compose -f docker-compose.yml -f docker-compose.laravel.yml \
+  #     exec -T clickhouse-laravel clickhouse-client --multiquery \
+  #     < api-laravel/scripts/clickhouse/init.sql
+  # The app talks to it over the HTTP interface (:8123, the
+  # LAGO_CLICKHOUSE_HOST/PORT/DATABASE/USERNAME/PASSWORD/SSL envs in
+  # api-laravel/config/lago.php).
+  clickhouse-laravel:
+    image: clickhouse/clickhouse-server:26.2-alpine
+    container_name: lago_laravel_clickhouse
+    restart: unless-stopped
+    hostname: clickhouse-laravel
+    environment:
+      CLICKHOUSE_USER: ${LAGO_CLICKHOUSE_USERNAME:-default}
+      CLICKHOUSE_PASSWORD: ${LAGO_CLICKHOUSE_PASSWORD:-default}
+      CLICKHOUSE_DB: ${LAGO_CLICKHOUSE_DATABASE:-default}
+    ports:
+      - "${LAGO_CLICKHOUSE_PORT:-8123}:8123"
+
   # One-shot: config/route cache warming + the frozen-schema loader
   # (`php artisan migrate --force`). Same role as the base file's `migrate`.
   api-laravel-migrate:

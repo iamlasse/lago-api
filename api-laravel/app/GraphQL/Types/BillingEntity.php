@@ -18,4 +18,10 @@ class BillingEntity
     {
         return TimezoneWire::toWire($root->timezone);
     }
+
+    /** Rails: Types::BillingEntities::Object#applied_dunning_campaign — the relation. */
+    public function appliedDunningCampaign(\App\Models\BillingEntity $root): ?\App\Models\DunningCampaign
+    {
+        return $root->appliedDunningCampaign;
+    }
 }

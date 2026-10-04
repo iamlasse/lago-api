@@ -1,0 +1,129 @@
+{
+  "captured_at": "2025-06-08T12:00:00Z",
+  "requests": [
+    {
+      "method": "POST",
+      "path": "/api/v1/credit_notes",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001dd",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "credit_note": {
+          "invoice_id": "1b9a5bcf-b3cd-434c-bce9-1eb144b13d24",
+          "credit_amount_cents": 2000,
+          "reason": "other",
+          "description": "contract credit note",
+          "items": [
+            {
+              "fee_id": "80f1dab4-abb7-4156-8ee2-4176a7f786fc",
+              "amount_cents": 2000
+            }
+          ]
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-08T12:00:00Z"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/credit_notes/estimate",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001dd",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "credit_note": {
+          "invoice_id": "1b9a5bcf-b3cd-434c-bce9-1eb144b13d24",
+          "credit_amount_cents": 1000,
+          "items": [
+            {
+              "fee_id": "80f1dab4-abb7-4156-8ee2-4176a7f786fc",
+              "amount_cents": 1000
+            }
+          ]
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-08T12:00:00Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/credit_notes",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001dd"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-08T12:00:00Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/credit_notes/CREDIT_NOTE_ID",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001dd"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-08T12:00:00Z"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/credit_notes/CREDIT_NOTE_ID",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001dd",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "credit_note": {
+          "refund_status": "should_refund"
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-08T12:00:00Z"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/credit_notes/CREDIT_NOTE_ID/void",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001dd"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-08T12:00:00Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/credit_notes/CREDIT_NOTE_ID",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001dd"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-08T12:00:00Z"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/credit_notes",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001dd",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "credit_note": {
+          "invoice_id": "1b9a5bcf-b3cd-434c-bce9-1eb144b13d24",
+          "credit_amount_cents": 10000,
+          "reason": "other",
+          "items": [
+            {
+              "fee_id": "80f1dab4-abb7-4156-8ee2-4176a7f786fc",
+              "amount_cents": 10000
+            }
+          ]
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-08T12:00:00Z"
+    }
+  ]
+}

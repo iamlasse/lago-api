@@ -21,7 +21,7 @@ class EventSerializer extends ModelSerializer
         /** @var Event $event */
         $event = $this->model;
 
-        return [
+        $payload = [
             'lago_id' => $event->id,
             'transaction_id' => $event->transaction_id,
             'lago_customer_id' => $event->customer_id,
@@ -38,6 +38,20 @@ class EventSerializer extends ModelSerializer
             'external_subscription_id' => $event->external_subscription_id,
             'created_at' => $this->serializeDatetime($event->created_at),
         ];
+
+        // CONTRACT NOTE: the captured batch response (golden
+        // events_ingestion/7.json) carries `updated_at` on every event, while
+        // the single create / show / index goldens (1/4/8/9.json) do not —
+        // and the checked-out Rails snapshot's V1::EventSerializer
+        // (app/serializers/v1/event_serializer.rb, spec confirmed) emits no
+        // `updated_at` at all. The goldens are truth, so the batch endpoint
+        // opts into the field via the `with_updated_at` option; every other
+        // path keeps the snapshot shape (key absent, not null).
+        if ((bool) ($this->options['with_updated_at'] ?? false)) {
+            $payload['updated_at'] = $this->serializeDatetime($event->updated_at);
+        }
+
+        return $payload;
     }
 
     /**

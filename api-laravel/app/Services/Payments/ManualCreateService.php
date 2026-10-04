@@ -11,6 +11,7 @@ use App\Enums\InvoiceStatus;
 use App\Models\Organization;
 use App\Services\BaseResult;
 use App\Services\BaseService;
+use App\Jobs\PaymentReceipts\CreateJob;
 use App\Services\Invoices\UpdateService;
 
 /**
@@ -24,8 +25,8 @@ use App\Services\Invoices\UpdateService;
  * payment row (status succeeded, payment_type manual) + invoice
  * total_paid_amount_cents / payment_status update in one transaction.
  *
- * TODO(port): PaymentReceipts::CreateJob (issue_receipts) and
- * Integrations::Aggregator::Payments::CreateJob (accounting sync), and the
+ * TODO(port): Integrations::Aggregator::Payments::CreateJob (accounting
+ * sync), and the
  * Payment model validations Rails enforces on manual payments (credit
  * invoice must be fully covered, amount <= total due, no double success).
  */
@@ -100,6 +101,12 @@ class ManualCreateService extends BaseService
         }
 
         $result->payment = $payment;
+
+        // Rails: PaymentReceipts::CreateJob.perform_later(result.payment)
+        // if organization.issue_receipts_enabled?.
+        if ($this->organization->issueReceiptsEnabled()) {
+            CreateJob::dispatch($payment);
+        }
 
         return $result;
     }

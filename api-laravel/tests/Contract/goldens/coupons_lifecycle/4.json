@@ -1,0 +1,23 @@
+{
+  "coupon": {
+    "lago_id": "28e185ac-6160-4bf2-bbd4-b832539adca7",
+    "name": "Fixed Coupon",
+    "code": "fixed-10",
+    "description": "ten euros off",
+    "coupon_type": "fixed_amount",
+    "amount_cents": 1000,
+    "amount_currency": "EUR",
+    "percentage_rate": null,
+    "frequency": "once",
+    "frequency_duration": null,
+    "reusable": false,
+    "limited_plans": false,
+    "limited_billable_metrics": false,
+    "plan_codes": [],
+    "billable_metric_codes": [],
+    "created_at": "2025-06-07T12:00:00Z",
+    "expiration": "time_limit",
+    "expiration_at": "2025-09-07T00:00:00Z",
+    "terminated_at": null
+  }
+}

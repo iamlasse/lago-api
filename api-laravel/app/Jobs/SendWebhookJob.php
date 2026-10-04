@@ -20,7 +20,10 @@ use App\Services\Webhooks\Wallets\TerminatedService as WalletTerminatedService;
 use App\Services\Webhooks\Subscriptions\StartedService as SubscriptionStartedService;
 use App\Services\Webhooks\Subscriptions\UpdatedService as SubscriptionUpdatedService;
 use App\Services\Webhooks\Subscriptions\CanceledService as SubscriptionCanceledService;
+use App\Services\Webhooks\PaymentReceipts\CreatedService as PaymentReceiptCreatedService;
 use App\Services\Webhooks\Subscriptions\TerminatedService as SubscriptionTerminatedService;
+use App\Services\Webhooks\DunningCampaigns\FinishedService as DunningCampaignFinishedService;
+use App\Services\Webhooks\PaymentReceipts\GeneratedService as PaymentReceiptGeneratedService;
 use App\Services\Webhooks\WalletTransactions\CreatedService as WalletTransactionCreatedService;
 use App\Services\Webhooks\WalletTransactions\UpdatedService as WalletTransactionUpdatedService;
 use App\Services\Webhooks\Wallets\DepletedOngoingBalanceService as WalletDepletedOngoingBalanceService;
@@ -68,6 +71,9 @@ class SendWebhookJob implements ShouldQueue
         'wallet_transaction.created' => WalletTransactionCreatedService::class,
         'wallet_transaction.updated' => WalletTransactionUpdatedService::class,
         'wallet.depleted_ongoing_balance' => WalletDepletedOngoingBalanceService::class,
+        'payment_receipt.created' => PaymentReceiptCreatedService::class,
+        'payment_receipt.generated' => PaymentReceiptGeneratedService::class,
+        'dunning_campaign.finished' => DunningCampaignFinishedService::class,
     ];
 
     /** Rails: HIGH_PRIORITY_WEBHOOK_TYPES. */

@@ -1,0 +1,177 @@
+{
+  "captured_at": "2025-06-06T12:00:00Z",
+  "requests": [
+    {
+      "method": "POST",
+      "path": "/api/v1/wallets",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001bb",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "wallet": {
+          "external_customer_id": "wallet-customer-1",
+          "name": "Captured Wallet",
+          "code": "captured-wallet",
+          "currency": "EUR",
+          "rate_amount": "1.0",
+          "paid_credits": "10.0",
+          "granted_credits": "5.0",
+          "expiration_at": "2025-07-06T00:00:00Z",
+          "metadata": {
+            "channel": "contract"
+          }
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-06T12:00:00Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/wallets?external_customer_id=wallet-customer-1",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001bb"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-06T12:00:00Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/wallets/1a4a0d6e-0000-4000-8000-000000000102",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001bb"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-06T12:00:00Z"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/wallets/1a4a0d6e-0000-4000-8000-000000000102",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001bb",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "wallet": {
+          "name": "Seeded Wallet Renamed",
+          "expiration_at": "2025-08-06T00:00:00Z"
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-06T12:00:00Z"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet_transactions",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001bb",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "wallet_transaction": {
+          "wallet_id": "1a4a0d6e-0000-4000-8000-000000000102",
+          "granted_credits": "5.0",
+          "name": "grant five"
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-06T12:00:01Z"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet_transactions",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001bb",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "wallet_transaction": {
+          "wallet_id": "1a4a0d6e-0000-4000-8000-000000000102",
+          "paid_credits": "10.0",
+          "name": "paid ten"
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-06T12:00:02Z"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet_transactions",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001bb",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "wallet_transaction": {
+          "wallet_id": "1a4a0d6e-0000-4000-8000-000000000102",
+          "voided_credits": "2.5",
+          "name": "pool void"
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-06T12:00:03Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/wallets/1a4a0d6e-0000-4000-8000-000000000102/wallet_transactions",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001bb"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-06T12:00:04Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/wallets/1a4a0d6e-0000-4000-8000-000000000102/wallet_transactions?status=settled",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001bb"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-06T12:00:04Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/wallets/1a4a0d6e-0000-4000-8000-000000000102/wallet_transactions?transaction_status=purchased",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001bb"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-06T12:00:04Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/wallet_transactions/GRANTED_TRANSACTION_ID",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001bb"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-06T12:00:05Z"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/wallets/1a4a0d6e-0000-4000-8000-000000000102",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001bb"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-06T12:00:00Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/wallets/1a4a0d6e-0000-4000-8000-000000000102",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001bb"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-06T12:00:00Z"
+    }
+  ]
+}

@@ -466,6 +466,72 @@ class Customer extends BaseModel
         return parent::setAttribute($key, $value);
     }
 
+    // -- dunning campaigns slice (appended) -----------------------------------
+
+    /** Rails: belongs_to :applied_dunning_campaign, optional: true. */
+    public function appliedDunningCampaign(): BelongsTo
+    {
+        return $this->belongsTo(DunningCampaign::class, 'applied_dunning_campaign_id');
+    }
+
+    /**
+     * Rails: scope :falling_back_to_default_dunning_campaign — customers
+     * with no explicit campaign that are not excluded from dunning (they
+     * resolve the billing entity's applied campaign at runtime).
+     */
+    public function scopeFallingBackToDefaultDunningCampaign($query)
+    {
+        return $query->whereNull('applied_dunning_campaign_id')
+            ->where('exclude_from_dunning_campaign', false);
+    }
+
+    /** Rails: overdue_balance_cents — non-self-billed overdue invoice sum in a currency. */
+    public function overdueBalanceCents(?string $forCurrency = null): int
+    {
+        return (int) $this->overdueInvoicesQuery($forCurrency ?? $this->currency)
+            ->sum('total_amount_cents');
+    }
+
+    /** Rails: overdue_balances — {currency => total_amount_cents} of overdue invoices. */
+    public function overdueBalances(): array
+    {
+        return $this->overdueInvoicesQuery()
+            ->groupBy('currency')
+            ->selectRaw('currency, SUM(total_amount_cents) as amount_cents')
+            ->pluck('amount_cents', 'currency')
+            ->map(fn ($cents) => (int) $cents)
+            ->all();
+    }
+
+    /** Rails: reset_dunning_campaign! */
+    public function resetDunningCampaign(): void
+    {
+        $this->forceFill([
+            'dunning_currency_attempts' => [],
+            'last_dunning_campaign_attempt' => 0,
+            'last_dunning_campaign_attempt_at' => null,
+        ])->save();
+    }
+
+    /**
+     * Rails: reset_dunning_campaign_for_currency! — zero the per-currency
+     * attempt counter; `last_dunning_campaign_attempt_at` only clears when
+     * every tracked currency is back at zero.
+     */
+    public function resetDunningCampaignForCurrency(string $currency): void
+    {
+        $attempts = $this->dunning_currency_attempts ?? [];
+        $attempts[$currency] = 0;
+
+        $allReset = count($attempts) > 0 && count(array_filter($attempts, fn ($v) => (int) $v !== 0)) === 0;
+
+        $this->forceFill([
+            'dunning_currency_attempts' => $attempts,
+            'last_dunning_campaign_attempt' => 0,
+            'last_dunning_campaign_attempt_at' => $allReset ? null : $this->last_dunning_campaign_attempt_at,
+        ])->save();
+    }
+
     // -- Lifecycle ------------------------------------------------------------
 
     protected static function booted(): void
@@ -535,5 +601,13 @@ class Customer extends BaseModel
             'subscription_invoice_issuing_date_anchor' => SubscriptionInvoiceIssuingDateAnchor::class,
             'subscription_invoice_issuing_date_adjustment' => SubscriptionInvoiceIssuingDateAdjustment::class,
         ];
+    }
+
+    private function overdueInvoicesQuery(?string $currency = null)
+    {
+        return $this->invoices()
+            ->where('self_billed', false)
+            ->where('payment_overdue', true)
+            ->when($currency !== null, fn ($q) => $q->where('currency', $currency));
     }
 }

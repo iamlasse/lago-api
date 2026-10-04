@@ -184,9 +184,20 @@ abstract class ContractCase extends BaseTestCase
     {
         $failures = [];
         $responses = [];
+        $baseAt = new CarbonImmutable($this->manifest['captured_at'], 'UTC');
 
         foreach ($this->manifest['requests'] ?? [] as $index => $request) {
             $request = $this->substituteRequestValues($request, $index + 1, $responses);
+
+            // Scenarios whose request-created rows would TIE on created_at
+            // (and so fall to the minted-id ordering tie-break) freeze each
+            // request at its OWN instant — the manifest carries it as `at`
+            // (captured_at unless the scenario stepped the clock, e.g. one
+            // second between two POSTs feeding the same index). Without a
+            // per-request instant the replay clock stays at captured_at,
+            // which is exactly what the older scenarios recorded.
+            $this->freezeRequestInstant($request['at'] ?? null, $baseAt);
+
             $response = $responses[$index + 1] = $this->replay($request);
 
             try {
@@ -202,10 +213,67 @@ abstract class ContractCase extends BaseTestCase
             }
         }
 
+        // Restore the scenario-wide frozen instant for side-assertions.
+        CarbonImmutable::setTestNow($baseAt);
+        JWT::$timestamp = $baseAt->getTimestamp();
+
         if ($failures !== []) {
             static::fail(count($failures).' of '.count($this->manifest['requests'] ?? [])." replayed request(s) diverge from the goldens:\n\n"
                 .implode("\n\n", $failures));
         }
+    }
+
+    /**
+     * Replaces minted-id TOKENS with the ids THIS replay minted. The
+     * scenarios write a token (e.g. "GRANTED_TRANSACTION_ID") into the
+     * manifest wherever the captured request addressed a row MINTED by an
+     * earlier captured request — the real value was sent to Rails during
+     * the capture; the replay substitutes its own (see
+     * substituteRequestValues overrides).
+     *
+     * @param  array<string, string>  $map  token => replay-minted id
+     * @param  array<string, mixed>  $request
+     * @return array<string, mixed>
+     */
+    protected function replaceTokens(array $request, array $map): array
+    {
+        if ($map === []) {
+            return $request;
+        }
+
+        $walk = function (mixed $value) use (&$walk, $map): mixed {
+            if (is_string($value)) {
+                return strtr($value, $map);
+            }
+
+            if (is_array($value)) {
+                return array_map($walk, $value);
+            }
+
+            return $value;
+        };
+
+        if (isset($request['path'])) {
+            $request['path'] = $walk($request['path']);
+        }
+
+        if (array_key_exists('body', $request)) {
+            $request['body'] = $walk($request['body']);
+        }
+
+        return $request;
+    }
+
+    /**
+     * Freezes the replay clock at one captured request's instant (the
+     * manifest's `at`, or the scenario-wide captured_at) — see runScenario.
+     */
+    private function freezeRequestInstant(?string $at, CarbonImmutable $baseAt): void
+    {
+        $instant = ($at !== null && $at !== '') ? new CarbonImmutable($at, 'UTC') : $baseAt;
+
+        CarbonImmutable::setTestNow($instant);
+        JWT::$timestamp = $instant->getTimestamp();
     }
 
     /**

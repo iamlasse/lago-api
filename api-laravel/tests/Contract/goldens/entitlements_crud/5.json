@@ -1,0 +1,25 @@
+{
+  "entitlements": [
+    {
+      "code": "seats",
+      "name": "Seat Management Renamed",
+      "description": "control the seat count",
+      "privileges": [
+        {
+          "code": "max_seats",
+          "name": "Maximum seats",
+          "value_type": "integer",
+          "value": 10,
+          "config": {}
+        },
+        {
+          "code": "premium_support",
+          "name": "Premium support",
+          "value_type": "boolean",
+          "value": true,
+          "config": {}
+        }
+      ]
+    }
+  ]
+}

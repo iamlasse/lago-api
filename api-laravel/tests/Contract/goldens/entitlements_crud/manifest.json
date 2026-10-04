@@ -1,0 +1,199 @@
+{
+  "captured_at": "2025-06-10T12:00:00Z",
+  "requests": [
+    {
+      "method": "POST",
+      "path": "/api/v1/features",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001ff",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "feature": {
+          "code": "seats",
+          "name": "Seat Management",
+          "description": "control the seat count",
+          "privileges": [
+            {
+              "code": "max_seats",
+              "name": "Maximum seats",
+              "value_type": "integer"
+            },
+            {
+              "code": "premium_support",
+              "name": "Premium support",
+              "value_type": "boolean"
+            }
+          ]
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-10T12:00:00Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/features",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001ff"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-10T12:00:00Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/features/seats",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001ff"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-10T12:00:00Z"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/features/seats",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001ff",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "feature": {
+          "name": "Seat Management Renamed",
+          "privileges": [
+            {
+              "code": "max_seats",
+              "name": "Maximum seats",
+              "value_type": "integer"
+            },
+            {
+              "code": "premium_support",
+              "name": "Premium support",
+              "value_type": "boolean"
+            },
+            {
+              "code": "priority_level",
+              "name": "Priority level",
+              "value_type": "string"
+            }
+          ]
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-10T12:00:00Z"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/plans/entitlement-plan/entitlements",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001ff",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "entitlements": {
+          "seats": {
+            "max_seats": "10",
+            "premium_support": true
+          }
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-10T12:00:00Z"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/plans/entitlement-plan/entitlements",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001ff",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "entitlements": {
+          "seats": {
+            "max_seats": "20",
+            "priority_level": "high"
+          }
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-10T12:00:00Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/plans/entitlement-plan/entitlements",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001ff"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-10T12:00:00Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/plans/entitlement-plan/entitlements/seats",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001ff"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-10T12:00:00Z"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/subscriptions/entitlement-sub-1/entitlements",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001ff",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "entitlements": {
+          "seats": {
+            "max_seats": "50"
+          }
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-10T12:00:00Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/subscriptions/entitlement-sub-1/entitlements",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001ff"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-10T12:00:00Z"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/subscriptions/entitlement-sub-1/entitlements/seats",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001ff"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-10T12:00:00Z"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/plans/entitlement-plan/entitlements/seats",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001ff"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-10T12:00:00Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/plans/entitlement-plan/entitlements",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001ff"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-10T12:00:00Z"
+    }
+  ]
+}

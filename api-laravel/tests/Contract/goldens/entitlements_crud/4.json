@@ -1,0 +1,28 @@
+{
+  "feature": {
+    "code": "seats",
+    "name": "Seat Management Renamed",
+    "description": "control the seat count",
+    "privileges": [
+      {
+        "code": "max_seats",
+        "name": "Maximum seats",
+        "value_type": "integer",
+        "config": {}
+      },
+      {
+        "code": "premium_support",
+        "name": "Premium support",
+        "value_type": "boolean",
+        "config": {}
+      },
+      {
+        "code": "priority_level",
+        "name": "Priority level",
+        "value_type": "string",
+        "config": {}
+      }
+    ],
+    "created_at": "2025-06-10T12:00:00Z"
+  }
+}

@@ -6,6 +6,7 @@ namespace App\Models;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -131,6 +132,18 @@ class Payment extends BaseModel
     public function payable(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    // -- payment-receipts slice (appended) -----------------------------------
+
+    /**
+     * Rails: has_one :payment_receipt (payment_receipts.payment_id UNIQUE —
+     * the receipt is created at most once per payment by
+     * PaymentReceipts::CreateService).
+     */
+    public function paymentReceipt(): HasOne
+    {
+        return $this->hasOne(PaymentReceipt::class);
     }
 
     protected function casts(): array

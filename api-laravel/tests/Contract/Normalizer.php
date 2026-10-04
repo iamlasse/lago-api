@@ -34,7 +34,8 @@ use InvalidArgumentException;
  *   captured request get a fresh SecureRandom.uuid on each side (Rails mints
  *   at capture, Laravel at replay — even two Rails runs would differ), so
  *   byte equality is unattainable by construction. A UUID under `lago_id`
- *   (and under `lago_invoice_id` / `lago_tax_id`, which reference rows
+ *   (and under `lago_invoice_id` / `lago_tax_id` / `lago_subscription_id` /
+ *   `lago_coupon_id`, which reference rows
  *   minted by an earlier captured request) canonicalizes to "<uuid>";
  *   anything else under those keys (null, a slug, a foreign row's id format
  *   mismatch) still compares strictly, so a port that fails to mint or fails
@@ -69,9 +70,11 @@ class Normalizer
      * reference rows minted by an earlier captured request, so each runtime
      * echoes its own fresh ids; lago_subscription_id appears on fees and
      * billing_periods of invoices whose subscription was created by an
-     * earlier captured request (same rationale).
+     * earlier captured request (same rationale); lago_coupon_id appears on
+     * applied coupons whose coupon was created by an earlier captured
+     * request (same rationale).
      */
-    public const MINTED_ID_FIELDS = ['lago_id', 'lago_invoice_id', 'lago_tax_id', 'lago_subscription_id'];
+    public const MINTED_ID_FIELDS = ['lago_id', 'lago_invoice_id', 'lago_tax_id', 'lago_subscription_id', 'lago_coupon_id'];
 
     /**
      * JSON keys whose numeric values are compared as rates (float tolerance).

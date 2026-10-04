@@ -1,0 +1,20 @@
+{
+  "rate_phase": {
+    "lago_id": "676ca5e7-7dba-4077-a7ed-f85ae4ecb85a",
+    "code": "phase-intro",
+    "position": 1,
+    "name": "Intro pricing",
+    "billing_interval_cycle_count": 3,
+    "rate_override": {
+      "lago_id": "d8b0e1cd-0f55-4dd7-a1f8-5dbbfc723234",
+      "rate_model": "standard",
+      "rate_properties": {
+        "amount": "0.25"
+      },
+      "min_amount_cents": 0,
+      "billing_interval_count": null,
+      "billing_interval_unit": null,
+      "pricing_unit_conversion_rate": null
+    }
+  }
+}

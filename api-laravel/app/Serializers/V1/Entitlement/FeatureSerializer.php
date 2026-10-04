@@ -29,7 +29,16 @@ class FeatureSerializer extends ModelSerializer
     {
         $out = [];
 
-        foreach ($this->model->privileges as $privilege) {
+        // The Rails association carries no ORDER BY, so its response order is
+        // the DB's heap order — effectively creation order. Pin that
+        // deterministically: creation time, then code as the tiebreak for
+        // privileges minted in the same request (matches every captured
+        // golden; see scripts/contract/README.md finding 22).
+        $privileges = $this->model->privileges
+            ->sortBy([['created_at', 'asc'], ['code', 'asc']])
+            ->values();
+
+        foreach ($privileges as $privilege) {
             $out[] = [
                 'code' => $privilege->code,
                 'name' => $privilege->name,

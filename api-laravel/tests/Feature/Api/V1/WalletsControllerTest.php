@@ -152,8 +152,10 @@ it('creates a wallet with metadata', function (): void {
         'metadata' => ['meta_key_1' => 'meta_value_1', 'meta_key_2' => 'meta_value_2'],
     ]], ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
+        // Rails renders the metadata as the flat value hash (the
+        // MetadataSerializer returns model&.value).
         ->assertJsonPath('wallet.metadata', [
-            'metadata' => ['meta_key_1' => 'meta_value_1', 'meta_key_2' => 'meta_value_2'],
+            'meta_key_1' => 'meta_value_1', 'meta_key_2' => 'meta_value_2',
         ]);
 });
 
@@ -200,8 +202,10 @@ it('creates a wallet with limitations', function (): void {
     ]], ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
         ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($billableMetric) {
-            $json->where('wallet.limitations.applies_to.fee_types', ['charge'])
-                ->where('wallet.limitations.applies_to.billable_metric_codes', [$billableMetric->code])
+            // Rails merges the limitations hash at the TOP level — the
+            // response carries `applies_to`, no `limitations` key.
+            $json->where('wallet.applies_to.fee_types', ['charge'])
+                ->where('wallet.applies_to.billable_metric_codes', [$billableMetric->code])
                 ->etc();
         });
 });
@@ -382,7 +386,7 @@ it('keeps the existing limitations when applies_to is omitted on update', functi
         'name' => 'wallet1',
     ]], ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
-        ->assertJsonPath('wallet.limitations.applies_to.billable_metric_codes', [$billableMetric->code]);
+        ->assertJsonPath('wallet.applies_to.billable_metric_codes', [$billableMetric->code]);
 });
 
 it('updates a wallet with metadata', function (): void {
@@ -396,7 +400,7 @@ it('updates a wallet with metadata', function (): void {
     ]], ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
         ->assertJsonPath('wallet.metadata', [
-            'metadata' => ['meta_key_1' => 'updated_meta_value_1', 'meta_key_3' => 'meta_value_3'],
+            'meta_key_1' => 'updated_meta_value_1', 'meta_key_3' => 'meta_value_3',
         ]);
 });
 
@@ -526,7 +530,7 @@ it('returns wallets', function (): void {
             $json->where('wallets.0.lago_id', $wallet->id)
                 ->where('wallets.0.name', $wallet->name)
                 ->where('wallets.0.recurring_transaction_rules', [])
-                ->where('wallets.0.limitations.applies_to.fee_types', [])
+                ->where('wallets.0.applies_to.fee_types', [])
                 ->etc();
         });
 });

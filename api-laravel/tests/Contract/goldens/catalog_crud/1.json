@@ -1,0 +1,12 @@
+{
+  "product_category": {
+    "lago_id": "baeb9484-c33f-4ca4-a45e-2d9b99326597",
+    "name": "Hardware",
+    "code": "hardware",
+    "description": "physical devices",
+    "invoice_display_name": null,
+    "products_count": 0,
+    "created_at": "2025-06-11T12:00:00Z",
+    "updated_at": "2025-06-11T12:00:00Z"
+  }
+}

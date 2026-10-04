@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Serializers\V1;
 
+use App\Support\MoneyMath;
 use App\Models\WalletTransaction;
 use App\Serializers\Base\ModelSerializer;
 use App\Serializers\V1\Concerns\FormatsDatetime;
@@ -33,10 +34,14 @@ class WalletTransactionSerializer extends ModelSerializer
             'source' => $transaction->sourceEnum()?->label(),
             'transaction_status' => $transaction->transactionStatusEnum()?->label(),
             'transaction_type' => $transaction->transactionTypeEnum()?->label(),
-            'amount' => $transaction->amount,
-            'credit_amount' => $transaction->credit_amount,
+            // Rails' ActiveSupport JSON encoder renders BigDecimal attributes
+            // and BigDecimal division results with to_s("F").
+            'amount' => MoneyMath::toF((string) $transaction->amount),
+            'credit_amount' => MoneyMath::toF((string) $transaction->credit_amount),
             'remaining_amount_cents' => $transaction->remaining_amount_cents,
-            'remaining_credit_amount' => $transaction->remainingCreditAmount(),
+            'remaining_credit_amount' => $transaction->remainingCreditAmount() === null
+                ? null
+                : MoneyMath::toF((string) $transaction->remainingCreditAmount()),
             'priority' => $transaction->priority,
             'purchase_order_number' => $transaction->resolvedPurchaseOrderNumber(),
             'settled_at' => $this->serializeDatetime($transaction->settled_at),

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\PaymentProviders\Stripe\Webhooks;
 
 use App\Services\BaseResult;
+use App\Jobs\Payments\SetPaymentMethodAndCreateReceiptJob;
 
 /**
  * Port of Rails' PaymentProviders::Stripe::Webhooks::PaymentIntentSucceededService
@@ -17,9 +18,20 @@ class PaymentIntentSucceededService extends BaseService
     {
         $result = $this->updatePaymentStatus('succeeded', static::makeResult('payment', 'invoice'));
 
-        // TODO(port): Payments::SetPaymentMethodAndCreateReceiptJob — sets
-        // provider_payment_method_data from the Stripe PaymentMethod and
-        // creates the payment receipt (payment receipts slice).
+        $payment = $result->payment;
+
+        if ($payment !== null) {
+            // Rails: Payments::SetPaymentMethodAndCreateReceiptJob
+            // .perform_later(payment:, provider_payment_method_id:) — the
+            // payment method attach + the payment receipt creation.
+            //
+            // TODO(port): the provider_payment_method_data snapshot
+            // (Payments::SetPaymentMethodDataService) rides in the same job.
+            SetPaymentMethodAndCreateReceiptJob::dispatch(
+                payment: $payment,
+                providerPaymentMethodId: $this->dataObject()['payment_method'] ?? null,
+            );
+        }
 
         return $result;
     }

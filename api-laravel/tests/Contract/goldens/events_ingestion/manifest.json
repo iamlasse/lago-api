@@ -1,0 +1,210 @@
+{
+  "captured_at": "2025-06-09T12:00:00Z",
+  "requests": [
+    {
+      "method": "POST",
+      "path": "/api/v1/events",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001ee",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "event": {
+          "transaction_id": "evt-txn-1",
+          "code": "api_calls",
+          "external_customer_id": "events-customer-1",
+          "external_subscription_id": "events-sub-1",
+          "timestamp": 1749451300,
+          "properties": {
+            "value": 15
+          }
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-09T12:00:00Z"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/events",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001ee",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "event": {
+          "transaction_id": "evt-txn-1",
+          "code": "api_calls",
+          "external_customer_id": "events-customer-1",
+          "external_subscription_id": "events-sub-1",
+          "timestamp": 1749451400,
+          "properties": {
+            "value": 1
+          }
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-09T12:00:00Z"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/events",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001ee",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "event": {
+          "transaction_id": "evt-txn-bad",
+          "external_customer_id": "events-customer-1",
+          "external_subscription_id": "events-sub-1",
+          "timestamp": 1749451400,
+          "properties": {}
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-09T12:00:00Z"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/events",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001ee",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "event": {
+          "transaction_id": "evt-txn-2",
+          "code": "computed_total",
+          "external_customer_id": "events-customer-1",
+          "external_subscription_id": "events-sub-1",
+          "timestamp": 1749451500,
+          "properties": {
+            "value": 21
+          }
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-09T12:00:00Z"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/events",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001ee",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "event": {
+          "transaction_id": "evt-txn-3",
+          "code": "computed_total",
+          "external_customer_id": "events-customer-1",
+          "external_subscription_id": "events-sub-1",
+          "timestamp": 1749451600,
+          "properties": {
+            "other": 1
+          }
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-09T12:00:00Z"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/events/batch",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001ee",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "events": [
+          {
+            "transaction_id": "evt-batch-a",
+            "code": "api_calls",
+            "external_customer_id": "events-customer-1",
+            "external_subscription_id": "events-sub-1",
+            "timestamp": 1749451600,
+            "properties": {
+              "value": 3
+            }
+          },
+          {
+            "transaction_id": "evt-txn-1",
+            "code": "api_calls",
+            "external_customer_id": "events-customer-1",
+            "external_subscription_id": "events-sub-1",
+            "timestamp": 1749451600,
+            "properties": {
+              "value": 4
+            }
+          },
+          {
+            "transaction_id": "evt-batch-b",
+            "code": "api_calls",
+            "external_customer_id": "events-customer-1",
+            "external_subscription_id": "events-sub-1",
+            "timestamp": 1749451600,
+            "properties": {
+              "value": 5
+            }
+          }
+        ]
+      },
+      "required_headers": {},
+      "at": "2025-06-09T12:00:00Z"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/events/batch",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001ee",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "events": [
+          {
+            "transaction_id": "evt-batch-c",
+            "code": "api_calls",
+            "external_customer_id": "events-customer-1",
+            "external_subscription_id": "events-sub-1",
+            "timestamp": 1749451700,
+            "properties": {
+              "value": 7
+            }
+          },
+          {
+            "transaction_id": "evt-batch-d",
+            "code": "computed_total",
+            "external_customer_id": "events-customer-1",
+            "external_subscription_id": "events-sub-1",
+            "timestamp": 1749451701,
+            "properties": {
+              "value": 5
+            }
+          }
+        ]
+      },
+      "required_headers": {},
+      "at": "2025-06-09T12:00:00Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/events/evt-txn-2",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001ee"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-09T12:00:00Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/events",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000001ee"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-09T12:00:00Z"
+    }
+  ]
+}

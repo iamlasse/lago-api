@@ -122,5 +122,9 @@ it('registers the M1 webhook types', function (): void {
         'wallet_transaction.created',
         'wallet_transaction.updated',
         'wallet.depleted_ongoing_balance',
+        // payment-receipts + dunning-campaigns slice.
+        'payment_receipt.created',
+        'payment_receipt.generated',
+        'dunning_campaign.finished',
     ]);
 });

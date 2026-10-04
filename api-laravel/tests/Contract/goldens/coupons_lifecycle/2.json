@@ -1,0 +1,23 @@
+{
+  "coupon": {
+    "lago_id": "c6f66a32-0196-44a9-a6be-523b9c716ed9",
+    "name": "Percentage Coupon",
+    "code": "pct-25",
+    "description": "25 percent off",
+    "coupon_type": "percentage",
+    "amount_cents": null,
+    "amount_currency": null,
+    "percentage_rate": "25.0",
+    "frequency": "recurring",
+    "frequency_duration": 3,
+    "reusable": true,
+    "limited_plans": false,
+    "limited_billable_metrics": false,
+    "plan_codes": [],
+    "billable_metric_codes": [],
+    "created_at": "2025-06-07T12:00:01Z",
+    "expiration": "no_expiration",
+    "expiration_at": null,
+    "terminated_at": null
+  }
+}

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Serializers\V1\CreditNotes;
 
+use App\Support\MoneyMath;
 use Illuminate\Support\Arr;
 use App\Serializers\Base\ModelSerializer;
 use App\Serializers\Base\CollectionSerializer;
@@ -26,12 +27,13 @@ class EstimateSerializer extends ModelSerializer
             'invoice_number' => $model->invoice->number,
             'currency' => $model->currency(),
             'taxes_amount_cents' => $model->taxes_amount_cents,
-            'precise_taxes_amount_cents' => $model->preciseTaxesAmount(),
+            // Rails renders these BigDecimals with to_s("F") at JSON-encode time.
+            'precise_taxes_amount_cents' => MoneyMath::toF($model->preciseTaxesAmount()),
             'sub_total_excluding_taxes_amount_cents' => $model->subTotalExcludingTaxesAmountCents(),
             'max_creditable_amount_cents' => $model->credit_amount_cents,
             'max_refundable_amount_cents' => $model->refund_amount_cents,
             'coupons_adjustment_amount_cents' => $model->coupons_adjustment_amount_cents,
-            'precise_coupons_adjustment_amount_cents' => $model->preciseCouponsAdjustment(),
+            'precise_coupons_adjustment_amount_cents' => MoneyMath::toF($model->preciseCouponsAdjustment()),
             'taxes_rate' => $model->taxes_rate,
         ];
 

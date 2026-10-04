@@ -97,6 +97,12 @@ PAO_DISABLE=1 DB_DATABASE=lago_laravel_golden ./vendor/bin/pest tests/Contract
 | `invoice_percentage` | 2 + extra `10.json` | green | finding 12 CLOSED (count + running_total live) |
 | `invoice_volume` | 2 + extra `10.json` | green | finding 12 CLOSED (live aggregation) |
 | `invoice_graduated_percentage` | 2 + extra `10.json` | green | premium flip, gotcha below |
+| `wallets_lifecycle` | 13 | red (findings 14-16) | wallet CRUD, paid/granted txs, pool void, tx filters, terminate |
+| `coupons_lifecycle` | 14 | green | update-after-apply immutability, applied destroy, coupon destroy |
+| `credit_notes_lifecycle` | 8 | red (findings 17, 18, 24) | premium flip on BOTH sides (see gotcha), invoice seeded via in-process billing |
+| `events_ingestion` | 9 | red (findings 19, 20) | duplicate dedup, expression metric, mixed batch, show/index |
+| `entitlements_crud` | 13 | red (findings 21, 22) | typed privileges, plan PATCH/POST, subscription override |
+| `catalog_crud` | 16 | red (findings 23, 24) | /api/v2 surface, product_catalog flag, pending contract, rate phases |
 
 The five per-charge-model scenarios (`invoice_graduated`, `invoice_package`,
 `invoice_percentage`, `invoice_volume`, `invoice_graduated_percentage`) share
@@ -232,6 +238,64 @@ match exactly — exp matches because both sides mint under the frozen clock.
   mirrors it with `CarbonImmutable::setTestNow(BILLING_AT)` around
   `(new BillSubscriptionJob(...))->handle()` and restores the captured
   instant afterwards (see `InvoiceChargeModelCase::billInProcess`).
+- **Per-request frozen instants (`at`)**: when several request-CREATED rows
+  feed the SAME index and would TIE on created_at (falling to the
+  minted-id tie-break), the scenario freezes each request at its OWN
+  instant — `capture!` takes `at:` (default CAPTURED_AT), records it in
+  the manifest as `at`, and wraps the request in a TOP-LEVEL `travel_to`
+  (the seed/dump block must be CLOSED before the first request — nested
+  travel_to raises, see the TimeHelpers gotcha above). `ContractCase::runScenario`
+  honors `at`: it advances the replay clock per request
+  (`freezeRequestInstant`) and restores the scenario-wide instant after.
+  wallets_lifecycle's transactions index (three POSTs one frozen second
+  apart) is the reference.
+- **Minted-id TOKENS in the manifest**: when request N addresses a row
+  MINTED by an earlier captured request (show a created wallet transaction,
+  terminate a created applied coupon), the scenario sends the REAL id to
+  Rails but writes a TOKEN into the manifest (`capture!` `tokens:` option
+  gsubs path and body). The replay test overrides
+  `substituteRequestValues` and calls `ContractCase::replaceTokens` with
+  the id ITS own request minted (see WalletsLifecycleTest: the token is
+  read from the earlier response's `wallet_transactions.0.lago_id`).
+- **`lago_coupon_id` is a minted-id field** (Normalizer MINTED_ID_FIELDS):
+  applied coupons echo the id of a coupon created by an earlier captured
+  request; each runtime its own. Unit test
+  `NormalizerTest::test_minted_lago_coupon_ids_compare_as_uuids`.
+- **Coupons require `expiration`** (enum `no_expiration` | `time_limit`)
+  — a create without it 422s `value_is_invalid`.
+- **Events dedup needs `external_subscription_id`**: the unique index is
+  `(organization_id, external_subscription_id, transaction_id)`; with a
+  NULL subscription Postgres treats duplicates as distinct and the
+  duplicate transaction_id case (the point of the scenario) never fires —
+  events_ingestion seeds a subscription and addresses every event to it.
+- **Batch events' created_at is the DATABASE clock**: Rails' batch ingest
+  writes through a bulk INSERT (insert_all — travel_to cannot stub it), so
+  the golden would bake in the capture DAY's wall clock. The scenario
+  re-stamps the batch rows AND golden 7.json to the frozen instant
+  (runtime state, not contract — see events_ingestion.rb).
+- **Credit notes are premium-gated in BOTH runtimes**
+  (`CreditNotes::CreateService` / `App\Support\License::premium()`). The
+  scenario flips the Rails singleton (`License.instance_variable_set`); the
+  replay flips the same switch via `config(['lago.license' => ...])` in the
+  test setUp (test-harness config, NOT an app change).
+- **The v2 catalog is a rollout FLAG, not a license gate**: every native
+  /api/v2 controller requires the organization's
+  `feature_flags: ["product_catalog"]` — the catalog_crud org is seeded
+  with it. Every /api/v2 response carries `X-Lago-Endpoint-Status: beta`
+  (asserted via `required_headers`).
+- **Contracts are editable only while PENDING** (`Contract#editable?`) —
+  an `active` contract (default when started_at is not in the future)
+  answers `contract_locked` on applied-rate-card writes, so catalog_crud
+  creates its contract with a frozen month-in-the-future `started_at`.
+- **Feature updates REPLACE the whole privilege set**
+  (Features::UpdateService): re-declare the existing privileges when
+  adding one. The entitlements PATCH/POST body shape is
+  `{entitlements: {feature_code: {privilege_code: value}}}` — NO
+  "privileges" wrapper (a wrapper is read as a privilege literally → 404
+  privilege_not_found).
+- **Rate phases: only the LAST phase may be indefinite** — a phase without
+  `billing_interval_cycle_count` 422s `indefinite_phase_must_be_last` when
+  it is not last.
 
 ## Current findings (Laravel deviations, intentionally not fixed)
 
@@ -394,6 +458,116 @@ Not red but load-bearing: `lago_subscription_id` (fees, billing_periods)
 now canonicalizes as a minted id in the Normalizer — the subscription is
 minted by manifest request #1, so each runtime echoes its own id (unit test:
 `NormalizerTest::test_minted_lago_subscription_ids_compare_as_uuids`).
+
+### Findings from the six new scenarios (captured 2025-06-06 … 2025-06-11, CLOSED)
+
+14. ~~**`wallets_lifecycle` — decimal fields emit raw DB scales, not Rails'
+    `to_s("F")`.**~~ CLOSED: `MoneyMath::toF` applied to the wallet credit
+    decimals in `WalletSerializer` (rate_amount, credits_balance,
+    credits_ongoing_balance, credits_ongoing_usage_balance,
+    consumed_credits) and `WalletTransactionSerializer` (amount,
+    credit_amount, remaining_credit_amount) — Rails' ActiveSupport JSON
+    encoder renders BigDecimal attributes with to_s("F") even where the
+    serializer body just emits `model.x`.
+
+15. ~~**`wallets_lifecycle` — `limitations` / `applies_to` key swap.**~~
+    CLOSED, and the CONFLICT resolved against the Rails source: the
+    serializer's private `limitations` method returns
+    `{ applies_to: {...} }` and `payload.merge!(limitations)` merges it at
+    the TOP level, so the emitted payload has `applies_to` and NO
+    `limitations` key (Rails wallet_serializer.rb:63, 66-70) — the golden
+    and the source agree; the earlier "fix" nested the hash under
+    `limitations` on the wrong reading of `merge!`. The include is still
+    gated by `include('limitations')` (the controller's include list key).
+
+16. ~~**`wallets_lifecycle` — `metadata` double nesting.**~~ CLOSED: Rails
+    `payload.merge!(metadata)` where the private `metadata` method returns
+    `{ metadata: V1::MetadataSerializer...serialize }` and that serializer
+    returns `model&.value` (the flat hash) — so the payload key is
+    `metadata` with the FLAT value hash. The port had wrapped the value
+    hash a second time.
+
+17. ~~**`credit_notes_lifecycle` — `precise_*` decimal fields.**~~ CLOSED:
+    `MoneyMath::toF` on `precise_total_amount_cents` /
+    `precise_taxes_amount_cents` (CreditNoteSerializer),
+    `items[].precise_amount_cents` (CreditNoteItemSerializer) and the
+    estimate's `precise_taxes_amount_cents` /
+    `precise_coupons_adjustment_amount_cents` (EstimateSerializer) — Rails
+    leaves these as BigDecimal and the JSON encoder formats them.
+
+18. ~~**`credit_notes_lifecycle` — `customer.integration_customers` is
+    null.**~~ CLOSED: `CreditNoteSerializer::customer()` passed
+    `includedRelations('customer')` as the serializer OPTIONS array
+    positionally — the `includes` key was never set, so the nested
+    CustomerSerializer saw no includes and dropped the key (the differ
+    reads a missing key as null). Now wrapped as
+    `['includes' => $this->includedRelations('customer')]`, matching
+    InvoiceSerializer; the empty integration_customers collection renders
+    as `[]`.
+
+19. ~~**`events_ingestion` — validation messages not translated to error
+    codes.**~~ CLOSED: Lago's en.yml overrides the ActiveRecord "blank"
+    message with the error code "value_is_mandatory"
+    (config/locales/en.yml:7), which is what `record.errors.messages`
+    carries when the RecordInvalid details render. Both the single
+    (Events/CreateService::assertValid) and batch
+    (Events/CreateBatchService::validationMessages) presence mappings emit
+    `value_is_mandatory` for transaction_id and code.
+
+20. ~~**`events_ingestion` — batch response omits `updated_at`.**~~
+    CLOSED, with a documented golden-vs-source conflict: the checked-out
+    Rails snapshot's V1::EventSerializer emits no `updated_at` at all (the
+    serializer spec confirms), yet the captured BATCH golden
+    (events_ingestion/7.json) carries it while the single
+    create/show/index goldens (1/4/8/9.json) do not — so the batch
+    endpoint genuinely rendered it in the capturing build. The goldens are
+    truth: `EventSerializer` accepts a `with_updated_at` option and only
+    the batch action (EventsController::batch) passes it; every other path
+    keeps the snapshot shape with the key absent (not null).
+
+21. ~~**`entitlements_crud` — PUT /features/:code serializes a STALE
+    privileges relation.**~~ CLOSED: Rails reaches the serializer through
+    the association's loaded target — `feature.privileges.new` appends and
+    `privilege.discard!` marks in-memory records — while Eloquent's
+    make() + child save() and the bulk delete leave the loaded collection
+    stale. Features/UpdateService now reloads the privileges relation
+    after the transaction commits (same shape as the auth_org webhook_url
+    fix).
+
+22. ~~**`entitlements_crud` — privilege list ORDER differs.**~~ CLOSED:
+    neither side has a deterministic ORDER BY — Rails' order falls to DB
+    heap order (effectively creation order on the replay DB). Pinned
+    deterministically to creation order: `FeatureSerializer` sorts
+    privileges by created_at then code, `PlanEntitlementSerializer` sorts
+    entitlement values by created_at then privilege code, and
+    SubscriptionEntitlementQuery's privilege SQL adds `p.code` after
+    `ordering_date` (values minted in one request share created_at under
+    the frozen replay clock). Matches every captured golden.
+
+23. ~~**`catalog_crud` — POST /api/v2/rate_cards rejects `standard` on a
+    fixed product.**~~ CLOSED: the divergence was neither the matrix nor
+    the params — `RateCardRate::validateRateModelCompatibility` read the
+    model with `getRawOriginal('rate_model')`, and on the UNSAVED rate the
+    originals array is empty, so 'standard' reached the matrix as '' and
+    fell out of FIXED_ITEM_RATE_MODELS. Now reads the raw attribute (same
+    read as validateRateModel). CASCADES CLEARED, and they exposed three
+    more diffs behind the 404/422s, all fixed: (a) Rails'
+    `before_validation :normalize_effective_from` (beginning_of_day on
+    arrears cards) was missing — ported to RateCardRate::validateAttributes;
+    (b) the applied-rate-cards index query JOINed contracts with `select *`,
+    letting the contracts columns clobber the card's id/created_at/
+    updated_at — now `select('contract_rate_cards.*')`; (c) the v2
+    serializer shapes — `units` renders through MoneyMath::toF and
+    FormatsDatetime::serializeDate now emits Rails' true Date#iso8601
+    ("Y-m-d", not midnight-datetime) for DATE columns.
+
+24. ~~**Pagination `meta` off-by-one on some indexes.**~~ CLOSED as a
+    cascade of finding 23: with the rate card 422'd, the v2 rate_cards and
+    applied_rate_cards indexes replayed against an EMPTY collection and
+    reported total_count 0 (current_page 0 with it) where the goldens held
+    the 1-row Rails state; with 23 fixed the meta matches. GET /credit_notes
+    (v1) never reproduced after the finding-17/18 fixes — its index meta
+    was already correct (the README note predated the serializer repairs).
 
 
 

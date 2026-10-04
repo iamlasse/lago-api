@@ -213,7 +213,12 @@ class SubscriptionEntitlementQuery extends BaseService
                     )
                 )
             ORDER BY
-                ordering_date
+                ordering_date,
+                -- Rails orders by ordering_date only; privileges minted in the
+                -- same request share created_at, so their relative order is
+                -- heap luck. The code tiebreak pins it to creation order
+                -- (contract finding 22).
+                p.code
             SQL;
     }
 

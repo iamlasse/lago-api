@@ -44,7 +44,11 @@ class ContractRateCardsQuery extends BaseService
 
         if (($this->filters['external_id'] ?? null) !== null) {
             $contractRateCards->join('contracts', 'contracts.id', '=', 'contract_rate_cards.contract_id')
-                ->where('contracts.external_id', $this->filters['external_id']);
+                ->where('contracts.external_id', $this->filters['external_id'])
+                // The join's columns share names with the card's (id,
+                // created_at, updated_at); without the explicit select the
+                // contracts row clobbers the model attributes.
+                ->select('contract_rate_cards.*');
         }
 
         // Rails: same order as a contract's appliedRateCards —

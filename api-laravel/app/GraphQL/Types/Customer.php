@@ -83,4 +83,10 @@ class Customer
     {
         return $root->editable();
     }
+
+    /** Rails: Types::Customers::Object#applied_dunning_campaign — the relation. */
+    public function appliedDunningCampaign(CustomerModel $root): ?\App\Models\DunningCampaign
+    {
+        return $root->appliedDunningCampaign;
+    }
 }

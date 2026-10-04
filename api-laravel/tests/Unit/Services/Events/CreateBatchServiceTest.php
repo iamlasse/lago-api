@@ -116,7 +116,9 @@ it('reports blank transaction_id per index', function (): void {
 
     expect($result->success())->toBeFalse()
         ->and(Event::query()->count())->toBe(0)
-        ->and($result->getError()->messages->{'0'})->toBe(['transaction_id' => ["can't be blank"]]);
+        // Lago's en.yml maps the ActiveRecord "blank" message to the
+        // error code "value_is_mandatory" (contract finding 19).
+        ->and($result->getError()->messages->{'0'})->toBe(['transaction_id' => ['value_is_mandatory']]);
 });
 
 it('reports duplicate transaction_ids within the payload', function (): void {

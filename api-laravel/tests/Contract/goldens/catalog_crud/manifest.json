@@ -1,0 +1,296 @@
+{
+  "captured_at": "2025-06-11T12:00:00Z",
+  "requests": [
+    {
+      "method": "POST",
+      "path": "/api/v2/product_categories",
+      "headers": {
+        "X-Lago-Endpoint-Status": "beta",
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-000000000201",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "product_category": {
+          "name": "Hardware",
+          "code": "hardware",
+          "description": "physical devices"
+        }
+      },
+      "required_headers": {
+        "X-Lago-Endpoint-Status": "beta"
+      },
+      "at": "2025-06-11T12:00:00Z"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/products",
+      "headers": {
+        "X-Lago-Endpoint-Status": "beta",
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-000000000201",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "product": {
+          "name": "Keyboard",
+          "code": "keyboard",
+          "description": "mechanical keyboard",
+          "invoice_display_name": "Keyboard",
+          "product_type": "fixed",
+          "product_category_code": "hardware"
+        }
+      },
+      "required_headers": {
+        "X-Lago-Endpoint-Status": "beta"
+      },
+      "at": "2025-06-11T12:00:01Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/products",
+      "headers": {
+        "X-Lago-Endpoint-Status": "beta",
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-000000000201"
+      },
+      "body": null,
+      "required_headers": {
+        "X-Lago-Endpoint-Status": "beta"
+      },
+      "at": "2025-06-11T12:00:00Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/products/keyboard",
+      "headers": {
+        "X-Lago-Endpoint-Status": "beta",
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-000000000201"
+      },
+      "body": null,
+      "required_headers": {
+        "X-Lago-Endpoint-Status": "beta"
+      },
+      "at": "2025-06-11T12:00:00Z"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v2/products/keyboard",
+      "headers": {
+        "X-Lago-Endpoint-Status": "beta",
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-000000000201",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "product": {
+          "name": "Keyboard Pro",
+          "description": "mechanical keyboard, pro"
+        }
+      },
+      "required_headers": {
+        "X-Lago-Endpoint-Status": "beta"
+      },
+      "at": "2025-06-11T12:00:00Z"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/rate_cards",
+      "headers": {
+        "X-Lago-Endpoint-Status": "beta",
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-000000000201",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "rate_card": {
+          "product_code": "keyboard",
+          "name": "Keyboard Card",
+          "code": "kb-card",
+          "description": "keyboard rate card",
+          "currency": "EUR",
+          "billing_timing": "arrears",
+          "proration": false,
+          "display_on_invoice": true,
+          "rates": [
+            {
+              "code": "kb-rate",
+              "effective_from": "2025-06-11T12:00:00Z",
+              "rate_model": "standard",
+              "min_amount_cents": 0,
+              "billing_interval_count": 1,
+              "billing_interval_unit": "month",
+              "rate_properties": {
+                "amount": "0.50"
+              }
+            }
+          ]
+        }
+      },
+      "required_headers": {
+        "X-Lago-Endpoint-Status": "beta"
+      },
+      "at": "2025-06-11T12:00:02Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/rate_cards",
+      "headers": {
+        "X-Lago-Endpoint-Status": "beta",
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-000000000201"
+      },
+      "body": null,
+      "required_headers": {
+        "X-Lago-Endpoint-Status": "beta"
+      },
+      "at": "2025-06-11T12:00:03Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/rate_cards/kb-card",
+      "headers": {
+        "X-Lago-Endpoint-Status": "beta",
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-000000000201"
+      },
+      "body": null,
+      "required_headers": {
+        "X-Lago-Endpoint-Status": "beta"
+      },
+      "at": "2025-06-11T12:00:00Z"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/contracts",
+      "headers": {
+        "X-Lago-Endpoint-Status": "beta",
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-000000000201",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "contract": {
+          "external_customer_id": "catalog-customer-1",
+          "external_id": "contract-1",
+          "name": "Catalog Contract",
+          "plan_code": "catalog-contract-plan",
+          "billing_time": "calendar",
+          "started_at": "2025-07-11T12:00:00Z"
+        }
+      },
+      "required_headers": {
+        "X-Lago-Endpoint-Status": "beta"
+      },
+      "at": "2025-06-11T12:00:04Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/contracts/contract-1",
+      "headers": {
+        "X-Lago-Endpoint-Status": "beta",
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-000000000201"
+      },
+      "body": null,
+      "required_headers": {
+        "X-Lago-Endpoint-Status": "beta"
+      },
+      "at": "2025-06-11T12:00:00Z"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/contracts/contract-1/applied_rate_cards",
+      "headers": {
+        "X-Lago-Endpoint-Status": "beta",
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-000000000201",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "applied_rate_card": {
+          "rate_card_code": "kb-card",
+          "units": 100
+        }
+      },
+      "required_headers": {
+        "X-Lago-Endpoint-Status": "beta"
+      },
+      "at": "2025-06-11T12:00:05Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/contracts/contract-1/applied_rate_cards",
+      "headers": {
+        "X-Lago-Endpoint-Status": "beta",
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-000000000201"
+      },
+      "body": null,
+      "required_headers": {
+        "X-Lago-Endpoint-Status": "beta"
+      },
+      "at": "2025-06-11T12:00:06Z"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/contracts/contract-1/applied_rate_cards/kb-card/rate_phases",
+      "headers": {
+        "X-Lago-Endpoint-Status": "beta",
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-000000000201",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "rate_phase": {
+          "code": "phase-intro",
+          "position": 1,
+          "name": "Intro pricing",
+          "billing_interval_cycle_count": 3,
+          "rate_override": {
+            "rate_model": "standard",
+            "rate_properties": {
+              "amount": "0.25"
+            }
+          }
+        }
+      },
+      "required_headers": {
+        "X-Lago-Endpoint-Status": "beta"
+      },
+      "at": "2025-06-11T12:00:07Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/contracts/contract-1/applied_rate_cards/kb-card",
+      "headers": {
+        "X-Lago-Endpoint-Status": "beta",
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-000000000201"
+      },
+      "body": null,
+      "required_headers": {
+        "X-Lago-Endpoint-Status": "beta"
+      },
+      "at": "2025-06-11T12:00:08Z"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v2/contracts/contract-1/applied_rate_cards/kb-card",
+      "headers": {
+        "X-Lago-Endpoint-Status": "beta",
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-000000000201",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "applied_rate_card": {
+          "units": 150
+        }
+      },
+      "required_headers": {
+        "X-Lago-Endpoint-Status": "beta"
+      },
+      "at": "2025-06-11T12:00:09Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/contracts",
+      "headers": {
+        "X-Lago-Endpoint-Status": "beta",
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-000000000201"
+      },
+      "body": null,
+      "required_headers": {
+        "X-Lago-Endpoint-Status": "beta"
+      },
+      "at": "2025-06-11T12:00:10Z"
+    }
+  ]
+}

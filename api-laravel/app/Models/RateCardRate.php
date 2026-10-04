@@ -184,6 +184,10 @@ class RateCardRate extends BaseModel
     {
         $errors = [];
 
+        // Rails: before_validation :normalize_effective_from — runs before
+        // every validation below, so they all see the normalized value.
+        $this->normalizeEffectiveFrom();
+
         $this->validateCode($errors);
         $this->validateEffectiveFrom($errors);
         $this->validateRateModel($errors);
@@ -197,6 +201,26 @@ class RateCardRate extends BaseModel
         $this->validateRateProperties($errors);
 
         return $errors;
+    }
+
+    /**
+     * Rails: `normalize_effective_from` — arrears rates apply per whole
+     * day, so their effective_from snaps to the start of the day; advance
+     * rates keep full instants (they price per event).
+     */
+    protected function normalizeEffectiveFrom(): void
+    {
+        $raw = $this->getAttributes()['effective_from'] ?? null;
+
+        if ($raw === null || $raw === '') {
+            return;
+        }
+
+        if (! $this->rateCard?->arrears()) {
+            return;
+        }
+
+        $this->effective_from = \Carbon\Carbon::parse((string) $raw, 'UTC')->startOfDay();
     }
 
     /** @param array<string, list<string>> $errors */
@@ -381,8 +405,15 @@ class RateCardRate extends BaseModel
      */
     protected function validateRateModelCompatibility(array &$errors): void
     {
+        // Read the raw attribute, not getRawOriginal(): on an unsaved record
+        // the originals array is empty, so getRawOriginal() answers null even
+        // though a rate_model was assigned — which blanked the value before
+        // the compatibility matrix and rejected fixed-product standard cards
+        // with not_allowed_for_product (contract finding 23).
+        $rawRateModel = $this->getAttributes()['rate_model'] ?? null;
+
         $errorCode = \App\Services\RateCardRates\ModelCompatibility::errorCode(
-            rateModel: ($this->rate_model !== null ? (string) $this->getRawOriginal('rate_model') : null),
+            rateModel: ($rawRateModel === null ? null : (string) $rawRateModel),
             rateCard: $this->rateCard,
         );
 

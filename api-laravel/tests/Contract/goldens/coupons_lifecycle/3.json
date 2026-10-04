@@ -1,0 +1,53 @@
+{
+  "coupons": [
+    {
+      "lago_id": "c6f66a32-0196-44a9-a6be-523b9c716ed9",
+      "name": "Percentage Coupon",
+      "code": "pct-25",
+      "description": "25 percent off",
+      "coupon_type": "percentage",
+      "amount_cents": null,
+      "amount_currency": null,
+      "percentage_rate": "25.0",
+      "frequency": "recurring",
+      "frequency_duration": 3,
+      "reusable": true,
+      "limited_plans": false,
+      "limited_billable_metrics": false,
+      "plan_codes": [],
+      "billable_metric_codes": [],
+      "created_at": "2025-06-07T12:00:01Z",
+      "expiration": "no_expiration",
+      "expiration_at": null,
+      "terminated_at": null
+    },
+    {
+      "lago_id": "28e185ac-6160-4bf2-bbd4-b832539adca7",
+      "name": "Fixed Coupon",
+      "code": "fixed-10",
+      "description": "ten euros off",
+      "coupon_type": "fixed_amount",
+      "amount_cents": 1000,
+      "amount_currency": "EUR",
+      "percentage_rate": null,
+      "frequency": "once",
+      "frequency_duration": null,
+      "reusable": false,
+      "limited_plans": false,
+      "limited_billable_metrics": false,
+      "plan_codes": [],
+      "billable_metric_codes": [],
+      "created_at": "2025-06-07T12:00:00Z",
+      "expiration": "time_limit",
+      "expiration_at": "2025-09-07T00:00:00Z",
+      "terminated_at": null
+    }
+  ],
+  "meta": {
+    "current_page": 1,
+    "next_page": null,
+    "prev_page": null,
+    "total_pages": 1,
+    "total_count": 2
+  }
+}

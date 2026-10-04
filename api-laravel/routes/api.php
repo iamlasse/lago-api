@@ -7,7 +7,9 @@ use App\Http\Middleware\SetBetaHeader;
 use App\Exceptions\Api\NotFoundException;
 use App\Http\Controllers\Api\V1\PlansController;
 use App\Http\Controllers\Api\V1\TaxesController;
+use App\Http\Controllers\Api\V1\AddOnsController;
 use App\Http\Controllers\Api\V1\EventsController;
+use App\Http\Controllers\Api\V1\OrdersController;
 use App\Http\Controllers\Api\V1\CouponsController;
 use App\Http\Controllers\Api\V1\WalletsController;
 use App\Http\Controllers\Api\V1\FeaturesController;
@@ -21,9 +23,11 @@ use App\Http\Controllers\Api\V1\CreditNotesController;
 use App\Http\Controllers\Api\V1\OrganizationsController;
 use App\Http\Controllers\Api\V1\Plans\ChargesController;
 use App\Http\Controllers\Api\V1\SubscriptionsController;
+use App\Http\Controllers\Api\V1\Analytics\MrrsController;
 use App\Http\Controllers\Api\V1\AppliedCouponsController;
 use App\Http\Controllers\Api\V1\DataApi\UsagesController;
 use App\Http\Controllers\Api\V1\BillableMetricsController;
+use App\Http\Controllers\Api\V1\PaymentReceiptsController;
 use App\Http\Controllers\Api\V1\PaymentRequestsController;
 use App\Http\Controllers\Api\V1\WebhookEndpointsController;
 use App\Http\Controllers\Api\V1\ProductCategoriesController;
@@ -31,6 +35,10 @@ use App\Http\Controllers\Api\V1\Plans\FixedChargesController;
 use App\Http\Controllers\Api\V1\WalletTransactionsController;
 use App\Http\Controllers\Api\V1\Plans\Charges\FiltersController;
 use App\Http\Controllers\Api\V1\Plans\AppliedRateCardsController;
+use App\Http\Controllers\Api\V1\Analytics\GrossRevenuesController;
+use App\Http\Controllers\Api\V1\Analytics\InvoicedUsagesController;
+use App\Http\Controllers\Api\V1\Analytics\OverdueBalancesController;
+use App\Http\Controllers\Api\V1\Analytics\InvoiceCollectionsController;
 use App\Http\Controllers\Api\V1\Customers\UsageController as CustomerUsageController;
 use App\Http\Controllers\Api\V1\RateCards\RatesController as RateCardRatesController;
 use App\Http\Controllers\Api\V1\Products\FiltersController as ProductFiltersController;
@@ -459,6 +467,45 @@ $sharedApi = function (): void {
         Route::delete('customers/{external_id}', [CustomersController::class, 'destroy'])
             ->where('external_id', '.+');
 
+        // == add-ons / orders / payment receipts — appended orders slice block ==
+        //
+        // From the rest.json rows (filter "/add_ons", "/orders",
+        // "/payment_receipts"); registered as a distinct appended block.
+        //
+        // - Add-ons are keyed by code, which may contain dots (Rails:
+        //   resources :add_ons, param: :code with the wildcard constraint).
+        // - Orders are keyed by uuid id; there is NO create route (orders
+        //   are created when an order form is signed) — index, show and
+        //   execute only.
+        // - The payment_receipts rows are registered here for the parallel
+        //   receipts slice under the PINNED class names
+        //   App\Http\Controllers\Api\V1\PaymentReceiptsController (the
+        //   routes resolve as soon as that class lands). Verified against
+        //   rest.json: there are NO customer-nested payment_receipts rows.
+        Route::prefix('add_ons')->as('add_ons:')->group(function (): void {
+            Route::get('', [AddOnsController::class, 'index']);
+            Route::post('', [AddOnsController::class, 'create']);
+
+            Route::get('{code}', [AddOnsController::class, 'show'])->where('code', '.+');
+            Route::put('{code}', [AddOnsController::class, 'update'])->where('code', '.+');
+            Route::patch('{code}', [AddOnsController::class, 'update'])->where('code', '.+');
+            Route::delete('{code}', [AddOnsController::class, 'destroy'])->where('code', '.+');
+        });
+
+        Route::prefix('orders')->as('orders:')->group(function (): void {
+            Route::get('', [OrdersController::class, 'index']);
+
+            Route::post('{id}/execute', [OrdersController::class, 'execute']);
+
+            Route::get('{id}', [OrdersController::class, 'show']);
+        });
+
+        Route::prefix('payment_receipts')->as('payment_receipts:')->group(function (): void {
+            Route::get('', [PaymentReceiptsController::class, 'index']);
+            Route::post('{id}/resend_email', [PaymentReceiptsController::class, 'resendEmail']);
+            Route::get('{id}', [PaymentReceiptsController::class, 'show']);
+        });
+
         // == analytics (Lago Data API proxy) — appended analytics-slice block ====
         //
         // The ONLY /analytics* route Rails serves from the Data API HTTP proxy:
@@ -472,31 +519,33 @@ $sharedApi = function (): void {
         // license instead); the api-permissions resource is "analytic".
         Route::get('analytics/usage', [UsagesController::class, 'index']);
 
-        // TODO(port): the OTHER five /analytics routes are ClickHouse-direct,
-        // NOT Data-API-backed, and stay unregistered until the ClickHouse
-        // analytics store exists (ensure_organization_uses_clickhouse +
-        // org-level result caching; Rails' Analytics::* models run raw SQL on
-        // the ClickHouse connection in app/models/analytics/*.rb, behind
-        // services in app/services/analytics/ and serializers in
-        // app/serializers/v1/analytics/):
+        // == analytics (the five raw-SQL analytics endpoints) ===================
         //
-        //   GET /api/v{1,2}/analytics/gross_revenue       api/v1/analytics/gross_revenues#index
-        //       (Analytics::GrossRevenuesService -> ::Analytics::GrossRevenue)
-        //   GET /api/v{1,2}/analytics/invoiced_usage      api/v1/analytics/invoiced_usages#index
-        //       (Analytics::InvoicedUsagesService -> ::Analytics::InvoicedUsage)
-        //   GET /api/v{1,2}/analytics/invoice_collection  api/v1/analytics/invoice_collections#index
-        //       (Analytics::InvoiceCollectionsService -> ::Analytics::InvoiceCollection)
-        //   GET /api/v{1,2}/analytics/mrr                 api/v1/analytics/mrrs#index
-        //       (Analytics::MrrsService -> ::Analytics::Mrr; premium-gated —
-        //        forbidden_failure! "feature_unavailable" without a license)
-        //   GET /api/v{1,2}/analytics/overdue_balance     api/v1/analytics/overdue_balances#index
-        //       (Analytics::OverdueBalancesService -> ::Analytics::OverdueBalance)
+        // From config/routes/shared_api.rb:
         //
-        // Note the REST /analytics/mrr is the ClickHouse model, NOT
-        // DataApi::MrrsService — the DataApi services (mrrs, revenue_streams,
-        // prepaid_credits, and the usages subresources) are ported under
-        // app/Services/DataApi/ and surface through the GraphQL dataApi
-        // queries in Rails.
+        //   namespace :analytics do
+        //     get :gross_revenue,    to: "gross_revenues#index"
+        //     get :invoiced_usage,   to: "invoiced_usages#index"
+        //     get :invoice_collection, to: "invoice_collections#index"
+        //     get :mrr,              to: "mrrs#index"
+        //     get :overdue_balance,  to: "overdue_balances#index"
+        //   end
+        //
+        // These are served by Api::V1::Analytics::*Controller over the
+        // Analytics::* raw-SQL models (App\Models\Analytics — note Rails
+        // runs those on the PRIMARY connection, not ClickHouse). The
+        // premium gate lives in the SERVICES, exactly like Rails:
+        // invoiced_usage / invoice_collection / mrr answer
+        // forbidden_failure! ("feature_unavailable") without a license;
+        // gross_revenue and overdue_balance have none. The api-permissions
+        // resource is "analytic" (shared with the usage proxy above).
+        Route::prefix('analytics')->as('analytics:')->group(function (): void {
+            Route::get('gross_revenue', [GrossRevenuesController::class, 'index']);
+            Route::get('invoiced_usage', [InvoicedUsagesController::class, 'index']);
+            Route::get('invoice_collection', [InvoiceCollectionsController::class, 'index']);
+            Route::get('mrr', [MrrsController::class, 'index']);
+            Route::get('overdue_balance', [OverdueBalancesController::class, 'index']);
+        });
     });
 };
 

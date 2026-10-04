@@ -74,7 +74,13 @@ class EventsController extends ApiController
             return $this->renderSerializerJson((new CollectionSerializer(
                 $result->events,
                 EventSerializer::class,
-                ['collection_name' => 'events'],
+                [
+                    'collection_name' => 'events',
+                    // The captured batch response carries `updated_at` on its
+                    // events (see EventSerializer's contract note) — the
+                    // single create / show / index paths do not.
+                    'with_updated_at' => true,
+                ],
             ))->toJson());
         }
 

@@ -1,0 +1,35 @@
+{
+  "events": [
+    {
+      "lago_id": "926a2ef6-64fd-4db9-8344-b2209c4939a2",
+      "transaction_id": "evt-batch-c",
+      "lago_customer_id": null,
+      "code": "api_calls",
+      "timestamp": "2025-06-09T06:48:20.000Z",
+      "precise_total_amount_cents": null,
+      "properties": {
+        "value": 7
+      },
+      "lago_subscription_id": null,
+      "external_subscription_id": "events-sub-1",
+      "created_at": "2025-06-09T12:00:00Z",
+      "updated_at": "2025-06-09T12:00:00Z"
+    },
+    {
+      "lago_id": "9bc65c8d-1623-4f88-af56-5cadd8213c3b",
+      "transaction_id": "evt-batch-d",
+      "lago_customer_id": null,
+      "code": "computed_total",
+      "timestamp": "2025-06-09T06:48:21.000Z",
+      "precise_total_amount_cents": null,
+      "properties": {
+        "value": 5,
+        "total": "10.0"
+      },
+      "lago_subscription_id": null,
+      "external_subscription_id": "events-sub-1",
+      "created_at": "2025-06-09T12:00:00Z",
+      "updated_at": "2025-06-09T12:00:00Z"
+    }
+  ]
+}

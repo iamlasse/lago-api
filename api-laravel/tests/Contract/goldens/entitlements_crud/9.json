@@ -1,0 +1,32 @@
+{
+  "entitlements": [
+    {
+      "code": "seats",
+      "name": "Seat Management Renamed",
+      "description": "control the seat count",
+      "privileges": [
+        {
+          "code": "max_seats",
+          "name": "Maximum seats",
+          "value_type": "integer",
+          "value": 50,
+          "plan_value": 20,
+          "override_value": 50,
+          "config": {}
+        },
+        {
+          "code": "priority_level",
+          "name": "Priority level",
+          "value_type": "string",
+          "value": "high",
+          "plan_value": "high",
+          "override_value": null,
+          "config": {}
+        }
+      ],
+      "overrides": {
+        "max_seats": 50
+      }
+    }
+  ]
+}

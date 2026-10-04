@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Serializers\V1;
 
+use App\Support\MoneyMath;
 use App\Models\ContractRateCard;
 use App\Serializers\Base\ModelSerializer;
 use App\Serializers\V1\Concerns\FormatsDatetime;
@@ -25,7 +26,11 @@ final class ContractAppliedRateCardSerializer extends ModelSerializer
             'lago_id' => $contractRateCard->id,
             'external_contract_id' => $contractRateCard->contract->external_id,
             'rate_card_code' => $contractRateCard->rateCard->code,
-            'units' => $contractRateCard->units,
+            // Rails renders the BigDecimal units with to_s("F") at
+            // JSON-encode time.
+            'units' => $contractRateCard->units === null
+                ? null
+                : MoneyMath::toF((string) $contractRateCard->units),
             'effective_date' => $this->serializeDate($contractRateCard->effective_date),
             'billing_anchor_date' => $this->serializeDate($contractRateCard->billing_anchor_date),
             'next_billing_at' => $this->serializeDatetime($contractRateCard->next_billing_at),

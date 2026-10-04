@@ -254,6 +254,12 @@ class Organization extends BaseModel
         return $this->hasMany(AddOn::class);
     }
 
+    /** Rails: `has_many :orders` (the orders slice — sequenced scope target). */
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
+
     /** Rails: `has_one :default_billing_entity, -> { active.order(created_at: :asc) }`. */
     public function defaultBillingEntity(): HasOne
     {
@@ -339,6 +345,25 @@ class Organization extends BaseModel
     public function webhookEndpoints(): HasMany
     {
         return $this->hasMany(WebhookEndpoint::class);
+    }
+
+    // -- PREMIUM_INTEGRATIONS flag helpers (appended) --------------------------
+    //
+    // Rails' Organization model defines `<integration>_enabled?` for every
+    // PREMIUM_INTEGRATIONS entry as `License.premium? &&
+    // premium_integrations.include?(name)`; the port adds the ones the
+    // ported slices need.
+
+    /** Rails: auto_dunning_enabled? (premium integration "auto_dunning"). */
+    public function autoDunningEnabled(): bool
+    {
+        return $this->premiumIntegrationEnabled('auto_dunning');
+    }
+
+    /** Rails: issue_receipts_enabled? (premium integration "issue_receipts"). */
+    public function issueReceiptsEnabled(): bool
+    {
+        return $this->premiumIntegrationEnabled('issue_receipts');
     }
 
     // -- Lifecycle (port of before_create :set_hmac_key / after_create
@@ -509,5 +534,11 @@ class Organization extends BaseModel
             'audit_logs_period' => 'integer',
             'max_wallets' => 'integer',
         ];
+    }
+
+    private function premiumIntegrationEnabled(string $integration): bool
+    {
+        return \App\Support\License::premium()
+            && in_array($integration, (array) ($this->premium_integrations ?? []), true);
     }
 }

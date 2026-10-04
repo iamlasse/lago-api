@@ -249,6 +249,34 @@ class NormalizerTest extends TestCase
         $this->assertCount(1, $diffs);
         $this->assertSame('$.fees[0].item.lago_item_id', $diffs[0]['path']);
     }
+
+    /**
+     * lago_coupon_id references a coupon minted by an earlier captured
+     * request (applied_coupons responses), so each runtime echoes its own
+     * fresh id — compared as "a UUID", same rule as lago_id. Everything
+     * else under the key stays strict.
+     */
+    public function test_minted_lago_coupon_ids_compare_as_uuids(): void
+    {
+        $this->assertSame([], Normalizer::compareJson(
+            '{"applied_coupon":{"lago_coupon_id":"28e185ac-6160-4bf2-bbd4-b832539adca7"}}',
+            '{"applied_coupon":{"lago_coupon_id":"71064ea3-1af4-433c-a77c-3d0d337af727"}}'
+        ));
+
+        $this->assertSame([], Normalizer::compareJson(
+            '{"applied_coupons":[{"lago_coupon_id":"28e185ac-6160-4bf2-bbd4-b832539adca7"}]}',
+            '{"applied_coupons":[{"lago_coupon_id":"71064ea3-1af4-433c-a77c-3d0d337af727"}]}'
+        ));
+
+        // A non-UUID under lago_coupon_id (null, garbage) is a diff.
+        $diffs = Normalizer::compareJson(
+            '{"applied_coupon":{"lago_coupon_id":"28e185ac-6160-4bf2-bbd4-b832539adca7"}}',
+            '{"applied_coupon":{"lago_coupon_id":null}}'
+        );
+
+        $this->assertCount(1, $diffs);
+        $this->assertSame('$.applied_coupon.lago_coupon_id', $diffs[0]['path']);
+    }
 }
 
 /** Hoist helper: test-local base64url encode (URL-safe, unpadded). */

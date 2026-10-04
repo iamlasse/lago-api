@@ -152,7 +152,7 @@ it('materializes the plan rate cards onto the contract', function (): void {
             $json->where('contract.plan_code', $plan->code)
                 ->where('contract.applied_rate_cards_count', 1)
                 ->has('contract.applied_rate_cards', 1)
-                ->where('contract.applied_rate_cards.0.units', 3)
+                ->where('contract.applied_rate_cards.0.units', '3.0')
                 ->etc();
         });
 });
@@ -350,7 +350,7 @@ it('attaches a rate card to a pending contract', function (): void {
     ]], ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
         ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json): void {
-            $json->where('applied_rate_card.units', 2)
+            $json->where('applied_rate_card.units', '2.0')
                 ->where('applied_rate_card.rate_phases_count', 2)
                 ->etc();
         });
