@@ -73,8 +73,7 @@ class SubscriptionSerializer extends ModelSerializer
         }
 
         if ($this->include('entitlements')) {
-            // TODO(port): Entitlement::SubscriptionEntitlement — empty collection.
-            $payload['entitlements'] = [];
+            $payload['entitlements'] = $this->entitlements();
         }
 
         $payload = [...$payload, ...$this->paymentMethod()];
@@ -178,5 +177,23 @@ class SubscriptionSerializer extends ModelSerializer
         }
 
         return \Carbon\CarbonImmutable::instance($date)->utc()->format('Y-m-d\TH:i:s\Z');
+    }
+
+    /**
+     * Rails: `entitlements` include — CollectionSerializer over
+     * Entitlement::SubscriptionEntitlement.for_subscription(model) with the
+     * V1::Entitlement::SubscriptionEntitlementSerializer.
+     *
+     * @return list<array<string, mixed>>
+     */
+    protected function entitlements(): array
+    {
+        $entitlements = \App\Models\Entitlement\SubscriptionEntitlement::forSubscription($this->model);
+
+        return (new \App\Serializers\Base\CollectionSerializer(
+            $entitlements,
+            Entitlement\SubscriptionEntitlementSerializer::class,
+            ['collection_name' => 'entitlements'],
+        ))->serialize()['entitlements'];
     }
 }

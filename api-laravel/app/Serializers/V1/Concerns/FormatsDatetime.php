@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Serializers\V1\Concerns;
 
-use Carbon\CarbonInterface;
+use DateTimeZone;
+use DateTimeInterface;
 
 /**
  * Shared datetime formatting for the V1 serializer ports — Rails serializers
@@ -12,12 +13,38 @@ use Carbon\CarbonInterface;
  */
 trait FormatsDatetime
 {
-    protected function serializeDatetime(?CarbonInterface $datetime): ?string
+    protected function serializeDatetime(mixed $datetime): ?string
     {
         if ($datetime === null) {
             return null;
         }
 
-        return $datetime->utc()->format('Y-m-d\TH:i:s\Z');
+        // Model columns surface as Carbon instances, but datetime strings
+        // reach the trait from paths that bypass Eloquent casting (joined
+        // selects, aggregations), so parse those too.
+        if ($datetime instanceof DateTimeInterface) {
+            return $datetime->setTimezone(new DateTimeZone('UTC'))->format('Y-m-d\TH:i:s\Z');
+        }
+
+        return \Carbon\CarbonImmutable::parse((string) $datetime, 'UTC')->utc()->format('Y-m-d\TH:i:s\Z');
+    }
+
+    /**
+     * Rails: `iso8601` on a date — midnight of the day, UTC, "Z" suffix.
+     * Model columns surface as Carbon instances, but plain 'Y-m-d' strings
+     * reach the trait from aggregations (e.g. contract applied rate card
+     * anchors selected outside Eloquent casting), so parse those too.
+     */
+    protected function serializeDate(mixed $date): ?string
+    {
+        if ($date === null) {
+            return null;
+        }
+
+        if ($date instanceof DateTimeInterface) {
+            return \Carbon\CarbonImmutable::instance($date)->utc()->format('Y-m-d\TH:i:s\Z');
+        }
+
+        return \Carbon\CarbonImmutable::parse((string) $date, 'UTC')->format('Y-m-d\TH:i:s\Z');
     }
 }

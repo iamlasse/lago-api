@@ -57,8 +57,7 @@ class PlanSerializer extends ModelSerializer
         }
 
         if ($this->include('entitlements')) {
-            // TODO(port): V1::Entitlement::PlanEntitlementSerializer.
-            $payload['entitlements'] = [];
+            $payload['entitlements'] = $this->entitlements();
         }
 
         if ($this->include('usage_thresholds')) {
@@ -120,6 +119,27 @@ class PlanSerializer extends ModelSerializer
             TaxSerializer::class,
             ['collection_name' => 'taxes'],
         ))->serialize();
+    }
+
+    /**
+     * Rails: `entitlements` include — V1::Entitlement::PlanEntitlementSerializer
+     * over the plan's entitlements (feature + values.privilege preloaded).
+     *
+     * @return list<array<string, mixed>>
+     */
+    protected function entitlements(): array
+    {
+        $entitlements = \App\Models\Entitlement::query()
+            ->where('plan_id', $this->model->id)
+            ->whereHas('feature')
+            ->with('feature', 'values.privilege')
+            ->get();
+
+        return (new CollectionSerializer(
+            $entitlements,
+            Entitlement\PlanEntitlementSerializer::class,
+            ['collection_name' => 'entitlements'],
+        ))->serialize()['entitlements'];
     }
 
     private function serializeInterval(): ?string

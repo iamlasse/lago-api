@@ -277,6 +277,50 @@ class Organization extends BaseModel
         return $this->hasMany(BillableMetric::class);
     }
 
+    // -- Product catalog (v2) relations (append-only) -------------------------
+
+    /** Rails: `has_many :products`. */
+    public function products(): HasMany
+    {
+        return $this->hasMany(Product::class);
+    }
+
+    /** Rails: `has_many :product_categories`. */
+    public function productCategories(): HasMany
+    {
+        return $this->hasMany(ProductCategory::class);
+    }
+
+    /** Rails: `has_many :product_filters`. */
+    public function productFilters(): HasMany
+    {
+        return $this->hasMany(ProductFilter::class);
+    }
+
+    /** Rails: `has_many :rate_cards`. */
+    public function rateCards(): HasMany
+    {
+        return $this->hasMany(RateCard::class);
+    }
+
+    /** Rails: `has_many :rate_card_rates`. */
+    public function rateCardRates(): HasMany
+    {
+        return $this->hasMany(RateCardRate::class);
+    }
+
+    /** Rails: `has_many :catalog_plans`. */
+    public function catalogPlans(): HasMany
+    {
+        return $this->hasMany(CatalogPlan::class);
+    }
+
+    /** Rails: `has_many :contracts`. */
+    public function contracts(): HasMany
+    {
+        return $this->hasMany(Contract::class);
+    }
+
     public function subscriptions(): HasMany
     {
         return $this->hasMany(Subscription::class);

@@ -1,0 +1,163 @@
+# docker-compose.laravel.yml — Laravel API overlay for the monorepo compose.
+#
+# Run the full Rails stack with the Laravel API alongside it (api-laravel on
+# :3000 is the drop-in replacement for the Rails `api` service; to *replace*
+# Rails, stop the `api`/`api-worker`/`api-clock` services first):
+#
+#   docker compose -f docker-compose.yml -f docker-compose.laravel.yml up api-laravel
+#
+# That brings up: db + redis (from docker-compose.yml) -> api-laravel-migrate
+# (one-shot frozen-schema loader) -> api-laravel, api-laravel-worker,
+# api-laravel-clock. Gotenberg (`pdf`) stays available from the base file.
+#
+# Worker/clock topology mirrors Rails' Sidekiq split:
+#   - api-laravel-worker consumes every queue (Horizon, or queue:work across
+#     all 17 queues while Horizon's config is unpublished — see DEPLOY.md).
+#     Dedicated workers can be carved out by setting SIDEKIQ_* flags exactly
+#     like the Rails compose comments (SIDEKIQ_EVENTS=true etc.).
+#   - api-laravel-clock is `schedule:work`, the port of Rails' clock.rb.
+#
+# Environment: the x-laravel-backend-env anchor below mirrors the base file's
+# x-backend-environment anchor 1:1 (same LAGO_*/SIDEKIQ_*/SECRET_KEY_BASE
+# names, same ${POSTGRES_*:-...} interpolation). Two names are translated
+# because Laravel's config reads different keys:
+#   DATABASE_URL -> DB_URL   (config/database.php 'url'; the search_path query
+#                             arg is dropped — Laravel's pgsql connector uses
+#                             its 'search_path' setting, default 'public',
+#                             matching the anchor's POSTGRES_SCHEMA default)
+#   RAILS_ENV    -> APP_ENV=production
+
+volumes:
+  lago_laravel_storage_data:
+
+x-laravel-backend-env: &laravel-backend-env
+  # --- database / redis (same interpolation as x-backend-environment) ------
+  "DATABASE_URL": postgresql://${POSTGRES_USER:-lago}:${POSTGRES_PASSWORD:-changeme}@${POSTGRES_HOST:-db}:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-lago}?search_path=${POSTGRES_SCHEMA:-public}
+  "DB_URL": postgresql://${POSTGRES_USER:-lago}:${POSTGRES_PASSWORD:-changeme}@${POSTGRES_HOST:-db}:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-lago}
+  "REDIS_URL": redis://${REDIS_HOST:-redis}:${REDIS_PORT:-6379}
+  "LAGO_REDIS_CACHE_URL": redis://${LAGO_REDIS_CACHE_HOST:-redis}:${LAGO_REDIS_CACHE_PORT:-6379}
+  "LAGO_REDIS_CACHE_PASSWORD": ${LAGO_REDIS_CACHE_PASSWORD}
+  "REDIS_PASSWORD": ${REDIS_PASSWORD:-}
+  "QUEUE_CONNECTION": redis
+  "REDIS_CLIENT": phpredis
+  # --- secrets --------------------------------------------------------------
+  "SECRET_KEY_BASE": ${SECRET_KEY_BASE:-your-secret-key-base-hex-64}
+  "APP_KEY": ${APP_KEY:-}
+  # --- app ------------------------------------------------------------------
+  "APP_ENV": production
+  "APP_DEBUG": "false"
+  "APP_NAME": Lago
+  "MIGRATE_ON_START": "false" # the api-laravel-migrate one-shot owns migrations
+  "LOG_CHANNEL": stderr
+  # --- Rails-parity LAGO_* (names unchanged from x-backend-environment) ----
+  "LAGO_RSA_PRIVATE_KEY": ${LAGO_RSA_PRIVATE_KEY}
+  "LAGO_ENCRYPTION_PRIMARY_KEY": ${LAGO_ENCRYPTION_PRIMARY_KEY:-your-encryption-primary-key}
+  "LAGO_ENCRYPTION_DETERMINISTIC_KEY": ${LAGO_ENCRYPTION_DETERMINISTIC_KEY:-your-encryption-deterministic-key}
+  "LAGO_ENCRYPTION_KEY_DERIVATION_SALT": ${LAGO_ENCRYPTION_KEY_DERIVATION_SALT:-your-encryption-derivation-salt}
+  "LAGO_USE_AWS_S3": ${LAGO_USE_AWS_S3:-false}
+  "LAGO_AWS_S3_ACCESS_KEY_ID": ${LAGO_AWS_S3_ACCESS_KEY_ID:-azerty123456}
+  "LAGO_AWS_S3_SECRET_ACCESS_KEY": ${LAGO_AWS_S3_SECRET_ACCESS_KEY:-azerty123456}
+  "LAGO_AWS_S3_REGION": ${LAGO_AWS_S3_REGION:-us-east-1}
+  "LAGO_AWS_S3_BUCKET": ${LAGO_AWS_S3_BUCKET:-bucket}
+  "LAGO_AWS_S3_ENDPOINT": ${LAGO_AWS_S3_ENDPOINT}
+  "LAGO_USE_GCS": ${LAGO_USE_GCS:-false}
+  "LAGO_GCS_PROJECT": ${LAGO_GCS_PROJECT:-}
+  "LAGO_GCS_BUCKET": ${LAGO_GCS_BUCKET:-}
+  "LAGO_FROM_EMAIL": ${LAGO_FROM_EMAIL:-}
+  "LAGO_SMTP_ADDRESS": ${LAGO_SMTP_ADDRESS:-}
+  "LAGO_SMTP_PORT": ${LAGO_SMTP_PORT:-587}
+  "LAGO_SMTP_USERNAME": ${LAGO_SMTP_USERNAME:-}
+  "LAGO_SMTP_PASSWORD": ${LAGO_SMTP_PASSWORD:-}
+  "LAGO_PDF_URL": ${LAGO_PDF_URL:-http://pdf:3000}
+  "LAGO_REDIS_CABLE_URL": ${LAGO_REDIS_CABLE_URL:-}
+  "LAGO_DISABLE_SIGNUP": ${LAGO_DISABLE_SIGNUP:-false}
+  "LAGO_WEBHOOK_ALLOW_PRIVATE_URLS": ${LAGO_WEBHOOK_ALLOW_PRIVATE_URLS:-false}
+  "LAGO_DISABLE_PDF_GENERATION": ${LAGO_DISABLE_PDF_GENERATION:-false}
+  "LAGO_LICENSE": ${LAGO_LICENSE:-}
+  "LAGO_API_URL": ${LAGO_API_URL:-http://localhost:3000}
+  "LAGO_FRONT_URL": ${LAGO_FRONT_URL:-http://localhost}
+  # --- Sidekiq queue-split flags (job routing, per the Rails comments) -----
+  "SIDEKIQ_EVENTS": ${SIDEKIQ_EVENTS:-false}
+  "SIDEKIQ_PDFS": ${SIDEKIQ_PDFS:-false}
+  "SIDEKIQ_BILLING": ${SIDEKIQ_BILLING:-false}
+  "SIDEKIQ_CLOCK": ${SIDEKIQ_CLOCK:-false}
+  "SIDEKIQ_WEBHOOK": ${SIDEKIQ_WEBHOOK:-false}
+  "SIDEKIQ_ALERTS": ${SIDEKIQ_ALERTS:-false}
+  "SIDEKIQ_PROVIDERS": ${SIDEKIQ_PROVIDERS:-false}
+  "SIDEKIQ_PAYMENTS": ${SIDEKIQ_PAYMENTS:-false}
+  "SIDEKIQ_WALLETS": ${SIDEKIQ_WALLETS:-false}
+  # --- GraphQL: parsed-query cache uses opcache files, not the app cache ----
+  "LIGHTHOUSE_QUERY_CACHE_MODE": opcache
+
+x-laravel-image: &laravel-image
+  build:
+    context: ./api-laravel
+    dockerfile: Dockerfile
+  image: lago-api-laravel:latest
+  restart: unless-stopped
+  environment:
+    <<: *laravel-backend-env
+
+services:
+  # One-shot: config/route cache warming + the frozen-schema loader
+  # (`php artisan migrate --force`). Same role as the base file's `migrate`.
+  api-laravel-migrate:
+    <<: *laravel-image
+    container_name: lago-laravel-migrate
+    command: ["migrate"]
+    depends_on:
+      db:
+        condition: service_healthy
+        restart: true
+      redis:
+        condition: service_healthy
+        restart: true
+
+  # The drop-in `api` container: nginx+php-fpm on :3000, /health + /ready.
+  api-laravel:
+    <<: *laravel-image
+    container_name: lago-laravel-api
+    command: ["web"]
+    depends_on:
+      api-laravel-migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: curl -f http://localhost:3000/health || exit 1
+      interval: 10s
+      start_period: 30s
+      timeout: 60s
+      start_interval: 2s
+    volumes:
+      - lago_laravel_storage_data:/var/www/html/storage
+    ports:
+      - ${API_PORT:-3000}:3000
+
+  # Queue consumer (Horizon when its config is published; otherwise a
+  # queue:work process across all 17 Sidekiq queues — see DEPLOY.md).
+  # Route dedicated Sidekiq-style workers by setting SIDEKIQ_* flags here.
+  api-laravel-worker:
+    <<: *laravel-image
+    container_name: lago-laravel-worker
+    command: ["worker"]
+    depends_on:
+      api-laravel-migrate:
+        condition: service_completed_successfully
+    environment:
+      <<: [*laravel-backend-env]
+    volumes:
+      - lago_laravel_storage_data:/var/www/html/storage
+
+  # Scheduler — the port of Rails' clock.rb (routes/console.php: biller at
+  # :10, finalize at :20, overdue at :25, invoice retry at :30, draft refresh
+  # every 5 min).
+  api-laravel-clock:
+    <<: *laravel-image
+    container_name: lago-laravel-clock
+    command: ["clock"]
+    depends_on:
+      api-laravel-migrate:
+        condition: service_completed_successfully
+    environment:
+      <<: [*laravel-backend-env]
+    volumes:
+      - lago_laravel_storage_data:/var/www/html/storage

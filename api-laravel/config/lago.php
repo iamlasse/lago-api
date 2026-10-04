@@ -66,6 +66,12 @@ return [
     // ApplicationMailer#set_shared_variables (@pdfs_enabled).
     'disable_pdf_generation' => env('LAGO_DISABLE_PDF_GENERATION', false),
 
+    // DataApi::BaseService (app/services/data_api/base_service.rb) — the
+    // Lago Data API the analytics proxy GETs (GET /api/v1/analytics/usage
+    // and the GraphQL dataApi queries), authenticated with a bearer token.
+    'data_api_url' => env('LAGO_DATA_API_URL'),
+    'data_api_bearer_token' => env('LAGO_DATA_API_BEARER_TOKEN'),
+
     'webhook' => [
         // app/services/webhooks/send_http_service.rb
         'timeout_seconds' => (int) env('LAGO_WEBHOOK_TIMEOUT_SECONDS', 30),

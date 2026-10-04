@@ -10,28 +10,45 @@ use App\Http\Controllers\Api\V1\TaxesController;
 use App\Http\Controllers\Api\V1\EventsController;
 use App\Http\Controllers\Api\V1\CouponsController;
 use App\Http\Controllers\Api\V1\WalletsController;
+use App\Http\Controllers\Api\V1\FeaturesController;
 use App\Http\Controllers\Api\V1\InvoicesController;
 use App\Http\Controllers\Api\V1\PaymentsController;
+use App\Http\Controllers\Api\V1\ProductsController;
+use App\Http\Controllers\Api\V1\ContractsController;
 use App\Http\Controllers\Api\V1\CustomersController;
+use App\Http\Controllers\Api\V1\RateCardsController;
 use App\Http\Controllers\Api\V1\CreditNotesController;
 use App\Http\Controllers\Api\V1\OrganizationsController;
 use App\Http\Controllers\Api\V1\Plans\ChargesController;
 use App\Http\Controllers\Api\V1\SubscriptionsController;
 use App\Http\Controllers\Api\V1\AppliedCouponsController;
+use App\Http\Controllers\Api\V1\DataApi\UsagesController;
 use App\Http\Controllers\Api\V1\BillableMetricsController;
 use App\Http\Controllers\Api\V1\PaymentRequestsController;
 use App\Http\Controllers\Api\V1\WebhookEndpointsController;
+use App\Http\Controllers\Api\V1\ProductCategoriesController;
 use App\Http\Controllers\Api\V1\Plans\FixedChargesController;
 use App\Http\Controllers\Api\V1\WalletTransactionsController;
 use App\Http\Controllers\Api\V1\Plans\Charges\FiltersController;
+use App\Http\Controllers\Api\V1\Plans\AppliedRateCardsController;
 use App\Http\Controllers\Api\V1\Customers\UsageController as CustomerUsageController;
+use App\Http\Controllers\Api\V1\RateCards\RatesController as RateCardRatesController;
+use App\Http\Controllers\Api\V1\Products\FiltersController as ProductFiltersController;
 use App\Http\Controllers\Api\V1\Customers\WalletsController as CustomerWalletsController;
 use App\Http\Controllers\Api\V1\Customers\PaymentsController as CustomerPaymentsController;
+use App\Http\Controllers\Api\V1\Plans\EntitlementsController as PlanEntitlementsController;
+use App\Http\Controllers\Api\V1\Features\PrivilegesController as FeaturePrivilegesController;
 use App\Http\Controllers\Api\V1\Customers\CreditNotesController as CustomerCreditNotesController;
 use App\Http\Controllers\Api\V1\Customers\AppliedCouponsController as CustomerAppliedCouponsController;
 use App\Http\Controllers\Api\V1\Customers\PaymentMethodsController as CustomerPaymentMethodsController;
 use App\Http\Controllers\Api\V1\Customers\ProjectedUsageController as CustomerProjectedUsageController;
 use App\Http\Controllers\Api\V1\Customers\PaymentRequestsController as CustomerPaymentRequestsController;
+use App\Http\Controllers\Api\V1\Contracts\AppliedRateCardsController as AppliedContractRateCardsController;
+use App\Http\Controllers\Api\V1\Subscriptions\EntitlementsController as SubscriptionEntitlementsController;
+use App\Http\Controllers\Api\V1\Plans\Entitlements\PrivilegesController as PlanEntitlementPrivilegesController;
+use App\Http\Controllers\Api\V1\Plans\AppliedRateCards\RatePhasesController as PlanRateCardRatePhasesController;
+use App\Http\Controllers\Api\V1\Contracts\AppliedRateCards\RatePhasesController as ContractRateCardRatePhasesController;
+use App\Http\Controllers\Api\V1\Subscriptions\Entitlements\PrivilegesController as SubscriptionEntitlementPrivilegesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -90,6 +107,26 @@ $sharedApi = function (): void {
                 ->where('code', '.+');
         });
 
+        // -- features ---------------------------------------------------------
+        // Keyed by code, which may contain dots (Rails: `resources :features,
+        // param: :code` with the wildcard code constraint); the nested
+        // privileges destroy is scoped to the parent feature's code.
+        Route::prefix('features')->as('features:')->group(function (): void {
+            Route::get('', [FeaturesController::class, 'index']);
+            Route::post('', [FeaturesController::class, 'create']);
+
+            Route::prefix('{feature_code}')
+                ->group(function (): void {
+                    Route::get('', [FeaturesController::class, 'show']);
+                    Route::put('', [FeaturesController::class, 'update']);
+                    Route::patch('', [FeaturesController::class, 'update']);
+                    Route::delete('', [FeaturesController::class, 'destroy']);
+
+                    Route::delete('privileges/{code}', [FeaturePrivilegesController::class, 'destroy'])
+                        ->where('code', '.+');
+                });
+        });
+
         // -- taxes -----------------------------------------------------------------
         // Keyed by code like billable metrics (Rails: `resources :taxes,
         // param: :code, code: /.*/`).
@@ -127,8 +164,10 @@ $sharedApi = function (): void {
         // contain dots, so the member routes carry the `.+` constraint
         // (mirrors Rails' `param: :code, code: /.*/`).
         //
-        // Not registered yet (dependencies do not exist): entitlements and
-        // metadata subresources (no ported services), charge filter
+        // Entitlements are registered below (EntitlementsController); the
+        // metadata subresource and charge filter create/update/destroy are
+        // not registered yet (dependencies do not exist — no ported
+        // services; only index/show need no service).
         // create/update/destroy (ChargeFilters::Create/Update/DestroyService
         // not ported — only index/show need no service).
         Route::prefix('plans')->as('plans:')->group(function () {
@@ -151,6 +190,25 @@ $sharedApi = function (): void {
             Route::patch('{plan_code}/fixed_charges/{code}', [FixedChargesController::class, 'update']);
             Route::delete('{plan_code}/fixed_charges/{code}', [FixedChargesController::class, 'destroy']);
 
+            // Nested entitlements (Rails: resources :entitlements,
+            // param: :code under the plans draw — plan codes AND feature
+            // codes may contain dots, so both segments carry the wildcard
+            // constraint). POST is a full sync, PATCH a partial merge; the
+            // nested privileges destroy removes one privilege value.
+            Route::get('{plan_code}/entitlements', [PlanEntitlementsController::class, 'index']);
+            Route::post('{plan_code}/entitlements', [PlanEntitlementsController::class, 'create']);
+            Route::patch('{plan_code}/entitlements', [PlanEntitlementsController::class, 'update']);
+
+            Route::delete(
+                '{plan_code}/entitlements/{entitlement_code}/privileges/{code}',
+                [PlanEntitlementPrivilegesController::class, 'destroy'],
+            )->where(['plan_code' => '.+', 'entitlement_code' => '.+', 'code' => '.+']);
+
+            Route::get('{plan_code}/entitlements/{entitlement_code}', [PlanEntitlementsController::class, 'show'])
+                ->where(['plan_code' => '.+', 'entitlement_code' => '.+']);
+            Route::delete('{plan_code}/entitlements/{entitlement_code}', [PlanEntitlementsController::class, 'destroy'])
+                ->where(['plan_code' => '.+', 'entitlement_code' => '.+']);
+
             Route::get('{code}', [PlansController::class, 'show'])->where('code', '.+');
             Route::put('{code}', [PlansController::class, 'update'])->where('code', '.+');
             Route::patch('{code}', [PlansController::class, 'update'])->where('code', '.+');
@@ -159,23 +217,35 @@ $sharedApi = function (): void {
 
         // -- subscriptions ----------------------------------------------------
         // DELETE on a subscription never destroys the row: it terminates it
-        // (Subscriptions\TerminateService).
-        //
-        // Not registered yet (dependencies do not exist): the nested
-        // subresources lifetime_usage, alerts, entitlements, charges and
-        // fixed_charges (no ported controllers/services), and the
-        // /customers/:external_id/subscriptions index.
+        // (Subscriptions\TerminateService). The nested entitlements
+        // subresource is keyed by the subscription external_id (which may
+        // contain dots) and the feature code: PATCH merges the entitlements
+        // hash, DELETE removes one feature entitlement (Rails draws no
+        // create — overrides are merged in).
         Route::prefix('subscriptions')->as('subscriptions:')->group(function () {
             Route::get('', [SubscriptionsController::class, 'index']);
             Route::post('', [SubscriptionsController::class, 'create']);
-            Route::get('{external_id}', [SubscriptionsController::class, 'show'])
-                ->where('external_id', '.+');
-            Route::put('{external_id}', [SubscriptionsController::class, 'update'])
-                ->where('external_id', '.+');
-            Route::patch('{external_id}', [SubscriptionsController::class, 'update'])
-                ->where('external_id', '.+');
-            Route::delete('{external_id}', [SubscriptionsController::class, 'terminate'])
-                ->where('external_id', '.+');
+
+            Route::prefix('{external_id}')->group(function (): void {
+                Route::get('entitlements', [SubscriptionEntitlementsController::class, 'index']);
+                Route::patch('entitlements', [SubscriptionEntitlementsController::class, 'update']);
+
+                // NOTE: the nested privileges route is registered BEFORE
+                // the plain {code} delete — with the wildcard code
+                // constraint, registration order is match priority (Rails'
+                // nested draw wins recognition the same way).
+                Route::delete(
+                    'entitlements/{entitlement_code}/privileges/{code}',
+                    [SubscriptionEntitlementPrivilegesController::class, 'destroy'],
+                )->where(['entitlement_code' => '.+', 'code' => '.+']);
+                Route::delete('entitlements/{code}', [SubscriptionEntitlementsController::class, 'destroy'])
+                    ->where('code', '.+');
+
+                Route::get('', [SubscriptionsController::class, 'show']);
+                Route::put('', [SubscriptionsController::class, 'update']);
+                Route::patch('', [SubscriptionsController::class, 'update']);
+                Route::delete('', [SubscriptionsController::class, 'terminate']);
+            });
         });
 
         // -- invoices ---------------------------------------------------------
@@ -389,8 +459,178 @@ $sharedApi = function (): void {
         Route::delete('customers/{external_id}', [CustomersController::class, 'destroy'])
             ->where('external_id', '.+');
 
+        // == analytics (Lago Data API proxy) — appended analytics-slice block ====
+        //
+        // The ONLY /analytics* route Rails serves from the Data API HTTP proxy:
+        //
+        //   get "analytics/usage", to: "data_api/usages#index"   (config/routes/shared_api.rb)
+        //
+        // Rails proxies it to LAGO_DATA_API_URL with the
+        // LAGO_DATA_API_BEARER_TOKEN bearer (DataApi::UsagesService) and
+        // renders the Data API JSON under the top-level "usages" key. There is
+        // no premium gate on the route itself (the service filters params by
+        // license instead); the api-permissions resource is "analytic".
+        Route::get('analytics/usage', [UsagesController::class, 'index']);
+
+        // TODO(port): the OTHER five /analytics routes are ClickHouse-direct,
+        // NOT Data-API-backed, and stay unregistered until the ClickHouse
+        // analytics store exists (ensure_organization_uses_clickhouse +
+        // org-level result caching; Rails' Analytics::* models run raw SQL on
+        // the ClickHouse connection in app/models/analytics/*.rb, behind
+        // services in app/services/analytics/ and serializers in
+        // app/serializers/v1/analytics/):
+        //
+        //   GET /api/v{1,2}/analytics/gross_revenue       api/v1/analytics/gross_revenues#index
+        //       (Analytics::GrossRevenuesService -> ::Analytics::GrossRevenue)
+        //   GET /api/v{1,2}/analytics/invoiced_usage      api/v1/analytics/invoiced_usages#index
+        //       (Analytics::InvoicedUsagesService -> ::Analytics::InvoicedUsage)
+        //   GET /api/v{1,2}/analytics/invoice_collection  api/v1/analytics/invoice_collections#index
+        //       (Analytics::InvoiceCollectionsService -> ::Analytics::InvoiceCollection)
+        //   GET /api/v{1,2}/analytics/mrr                 api/v1/analytics/mrrs#index
+        //       (Analytics::MrrsService -> ::Analytics::Mrr; premium-gated —
+        //        forbidden_failure! "feature_unavailable" without a license)
+        //   GET /api/v{1,2}/analytics/overdue_balance     api/v1/analytics/overdue_balances#index
+        //       (Analytics::OverdueBalancesService -> ::Analytics::OverdueBalance)
+        //
+        // Note the REST /analytics/mrr is the ClickHouse model, NOT
+        // DataApi::MrrsService — the DataApi services (mrrs, revenue_streams,
+        // prepaid_credits, and the usages subresources) are ported under
+        // app/Services/DataApi/ and surface through the GraphQL dataApi
+        // queries in Rails.
     });
 };
+
+// == v2 product catalog (drawn AHEAD of the shared mounts, like Rails —
+// config/routes.rb draws the v2 catalog first so the greedy v2 :code does
+// not swallow these paths; the v2 mounts below follow) =====================
+//
+// V2-ONLY rows from tests/inventory/rest.json (handler modules
+// api/v2/products, product_categories, rate_cards, contracts and the nested
+// plan_rate_cards / contract_rate_cards with their rate_phases). The
+// CONTROLLERS land with the parallel catalog slice under these pinned class
+// names — the routes resolve as soon as those classes exist.
+//
+// A contract is never destroyed — DELETE terminates it (contracts#terminate),
+// the same idiom subscriptions follow.
+Route::prefix('v2')
+    ->middleware([SetBetaHeader::class, 'lago.auth'])
+    ->group(function (): void {
+        Route::prefix('products')->as('products:')->group(function (): void {
+            Route::get('', [ProductsController::class, 'index']);
+            Route::post('', [ProductsController::class, 'create']);
+
+            Route::prefix('{product_code}')->group(function (): void {
+                Route::get('filters', [ProductFiltersController::class, 'index']);
+                Route::post('filters', [ProductFiltersController::class, 'create']);
+                Route::get('filters/{code}', [ProductFiltersController::class, 'show'])
+                    ->where('code', '.+');
+                Route::put('filters/{code}', [ProductFiltersController::class, 'update'])
+                    ->where('code', '.+');
+                Route::patch('filters/{code}', [ProductFiltersController::class, 'update'])
+                    ->where('code', '.+');
+                Route::delete('filters/{code}', [ProductFiltersController::class, 'destroy'])
+                    ->where('code', '.+');
+
+                Route::get('', [ProductsController::class, 'show']);
+                Route::put('', [ProductsController::class, 'update']);
+                Route::patch('', [ProductsController::class, 'update']);
+                Route::delete('', [ProductsController::class, 'destroy']);
+            });
+        });
+
+        Route::prefix('product_categories')->as('product_categories:')->group(function (): void {
+            Route::get('', [ProductCategoriesController::class, 'index']);
+            Route::post('', [ProductCategoriesController::class, 'create']);
+
+            Route::get('{code}', [ProductCategoriesController::class, 'show'])->where('code', '.+');
+            Route::put('{code}', [ProductCategoriesController::class, 'update'])->where('code', '.+');
+            Route::patch('{code}', [ProductCategoriesController::class, 'update'])->where('code', '.+');
+            Route::delete('{code}', [ProductCategoriesController::class, 'destroy'])->where('code', '.+');
+        });
+
+        Route::prefix('rate_cards')->as('rate_cards:')->group(function (): void {
+            Route::get('', [RateCardsController::class, 'index']);
+            Route::post('', [RateCardsController::class, 'create']);
+
+            Route::prefix('{rate_card_code}')->group(function (): void {
+                Route::get('rates', [RateCardRatesController::class, 'index']);
+                Route::post('rates', [RateCardRatesController::class, 'create']);
+                Route::get('rates/{code}', [RateCardRatesController::class, 'show'])->where('code', '.+');
+                Route::put('rates/{code}', [RateCardRatesController::class, 'update'])->where('code', '.+');
+                Route::patch('rates/{code}', [RateCardRatesController::class, 'update'])->where('code', '.+');
+                Route::delete('rates/{code}', [RateCardRatesController::class, 'destroy'])->where('code', '.+');
+
+                Route::get('', [RateCardsController::class, 'show']);
+                Route::put('', [RateCardsController::class, 'update']);
+                Route::patch('', [RateCardsController::class, 'update']);
+                Route::delete('', [RateCardsController::class, 'destroy']);
+            });
+        });
+
+        // /v2/plans/:code/applied_rate_cards (+ nested rate_phases) — the
+        // plan_rate_cards handler module. Registered before the shared
+        // mounts' v2 plans member route so the greedy :code cannot swallow
+        // the applied_rate_cards paths.
+        Route::prefix('plans')->as('plans:')->group(function (): void {
+            Route::get('{plan_code}/applied_rate_cards', [AppliedRateCardsController::class, 'index'])
+                ->where('plan_code', '.+');
+            Route::post('{plan_code}/applied_rate_cards', [AppliedRateCardsController::class, 'create'])
+                ->where('plan_code', '.+');
+
+            Route::prefix('{plan_code}/applied_rate_cards/{rate_card_code}')
+                ->where(['plan_code' => '.+', 'rate_card_code' => '.+'])
+                ->group(function (): void {
+                    Route::get('rate_phases', [PlanRateCardRatePhasesController::class, 'index']);
+                    Route::post('rate_phases', [PlanRateCardRatePhasesController::class, 'create']);
+                    Route::put('rate_phases/{code}', [PlanRateCardRatePhasesController::class, 'update'])
+                        ->where('code', '.+');
+                    Route::patch('rate_phases/{code}', [PlanRateCardRatePhasesController::class, 'update'])
+                        ->where('code', '.+');
+                    Route::delete('rate_phases/{code}', [PlanRateCardRatePhasesController::class, 'destroy'])
+                        ->where('code', '.+');
+
+                    Route::get('', [AppliedRateCardsController::class, 'show']);
+                    Route::put('', [AppliedRateCardsController::class, 'update']);
+                    Route::patch('', [AppliedRateCardsController::class, 'update']);
+                    Route::delete('', [AppliedRateCardsController::class, 'destroy']);
+                });
+        });
+
+        // /v2/contracts — external ids may contain dots (Rails constraint
+        // external_id: /[^\/]+/).
+        Route::prefix('contracts')->as('contracts:')->group(function (): void {
+            Route::get('', [ContractsController::class, 'index']);
+            Route::post('', [ContractsController::class, 'create']);
+
+            Route::prefix('{external_id}')->group(function (): void {
+                Route::prefix('applied_rate_cards')->group(function (): void {
+                    Route::get('', [AppliedContractRateCardsController::class, 'index']);
+                    Route::post('', [AppliedContractRateCardsController::class, 'create']);
+
+                    Route::prefix('{rate_card_code}')->group(function (): void {
+                        Route::get('rate_phases', [ContractRateCardRatePhasesController::class, 'index']);
+                        Route::post('rate_phases', [ContractRateCardRatePhasesController::class, 'create']);
+                        Route::put('rate_phases/{code}', [ContractRateCardRatePhasesController::class, 'update'])
+                            ->where('code', '.+');
+                        Route::patch('rate_phases/{code}', [ContractRateCardRatePhasesController::class, 'update'])
+                            ->where('code', '.+');
+                        Route::delete('rate_phases/{code}', [ContractRateCardRatePhasesController::class, 'destroy'])
+                            ->where('code', '.+');
+
+                        Route::get('', [AppliedContractRateCardsController::class, 'show']);
+                        Route::put('', [AppliedContractRateCardsController::class, 'update']);
+                        Route::patch('', [AppliedContractRateCardsController::class, 'update']);
+                        Route::delete('', [AppliedContractRateCardsController::class, 'destroy']);
+                    });
+                });
+
+                Route::get('', [ContractsController::class, 'show']);
+                Route::put('', [ContractsController::class, 'update']);
+                Route::patch('', [ContractsController::class, 'update']);
+                Route::delete('', [ContractsController::class, 'terminate']);
+            });
+        });
+    });
 
 Route::prefix('v1')->group($sharedApi);
 

@@ -1,0 +1,232 @@
+name: Laravel API (api-laravel)
+
+# CI gate for the Laravel drop-in port. Mirrors the local pipeline: pint
+# (style), larastan (static analysis, report-only until the port clears it),
+# the full Pest suite against the frozen schema on
+# getlago/postgres-partman:15.0-alpine (same image as the dev compose db),
+# the inventory coverage check, and the frozen-schema catalog diff (the
+# psql-inline equivalent of api-laravel/scripts/verify-frozen-schema.sh,
+# which assumes `docker exec` into the dev lago-laravel-pg container).
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "api-laravel/**"
+      - ".github/workflows/laravel.yml"
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+    paths:
+      - "api-laravel/**"
+      - ".github/workflows/laravel.yml"
+
+concurrency:
+  group: laravel-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Local dev pins the db on 5433 (lago-laravel-pg); the CI service maps the
+  # standard 5432. phpunit.xml defaults are overridden by real env vars.
+  DB_HOST: 127.0.0.1
+  DB_PORT: "5432"
+  DB_USERNAME: postgres
+  DB_PASSWORD: postgres
+  SECRET_KEY_BASE: ci-secret-key-base-0123456789abcdef0123456789abcdef
+  LAGO_RAILS_PATH: ${{ github.workspace }}/api
+
+defaults:
+  run:
+    working-directory: api-laravel
+
+jobs:
+  lint:
+    name: Pint (code style)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # --dirty needs the base commit for the diff
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: bcmath, intl, zip, pgsql, pdo_pgsql
+          coverage: none
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+      - name: Pint (test mode)
+        run: vendor/bin/pint --test
+
+  static-analysis:
+    name: Larastan
+    runs-on: ubuntu-latest
+    # REPORT-ONLY until the port clears static analysis: at level 5 the
+    # codebase currently reports ~2800 errors (dominated by Services\*Result
+    # magic-property access, the scripts/inventory helper functions not being
+    # visible to phpstan, and deliberate env() reads in job classes). Flip
+    # continue-on-error to false once a committed phpstan.neon lands green.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: bcmath, intl, zip, pgsql, pdo_pgsql
+          coverage: none
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+      - name: Larastan (level 5, report-only)
+        run: |
+          cat > .larastan-ci.neon <<'NEON'
+          includes:
+              - vendor/larastan/larastan/extension.neon
+          parameters:
+              level: 5
+              paths:
+                  - app
+                  - config
+                  - database
+                  - routes
+              excludePaths:
+                  - database/migrations
+                  - database/factories
+          NEON
+          vendor/bin/phpstan analyse -c .larastan-ci.neon --no-progress --error-format=github
+          rm -f .larastan-ci.neon
+
+  tests:
+    name: Pest (frozen schema) + schema verification
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: getlago/postgres-partman:15.0-alpine
+        ports:
+          - "5432:5432"
+        env:
+          POSTGRES_DB: lago
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports:
+          - "6379:6379"
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DB_DATABASE: lago_test_ci
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: bcmath, intl, zip, pgsql, pdo_pgsql, redis
+          coverage: none
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+      - name: Create test databases
+        working-directory: .
+        run: |
+          PGPASSWORD=postgres psql -h 127.0.0.1 -U postgres -c "CREATE DATABASE lago_test_ci;"
+      - name: Load the frozen schema (in-pipeline migration)
+        run: php artisan migrate --force
+      - name: Run the Pest suite
+        run: vendor/bin/pest --compact
+      - name: Verify the frozen schema (catalog diff vs psql-loaded reference)
+        working-directory: .
+        # Inline psql equivalent of scripts/verify-frozen-schema.sh, which
+        # docker-execs into the dev container — here psql talks to the
+        # service directly. Compares tables/columns/constraints/indexes/enums
+        # between the migrated DB and a raw-psql-loaded reference.
+        run: |
+          export PGPASSWORD=postgres
+          REF_DB="lago_frozen_reference_ci"
+          # Laravel-infrastructure tables created after the frozen loader
+          # (cache + queue migrations) — excluded from the catalog diff.
+          INFRA="'migrations','cache','cache_locks','jobs','job_batches','failed_jobs'"
+
+          psql -h 127.0.0.1 -U postgres -v ON_ERROR_STOP=1 -q \
+            -d postgres -c "DROP DATABASE IF EXISTS ${REF_DB};"
+          psql -h 127.0.0.1 -U postgres -v ON_ERROR_STOP=1 -q \
+            -d postgres -c "CREATE DATABASE ${REF_DB};"
+          psql -h 127.0.0.1 -U postgres -v ON_ERROR_STOP=1 -tA \
+            -d "${REF_DB}" < database/frozen/structure.sql > /dev/null
+
+          catalog() {
+            psql -h 127.0.0.1 -U postgres -v ON_ERROR_STOP=1 -tA -d "$1" <<SQL
+          WITH objects AS (
+            SELECT format('col|%s.%s|%s|%s|%s|%s',
+              c.table_name, c.column_name, c.data_type, c.udt_name,
+              coalesce(c.column_default, ''), c.is_nullable)
+            FROM information_schema.columns c
+            WHERE c.table_schema = 'public' AND c.table_name NOT IN (${INFRA})
+            UNION ALL
+            SELECT format('table|%s|%s', t.table_name, t.table_type)
+            FROM information_schema.tables t
+            WHERE t.table_schema = 'public' AND t.table_name NOT IN (${INFRA})
+            UNION ALL
+            SELECT format('con|%s|%s|%s|%s', con.conname, con.contype,
+              pg_get_constraintdef(con.oid, true), cl.relname)
+            FROM pg_constraint con
+            JOIN pg_class cl ON cl.oid = con.conrelid
+            JOIN pg_namespace ns ON ns.oid = cl.relnamespace
+            WHERE ns.nspname = 'public' AND cl.relname NOT IN (${INFRA})
+            UNION ALL
+            SELECT format('idx|%s|%s', cl.relname, pg_get_indexdef(idx.indexrelid, 0, true))
+            FROM pg_index idx
+            JOIN pg_class cl ON cl.oid = idx.indrelid
+            JOIN pg_namespace ns ON ns.oid = cl.relnamespace
+            WHERE ns.nspname = 'public' AND cl.relname NOT IN (${INFRA})
+            UNION ALL
+            SELECT format('enum|%s|%s', t.typname,
+              (SELECT string_agg(e.enumlabel, ',' ORDER BY e.enumsortorder)
+               FROM pg_enum e WHERE e.enumtypid = t.oid))
+            FROM pg_type t
+            JOIN pg_namespace ns ON ns.oid = t.typnamespace
+            WHERE ns.nspname = 'public' AND t.typtype = 'e'
+          )
+          SELECT * FROM objects ORDER BY 1;
+          SQL
+          }
+
+          catalog "lago_test_ci" > /tmp/migrated.txt
+          catalog "${REF_DB}" > /tmp/reference.txt
+          psql -h 127.0.0.1 -U postgres -q -d postgres -c "DROP DATABASE ${REF_DB};"
+
+          if diff -u /tmp/reference.txt /tmp/migrated.txt; then
+            echo "FROZEN SCHEMA VERIFIED: migrated DB matches psql-loaded reference exactly."
+          else
+            echo "FROZEN SCHEMA MISMATCH" >&2
+            exit 1
+          fi
+
+  inventory:
+    name: Inventory coverage check
+    runs-on: ubuntu-latest
+    # REPORT-ONLY for now: the ledger has known gaps (31 open problems
+    # locally, 138 for --milestone=m1). Flip continue-on-error once the
+    # ledger catches up; see the coverage ledger section of the port plan.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: bcmath, intl, zip, pgsql, pdo_pgsql
+          coverage: none
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+      - name: inventory:check (full ledger)
+        run: php artisan inventory:check
+      - name: inventory:check --milestone=m1
+        run: php artisan inventory:check --milestone=m1

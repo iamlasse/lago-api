@@ -394,11 +394,13 @@
             "source": "schema.json",
             "laravel": "App\\GraphQL\\Mutation\\CreateCreditNote",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/GraphQL/CreditNotesTest.php"
+            ],
             "notes": ""
         },
         {
@@ -1798,11 +1800,13 @@
             "source": "schema.json",
             "laravel": "App\\GraphQL\\Mutation\\RegisterUser",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/GraphQL/RegisterUserMutationTest.php"
+            ],
             "notes": ""
         },
         {
@@ -2296,11 +2300,13 @@
             "source": "schema.json",
             "laravel": "App\\GraphQL\\Mutation\\UpdateCreditNote",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/GraphQL/CreditNotesTest.php"
+            ],
             "notes": ""
         },
         {
@@ -2878,11 +2884,13 @@
             "source": "schema.json",
             "laravel": "App\\GraphQL\\Mutation\\VoidCreditNote",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/GraphQL/CreditNotesTest.php"
+            ],
             "notes": ""
         },
         {
@@ -3278,11 +3286,13 @@
             "source": "schema.json",
             "laravel": "App\\GraphQL\\Query\\CreditNote",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/GraphQL/CreditNotesTest.php"
+            ],
             "notes": ""
         },
         {
@@ -3290,11 +3300,13 @@
             "source": "schema.json",
             "laravel": "App\\GraphQL\\Query\\CreditNoteEstimate",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/GraphQL/CreditNotesTest.php"
+            ],
             "notes": ""
         },
         {
@@ -3876,11 +3888,14 @@
             "source": "schema.json",
             "laravel": "App\\GraphQL\\Query\\InvoiceCreditNotes",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/GraphQL/CreditNotesTest.php",
+                "tests/Feature/GraphQL/Resolvers/InvoicesResolverTest.php"
+            ],
             "notes": "Null-stub: the schema root field resolves to null until the credit-notes slice (asserted in tests/Feature/GraphQL/Resolvers/InvoicesResolverTest.php) — code stays todo."
         },
         {
@@ -5066,11 +5081,13 @@
             "source": "app/jobs/clock/finalize_invoices_job.rb",
             "laravel": "App\\Jobs\\Clock\\FinalizeInvoicesJob",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Jobs/Clock/FinalizeInvoicesJobTest.php"
+            ],
             "notes": ""
         },
         {
@@ -5114,11 +5131,13 @@
             "source": "app/jobs/clock/mark_invoices_as_payment_overdue_job.rb",
             "laravel": "App\\Jobs\\Clock\\MarkInvoicesAsPaymentOverdueJob",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Jobs/Clock/MarkInvoicesAsPaymentOverdueJobTest.php"
+            ],
             "notes": ""
         },
         {
@@ -5198,11 +5217,13 @@
             "source": "app/jobs/clock/refresh_draft_invoices_job.rb",
             "laravel": "App\\Jobs\\Clock\\RefreshDraftInvoicesJob",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Jobs/Clock/RefreshDraftInvoicesJobTest.php"
+            ],
             "notes": ""
         },
         {
@@ -5248,11 +5269,13 @@
             "source": "app/jobs/clock/retry_generating_subscription_invoices_job.rb",
             "laravel": "App\\Jobs\\Clock\\RetryGeneratingSubscriptionInvoicesJob",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Jobs/Clock/RetryGeneratingSubscriptionInvoicesJobTest.php"
+            ],
             "notes": ""
         },
         {
@@ -7994,11 +8017,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\CouponsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/CouponsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -8044,11 +8069,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Customers\\AppliedCouponsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/Customers/AppliedCouponsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -8056,11 +8083,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Customers\\PaymentMethodsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/Customers/PaymentMethodsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -8068,11 +8097,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Customers\\WalletsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/Customers/WalletsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -8128,11 +8159,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\FeaturesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/FeaturesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -8140,11 +8173,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Features\\PrivilegesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/FeaturesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -8218,11 +8253,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Plans\\EntitlementsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/Plans/EntitlementsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -8230,11 +8267,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Plans\\Entitlements\\PrivilegesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/Plans/EntitlementsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -8330,11 +8369,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Subscriptions\\EntitlementsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/Subscriptions/EntitlementsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -8342,11 +8383,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Subscriptions\\Entitlements\\PrivilegesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/Subscriptions/EntitlementsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -8380,11 +8423,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\WalletsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/WalletsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -8456,11 +8501,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V2\\ContractsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/ContractsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -8796,11 +8843,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V2\\ProductCategoriesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/ProductCategoriesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -8808,11 +8857,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V2\\ProductsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/ProductsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -8832,11 +8883,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V2\\RateCardsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/RateCardsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9186,11 +9239,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\DataApi\\UsagesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/AnalyticsUsageControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9222,11 +9277,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\AppliedCouponsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/AppliedCouponsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9310,11 +9367,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\CouponsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/CouponsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9322,11 +9381,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\CouponsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/CouponsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9358,11 +9419,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\CreditNotesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/CreditNotesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9370,11 +9433,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\CreditNotesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/CreditNotesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9410,11 +9475,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Customers\\AppliedCouponsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/Customers/AppliedCouponsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9422,11 +9489,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Customers\\CreditNotesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/Customers/CreditNotesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9472,11 +9541,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Customers\\PaymentMethodsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/Customers/PaymentMethodsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9484,11 +9555,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Customers\\PaymentRequestsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/PaymentRequestsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9496,11 +9569,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Customers\\PaymentsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/PaymentsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9546,11 +9621,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Customers\\WalletsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/Customers/WalletsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9558,11 +9635,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Customers\\WalletsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/Customers/WalletsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9594,11 +9673,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\EventsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/EventsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9606,11 +9687,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\EventsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/EventsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9618,11 +9701,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\EventsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/EventsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9630,11 +9715,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\FeaturesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/FeaturesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9642,11 +9729,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\FeaturesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/FeaturesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9806,11 +9895,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\PaymentRequestsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/PaymentRequestsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9818,11 +9909,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\PaymentRequestsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/PaymentRequestsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9830,11 +9923,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\PaymentsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/PaymentsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9842,11 +9937,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\PaymentsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/PaymentsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9950,11 +10047,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Plans\\EntitlementsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/Plans/EntitlementsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -9962,11 +10061,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Plans\\EntitlementsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/Plans/EntitlementsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -10186,11 +10287,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Subscriptions\\EntitlementsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/Subscriptions/EntitlementsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -10310,11 +10413,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\WalletTransactionsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/WalletTransactionsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -10346,11 +10451,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\WalletsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/WalletsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -10358,11 +10465,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\WalletsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/WalletsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -10370,11 +10479,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\WalletTransactionsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/WalletTransactionsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -10566,11 +10677,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\DataApi\\UsagesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/AnalyticsUsageControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -10690,11 +10803,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V2\\ContractsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/ContractsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -10702,11 +10817,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V2\\ContractsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/ContractsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -10714,11 +10831,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V2\\ContractRateCardsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/ContractsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -10798,11 +10917,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\CreditNotesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/CreditNotesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -10810,11 +10931,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\CreditNotesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/CreditNotesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -10862,11 +10985,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Customers\\CreditNotesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/Customers/CreditNotesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -11466,11 +11591,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V2\\ProductCategoriesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/ProductCategoriesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -11478,11 +11605,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V2\\ProductCategoriesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/ProductCategoriesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -11490,11 +11619,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V2\\ProductsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/ProductsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -11502,11 +11633,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V2\\ProductsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/ProductsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -11514,11 +11647,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V2\\Products\\FiltersController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/ProductsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -11586,11 +11721,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V2\\RateCardsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/RateCardsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -11598,11 +11735,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V2\\RateCardsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/RateCardsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -11610,11 +11749,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V2\\RateCards\\RatesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/RateCardsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -12132,11 +12273,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\CreditNotesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/CreditNotesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -12192,11 +12335,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\FeaturesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/FeaturesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -12268,11 +12413,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Plans\\EntitlementsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/Plans/EntitlementsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -12354,11 +12501,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Subscriptions\\EntitlementsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/Subscriptions/EntitlementsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -12492,11 +12641,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V2\\ContractsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/ContractsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -12540,11 +12691,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\CreditNotesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/CreditNotesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -12600,11 +12753,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\FeaturesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/FeaturesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -12736,11 +12891,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V2\\ProductCategoriesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/ProductCategoriesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -12748,11 +12905,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V2\\ProductsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/ProductsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -12772,11 +12931,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V2\\RateCardsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/RateCardsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -12994,11 +13155,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\AppliedCouponsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/AppliedCouponsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -13046,11 +13209,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\CouponsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/CouponsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -13058,11 +13223,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\CreditNotesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/CreditNotesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -13070,11 +13237,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\CreditNotesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/CreditNotesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -13082,11 +13251,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\CreditNotesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/CreditNotesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -13094,11 +13265,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\CreditNotesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/CreditNotesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -13130,11 +13303,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\CreditNotesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/CreditNotesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -13168,11 +13343,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Customers\\WalletsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/Customers/WalletsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -13204,11 +13381,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\EventsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/EventsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -13216,11 +13395,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\EventsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/EventsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -13264,11 +13445,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\FeaturesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/FeaturesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -13470,11 +13653,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\PaymentRequestsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/PaymentRequestsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -13482,11 +13667,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\PaymentsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/PaymentsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -13534,11 +13721,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Plans\\EntitlementsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/Plans/EntitlementsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -13672,11 +13861,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\WalletTransactionsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/WalletTransactionsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -13696,11 +13887,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\WalletsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/WalletsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -13798,11 +13991,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V2\\ContractsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/ContractsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -13810,11 +14005,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V2\\ContractRateCardsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/ContractsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -13846,11 +14043,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\CreditNotesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/CreditNotesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -13870,11 +14069,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\CreditNotesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/CreditNotesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -13882,11 +14083,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\CreditNotesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/CreditNotesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -13918,11 +14121,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\CreditNotesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/CreditNotesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -14364,11 +14569,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V2\\ProductCategoriesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/ProductCategoriesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -14376,11 +14583,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V2\\ProductsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/ProductsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -14388,11 +14597,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V2\\Products\\FiltersController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/ProductsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -14436,11 +14647,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V2\\RateCardsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/RateCardsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -14448,11 +14661,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V2\\RateCards\\RatesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/RateCardsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -14732,11 +14947,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\CouponsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/CouponsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -14744,11 +14961,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\CreditNotesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/CreditNotesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -14768,11 +14987,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\CreditNotesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/CreditNotesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -14780,11 +15001,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Customers\\PaymentMethodsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/Customers/PaymentMethodsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -14792,11 +15015,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Customers\\WalletsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/Customers/WalletsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -14828,11 +15053,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\FeaturesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/FeaturesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -15086,11 +15313,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\WalletsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/WalletsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -15162,11 +15391,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V2\\ContractsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/ContractsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -15234,11 +15465,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\CreditNotesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/CreditNotesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -15466,11 +15699,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V2\\ProductCategoriesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/ProductCategoriesControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -15478,11 +15713,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V2\\ProductsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/ProductsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -15502,11 +15739,13 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V2\\RateCardsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Api/V1/RateCardsControllerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -16314,11 +16553,13 @@
             "source": "app/serializers/v1/applied_coupon_serializer.rb",
             "laravel": "App\\Serializers\\V1\\AppliedCouponSerializer",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Serializers/V1/AppliedCouponSerializerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -16440,11 +16681,13 @@
             "source": "app/serializers/v1/coupon_serializer.rb",
             "laravel": "App\\Serializers\\V1\\CouponSerializer",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Serializers/V1/CouponSerializerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -16452,11 +16695,13 @@
             "source": "app/serializers/v1/credit_note_item_serializer.rb",
             "laravel": "App\\Serializers\\V1\\CreditNoteItemSerializer",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Serializers/V1/CreditNoteSerializerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -16464,11 +16709,13 @@
             "source": "app/serializers/v1/credit_note_serializer.rb",
             "laravel": "App\\Serializers\\V1\\CreditNoteSerializer",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Serializers/V1/CreditNoteSerializerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -16476,11 +16723,13 @@
             "source": "app/serializers/v1/credit_notes/applied_tax_serializer.rb",
             "laravel": "App\\Serializers\\V1\\CreditNotes\\AppliedTaxSerializer",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Serializers/V1/CreditNoteSerializerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -17359,11 +17608,13 @@
             "source": "app/serializers/v1/wallet_serializer.rb",
             "laravel": "App\\Serializers\\V1\\WalletSerializer",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Serializers/V1/WalletSerializerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -17383,11 +17634,13 @@
             "source": "app/serializers/v1/wallet_transaction_serializer.rb",
             "laravel": "App\\Serializers\\V1\\WalletTransactionSerializer",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Serializers/V1/WalletTransactionSerializerTest.php"
+            ],
             "notes": ""
         },
         {
@@ -17911,11 +18164,13 @@
             "source": "app/services/applied_coupons/create_service.rb",
             "laravel": "App\\Services\\AppliedCoupons\\CreateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/AppliedCoupons/CreateServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -17923,11 +18178,13 @@
             "source": "app/services/applied_coupons/recredit_service.rb",
             "laravel": "App\\Services\\AppliedCoupons\\RecreditService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/AppliedCoupons/RecreditServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -17935,11 +18192,13 @@
             "source": "app/services/applied_coupons/terminate_service.rb",
             "laravel": "App\\Services\\AppliedCoupons\\TerminateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/AppliedCoupons/TerminateServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -18371,11 +18630,13 @@
             "source": "app/services/billable_metrics/evaluate_expression_service.rb",
             "laravel": "App\\Services\\BillableMetrics\\EvaluateExpressionService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/BillableMetrics/EvaluateExpressionServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -19763,11 +20024,13 @@
             "source": "app/services/contracts/create_service.rb",
             "laravel": "App\\Services\\Contracts\\CreateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Contracts/ContractsServicesTest.php"
+            ],
             "notes": ""
         },
         {
@@ -19799,11 +20062,13 @@
             "source": "app/services/contracts/terminate_service.rb",
             "laravel": "App\\Services\\Contracts\\TerminateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Contracts/ContractsServicesTest.php"
+            ],
             "notes": ""
         },
         {
@@ -19811,11 +20076,13 @@
             "source": "app/services/contracts/update_service.rb",
             "laravel": "App\\Services\\Contracts\\UpdateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Contracts/ContractsServicesTest.php"
+            ],
             "notes": ""
         },
         {
@@ -19823,11 +20090,13 @@
             "source": "app/services/coupons/create_service.rb",
             "laravel": "App\\Services\\Coupons\\CreateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Coupons/CreateServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -19835,11 +20104,13 @@
             "source": "app/services/coupons/destroy_service.rb",
             "laravel": "App\\Services\\Coupons\\DestroyService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Coupons/DestroyServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -19859,11 +20130,13 @@
             "source": "app/services/coupons/terminate_service.rb",
             "laravel": "App\\Services\\Coupons\\TerminateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Coupons/TerminateServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -19871,11 +20144,13 @@
             "source": "app/services/coupons/update_service.rb",
             "laravel": "App\\Services\\Coupons\\UpdateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Coupons/UpdateServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -19895,11 +20170,13 @@
             "source": "app/services/credit_notes/adjust_amounts_with_rounding_service.rb",
             "laravel": "App\\Services\\CreditNotes\\AdjustAmountsWithRoundingService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/CreditNotes/AdjustAmountsWithRoundingServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -19907,11 +20184,13 @@
             "source": "app/services/credit_notes/apply_taxes_service.rb",
             "laravel": "App\\Services\\CreditNotes\\ApplyTaxesService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/CreditNotes/ApplyTaxesServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -19919,11 +20198,13 @@
             "source": "app/services/credit_notes/compute_taxes_service.rb",
             "laravel": "App\\Services\\CreditNotes\\ComputeTaxesService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/CreditNotes/ComputeTaxesServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -19955,11 +20236,13 @@
             "source": "app/services/credit_notes/create_service.rb",
             "laravel": "App\\Services\\CreditNotes\\CreateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/CreditNotes/CreateServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -19979,11 +20262,13 @@
             "source": "app/services/credit_notes/estimate_service.rb",
             "laravel": "App\\Services\\CreditNotes\\EstimateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/CreditNotes/EstimateServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -20087,11 +20372,13 @@
             "source": "app/services/credit_notes/update_service.rb",
             "laravel": "App\\Services\\CreditNotes\\UpdateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/CreditNotes/UpdateServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -20099,11 +20386,13 @@
             "source": "app/services/credit_notes/validate_item_service.rb",
             "laravel": "App\\Services\\CreditNotes\\ValidateItemService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/CreditNotes/ValidateItemServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -20111,11 +20400,13 @@
             "source": "app/services/credit_notes/validate_service.rb",
             "laravel": "App\\Services\\CreditNotes\\ValidateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/CreditNotes/ValidateServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -20123,11 +20414,13 @@
             "source": "app/services/credit_notes/void_service.rb",
             "laravel": "App\\Services\\CreditNotes\\VoidService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/CreditNotes/VoidServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -21309,11 +21602,13 @@
             "source": "app/services/events/calculate_expression_service.rb",
             "laravel": "App\\Services\\Events\\CalculateExpressionService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Events/CalculateExpressionServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -21333,11 +21628,13 @@
             "source": "app/services/events/create_batch_service.rb",
             "laravel": "App\\Services\\Events\\CreateBatchService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Events/CreateBatchServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -21345,11 +21642,13 @@
             "source": "app/services/events/create_service.rb",
             "laravel": "App\\Services\\Events\\CreateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Events/CreateServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -21431,11 +21730,13 @@
             "source": "app/services/events/post_process_service.rb",
             "laravel": "App\\Services\\Events\\PostProcessService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Events/PostProcessServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -21599,11 +21900,13 @@
             "source": "app/services/events/stores/postgres_store.rb",
             "laravel": "App\\Services\\Events\\Stores\\PostgresStore",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Events/PostgresStoreTest.php"
+            ],
             "notes": ""
         },
         {
@@ -21623,11 +21926,13 @@
             "source": "app/services/events/stores/store_factory.rb",
             "laravel": "App\\Services\\Events\\Stores\\StoreFactory",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Events/StoreFactoryTest.php"
+            ],
             "notes": ""
         },
         {
@@ -22211,11 +22516,13 @@
             "source": "app/services/fixed_charges/create_service.rb",
             "laravel": "App\\Services\\FixedCharges\\CreateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Services/FixedCharges/CreateServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -22235,11 +22542,13 @@
             "source": "app/services/fixed_charges/destroy_service.rb",
             "laravel": "App\\Services\\FixedCharges\\DestroyService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Services/FixedCharges/CreateServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -22259,11 +22568,13 @@
             "source": "app/services/fixed_charges/generate_code_service.rb",
             "laravel": "App\\Services\\FixedCharges\\GenerateCodeService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Services/FixedCharges/CreateServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -22295,11 +22606,13 @@
             "source": "app/services/fixed_charges/update_service.rb",
             "laravel": "App\\Services\\FixedCharges\\UpdateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Feature/Services/FixedCharges/CreateServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -24628,11 +24941,13 @@
             "source": "app/services/invoices/payments/mark_overdue_service.rb",
             "laravel": "App\\Services\\Invoices\\Payments\\MarkOverdueService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Invoices/Payments/MarkOverdueServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -27405,11 +27720,13 @@
             "source": "app/services/rate_card_rates/create_service.rb",
             "laravel": "App\\Services\\RateCardRates\\CreateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/RateCardRates/RateCardRateServicesTest.php"
+            ],
             "notes": ""
         },
         {
@@ -27417,11 +27734,13 @@
             "source": "app/services/rate_card_rates/destroy_service.rb",
             "laravel": "App\\Services\\RateCardRates\\DestroyService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/RateCardRates/RateCardRateServicesTest.php"
+            ],
             "notes": ""
         },
         {
@@ -27525,11 +27844,13 @@
             "source": "app/services/rate_phases/create_service.rb",
             "laravel": "App\\Services\\RatePhases\\CreateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/RateCardRates/RateCardRateServicesTest.php"
+            ],
             "notes": ""
         },
         {
@@ -28870,11 +29191,13 @@
             "source": "app/services/wallet_transactions/create_from_params_service.rb",
             "laravel": "App\\Services\\WalletTransactions\\CreateFromParamsService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/WalletTransactions/CreateFromParamsServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -28894,11 +29217,13 @@
             "source": "app/services/wallet_transactions/mark_as_failed_service.rb",
             "laravel": "App\\Services\\WalletTransactions\\MarkAsFailedService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/WalletTransactions/VoidSettleTrackingTest.php"
+            ],
             "notes": ""
         },
         {
@@ -28930,11 +29255,13 @@
             "source": "app/services/wallet_transactions/settle_service.rb",
             "laravel": "App\\Services\\WalletTransactions\\SettleService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/WalletTransactions/VoidSettleTrackingTest.php"
+            ],
             "notes": ""
         },
         {
@@ -28942,11 +29269,13 @@
             "source": "app/services/wallet_transactions/track_consumption_service.rb",
             "laravel": "App\\Services\\WalletTransactions\\TrackConsumptionService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/WalletTransactions/VoidSettleTrackingTest.php"
+            ],
             "notes": ""
         },
         {
@@ -28966,11 +29295,13 @@
             "source": "app/services/wallet_transactions/void_service.rb",
             "laravel": "App\\Services\\WalletTransactions\\VoidService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/WalletTransactions/VoidSettleTrackingTest.php"
+            ],
             "notes": ""
         },
         {
@@ -29062,11 +29393,13 @@
             "source": "app/services/wallets/create_service.rb",
             "laravel": "App\\Services\\Wallets\\CreateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Wallets/CreateServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -29134,11 +29467,13 @@
             "source": "app/services/wallets/terminate_service.rb",
             "laravel": "App\\Services\\Wallets\\TerminateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Wallets/TerminateServiceTest.php"
+            ],
             "notes": ""
         },
         {
@@ -29158,11 +29493,13 @@
             "source": "app/services/wallets/update_service.rb",
             "laravel": "App\\Services\\Wallets\\UpdateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
+            "tests": [
+                "tests/Unit/Services/Wallets/UpdateServiceTest.php"
+            ],
             "notes": ""
         },
         {
