@@ -113,8 +113,9 @@ class RefreshDraftService extends \App\Services\BaseService
                 }
 
                 if ($oldTotalAmountCents !== (int) $this->invoice->total_amount_cents) {
-                    // TODO(port): LifetimeUsages::FlagRefreshFromInvoiceService
-                    // + customer.flag_wallets_for_refresh.
+                    // FlagRefreshFromInvoiceService — WIRED (usage-monitoring
+                    // slice). TODO(port): customer.flag_wallets_for_refresh.
+                    \App\Services\LifetimeUsages\FlagRefreshFromInvoiceService::callBang(invoice: $this->invoice);
                 }
 
                 // NOTE: In case of a refresh the same day of the termination.

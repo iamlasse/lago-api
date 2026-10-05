@@ -7,6 +7,7 @@ uses()->group(
     'ledger:rest:POST:/api/v1/plans/:code/fixed_charges',
     'ledger:rest:GET:/api/v1/plans/:code/fixed_charges/:code',
     'ledger:rest:PUT:/api/v1/plans/:code/fixed_charges/:code',
+    'ledger:rest:PATCH:/api/v1/plans/:code/fixed_charges/:code',
     'ledger:rest:DELETE:/api/v1/plans/:code/fixed_charges/:code',
 );
 
@@ -297,6 +298,57 @@ it('returns not found error when fixed charge does not exist on update', functio
     $plan = Plan::factory()->create(['organization_id' => $organization->id]);
 
     test()->putJson('/api/v1/plans/'.$plan->code.'/fixed_charges/invalid_code', ['fixed_charge' => [
+        'units' => 25,
+    ]], fixedChargesBearer([$organization, $apiKey]))
+        ->assertNotFound()
+        ->assertExactJson(['status' => 404, 'error' => 'Not Found', 'code' => 'fixed_charge_not_found']);
+});
+
+// -- PATCH /api/v1/plans/:plan_code/fixed_charges/:code -------------------------
+// Rails maps PATCH to the same Plans::FixedChargesController#update the PUT
+// route hits (plan_nested_api.rb resources :fixed_charges; no verb branch in
+// the controller chain — pinned contractually by the plans_fixed_charges_patch
+// scenario).
+
+it('updates the fixed charge via PATCH', function (): void {
+    [$organization, $apiKey] = fixedChargesOrganization();
+    $plan = Plan::factory()->create(['organization_id' => $organization->id]);
+    $addOn = AddOn::factory()->for($organization)->create();
+    $fixedCharge = FixedCharge::factory()->create([
+        'plan_id' => $plan->id, 'organization_id' => $organization->id, 'add_on_id' => $addOn->id,
+    ]);
+
+    test()->patchJson('/api/v1/plans/'.$plan->code.'/fixed_charges/'.$fixedCharge->code, ['fixed_charge' => [
+        'invoice_display_name' => 'Updated Fixed Charge Name',
+        'charge_model' => 'standard',
+        'units' => 20,
+        'properties' => ['amount' => '200'],
+    ]], fixedChargesBearer([$organization, $apiKey]))
+        ->assertOk()
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json): void {
+            $json->where('fixed_charge.invoice_display_name', 'Updated Fixed Charge Name')
+                ->where('fixed_charge.units', '20.0')
+                ->where('fixed_charge.properties.amount', '200')
+                ->etc();
+        });
+});
+
+it('returns not found error when plan does not exist on fixed charge PATCH', function (): void {
+    [$organization, $apiKey] = fixedChargesOrganization();
+    $fixedCharge = FixedCharge::factory()->create(['organization_id' => $organization->id]);
+
+    test()->patchJson('/api/v1/plans/invalid_code/fixed_charges/'.$fixedCharge->code, ['fixed_charge' => [
+        'units' => 25,
+    ]], fixedChargesBearer([$organization, $apiKey]))
+        ->assertNotFound()
+        ->assertExactJson(['status' => 404, 'error' => 'Not Found', 'code' => 'plan_not_found']);
+});
+
+it('returns not found error when fixed charge does not exist on PATCH', function (): void {
+    [$organization, $apiKey] = fixedChargesOrganization();
+    $plan = Plan::factory()->create(['organization_id' => $organization->id]);
+
+    test()->patchJson('/api/v1/plans/'.$plan->code.'/fixed_charges/invalid_code', ['fixed_charge' => [
         'units' => 25,
     ]], fixedChargesBearer([$organization, $apiKey]))
         ->assertNotFound()

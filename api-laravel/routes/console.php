@@ -38,3 +38,15 @@ Schedule::job(new RetryGeneratingSubscriptionInvoicesJob)->hourlyAt(30);
 
 // every(1.hour, "schedule:process_dunning_campaigns", at: "*:45") — "45 */1 * * *"
 Schedule::job(new ProcessDunningCampaignsJob)->hourlyAt(45);
+
+// Usage-monitoring slice (clock.rb entries):
+// every(LAGO_SUBSCRIPTION_ACTIVITY_PROCESSING_INTERVAL_SECONDS || 1.minute,
+//   "schedule:process_subscription_activity")
+Schedule::job(new App\Jobs\Clock\ProcessAllSubscriptionActivitiesJob)->everyMinute();
+
+// every(LAGO_LIFETIME_USAGE_REFRESH_INTERVAL_SECONDS || 5.minutes,
+//   "schedule:refresh_lifetime_usages")
+Schedule::job(new App\Jobs\Clock\RefreshLifetimeUsagesJob)->everyFiveMinutes();
+
+// every(1.hour, "schedule:expire_order_forms", at: "*:40") — "40 */1 * * *"
+Schedule::job(new App\Jobs\Clock\ExpireOrderFormsJob)->hourlyAt(40);

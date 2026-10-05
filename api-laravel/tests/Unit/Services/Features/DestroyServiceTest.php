@@ -38,7 +38,7 @@ it('discards the feature and its cascade', function (): void {
         // Soft deletes — the rows are kept with deleted_at.
         ->and(Feature::withTrashed()->count())->toBe(1)
         ->and(Privilege::withTrashed()->count())->toBe(1);
-})->group('ledger:svc:Features.DestroyService');
+})->group('ledger:svc:Entitlement.FeatureDestroyService');
 
 it('returns a not found failure when the feature is missing', function (): void {
     $result = DestroyService::call(feature: null);

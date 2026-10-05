@@ -2,6 +2,11 @@
 
 declare(strict_types=1);
 
+uses()->group(
+    'ledger:svc:DunningCampaigns.ProcessCustomerService',
+    'ledger:svc:DunningCampaigns.ProcessAttemptService',
+);
+
 require_once __DIR__.'/CrudServicesTest.php';
 
 use App\Jobs\SendWebhookJob;
@@ -14,8 +19,8 @@ use App\Services\DunningCampaigns\ProcessCustomerService;
 
 /**
  * Ports of Rails' spec/services/dunning_campaigns/{process_customer,
- * process_attempt}_service_spec.rb. Ledger rows: svc:dunning_campaigns:
- * process_customer / process_attempt.
+ * process_attempt}_service_spec.rb. Ledger rows:
+ * svc:DunningCampaigns.ProcessCustomerService / ProcessAttemptService.
  */
 beforeEach(function (): void {
     Queue::fake();

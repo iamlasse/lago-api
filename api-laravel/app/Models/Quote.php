@@ -13,13 +13,15 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
- * Minimal read-model scaffold of Rails' Quote (app/models/quote.rb) — only
- * what the ORDERS slice needs (the order_type delegate and the number).
+ * Port of Rails' Quote (app/models/quote.rb).
  *
- * TODO(port): the full quotes slice (versions workflow, approval, images,
- * owners) — this class stays read-only until then.
+ * The quote is the deal header: the order type decides what signing it
+ * executes, and the number ("QT-YYYY-0000") is what every read surface
+ * shows. Everything stateful — draft/approved/voided lifecycle, billing
+ * items, content — lives on the versions.
  */
 #[Fillable([
     'organization_id',
@@ -37,12 +39,15 @@ class Quote extends BaseModel
     use HasUuid;
     use Sequenced;
 
-    /** Rails: `enum :order_type, ORDER_TYPES` (quotes.order_type values). */
+    /** Rails: `enum :order_type, ORDER_TYPES`. */
     public const ORDER_TYPES = [
         'subscription_creation' => 'subscription_creation',
         'subscription_amendment' => 'subscription_amendment',
         'one_off' => 'one_off',
     ];
+
+    /** Rails: QUOTE_NUMBER_REGEX (lib validation on the read surface). */
+    public const QUOTE_NUMBER_REGEX = '/\AQT-\d{4}-\d{4,}\z/';
 
     // -- Relationships --------------------------------------------------------
 
@@ -58,11 +63,63 @@ class Quote extends BaseModel
         return $this->belongsTo(Subscription::class);
     }
 
-    /** Rails: `has_many :quote_versions`. */
+    /** Rails: `has_many :quote_owners, dependent: :destroy`. */
+    public function quoteOwners(): HasMany
+    {
+        return $this->hasMany(QuoteOwner::class);
+    }
+
+    /** Rails: `has_many :owners, through: :quote_owners, source: :user`. */
+    public function owners(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            User::class,
+            'quote_owners',
+            'quote_id',
+            'user_id',
+        );
+    }
+
+    /**
+     * Rails: `has_many :versions, -> { order(sequential_id: :desc) }` —
+     * newest version first.
+     */
+    public function versions(): HasMany
+    {
+        return $this->hasMany(QuoteVersion::class)
+            ->orderByDesc('sequential_id');
+    }
+
+    /** Rails: `has_one :current_version, -> { order(sequential_id: :desc) }`. */
+    public function currentVersion()
+    {
+        return $this->hasOne(QuoteVersion::class)
+            ->orderByDesc('sequential_id');
+    }
+
+    /**
+     * Laravel-idiom alias of `versions()` — the name the scaffold (and the
+     * services written against it) use for the same relation.
+     */
     public function quoteVersions(): HasMany
     {
-        return $this->hasMany(QuoteVersion::class);
+        return $this->versions();
     }
+
+    /** Rails: `has_many :order_forms, through: :versions`. */
+    public function orderForms()
+    {
+        return OrderForm::query()
+            ->whereIn('quote_version_id', $this->versions()->select('id'));
+    }
+
+    /** Rails: `def version` on the version — the current one read off the quote. */
+    public function currentVersionNumber(): ?int
+    {
+        return $this->currentVersion()->first()?->sequential_id;
+    }
+
+    // -- Number ---------------------------------------------------------------
 
     /**
      * Rails: `before_save :ensure_number` — registered after the Sequenced

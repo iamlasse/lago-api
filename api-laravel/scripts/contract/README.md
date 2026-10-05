@@ -103,6 +103,10 @@ PAO_DISABLE=1 DB_DATABASE=lago_laravel_golden ./vendor/bin/pest tests/Contract
 | `events_ingestion` | 9 | red (findings 19, 20) | duplicate dedup, expression metric, mixed batch, show/index |
 | `entitlements_crud` | 13 | red (findings 21, 22) | typed privileges, plan PATCH/POST, subscription override |
 | `catalog_crud` | 16 | red (findings 23, 24) | /api/v2 surface, product_catalog flag, pending contract, rate phases |
+| `taxes_crud` | 10 | pending (replay slice) | tax CRUD by code, applied_to_organization billing-entity attach/detach, duplicate-code 422, destroy |
+| `webhook_endpoints_crud` | 9 | pending (replay slice) | endpoint CRUD + event_types semantics, invalid/must_be_array 422s, minted-id TOKENS on show/update/destroy |
+| `metrics_extras` | 8 | pending (replay slice) | evaluate_expression (success + 3 error envelopes), PATCH expression/rounding, filters batch upsert |
+| `invoice_actions` | 14 | pending (replay slice) | one-off show/PATCH (TOKEN), draft refresh → finalize → lose_dispute → void, 405/422 envelopes, premium resend_email |
 
 The five per-charge-model scenarios (`invoice_graduated`, `invoice_package`,
 `invoice_percentage`, `invoice_volume`, `invoice_graduated_percentage`) share
@@ -296,6 +300,50 @@ match exactly — exp matches because both sides mint under the frozen clock.
 - **Rate phases: only the LAST phase may be indefinite** — a phase without
   `billing_interval_cycle_count` 422s `indefinite_phase_must_be_last` when
   it is not last.
+
+### Gotchas from the 2025-06-12 capture wave (taxes / webhook_endpoints / metrics_extras / invoice_actions)
+
+- **Duplicate tax code is `value_already_exist`** (singular) — that is what
+  Rails' uniqueness message carries verbatim; the obvious
+  `value_already_exists` guess will diff.
+- **`evaluate_expression` values are STRINGS** — the lago-expression gem
+  returns BigDecimal and the JSON encoder renders `21.0` as `"21.0"`,
+  `event.timestamp` as `"1749740400.0"` (F-notation with a trailing `.0`).
+  The replay must run the expression result through the same BigDecimal
+  rendering as the serializers, not emit a JSON number.
+- **`event.timestamp` falls back to the FROZEN clock** — an event without
+  `timestamp` gets `Time.current` inside `travel_to`, so golden 2.json of
+  metrics_extras is deterministic (the replay must freeze the same instant).
+- **Webhook `event_types: ["*"]` normalizes to `null`** (filtering DISABLED,
+  golden shows `event_types: null`); invalid types 422 with the offenders
+  embedded IN the message (`contains invalid types: ["not_a_real_event"]`);
+  a scalar `event_types` survives `params.permit` ON PURPOSE so the model
+  can raise `must_be_array` — the Laravel port must not drop the scalar at
+  validation.
+- **The static-parse inventory's `new`/`edit` rows are false positives** for
+  taxes/billable_metrics — Rails' `resources` registers the routes but the
+  API controllers have no such actions (they would 500); the scenarios skip
+  them.
+- **PATCH payment_status leaves fees `pending`** — the fee sync is
+  `Invoices::UpdateFeesPaymentStatusJob` (`perform_after_commit`), which
+  Rails' `:test` adapter records but never runs. The replay's `Queue::fake()`
+  mirrors this — do not "fix" the divergence by running the job.
+- **PUT /invoices/:id/refresh re-derives the billing boundaries and PRORATES**
+  — RefreshDraftService destroys the seeded invoice_subscription and rebuilds
+  it via CreateInvoiceSubscriptionService; in the captured fixture that
+  yields a degenerate period (subscription_from == subscription_to ==
+  2025-06-01T00:00:00Z) and a subscription fee of 158c (4900 over a 31-day
+  base). Deterministic, but the replay must reproduce the boundary math, not
+  expect the seed's full-month values. Finalize re-runs the same refresh and
+  only moves issuing_date to the frozen date + flips status.
+- **PUT finalize/refresh on a non-subscription invoice is `forbidden_failure!`**
+  — both services bail (`invoice.subscription?`) before anything else; the
+  scenario's draft invoice is seeded as `invoice_type: subscription` via the
+  `:subscription` factory trait for that reason.
+- **Minted-id tokens in these manifests**: `ONE_OFF_INVOICE_ID`
+  (invoice_actions #2/#3), `WEBHOOK_ENDPOINT_ONE_ID` (#4/#5) and
+  `WEBHOOK_ENDPOINT_TWO_ID` (#8) — the replay tests substitute the ids their
+  own requests minted (same mechanics as wallets_lifecycle).
 
 ## Current findings (Laravel deviations, intentionally not fixed)
 

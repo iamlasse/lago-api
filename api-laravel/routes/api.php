@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\V1\TaxesController;
 use App\Http\Controllers\Api\V1\AddOnsController;
 use App\Http\Controllers\Api\V1\EventsController;
 use App\Http\Controllers\Api\V1\OrdersController;
+use App\Http\Controllers\Api\V1\QuotesController;
 use App\Http\Controllers\Api\V1\CouponsController;
 use App\Http\Controllers\Api\V1\WalletsController;
 use App\Http\Controllers\Api\V1\FeaturesController;
@@ -19,9 +20,11 @@ use App\Http\Controllers\Api\V1\ProductsController;
 use App\Http\Controllers\Api\V1\ContractsController;
 use App\Http\Controllers\Api\V1\CustomersController;
 use App\Http\Controllers\Api\V1\RateCardsController;
+use App\Http\Controllers\Api\V1\OrderFormsController;
 use App\Http\Controllers\Api\V1\CreditNotesController;
 use App\Http\Controllers\Api\V1\OrganizationsController;
 use App\Http\Controllers\Api\V1\Plans\ChargesController;
+use App\Http\Controllers\Api\V1\QuoteVersionsController;
 use App\Http\Controllers\Api\V1\SubscriptionsController;
 use App\Http\Controllers\Api\V1\Analytics\MrrsController;
 use App\Http\Controllers\Api\V1\AppliedCouponsController;
@@ -29,6 +32,7 @@ use App\Http\Controllers\Api\V1\DataApi\UsagesController;
 use App\Http\Controllers\Api\V1\BillableMetricsController;
 use App\Http\Controllers\Api\V1\PaymentReceiptsController;
 use App\Http\Controllers\Api\V1\PaymentRequestsController;
+use App\Http\Controllers\Api\V1\Quotes\VersionsController;
 use App\Http\Controllers\Api\V1\WebhookEndpointsController;
 use App\Http\Controllers\Api\V1\ProductCategoriesController;
 use App\Http\Controllers\Api\V1\Plans\FixedChargesController;
@@ -46,7 +50,9 @@ use App\Http\Controllers\Api\V1\Customers\WalletsController as CustomerWalletsCo
 use App\Http\Controllers\Api\V1\Customers\PaymentsController as CustomerPaymentsController;
 use App\Http\Controllers\Api\V1\Plans\EntitlementsController as PlanEntitlementsController;
 use App\Http\Controllers\Api\V1\Features\PrivilegesController as FeaturePrivilegesController;
+use App\Http\Controllers\Api\V1\Subscriptions\AlertsController as SubscriptionAlertsController;
 use App\Http\Controllers\Api\V1\Customers\CreditNotesController as CustomerCreditNotesController;
+use App\Http\Controllers\Api\V1\Customers\Wallets\AlertsController as CustomerWalletAlertsController;
 use App\Http\Controllers\Api\V1\Customers\AppliedCouponsController as CustomerAppliedCouponsController;
 use App\Http\Controllers\Api\V1\Customers\PaymentMethodsController as CustomerPaymentMethodsController;
 use App\Http\Controllers\Api\V1\Customers\ProjectedUsageController as CustomerProjectedUsageController;
@@ -54,6 +60,7 @@ use App\Http\Controllers\Api\V1\Customers\PaymentRequestsController as CustomerP
 use App\Http\Controllers\Api\V1\Contracts\AppliedRateCardsController as AppliedContractRateCardsController;
 use App\Http\Controllers\Api\V1\Subscriptions\EntitlementsController as SubscriptionEntitlementsController;
 use App\Http\Controllers\Api\V1\Plans\Entitlements\PrivilegesController as PlanEntitlementPrivilegesController;
+use App\Http\Controllers\Api\V1\Subscriptions\LifetimeUsagesController as SubscriptionLifetimeUsagesController;
 use App\Http\Controllers\Api\V1\Plans\AppliedRateCards\RatePhasesController as PlanRateCardRatePhasesController;
 use App\Http\Controllers\Api\V1\Contracts\AppliedRateCards\RatePhasesController as ContractRateCardRatePhasesController;
 use App\Http\Controllers\Api\V1\Subscriptions\Entitlements\PrivilegesController as SubscriptionEntitlementPrivilegesController;
@@ -458,6 +465,32 @@ $sharedApi = function (): void {
                     Route::put('{id}/set_as_default', [CustomerPaymentMethodsController::class, 'setAsDefault']);
                 });
             });
+        // NOTE (usage-monitoring slice): the wallet-alerts nested routes MUST
+        // be registered BEFORE the customers show/destroy routes below —
+        // those carry the greedy `.+` external_id constraint and would
+        // otherwise swallow `customers/x/wallets/code/alerts` (Laravel matches
+        // by registration order).
+        Route::prefix('customers/{external_id}')
+            ->where(['external_id' => '.+'])
+            ->as('customers:')->group(function (): void {
+                Route::prefix('wallets/{code}')->as('wallets:')->group(function (): void {
+                    Route::prefix('alerts')->as('alerts:')->group(function (): void {
+                        Route::delete('/', [CustomerWalletAlertsController::class, 'destroyAll']);
+                        Route::get('/', [CustomerWalletAlertsController::class, 'index']);
+                        Route::post('/', [CustomerWalletAlertsController::class, 'create']);
+
+                        Route::get('{alert_code}', [CustomerWalletAlertsController::class, 'show'])
+                            ->where('alert_code', '.+');
+                        Route::put('{alert_code}', [CustomerWalletAlertsController::class, 'update'])
+                            ->where('alert_code', '.+');
+                        Route::patch('{alert_code}', [CustomerWalletAlertsController::class, 'update'])
+                            ->where('alert_code', '.+');
+                        Route::delete('{alert_code}', [CustomerWalletAlertsController::class, 'destroy'])
+                            ->where('alert_code', '.+');
+                    });
+                });
+            });
+
         // customers and subscriptions are looked up by external_id, which
         // may contain dots. Rails constrains those params with /[^\/]+/ (a
         // bare :external_id would truncate the value at the format
@@ -506,6 +539,36 @@ $sharedApi = function (): void {
             Route::get('{id}', [PaymentReceiptsController::class, 'show']);
         });
 
+        // == quotes / quote_versions / order_forms — appended order-forms slice block ==
+        //
+        // From the rest.json rows (filter "/quotes", "/quote_versions",
+        // "/order_forms"): quotes are READ-ONLY over REST — creation, updates
+        // and the version lifecycle transitions live on the GraphQL surface
+        // (Rails keeps createQuote/updateQuote/addQuoteImage and
+        // updateQuoteVersion off the REST router). REST owns the reads plus
+        // the approve / void / clone and mark_as_signed / void transitions.
+        // The rows exist for both /api/v1 and /api/v2; both prefixes mount the
+        // same $sharedApi closure, so one block serves both.
+        Route::prefix('quotes')->as('quotes:')->group(function (): void {
+            Route::get('', [QuotesController::class, 'index']);
+            Route::get('{id}', [QuotesController::class, 'show']);
+            Route::get('{quote_id}/versions', [VersionsController::class, 'index']);
+        });
+
+        Route::prefix('quote_versions')->as('quote_versions:')->group(function (): void {
+            Route::get('{id}', [QuoteVersionsController::class, 'show']);
+            Route::post('{id}/approve', [QuoteVersionsController::class, 'approve']);
+            Route::post('{id}/void', [QuoteVersionsController::class, 'void']);
+            Route::post('{id}/clone', [QuoteVersionsController::class, 'clone']);
+        });
+
+        Route::prefix('order_forms')->as('order_forms:')->group(function (): void {
+            Route::get('', [OrderFormsController::class, 'index']);
+            Route::post('{id}/mark_as_signed', [OrderFormsController::class, 'markAsSigned']);
+            Route::post('{id}/void', [OrderFormsController::class, 'void']);
+            Route::get('{id}', [OrderFormsController::class, 'show']);
+        });
+
         // == analytics (Lago Data API proxy) — appended analytics-slice block ====
         //
         // The ONLY /analytics* route Rails serves from the Data API HTTP proxy:
@@ -545,6 +608,55 @@ $sharedApi = function (): void {
             Route::get('invoice_collection', [InvoiceCollectionsController::class, 'index']);
             Route::get('mrr', [MrrsController::class, 'index']);
             Route::get('overdue_balance', [OverdueBalancesController::class, 'index']);
+        });
+
+        // == usage monitoring (alerts / lifetime_usage) — appended
+        // usage-monitoring-slice block ==========================================
+        //
+        // From config/routes/shared_api.rb:
+        //
+        //   customers nested draw (module: :customers do ... end):
+        //     resources :wallets, param: :code do
+        //       scope module: :wallets do
+        //         resources :alerts, only: [...], param: :code do
+        //           collection { delete "/", action: :destroy_all }
+        //         end
+        //       end
+        //     end
+        //
+        //   resources :subscriptions, param: :external_id do
+        //     resource :lifetime_usage, only: %i[show update],
+        //       controller: "subscriptions/lifetime_usages"
+        //     resources :alerts, only: [...], param: :code,
+        //       controller: "subscriptions/alerts" do
+        //       collection { delete "/", action: :destroy_all }
+        //     end
+        //   end
+        //
+        // The wallet alert code and the subscription alert code route params
+        // carry the `.+` wildcard (codes may contain dots, Rails'
+        // `param: :code` without a constraint would clash with the nested
+        // destroy_all; the explicit collection DELETE is registered first).
+
+        Route::prefix('subscriptions/{external_id}')->where(['external_id' => '.+'])->group(function (): void {
+            Route::get('lifetime_usage', [SubscriptionLifetimeUsagesController::class, 'show']);
+            Route::put('lifetime_usage', [SubscriptionLifetimeUsagesController::class, 'update']);
+            Route::patch('lifetime_usage', [SubscriptionLifetimeUsagesController::class, 'update']);
+
+            Route::prefix('alerts')->as('subscriptions:alerts:')->group(function (): void {
+                Route::delete('/', [SubscriptionAlertsController::class, 'destroyAll']);
+                Route::get('/', [SubscriptionAlertsController::class, 'index']);
+                Route::post('/', [SubscriptionAlertsController::class, 'create']);
+
+                Route::get('{alert_code}', [SubscriptionAlertsController::class, 'show'])
+                    ->where('alert_code', '.+');
+                Route::put('{alert_code}', [SubscriptionAlertsController::class, 'update'])
+                    ->where('alert_code', '.+');
+                Route::patch('{alert_code}', [SubscriptionAlertsController::class, 'update'])
+                    ->where('alert_code', '.+');
+                Route::delete('{alert_code}', [SubscriptionAlertsController::class, 'destroy'])
+                    ->where('alert_code', '.+');
+            });
         });
     });
 };

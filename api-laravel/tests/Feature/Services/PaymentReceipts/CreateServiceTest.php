@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+uses()->group('ledger:svc:PaymentReceipts.CreateService');
+
 use App\Models\Payment;
 use App\Models\Customer;
 use App\Jobs\SendWebhookJob;
@@ -13,7 +15,7 @@ use App\Jobs\PaymentReceipts\GenerateDocumentsJob;
 
 /**
  * Ports of Rails' spec/services/payment_receipts/create_service_spec.rb over
- * the frozen schema. Ledger row: svc:payment_receipts:create.
+ * the frozen schema. Ledger row: svc:PaymentReceipts.CreateService.
  *
  * The receipt NUMBER comes from the frozen schema's
  * set_payment_receipt_number() trigger (before_payment_receipt_insert) —

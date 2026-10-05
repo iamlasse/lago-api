@@ -14,9 +14,9 @@ use App\Serializers\V1\Concerns\FormatsDatetime;
  * (app/serializers/v1/plan_serializer.rb).
  *
  * Not ported (dependencies do not exist yet):
- * - TODO(port): entitlements / usage_thresholds /
- *   applicable_usage_thresholds include the real serializers when the
- *   Entitlement and UsageThreshold models exist (empty collections today).
+ * - TODO(port): entitlements include (the Entitlement model exists —
+ *   empty collection today; usage_thresholds / applicable_usage_thresholds
+ *   landed with the usage-monitoring slice).
  * - TODO(port): minimum_commitment include (V1::CommitmentSerializer).
  * - TODO(port): metadata include (Metadata::ItemMetadata).
  */
@@ -61,13 +61,18 @@ class PlanSerializer extends ModelSerializer
         }
 
         if ($this->include('usage_thresholds')) {
-            // TODO(port): V1::UsageThresholdSerializer.
-            $payload['usage_thresholds'] = [];
+            $payload['usage_thresholds'] = $this->model->usageThresholds
+                ->map(fn ($threshold): array => (new UsageThresholdSerializer($threshold))->serialize())
+                ->values()
+                ->all();
         }
 
         if ($this->include('applicable_usage_thresholds')) {
-            // TODO(port): V1::ApplicableUsageThresholdSerializer.
-            $payload['applicable_usage_thresholds'] = [];
+            $payload['applicable_usage_thresholds'] = $this->model
+                ->applicableUsageThresholds()
+                ->map(fn ($threshold): array => (new ApplicableUsageThresholdSerializer($threshold))->serialize())
+                ->values()
+                ->all();
         }
 
         if ($this->include('taxes')) {

@@ -50,7 +50,6 @@ class SendWebhookJob implements ShouldQueue
      * @var array<string, class-string>
      */
     public const array WEBHOOK_SERVICES = [
-        // "alert.triggered" => Webhooks\UsageMonitoring\AlertTriggeredService,
         // "billable_metric.created" => ..., (billable metrics webhooks — later slice)
         'customer.created' => CustomerCreatedService::class,
         'customer.updated' => CustomerUpdatedService::class,
@@ -74,6 +73,9 @@ class SendWebhookJob implements ShouldQueue
         'payment_receipt.created' => PaymentReceiptCreatedService::class,
         'payment_receipt.generated' => PaymentReceiptGeneratedService::class,
         'dunning_campaign.finished' => DunningCampaignFinishedService::class,
+        // usage-monitoring slice.
+        'alert.triggered' => \App\Services\Webhooks\UsageMonitoring\AlertTriggeredService::class,
+        'subscription.usage_threshold_reached' => \App\Services\Webhooks\Subscriptions\UsageThresholdsReachedService::class,
     ];
 
     /** Rails: HIGH_PRIORITY_WEBHOOK_TYPES. */

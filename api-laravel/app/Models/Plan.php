@@ -23,8 +23,8 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * relations, enums, scopes and validations (app/models/plan.rb).
  *
  * Not ported (dependencies do not exist yet):
- * - TODO(port): metadata (Metadata::ItemMetadata), usage_thresholds,
- *   entitlements, add-on coupon targets and Clickhouse activity logs.
+ * - TODO(port): metadata (Metadata::ItemMetadata), entitlements,
+ *   add-on coupon targets and Clickhouse activity logs.
  */
 #[Fillable([
     'organization_id',
@@ -64,6 +64,25 @@ class Plan extends BaseModel
     public function parent(): BelongsTo
     {
         return $this->belongsTo(self::class, 'parent_id');
+    }
+
+    // -- Usage thresholds (usage-monitoring slice, appended) ---------------------
+
+    /** Rails: `has_many :usage_thresholds` (deleted_at discard). */
+    public function usageThresholds(): HasMany
+    {
+        return $this->hasMany(UsageThreshold::class);
+    }
+
+    /**
+     * Rails: `Plan#applicable_usage_thresholds` — the override parent's
+     * thresholds when this plan is an override child, else its own.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, UsageThreshold>
+     */
+    public function applicableUsageThresholds(): \Illuminate\Database\Eloquent\Collection
+    {
+        return ($this->parent ?? $this)->usageThresholds;
     }
 
     /** Rails: `has_one :minimum_commitment, -> { where(commitment_type: :minimum_commitment) }`. */

@@ -96,6 +96,18 @@ class BillableMetric extends BaseModel
     }
 
     /** Rails: `has_many :filters, -> { order(:key) }, dependent: :delete_all, class_name: "BillableMetricFilter"`. */
+    /**
+     * Rails: `has_many :product_filter_values, through: :filters`
+     * (usage-monitoring slice, appended) — kept as an explicit whereIn over
+     * the kept filters so the intermediate default scope (discard) applies
+     * exactly like Rails' through.
+     */
+    public function productFilterValues()
+    {
+        return ProductFilterValue::query()
+            ->whereIn('billable_metric_filter_id', $this->filters()->select('id'));
+    }
+
     public function filters(): HasMany
     {
         return $this->hasMany(BillableMetricFilter::class);

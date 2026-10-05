@@ -99,6 +99,14 @@ return [
         'rsa_private_key_path' => env('LAGO_RSA_PRIVATE_KEY_PATH', base_path('config/keys/private.pem')),
     ],
 
+    // Auth::GoogleService (app/services/auth/google_service.rb) —
+    // ENV["GOOGLE_AUTH_CLIENT_ID"] / ENV["GOOGLE_AUTH_CLIENT_SECRET"]. Okta
+    // and Entra ID have NO env names in Rails: their client_id/secret/domain/
+    // tenant live on the organization's `integrations` row (settings/secrets
+    // columns), created through the integrations REST surface.
+    'google_auth_client_id' => env('GOOGLE_AUTH_CLIENT_ID'),
+    'google_auth_client_secret' => env('GOOGLE_AUTH_CLIENT_SECRET'),
+
     // Lago::RedisConfigBuilder cache connection
     'redis_cache_url' => env('LAGO_REDIS_CACHE_URL'),
 

@@ -24,8 +24,6 @@ use function array_key_exists;
  * Not ported (dependencies do not exist yet):
  * - TODO(port): plan metadata (Metadata::ItemMetadata) — the `metadata` arg
  *   is accepted and ignored.
- * - TODO(port): UsageThresholds::UpdateService (progressive billing is
- *   premium + a later milestone).
  * - TODO(port): AppliedPricingUnits — premium applied pricing params are
  *   accepted and ignored.
  * - TODO(port): SegmentTrackJob + activity log middleware.
@@ -121,9 +119,16 @@ class CreateService extends BaseService
                     )->raiseIfError();
                 }
 
-                // TODO(port): UsageThresholds::UpdateService — progressive
-                // billing (premium) is a later milestone; the
-                // usage_thresholds arg is ignored.
+                // UsageThresholds::UpdateService — WIRED (usage-monitoring
+                // slice; progressive billing is premium-gated).
+                if ($this->present($args['usage_thresholds'] ?? null) !== []
+                    && $plan->organization->progressiveBillingEnabled()) {
+                    \App\Services\UsageThresholds\UpdateService::callBang(
+                        model: $plan,
+                        usageThresholdsParams: $args['usage_thresholds'],
+                        partial: false,
+                    );
+                }
 
                 if ($this->present($args['charges'] ?? null) !== []) {
                     foreach ($args['charges'] as $chargeParams) {

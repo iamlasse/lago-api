@@ -1,0 +1,21 @@
+{
+  "captured_at": "2025-06-13T12:00:00Z",
+  "requests": [
+    {
+      "method": "PATCH",
+      "path": "/api/v1/plans/patch-plan",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000002b1",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "plan": {
+          "name": "Patch Plan Renamed",
+          "description": "renamed via PATCH",
+          "invoice_display_name": "Patch Plan Display v2"
+        }
+      },
+      "required_headers": {}
+    }
+  ]
+}

@@ -7,6 +7,7 @@ uses()->group(
     'ledger:rest:GET:/api/v1/coupons',
     'ledger:rest:GET:/api/v1/coupons/:code',
     'ledger:rest:PUT:/api/v1/coupons/:code',
+    'ledger:rest:PATCH:/api/v1/coupons/:code',
     'ledger:rest:DELETE:/api/v1/coupons/:code',
 );
 
@@ -196,6 +197,58 @@ it('returns unprocessable_entity when the updated code already exists', function
     $coupon = Coupon::factory()->create(['organization_id' => $organization->id]);
 
     $this->putJson('/api/v1/coupons/'.$coupon->code, ['coupon' => [
+        'code' => $anotherCoupon->code,
+    ]], ['Authorization' => 'Bearer '.$apiKey->value])
+        ->assertUnprocessable();
+});
+
+// -- PATCH /api/v1/coupons/:code ----------------------------------------------------
+// Rails maps PATCH to the same CouponsController#update the PUT route hits
+// (config/routes.rb resources :coupons; no verb branch in the controller
+// chain — pinned contractually by the coupons_patch scenario).
+
+it('updates a coupon via PATCH', function (): void {
+    [$organization, $apiKey] = couponEndpointOrganization();
+
+    $coupon = Coupon::factory()->create(['organization_id' => $organization->id]);
+    $expirationAt = now()->addDays(15);
+
+    $updateParams = [
+        'name' => 'coupon1',
+        'code' => $coupon->code,
+        'coupon_type' => 'fixed_amount',
+        'frequency' => 'once',
+        'amount_cents' => 123,
+        'amount_currency' => 'EUR',
+        'expiration' => 'time_limit',
+        'expiration_at' => $expirationAt->toIso8601String(),
+    ];
+
+    $this->patchJson('/api/v1/coupons/'.$coupon->code, ['coupon' => $updateParams], [
+        'Authorization' => 'Bearer '.$apiKey->value,
+    ])->assertOk()->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($coupon): void {
+        $json->where('coupon.lago_id', $coupon->id)
+            ->where('coupon.code', $coupon->code)
+            ->etc();
+    });
+});
+
+it('returns not_found when the PATCHed coupon does not exist', function (): void {
+    [$organization, $apiKey] = couponEndpointOrganization();
+
+    $this->patchJson('/api/v1/coupons/'.Str::uuid(), ['coupon' => [
+        'name' => 'coupon1',
+    ]], ['Authorization' => 'Bearer '.$apiKey->value])
+        ->assertNotFound();
+});
+
+it('returns unprocessable_entity when the PATCHed code already exists', function (): void {
+    [$organization, $apiKey] = couponEndpointOrganization();
+
+    $anotherCoupon = Coupon::factory()->create(['organization_id' => $organization->id]);
+    $coupon = Coupon::factory()->create(['organization_id' => $organization->id]);
+
+    $this->patchJson('/api/v1/coupons/'.$coupon->code, ['coupon' => [
         'code' => $anotherCoupon->code,
     ]], ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertUnprocessable();

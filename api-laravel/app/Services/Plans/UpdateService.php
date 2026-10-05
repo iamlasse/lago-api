@@ -29,7 +29,6 @@ use function array_key_exists;
  *
  * Not ported (dependencies do not exist yet):
  * - TODO(port): plan metadata (Metadata::UpdateItemService).
- * - TODO(port): Plans::UpdateUsageThresholdsService (progressive billing).
  * - TODO(port): the cascade jobs — Plans::UpdateAmountJob,
  *   Charges::{Create,Update,Destroy}ChildrenJob, ChargeFilters::CascadeDispatcher,
  *   FixedCharges::CascadePlanUpdateJob (parent-plan children are a later
@@ -148,8 +147,14 @@ class UpdateService extends BaseService
                     $this->processFixedCharges($plan, $result, $params['fixed_charges']);
                 }
 
-                // TODO(port): Plans::UpdateUsageThresholdsService (premium
-                // progressive billing).
+                // Plans::UpdateUsageThresholdsService — WIRED
+                // (usage-monitoring slice; premium progressive billing).
+                if (array_key_exists('usage_thresholds', $params) && $this->premium()) {
+                    UpdateUsageThresholdsService::call(
+                        plan: $plan,
+                        usageThresholdsParams: (array) $params['usage_thresholds'],
+                    );
+                }
 
                 if (($params['minimum_commitment'] ?? null) !== null && $this->premium()) {
                     $this->processMinimumCommitment($plan, (array) $params['minimum_commitment']);

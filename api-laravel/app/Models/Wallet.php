@@ -136,6 +136,22 @@ class Wallet extends BaseModel
         return $this->belongsTo(BillingEntity::class);
     }
 
+    // -- Usage monitoring (usage-monitoring slice, appended) ---------------------
+
+    /** Rails: has_many :alerts, class_name: "UsageMonitoring::Alert". */
+    public function alerts(): HasMany
+    {
+        return $this->hasMany(UsageMonitoring\Alert::class);
+    }
+
+    /** Rails: has_many :triggered_alerts, -> { triggered }. */
+    public function triggeredAlerts(): HasMany
+    {
+        return $this->hasMany(UsageMonitoring\TriggeredAlert::class)->where('kind', 'triggered');
+    }
+
+    // -- Relations (continued) ---------------------------------------------------
+
     public function walletTransactions(): HasMany
     {
         return $this->hasMany(WalletTransaction::class);

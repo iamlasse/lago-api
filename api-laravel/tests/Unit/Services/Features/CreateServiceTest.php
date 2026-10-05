@@ -47,7 +47,7 @@ it('creates a feature with the provided attributes', function (): void {
         ->and($result->feature->name)->toBe('Number of seats')
         ->and($result->feature->description)->toBe('Number of users of the account')
         ->and($result->feature->organization_id)->toBe($organization->id);
-})->group('ledger:svc:Features.CreateService');
+})->group('ledger:svc:Entitlement.FeatureCreateService');
 
 it('trims codes', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();

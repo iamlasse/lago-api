@@ -33,7 +33,7 @@ it('discards the privilege and its values', function (): void {
         ->and(Privilege::query()->count())->toBe(0)
         ->and(App\Models\EntitlementValue::query()->count())->toBe(0)
         ->and(Feature::query()->count())->toBe(1);
-})->group('ledger:svc:Entitlements.PrivilegeDestroyService');
+})->group('ledger:svc:Entitlement.PrivilegeDestroyService');
 
 it('returns a not found failure when the privilege is missing', function (): void {
     $result = PrivilegeDestroyService::call(privilege: null);

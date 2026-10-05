@@ -14,6 +14,7 @@ use App\Models\Concerns\ConnectionResolvable;
 use App\Models\Concerns\BelongsToOrganization;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -30,11 +31,9 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * are Rails-ignored — they are deliberately NOT fillable and not read.
  *
  * Not ported (dependencies do not exist yet):
- * - TODO(port): lifetime_usage (LifetimeUsage model) — markAsActive() used to
- *   build/carry it across upgrade chains.
  * - TODO(port): activation_rules (Subscription::ActivationRule) — pending
  *   payment gating; pendingRules()/paymentGated() are stubbed false.
- * - TODO(port): usage_thresholds, entitlements, fixed_charge_events,
+ * - TODO(port): entitlements, fixed_charge_events,
  *   fixed_charge_units_overrides, integration_resources,
  *   billing_object_connections, applied_invoice_custom_sections,
  *   Clickhouse activity logs.
@@ -93,6 +92,9 @@ class Subscription extends BaseModel
 
     /** Rails: HasPurchaseOrderNumber::PURCHASE_ORDER_NUMBER_MAX_LENGTH. */
     public const PURCHASE_ORDER_NUMBER_MAX_LENGTH = 255;
+
+    /** Ledger row built by markAsActive before the parent has an id. */
+    protected ?LifetimeUsage $pendingLifetimeUsage = null;
 
     /** Rails schema defaults, mirrored for new instances. */
     protected $attributes = [
@@ -279,6 +281,24 @@ class Subscription extends BaseModel
         return (int) $this->getRawOriginal('billing_time');
     }
 
+    // -- Usage monitoring (usage-monitoring slice, appended) ---------------------
+
+    /**
+     * Rails: has_many :alerts, ->(s) { where(organization_id: s.organization_id) },
+     *   foreign_key: :subscription_external_id, primary_key: :external_id.
+     */
+    public function alerts(): HasMany
+    {
+        return $this->hasMany(UsageMonitoring\Alert::class, 'subscription_external_id', 'external_id')
+            ->where('organization_id', $this->organization_id);
+    }
+
+    /** Rails: has_many :subscription_activities (usage-monitoring slice). */
+    public function subscriptionActivities(): HasMany
+    {
+        return $this->hasMany(UsageMonitoring\SubscriptionActivity::class);
+    }
+
     // -- State transitions (Rails mark_as_*! bang methods) -------------------------
 
     /** Rails: `mark_as_active!(timestamp = Time.current)`. */
@@ -288,11 +308,41 @@ class Subscription extends BaseModel
 
         $this->started_at ??= $timestamp;
         $this->activated_at ??= $timestamp;
-        // TODO(port): self.lifetime_usage ||= previous_subscription&.lifetime_usage ||
-        //   build_lifetime_usage(organization:) — LifetimeUsage model is not ported yet.
+
+        // Rails: self.lifetime_usage ||= previous_subscription&.lifetime_usage ||
+        //   build_lifetime_usage(organization:) — the ledger is carried across
+        //   upgrade/downgrade chains. Rails persists it through the
+        //   subscription's autosave on the next save; the port defers the write
+        //   the same way (this instance's save() flushes it after the parent
+        //   has an id).
+        $lifetimeUsage = $this->lifetimeUsage ?? $this->previousSubscription?->lifetimeUsage;
+        $lifetimeUsage ??= $this->buildLifetimeUsage();
+        $lifetimeUsage->recalculate_invoiced_usage = true;
+        $this->pendingLifetimeUsage = $lifetimeUsage;
+        $this->setRelation('lifetimeUsage', $lifetimeUsage);
+
         $this->status = SubscriptionStatus::Active->value;
 
         return $this;
+    }
+
+    /**
+     * Flushes the lifetime-usage ledger built in markAsActive after the
+     * subscription has an id (Rails' has_one autosave equivalent).
+     */
+    public function save(array $options = []): bool
+    {
+        $saved = parent::save($options);
+
+        if ($this->pendingLifetimeUsage !== null && $this->exists) {
+            $lifetimeUsage = $this->pendingLifetimeUsage;
+            $this->pendingLifetimeUsage = null;
+            $lifetimeUsage->subscription_id = $this->id;
+            $lifetimeUsage->save();
+            $this->setRelation('lifetimeUsage', $lifetimeUsage);
+        }
+
+        return $saved;
     }
 
     /** Rails: `mark_as_terminated!(timestamp = Time.current)`. */
@@ -554,17 +604,62 @@ class Subscription extends BaseModel
 
     /**
      * Rails: `applicable_usage_thresholds` — direct thresholds override; plan
-     * thresholds otherwise.
+     * thresholds otherwise; the parent plan's when the plan is an override
+     * child without its own. Answers [] when progressive billing is disabled
+     * on the subscription.
      *
-     * TODO(port): usage_thresholds model is not ported yet; returns [] until
-     * progressive billing is ported (threshold columns live in
-     * `usage_thresholds`, M1 task 9 territory).
-     *
-     * @return list<mixed>
+     * @return \Illuminate\Database\Eloquent\Collection<int, UsageThreshold>
      */
-    public function applicableUsageThresholds(): array
+    public function applicableUsageThresholds(): \Illuminate\Database\Eloquent\Collection
     {
-        return [];
+        if ($this->progressive_billing_disabled) {
+            return UsageThreshold::query()->whereRaw('1 = 0')->get();
+        }
+
+        $direct = $this->usageThresholds;
+
+        if ($direct->isNotEmpty()) {
+            return $direct;
+        }
+
+        $planThresholds = $this->plan->usageThresholds;
+
+        if ($planThresholds->isNotEmpty()) {
+            return $planThresholds;
+        }
+
+        return $this->plan->applicableUsageThresholds();
+    }
+
+    /** Rails: has_many :usage_thresholds. */
+    public function usageThresholds(): HasMany
+    {
+        return $this->hasMany(UsageThreshold::class);
+    }
+
+    /** Rails: has_one :lifetime_usage. */
+    public function lifetimeUsage(): HasOne
+    {
+        return $this->hasOne(LifetimeUsage::class);
+    }
+
+    /**
+     * Rails: `build_lifetime_usage` / `create_lifetime_usage!` — the lifetime
+     * usage ledger row for this subscription.
+     */
+    public function buildLifetimeUsage(array $attributes = []): LifetimeUsage
+    {
+        return $this->lifetimeUsage()->make(array_merge([
+            'organization_id' => $this->organization_id,
+        ], $attributes));
+    }
+
+    public function createLifetimeUsage(array $attributes = []): LifetimeUsage
+    {
+        $lifetimeUsage = $this->buildLifetimeUsage($attributes);
+        $lifetimeUsage->save();
+
+        return $lifetimeUsage;
     }
 
     /** Rails: `last_subscription_fee`. */

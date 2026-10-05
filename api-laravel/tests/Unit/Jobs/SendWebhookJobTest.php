@@ -126,5 +126,8 @@ it('registers the M1 webhook types', function (): void {
         'payment_receipt.created',
         'payment_receipt.generated',
         'dunning_campaign.finished',
+        // usage-monitoring slice.
+        'alert.triggered',
+        'subscription.usage_threshold_reached',
     ]);
 });

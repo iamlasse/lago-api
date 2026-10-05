@@ -18,8 +18,8 @@ use Illuminate\Support\Facades\DB;
  * Not ported (dependencies do not exist yet):
  * - TODO(port): product_filter_values guard (single_validation_failure
  *   "referenced_by_product_filter").
- * - TODO(port): UsageMonitoring::Alert soft deletes.
- * - TODO(port): BillableMetricFilters::DestroyAllJob.
+ * - UsageMonitoring::Alert soft deletes — WIRED (usage-monitoring slice).
+ * - BillableMetricFilters::DestroyAllJob — WIRED (usage-monitoring slice).
  * - TODO(port): SendWebhookJob.perform_after_commit("billable_metric.deleted").
  * - TODO(port): activity log middleware (activity_loggable).
  */
@@ -60,13 +60,17 @@ class DestroyService extends BaseService
             // (kept charges only — the has_many goes through the default scope).
             $metric->charges()->update(['deleted_at' => now()]);
 
-            // TODO(port): metric.alerts.update_all(deleted_at: Time.current)
-            //   (UsageMonitoring::Alert is a later milestone).
+            // Rails: metric.alerts.update_all(deleted_at: Time.current) —
+            // WIRED (usage-monitoring slice).
+            \App\Models\UsageMonitoring\Alert::query()
+                ->where('billable_metric_id', $metric->id)
+                ->update(['deleted_at' => now()]);
 
             Invoice::query()->whereIn('id', $draftInvoiceIds)->update(['ready_to_be_refreshed' => true]);
         });
 
-        // TODO(port): BillableMetricFilters::DestroyAllJob.perform_later(metric.id).
+        // BillableMetricFilters::DestroyAllJob — WIRED (usage-monitoring slice).
+        \App\Jobs\BillableMetricFilters\DestroyAllJob::dispatch((string) $metric->id);
         // TODO(port): SendWebhookJob.perform_after_commit(
         //   "billable_metric.deleted", metric) — webhook emission hook point.
 

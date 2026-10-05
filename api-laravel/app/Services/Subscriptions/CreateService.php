@@ -28,7 +28,6 @@ use App\Services\Customers\UpdateCurrencyService;
  *   carrying plan_overrides still fails with forbidden when non-premium, and
  *   the premium override branches are deferred at the marked hooks.
  * - TODO(port): Subscriptions::ActivationRules::ApplyService.
- * - TODO(port): UpdateUsageThresholdsService (usage_thresholds).
  * - TODO(port): InvoiceCustomSections::AttachToResourceService.
  * - TODO(port): BillingObjectConnections::AttachToResourceService.
  * - TODO(port): EmitFixedChargeEventsService.
@@ -189,9 +188,15 @@ class CreateService extends BaseService
 
                 $subscription = $this->handleSubscription($customer, $billingTimeValue);
 
-                // TODO(port): UpdateUsageThresholdsService.call! when
-                // params[:usage_thresholds] is present — usage thresholds are
-                // not ported yet.
+                // UpdateUsageThresholdsService.call! — WIRED
+                // (usage-monitoring slice).
+                if (! blank($params['usage_thresholds'] ?? null)) {
+                    UpdateUsageThresholdsService::callBang(
+                        subscription: $subscription,
+                        usageThresholdsParams: (array) $params['usage_thresholds'],
+                        partial: false,
+                    );
+                }
                 // TODO(port): InvoiceCustomSections::AttachToResourceService
                 // and BillingObjectConnections::AttachToResourceService unless
                 // downgrade — not ported yet.

@@ -55,7 +55,7 @@ it('creates entitlements and values for the plan', function (): void {
 
     expect($value->entitlement_privilege_id)->toBe($privilege->id)
         ->and($value->value)->toBe('25');
-})->group('ledger:svc:Entitlements.PlanEntitlementsUpdateService');
+})->group('ledger:svc:Entitlement.PlanEntitlementsUpdateService');
 
 it('replaces existing entitlements on a full update', function (): void {
     [$organization, $plan, $feature, $privilege] = planEntitlementFixture();

@@ -44,6 +44,33 @@ class OrderFormFactory extends Factory
         ]);
     }
 
+    /** Rails trait :expired. */
+    public function expired(): static
+    {
+        return $this->state(fn (): array => [
+            'status' => 'expired',
+            'voided_at' => now(),
+            'void_reason' => 'expired',
+        ]);
+    }
+
+    /** Rails trait :voided. */
+    public function voided(): static
+    {
+        return $this->state(fn (): array => [
+            'status' => 'voided',
+            'voided_at' => now(),
+            'void_reason' => 'manual',
+        ]);
+    }
+
+    public function withExpiresAt(\Illuminate\Support\Carbon $expiresAt): static
+    {
+        return $this->state(fn (): array => [
+            'expires_at' => $expiresAt,
+        ]);
+    }
+
     public function forQuoteVersion(QuoteVersion $quoteVersion): static
     {
         return $this->state(fn (): array => [

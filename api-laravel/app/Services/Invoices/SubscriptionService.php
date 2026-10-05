@@ -22,7 +22,8 @@ use App\Services\Failures\UnknownTaxFailure;
  * TODO(port) hooks (not in M1 scope):
  * - Invoices::ApplyInvoiceCustomSectionsService
  * - subscription activation rules (payment gating) — Subscriptions slice
- * - LifetimeUsages::FlagRefreshFromInvoiceService, wallet refresh flags
+ * - wallet refresh flags (FlagRefreshFromInvoiceService landed with the
+ *   usage-monitoring slice)
  * - webhooks (invoice.created / invoice.drafted / fee.created) and
  *   GenerateDocumentsJob, integrations syncs, payments, Segment tracking —
  *   they plug in at the marked emission points.
@@ -105,8 +106,10 @@ class SubscriptionService extends \App\Services\BaseService
 
             $invoice->refresh();
 
-            // TODO(port): LifetimeUsages::FlagRefreshFromInvoiceService;
-            // customer.flag_wallets_for_refresh when in grace period.
+            // LifetimeUsages::FlagRefreshFromInvoiceService — WIRED
+            // (usage-monitoring slice).
+            // TODO(port): customer.flag_wallets_for_refresh when in grace period.
+            \App\Services\LifetimeUsages\FlagRefreshFromInvoiceService::callBang(invoice: $invoice);
 
             return $feeResult;
         });

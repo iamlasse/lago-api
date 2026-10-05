@@ -27,10 +27,9 @@ use Illuminate\Database\Eloquent\Builder;
  * - TODO(port): create_enriched_events (Events::EnrichService + the
  *   postgres_enriched_events feature flag — the enriched_events table is
  *   now in the frozen schema but the enrichment pipeline is not ported);
- * - TODO(port): track_subscription_activity
- *   (UsageMonitoring::TrackSubscriptionActivityService);
  * - flag_wallets_for_refresh — WIRED (the wallet refresh chain landed:
  *   Clock\RefreshWalletsOngoingBalanceJob picks the flag up);
+ * - track_subscription_activity — WIRED (the usage-monitoring slice);
  * - TODO(port): check_targeted_wallets (wallets slice — events targeting
  *   wallets + the event.error webhook);
  * - handle_pay_in_advance — WIRED (Events\PayInAdvanceJob);
@@ -51,8 +50,11 @@ class PostProcessService extends BaseService
     {
         $result = static::makeResult('event');
 
-        // create_enriched_events / track_subscription_activity /
-        // check_targeted_wallets — TODO(port), see the class docblock.
+        // create_enriched_events / check_targeted_wallets — TODO(port), see
+        // the class docblock. track_subscription_activity — WIRED (the
+        // usage-monitoring slice).
+
+        $this->trackSubscriptionActivity();
 
         $this->customer()?->flagWalletsForRefresh();
 
@@ -142,6 +144,33 @@ class PostProcessService extends BaseService
             ->billableMetrics()
             ->where('code', $this->event->code)
             ->first();
+    }
+
+    /**
+     * Rails: `track_subscription_activity` — every ACTIVE subscription the
+     * event matched (or the fallback one) gets its activity tracked for the
+     * customer's current date.
+     */
+    private function trackSubscriptionActivity(): void
+    {
+        $subs = $this->subscriptions()->filter(fn ($subscription): bool => $subscription->active())->values();
+        $subs = $subs->isNotEmpty() ? $subs : collect([$this->fallbackSubscription()])->filter();
+
+        $customer = $this->customer();
+
+        if ($customer === null) {
+            return;
+        }
+
+        $date = \Carbon\Carbon::now($customer->applicableTimezone())->toDateString();
+
+        foreach ($subs as $subscription) {
+            \App\Services\UsageMonitoring\TrackSubscriptionActivityService::call(
+                subscription: $subscription,
+                date: \Carbon\CarbonImmutable::parse($date),
+                organization: $this->event->organization,
+            );
+        }
     }
 
     /**

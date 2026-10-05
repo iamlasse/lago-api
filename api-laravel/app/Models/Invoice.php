@@ -168,6 +168,22 @@ class Invoice extends BaseModel
         return $this->hasMany(Credit::class);
     }
 
+    /** Rails: has_many :credit_notes (usage-monitoring slice, appended). */
+    public function creditNotes(): HasMany
+    {
+        return $this->hasMany(CreditNote::class);
+    }
+
+    /**
+     * Rails: has_many :progressive_billing_credits, class_name: "Credit",
+     * foreign_key: :progressive_billing_invoice_id — the credits applied FROM
+     * this progressive-billing invoice onto later subscription invoices.
+     */
+    public function progressiveBillingCredits(): HasMany
+    {
+        return $this->hasMany(Credit::class, 'progressive_billing_invoice_id');
+    }
+
     public function invoiceSubscriptions(): HasMany
     {
         return $this->hasMany(InvoiceSubscription::class);

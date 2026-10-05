@@ -138,14 +138,16 @@
         {
             "id": "gql:mutation:approveQuoteVersion",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\ApproveQuoteVersion",
+            "laravel": "App\\GraphQL\\Mutations\\ApproveQuoteVersion",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/QuotesAndOrderFormsTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "gql:mutation:askFinanceAssistant",
@@ -456,14 +458,16 @@
         {
             "id": "gql:mutation:createCustomerWalletAlert",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\CreateCustomerWalletAlert",
+            "laravel": "App\\GraphQL\\Mutations\\CreateCustomerWalletAlert",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/UsageMonitoringAlertsTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "gql:mutation:createCustomerWalletTransaction",
@@ -780,14 +784,16 @@
         {
             "id": "gql:mutation:createQuote",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\CreateQuote",
+            "laravel": "App\\GraphQL\\Mutations\\CreateQuote",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/QuotesAndOrderFormsTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "gql:mutation:createRateCard",
@@ -866,14 +872,16 @@
         {
             "id": "gql:mutation:createSubscriptionAlert",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\CreateSubscriptionAlert",
+            "laravel": "App\\GraphQL\\Mutations\\CreateSubscriptionAlert",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/UsageMonitoringAlertsTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "gql:mutation:createSubscriptionChargeFilter",
@@ -1098,14 +1106,16 @@
         {
             "id": "gql:mutation:destroyCustomerWalletAlert",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\DestroyCustomerWalletAlert",
+            "laravel": "App\\GraphQL\\Mutations\\DestroyCustomerWalletAlert",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/UsageMonitoringAlertsTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "gql:mutation:destroyDunningCampaign",
@@ -1350,14 +1360,16 @@
         {
             "id": "gql:mutation:destroySubscriptionAlert",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\DestroySubscriptionAlert",
+            "laravel": "App\\GraphQL\\Mutations\\DestroySubscriptionAlert",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/UsageMonitoringAlertsTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "gql:mutation:destroySubscriptionChargeFilter",
@@ -1494,38 +1506,44 @@
         {
             "id": "gql:mutation:entraIdAcceptInvite",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\EntraIdAcceptInvite",
+            "laravel": "App\\GraphQL\\Mutations\\EntraIdAcceptInvite",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/SsoMutationsTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "gql:mutation:entraIdAuthorize",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\EntraIdAuthorize",
+            "laravel": "App\\GraphQL\\Mutations\\EntraIdAuthorize",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/SsoMutationsTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "gql:mutation:entraIdLogin",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\EntraIdLogin",
+            "laravel": "App\\GraphQL\\Mutations\\EntraIdLogin",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/SsoMutationsTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "gql:mutation:executeOrder",
@@ -1652,52 +1670,58 @@
         {
             "id": "gql:mutation:googleAcceptInvite",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\GoogleAcceptInvite",
+            "laravel": "App\\GraphQL\\Mutations\\GoogleAcceptInvite",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/SsoMutationsTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "gql:mutation:googleLoginUser",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\GoogleLoginUser",
+            "laravel": "App\\GraphQL\\Mutations\\GoogleLoginUser",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/SsoMutationsTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "gql:mutation:googleRegisterUser",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\GoogleRegisterUser",
+            "laravel": "App\\GraphQL\\Mutations\\GoogleRegisterUser",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/SsoMutationsTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "gql:mutation:loginUser",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\LoginUser",
+            "laravel": "App\\GraphQL\\Mutations\\LoginUser",
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/LoginUserTest.php"
             ],
-            "notes": "Port of Rails' spec/graphql/mutations/login_user_spec.rb."
+            "notes": "Contract: replayed green via auth_org."
         },
         {
             "id": "gql:mutation:loseInvoiceDispute",
@@ -1714,50 +1738,58 @@
         {
             "id": "gql:mutation:markOrderFormAsSigned",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\MarkOrderFormAsSigned",
+            "laravel": "App\\GraphQL\\Mutations\\MarkOrderFormAsSigned",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/QuotesAndOrderFormsTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "gql:mutation:oktaAcceptInvite",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\OktaAcceptInvite",
+            "laravel": "App\\GraphQL\\Mutations\\OktaAcceptInvite",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/SsoMutationsTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "gql:mutation:oktaAuthorize",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\OktaAuthorize",
+            "laravel": "App\\GraphQL\\Mutations\\OktaAuthorize",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/SsoMutationsTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "gql:mutation:oktaLogin",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\OktaLogin",
+            "laravel": "App\\GraphQL\\Mutations\\OktaLogin",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/SsoMutationsTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "gql:mutation:previewAdjustedFee",
@@ -2362,14 +2394,16 @@
         {
             "id": "gql:mutation:updateCustomerWalletAlert",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\UpdateCustomerWalletAlert",
+            "laravel": "App\\GraphQL\\Mutations\\UpdateCustomerWalletAlert",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/UsageMonitoringAlertsTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "gql:mutation:updateDunningCampaign",
@@ -2688,14 +2722,16 @@
         {
             "id": "gql:mutation:updateQuoteVersion",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\UpdateQuoteVersion",
+            "laravel": "App\\GraphQL\\Mutations\\UpdateQuoteVersion",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/QuotesAndOrderFormsTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "gql:mutation:updateRateCard",
@@ -2786,14 +2822,16 @@
         {
             "id": "gql:mutation:updateSubscriptionAlert",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\UpdateSubscriptionAlert",
+            "laravel": "App\\GraphQL\\Mutations\\UpdateSubscriptionAlert",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/UsageMonitoringAlertsTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "gql:mutation:updateSubscriptionCharge",
@@ -2908,14 +2946,16 @@
         {
             "id": "gql:mutation:voidOrderForm",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\VoidOrderForm",
+            "laravel": "App\\GraphQL\\Mutations\\VoidOrderForm",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/QuotesAndOrderFormsTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "gql:mutation:voidQuoteVersion",
@@ -3052,26 +3092,30 @@
         {
             "id": "gql:query:alert",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\Alert",
+            "laravel": "App\\GraphQL\\Queries\\Alert",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/UsageMonitoringAlertsTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "gql:query:alerts",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\Alerts",
+            "laravel": "App\\GraphQL\\Queries\\Alerts",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/UsageMonitoringAlertsTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "gql:query:apiKey",
@@ -3328,12 +3372,12 @@
             "status": {
                 "code": "done",
                 "test": "written",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/AuthPlumbingTest.php"
             ],
-            "notes": "Written-first tests (resolver exercised via GraphQL request tests)."
+            "notes": "Contract: replayed green via auth_org (Rails-minted JWT authenticates the query)."
         },
         {
             "id": "gql:query:currentVersion",
@@ -3999,14 +4043,16 @@
         {
             "id": "gql:query:orderForms",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\OrderForms",
+            "laravel": "App\\GraphQL\\Queries\\OrderForms",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/QuotesAndOrderFormsTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "gql:query:orders",
@@ -4289,14 +4335,16 @@
         {
             "id": "gql:query:quotes",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\Quotes",
+            "laravel": "App\\GraphQL\\Queries\\Quotes",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/QuotesAndOrderFormsTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "gql:query:rateCard",
@@ -5069,12 +5117,14 @@
             "source": "app/jobs/clock/expire_order_forms_job.rb",
             "laravel": "App\\Jobs\\Clock\\ExpireOrderFormsJob",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Jobs/Clock/ExpireOrderFormsJobTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "job:Clock.FinalizeInvoicesJob",
@@ -7249,12 +7299,14 @@
             "source": "app/jobs/order_forms/expire_order_form_job.rb",
             "laravel": "App\\Jobs\\OrderForms\\ExpireOrderFormJob",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Jobs/OrderForms/ExpireOrderFormJobTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "job:Orders.ExecuteOrderJob",
@@ -7917,12 +7969,14 @@
             "source": "app/jobs/usage_monitoring/process_organization_subscription_activities_job.rb",
             "laravel": "App\\Jobs\\UsageMonitoring\\ProcessOrganizationSubscriptionActivitiesJob",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/UsageMonitoring/ProcessAlertAndWebhookTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "job:UsageMonitoring.ProcessSubscriptionActivityJob",
@@ -8113,24 +8167,28 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Customers\\Wallets\\AlertsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/UsageMonitoringRestTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "rest:DELETE:/api/v1/customers/:external_id/wallets/:code/alerts/:code",
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Customers\\Wallets\\AlertsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/UsageMonitoringRestTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "rest:DELETE:/api/v1/customers/:external_id/wallets/:code/metadata",
@@ -8335,24 +8393,28 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Subscriptions\\AlertsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/UsageMonitoringRestTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "rest:DELETE:/api/v1/subscriptions/:external_id/alerts/:code",
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Subscriptions\\AlertsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/UsageMonitoringRestTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "rest:DELETE:/api/v1/subscriptions/:external_id/charges/:code/filters/:id",
@@ -8627,24 +8689,28 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Customers\\Wallets\\AlertsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/UsageMonitoringRestTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "rest:DELETE:/api/v2/customers/:external_id/wallets/:code/alerts/:code",
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Customers\\Wallets\\AlertsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/UsageMonitoringRestTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "rest:DELETE:/api/v2/customers/:external_id/wallets/:code/metadata",
@@ -8925,24 +8991,28 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Subscriptions\\AlertsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/UsageMonitoringRestTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "rest:DELETE:/api/v2/subscriptions/:external_id/alerts/:code",
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Subscriptions\\AlertsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/UsageMonitoringRestTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "rest:DELETE:/api/v2/subscriptions/:external_id/charges/:code/filters/:id",
@@ -9665,24 +9735,28 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Customers\\Wallets\\AlertsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/UsageMonitoringRestTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "rest:GET:/api/v1/customers/:external_id/wallets/:code/alerts/:code",
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Customers\\Wallets\\AlertsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/UsageMonitoringRestTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "rest:GET:/api/v1/events",
@@ -10239,24 +10313,28 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Subscriptions\\AlertsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/UsageMonitoringRestTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "rest:GET:/api/v1/subscriptions/:external_id/alerts/:code",
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Subscriptions\\AlertsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/UsageMonitoringRestTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "rest:GET:/api/v1/subscriptions/:external_id/charges",
@@ -10349,12 +10427,14 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Subscriptions\\LifetimeUsagesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/UsageMonitoringRestTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "rest:GET:/api/v1/taxes",
@@ -10835,49 +10915,49 @@
         {
             "id": "rest:GET:/api/v2/contracts",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\Api\\V2\\ContractsController",
+            "laravel": "App\\Http\\Controllers\\Api\\V1\\ContractsController",
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/ContractsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via catalog_crud."
         },
         {
             "id": "rest:GET:/api/v2/contracts/:external_id",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\Api\\V2\\ContractsController",
+            "laravel": "App\\Http\\Controllers\\Api\\V1\\ContractsController",
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/ContractsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via catalog_crud."
         },
         {
             "id": "rest:GET:/api/v2/contracts/:external_id/applied_rate_cards",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\Api\\V2\\ContractRateCardsController",
+            "laravel": "App\\Http\\Controllers\\Api\\V1\\Contracts\\AppliedRateCardsController",
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/ContractsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via catalog_crud."
         },
         {
             "id": "rest:GET:/api/v2/contracts/:external_id/applied_rate_cards/:code",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\Api\\V2\\ContractRateCardsController",
+            "laravel": "App\\Http\\Controllers\\Api\\V1\\Contracts\\AppliedRateCardsController",
             "status": {
                 "code": "todo",
                 "test": "todo",
@@ -11165,24 +11245,28 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Customers\\Wallets\\AlertsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/UsageMonitoringRestTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "rest:GET:/api/v2/customers/:external_id/wallets/:code/alerts/:code",
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Customers\\Wallets\\AlertsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/UsageMonitoringRestTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "rest:GET:/api/v2/events",
@@ -11655,30 +11739,30 @@
         {
             "id": "rest:GET:/api/v2/products",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\Api\\V2\\ProductsController",
+            "laravel": "App\\Http\\Controllers\\Api\\V1\\ProductsController",
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/ProductsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via catalog_crud."
         },
         {
             "id": "rest:GET:/api/v2/products/:code",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\Api\\V2\\ProductsController",
+            "laravel": "App\\Http\\Controllers\\Api\\V1\\ProductsController",
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/ProductsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via catalog_crud."
         },
         {
             "id": "rest:GET:/api/v2/products/:code/filters",
@@ -11757,30 +11841,30 @@
         {
             "id": "rest:GET:/api/v2/rate_cards",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\Api\\V2\\RateCardsController",
+            "laravel": "App\\Http\\Controllers\\Api\\V1\\RateCardsController",
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/RateCardsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via catalog_crud."
         },
         {
             "id": "rest:GET:/api/v2/rate_cards/:code",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\Api\\V2\\RateCardsController",
+            "laravel": "App\\Http\\Controllers\\Api\\V1\\RateCardsController",
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/RateCardsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via catalog_crud."
         },
         {
             "id": "rest:GET:/api/v2/rate_cards/:code/rates",
@@ -11865,24 +11949,28 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Subscriptions\\AlertsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/UsageMonitoringRestTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "rest:GET:/api/v2/subscriptions/:external_id/alerts/:code",
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Subscriptions\\AlertsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/UsageMonitoringRestTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "rest:GET:/api/v2/subscriptions/:external_id/charges",
@@ -11973,12 +12061,14 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Subscriptions\\LifetimeUsagesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/UsageMonitoringRestTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "rest:GET:/api/v2/taxes",
@@ -12299,12 +12389,14 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\CouponsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Api/V1/CouponsControllerTest.php"
+            ],
+            "notes": "PATCH maps to the same update action as PUT (Rails: resources + no verb branch). Contract: replayed green via coupons_patch."
         },
         {
             "id": "rest:PATCH:/api/v1/credit_notes/:id",
@@ -12349,12 +12441,14 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Customers\\Wallets\\AlertsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/UsageMonitoringRestTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "rest:PATCH:/api/v1/customers/:external_id/wallets/:code/metadata",
@@ -12414,25 +12508,27 @@
             "laravel": "App\\Http\\Controllers\\Api\\V1\\PlansController",
             "status": {
                 "code": "done",
-                "test": "ported",
-                "contract": "untested"
+                "test": "written",
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/PlansControllerTest.php"
             ],
-            "notes": ""
+            "notes": "PATCH maps to the same update action as PUT (Rails: resources + no verb branch). Contract: replayed green via plans_patch."
         },
         {
             "id": "rest:PATCH:/api/v1/plans/:code/charges/:code",
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Plans\\ChargesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Api/V1/Plans/ChargesControllerTest.php"
+            ],
+            "notes": "PATCH maps to the same update action as PUT (Rails: resources + no verb branch). Contract: replayed green via plans_charges_patch."
         },
         {
             "id": "rest:PATCH:/api/v1/plans/:code/charges/:code/filters/:id",
@@ -12465,12 +12561,14 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Plans\\FixedChargesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Api/V1/Plans/FixedChargesControllerTest.php"
+            ],
+            "notes": "PATCH maps to the same update action as PUT (Rails: resources + no verb branch). Contract: replayed green via plans_fixed_charges_patch."
         },
         {
             "id": "rest:PATCH:/api/v1/plans/:code/metadata",
@@ -12503,12 +12601,14 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Subscriptions\\AlertsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/UsageMonitoringRestTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "rest:PATCH:/api/v1/subscriptions/:external_id/charges/:code",
@@ -12565,12 +12665,14 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Subscriptions\\LifetimeUsagesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/UsageMonitoringRestTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "rest:PATCH:/api/v1/taxes/:code",
@@ -12769,12 +12871,14 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Customers\\Wallets\\AlertsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/UsageMonitoringRestTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "rest:PATCH:/api/v2/customers/:external_id/wallets/:code/metadata",
@@ -13011,12 +13115,14 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Subscriptions\\AlertsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/UsageMonitoringRestTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "rest:PATCH:/api/v2/subscriptions/:external_id/charges/:code",
@@ -13071,12 +13177,14 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Subscriptions\\LifetimeUsagesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/UsageMonitoringRestTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "rest:PATCH:/api/v2/taxes/:code",
@@ -13399,12 +13507,14 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Customers\\Wallets\\AlertsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/UsageMonitoringRestTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "rest:POST:/api/v1/customers/:external_id/wallets/:code/metadata",
@@ -13857,12 +13967,14 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Subscriptions\\AlertsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/UsageMonitoringRestTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "rest:POST:/api/v1/subscriptions/:external_id/charges/:code/filters",
@@ -14035,35 +14147,35 @@
         {
             "id": "rest:POST:/api/v2/contracts",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\Api\\V2\\ContractsController",
+            "laravel": "App\\Http\\Controllers\\Api\\V1\\ContractsController",
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/ContractsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via catalog_crud."
         },
         {
             "id": "rest:POST:/api/v2/contracts/:external_id/applied_rate_cards",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\Api\\V2\\ContractRateCardsController",
+            "laravel": "App\\Http\\Controllers\\Api\\V1\\Contracts\\AppliedRateCardsController",
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/ContractsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via catalog_crud."
         },
         {
             "id": "rest:POST:/api/v2/contracts/:external_id/applied_rate_cards/:code/rate_phases",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\Api\\V2\\ContractRateCards\\RatePhasesController",
+            "laravel": "App\\Http\\Controllers\\Api\\V1\\Contracts\\AppliedRateCards\\RatePhasesController",
             "status": {
                 "code": "todo",
                 "test": "todo",
@@ -14219,12 +14331,14 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Customers\\Wallets\\AlertsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/UsageMonitoringRestTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "rest:POST:/api/v2/customers/:external_id/wallets/:code/metadata",
@@ -14615,30 +14729,30 @@
         {
             "id": "rest:POST:/api/v2/product_categories",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\Api\\V2\\ProductCategoriesController",
+            "laravel": "App\\Http\\Controllers\\Api\\V1\\ProductCategoriesController",
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/ProductCategoriesControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via catalog_crud."
         },
         {
             "id": "rest:POST:/api/v2/products",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\Api\\V2\\ProductsController",
+            "laravel": "App\\Http\\Controllers\\Api\\V1\\ProductsController",
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/ProductsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via catalog_crud."
         },
         {
             "id": "rest:POST:/api/v2/products/:code/filters",
@@ -14693,16 +14807,16 @@
         {
             "id": "rest:POST:/api/v2/rate_cards",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\Api\\V2\\RateCardsController",
+            "laravel": "App\\Http\\Controllers\\Api\\V1\\RateCardsController",
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/RateCardsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via catalog_crud."
         },
         {
             "id": "rest:POST:/api/v2/rate_cards/:code/rates",
@@ -14737,12 +14851,14 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Subscriptions\\AlertsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/UsageMonitoringRestTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "rest:POST:/api/v2/subscriptions/:external_id/charges/:code/filters",
@@ -15079,12 +15195,14 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Customers\\Wallets\\AlertsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/UsageMonitoringRestTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "rest:PUT:/api/v1/customers/:external_id/wallets/:code/metadata",
@@ -15277,12 +15395,14 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Subscriptions\\AlertsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/UsageMonitoringRestTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "rest:PUT:/api/v1/subscriptions/:external_id/charges/:code",
@@ -15325,12 +15445,14 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Subscriptions\\LifetimeUsagesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/UsageMonitoringRestTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "rest:PUT:/api/v1/taxes/:code",
@@ -15453,7 +15575,7 @@
         {
             "id": "rest:PUT:/api/v2/contracts/:external_id/applied_rate_cards/:code",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\Api\\V2\\ContractRateCardsController",
+            "laravel": "App\\Http\\Controllers\\Api\\V1\\Contracts\\AppliedRateCardsController",
             "status": {
                 "code": "todo",
                 "test": "todo",
@@ -15553,12 +15675,14 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Customers\\Wallets\\AlertsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/UsageMonitoringRestTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "rest:PUT:/api/v2/customers/:external_id/wallets/:code/metadata",
@@ -15761,16 +15885,16 @@
         {
             "id": "rest:PUT:/api/v2/products/:code",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\Api\\V2\\ProductsController",
+            "laravel": "App\\Http\\Controllers\\Api\\V1\\ProductsController",
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/ProductsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via catalog_crud."
         },
         {
             "id": "rest:PUT:/api/v2/products/:code/filters/:code",
@@ -15827,12 +15951,14 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Subscriptions\\AlertsController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/UsageMonitoringRestTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "rest:PUT:/api/v2/subscriptions/:external_id/charges/:code",
@@ -15875,12 +16001,14 @@
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\Subscriptions\\LifetimeUsagesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/UsageMonitoringRestTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "rest:PUT:/api/v2/taxes/:code",
@@ -17254,12 +17382,14 @@
             "source": "app/serializers/v1/lifetime_usage_serializer.rb",
             "laravel": "App\\Serializers\\V1\\LifetimeUsageSerializer",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/UsageMonitoringRestTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "ser:V1.MembershipSerializer",
@@ -17510,24 +17640,28 @@
             "source": "app/serializers/v1/quote_serializer.rb",
             "laravel": "App\\Serializers\\V1\\QuoteSerializer",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Api/V1/QuotesControllerTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "ser:V1.QuoteVersionSerializer",
             "source": "app/serializers/v1/quote_version_serializer.rb",
             "laravel": "App\\Serializers\\V1\\QuoteVersionSerializer",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Api/V1/QuoteVersionsControllerTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "ser:V1.QuoteWithVersionSerializer",
@@ -17622,24 +17756,28 @@
             "source": "app/serializers/v1/usage_monitoring/alert_serializer.rb",
             "laravel": "App\\Serializers\\V1\\UsageMonitoring\\AlertSerializer",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/UsageMonitoringRestTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "ser:V1.UsageMonitoring.TriggeredAlertSerializer",
             "source": "app/serializers/v1/usage_monitoring/triggered_alert_serializer.rb",
             "laravel": "App\\Serializers\\V1\\UsageMonitoring\\TriggeredAlertSerializer",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/UsageMonitoring/ProcessAlertAndWebhookTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "ser:V1.UsageThresholdSerializer",
@@ -18288,108 +18426,126 @@
             "source": "app/services/auth/entra_id/accept_invite_service.rb",
             "laravel": "App\\Services\\Auth\\EntraId\\AcceptInviteService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Auth/EntraId/AcceptInviteServiceTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:Auth.EntraId.AuthorizeService",
             "source": "app/services/auth/entra_id/authorize_service.rb",
             "laravel": "App\\Services\\Auth\\EntraId\\AuthorizeService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Auth/EntraId/AuthorizeServiceTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:Auth.EntraId.BaseService",
             "source": "app/services/auth/entra_id/base_service.rb",
             "laravel": "App\\Services\\Auth\\EntraId\\BaseService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Auth/EntraId/AcceptInviteServiceTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:Auth.EntraId.LoginService",
             "source": "app/services/auth/entra_id/login_service.rb",
             "laravel": "App\\Services\\Auth\\EntraId\\LoginService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Auth/EntraId/LoginServiceTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:Auth.GoogleService",
             "source": "app/services/auth/google_service.rb",
             "laravel": "App\\Services\\Auth\\GoogleService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Auth/GoogleServiceTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:Auth.Okta.AcceptInviteService",
             "source": "app/services/auth/okta/accept_invite_service.rb",
             "laravel": "App\\Services\\Auth\\Okta\\AcceptInviteService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Auth/Okta/AcceptInviteServiceTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:Auth.Okta.AuthorizeService",
             "source": "app/services/auth/okta/authorize_service.rb",
             "laravel": "App\\Services\\Auth\\Okta\\AuthorizeService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Auth/Okta/AuthorizeServiceTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:Auth.Okta.BaseService",
             "source": "app/services/auth/okta/base_service.rb",
             "laravel": "App\\Services\\Auth\\Okta\\BaseService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Auth/Okta/AcceptInviteServiceTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:Auth.Okta.LoginService",
             "source": "app/services/auth/okta/login_service.rb",
             "laravel": "App\\Services\\Auth\\Okta\\LoginService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Auth/Okta/LoginServiceTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:Auth.Superset.Client",
@@ -25181,12 +25337,14 @@
             "source": "app/services/invoices/progressive_billing_service.rb",
             "laravel": "App\\Services\\Invoices\\ProgressiveBillingService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/LifetimeUsages/CheckThresholdsServiceTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:Invoices.ProviderTaxes.PullTaxesAndApplyService",
@@ -25388,96 +25546,112 @@
             "source": "app/services/lifetime_usages/calculate_service.rb",
             "laravel": "App\\Services\\LifetimeUsages\\CalculateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/LifetimeUsages/LifetimeUsagesTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:LifetimeUsages.CheckThresholdsService",
             "source": "app/services/lifetime_usages/check_thresholds_service.rb",
             "laravel": "App\\Services\\LifetimeUsages\\CheckThresholdsService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/LifetimeUsages/CheckThresholdsServiceTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:LifetimeUsages.FindLastAndNextThresholdsService",
             "source": "app/services/lifetime_usages/find_last_and_next_thresholds_service.rb",
             "laravel": "App\\Services\\LifetimeUsages\\FindLastAndNextThresholdsService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/LifetimeUsages/LifetimeUsagesTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:LifetimeUsages.FlagRefreshFromInvoiceService",
             "source": "app/services/lifetime_usages/flag_refresh_from_invoice_service.rb",
             "laravel": "App\\Services\\LifetimeUsages\\FlagRefreshFromInvoiceService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/LifetimeUsages/LifetimeUsagesTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:LifetimeUsages.FlagRefreshFromPlanUpdateService",
             "source": "app/services/lifetime_usages/flag_refresh_from_plan_update_service.rb",
             "laravel": "App\\Services\\LifetimeUsages\\FlagRefreshFromPlanUpdateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/LifetimeUsages/LifetimeUsagesTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:LifetimeUsages.UpdateService",
             "source": "app/services/lifetime_usages/update_service.rb",
             "laravel": "App\\Services\\LifetimeUsages\\UpdateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/LifetimeUsages/LifetimeUsagesTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:LifetimeUsages.UsageThresholds.CheckService",
             "source": "app/services/lifetime_usages/usage_thresholds/check_service.rb",
             "laravel": "App\\Services\\LifetimeUsages\\UsageThresholds\\CheckService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/LifetimeUsages/LifetimeUsagesTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:LifetimeUsages.UsageThresholdsCompletionService",
             "source": "app/services/lifetime_usages/usage_thresholds_completion_service.rb",
             "laravel": "App\\Services\\LifetimeUsages\\UsageThresholdsCompletionService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/LifetimeUsages/LifetimeUsagesTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:Memberships.CreateService",
@@ -25616,72 +25790,84 @@
             "source": "app/services/order_forms/create_service.rb",
             "laravel": "App\\Services\\OrderForms\\CreateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/QuotesAndOrderFormsTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:OrderForms.ExecutionSettingsValidation",
             "source": "app/services/order_forms/execution_settings_validation.rb",
-            "laravel": "App\\Services\\OrderForms\\ExecutionSettingsValidation",
+            "laravel": "App\\Services\\OrderForms\\MarkAsSignedService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/QuotesAndOrderFormsTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:OrderForms.ExpireService",
             "source": "app/services/order_forms/expire_service.rb",
             "laravel": "App\\Services\\OrderForms\\ExpireService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Quotes/QuoteServicesTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:OrderForms.MarkAsSignedService",
             "source": "app/services/order_forms/mark_as_signed_service.rb",
             "laravel": "App\\Services\\OrderForms\\MarkAsSignedService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/QuotesAndOrderFormsTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:OrderForms.Premium",
             "source": "app/services/order_forms/premium.rb",
-            "laravel": "App\\Services\\OrderForms\\Premium",
+            "laravel": "App\\Services\\OrderForms\\CreateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Quotes/QuoteServicesTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:OrderForms.VoidService",
             "source": "app/services/order_forms/void_service.rb",
             "laravel": "App\\Services\\OrderForms\\VoidService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/QuotesAndOrderFormsTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:Orders.BaseExecuteService",
@@ -27458,60 +27644,70 @@
             "source": "app/services/quote_versions/approve_service.rb",
             "laravel": "App\\Services\\QuoteVersions\\ApproveService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Quotes/QuoteServicesTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:QuoteVersions.CloneService",
             "source": "app/services/quote_versions/clone_service.rb",
             "laravel": "App\\Services\\QuoteVersions\\CloneService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Quotes/QuoteServicesTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:QuoteVersions.ComputeMentionVariablesService",
             "source": "app/services/quote_versions/compute_mention_variables_service.rb",
             "laravel": "App\\Services\\QuoteVersions\\ComputeMentionVariablesService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "written",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/QuotesAndOrderFormsTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:QuoteVersions.CreateService",
             "source": "app/services/quote_versions/create_service.rb",
             "laravel": "App\\Services\\QuoteVersions\\CreateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Quotes/QuoteServicesTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:QuoteVersions.DealExpiration",
             "source": "app/services/quote_versions/deal_expiration.rb",
             "laravel": "App\\Services\\QuoteVersions\\DealExpiration",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Quotes/QuoteServicesTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:QuoteVersions.MentionVariablesLocalizer",
@@ -27530,48 +27726,56 @@
             "source": "app/services/quote_versions/update_service.rb",
             "laravel": "App\\Services\\QuoteVersions\\UpdateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Quotes/QuoteServicesTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:QuoteVersions.Validators",
             "source": "app/services/quote_versions/validators.rb",
-            "laravel": "App\\Services\\QuoteVersions\\Validators",
+            "laravel": "App\\Services\\QuoteVersions\\Validators\\Validators",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Quotes/QuoteServicesTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:QuoteVersions.Validators.BaseOrderTypeValidator",
             "source": "app/services/quote_versions/validators/base_order_type_validator.rb",
             "laravel": "App\\Services\\QuoteVersions\\Validators\\BaseOrderTypeValidator",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Quotes/QuoteServicesTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:QuoteVersions.Validators.BaseStructuralValidator",
             "source": "app/services/quote_versions/validators/base_structural_validator.rb",
-            "laravel": "App\\Services\\QuoteVersions\\Validators\\BaseStructuralValidator",
+            "laravel": "App\\Services\\QuoteVersions\\Validators\\StructuralValidator",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Quotes/QuoteServicesTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:QuoteVersions.Validators.BillingEntityValidation",
@@ -27588,146 +27792,170 @@
         {
             "id": "svc:QuoteVersions.Validators.CurrencyValidation",
             "source": "app/services/quote_versions/validators/currency_validation.rb",
-            "laravel": "App\\Services\\QuoteVersions\\Validators\\CurrencyValidation",
+            "laravel": "App\\Services\\QuoteVersions\\Validators\\BaseOrderTypeValidator",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Quotes/QuoteServicesTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:QuoteVersions.Validators.OneOff.BusinessValidator",
             "source": "app/services/quote_versions/validators/one_off/business_validator.rb",
-            "laravel": "App\\Services\\QuoteVersions\\Validators\\OneOff\\BusinessValidator",
+            "laravel": "App\\Services\\QuoteVersions\\Validators\\OneOffValidator",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Quotes/QuoteServicesTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:QuoteVersions.Validators.OneOff.Schema",
             "source": "app/services/quote_versions/validators/one_off/schema.rb",
-            "laravel": "App\\Services\\QuoteVersions\\Validators\\OneOff\\Schema",
+            "laravel": "App\\Services\\QuoteVersions\\Validators\\OneOffSchema",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Quotes/QuoteServicesTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:QuoteVersions.Validators.OneOff.StructuralValidator",
             "source": "app/services/quote_versions/validators/one_off/structural_validator.rb",
-            "laravel": "App\\Services\\QuoteVersions\\Validators\\OneOff\\StructuralValidator",
+            "laravel": "App\\Services\\QuoteVersions\\Validators\\StructuralValidator",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Quotes/QuoteServicesTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:QuoteVersions.Validators.OneOffValidator",
             "source": "app/services/quote_versions/validators/one_off_validator.rb",
             "laravel": "App\\Services\\QuoteVersions\\Validators\\OneOffValidator",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Quotes/QuoteServicesTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:QuoteVersions.Validators.SubscriptionAmendment.BusinessValidator",
             "source": "app/services/quote_versions/validators/subscription_amendment/business_validator.rb",
-            "laravel": "App\\Services\\QuoteVersions\\Validators\\SubscriptionAmendment\\BusinessValidator",
+            "laravel": "App\\Services\\QuoteVersions\\Validators\\SubscriptionAmendmentValidator",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Quotes/QuoteServicesTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:QuoteVersions.Validators.SubscriptionAmendmentValidator",
             "source": "app/services/quote_versions/validators/subscription_amendment_validator.rb",
             "laravel": "App\\Services\\QuoteVersions\\Validators\\SubscriptionAmendmentValidator",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Quotes/QuoteServicesTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:QuoteVersions.Validators.SubscriptionCreation.BusinessValidator",
             "source": "app/services/quote_versions/validators/subscription_creation/business_validator.rb",
-            "laravel": "App\\Services\\QuoteVersions\\Validators\\SubscriptionCreation\\BusinessValidator",
+            "laravel": "App\\Services\\QuoteVersions\\Validators\\SubscriptionCreationValidator",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Quotes/QuoteServicesTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:QuoteVersions.Validators.SubscriptionCreation.Schema",
             "source": "app/services/quote_versions/validators/subscription_creation/schema.rb",
-            "laravel": "App\\Services\\QuoteVersions\\Validators\\SubscriptionCreation\\Schema",
+            "laravel": "App\\Services\\QuoteVersions\\Validators\\Schema",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Quotes/QuoteServicesTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:QuoteVersions.Validators.SubscriptionCreation.StructuralValidator",
             "source": "app/services/quote_versions/validators/subscription_creation/structural_validator.rb",
-            "laravel": "App\\Services\\QuoteVersions\\Validators\\SubscriptionCreation\\StructuralValidator",
+            "laravel": "App\\Services\\QuoteVersions\\Validators\\StructuralValidator",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Quotes/QuoteServicesTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:QuoteVersions.Validators.SubscriptionCreationValidator",
             "source": "app/services/quote_versions/validators/subscription_creation_validator.rb",
             "laravel": "App\\Services\\QuoteVersions\\Validators\\SubscriptionCreationValidator",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Quotes/QuoteServicesTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:QuoteVersions.VoidService",
             "source": "app/services/quote_versions/void_service.rb",
             "laravel": "App\\Services\\QuoteVersions\\VoidService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Quotes/QuoteServicesTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:Quotes.AddImageService",
@@ -27746,36 +27974,42 @@
             "source": "app/services/quotes/create_service.rb",
             "laravel": "App\\Services\\Quotes\\CreateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Quotes/QuoteServicesTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:Quotes.LockService",
             "source": "app/services/quotes/lock_service.rb",
             "laravel": "App\\Services\\Quotes\\LockService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Quotes/QuoteServicesTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:Quotes.UpdateService",
             "source": "app/services/quotes/update_service.rb",
             "laravel": "App\\Services\\Quotes\\UpdateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Quotes/QuoteServicesTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:RateCardRates.CreateService",
@@ -28542,12 +28776,14 @@
             "source": "app/services/subscriptions/progressive_billed_amount.rb",
             "laravel": "App\\Services\\Subscriptions\\ProgressiveBilledAmount",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/LifetimeUsages/LifetimeUsagesTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:Subscriptions.TerminateService",
@@ -28620,12 +28856,14 @@
             "source": "app/services/subscriptions/update_usage_thresholds_service.rb",
             "laravel": "App\\Services\\Subscriptions\\UpdateUsageThresholdsService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/UsageThresholds/UpdateServiceTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:Subscriptions.ValidateService",
@@ -28773,36 +29011,42 @@
             "source": "app/services/usage_monitoring/alerts/create_batch_service.rb",
             "laravel": "App\\Services\\UsageMonitoring\\Alerts\\CreateBatchService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/UsageMonitoringRestTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:UsageMonitoring.Alerts.DestroyAllService",
             "source": "app/services/usage_monitoring/alerts/destroy_all_service.rb",
             "laravel": "App\\Services\\UsageMonitoring\\Alerts\\DestroyAllService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/UsageMonitoringRestTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:UsageMonitoring.BaseService",
             "source": "app/services/usage_monitoring/base_service.rb",
             "laravel": "App\\Services\\UsageMonitoring\\BaseService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/UsageMonitoring/CreateAlertServiceTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:UsageMonitoring.Concerns.CreateOrUpdateConcern",
@@ -28821,144 +29065,168 @@
             "source": "app/services/usage_monitoring/create_alert_service.rb",
             "laravel": "App\\Services\\UsageMonitoring\\CreateAlertService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/UsageMonitoring/CreateAlertServiceTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:UsageMonitoring.DestroyAlertService",
             "source": "app/services/usage_monitoring/destroy_alert_service.rb",
             "laravel": "App\\Services\\UsageMonitoring\\DestroyAlertService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/UsageMonitoring/CreateAlertServiceTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:UsageMonitoring.ProcessAlertService",
             "source": "app/services/usage_monitoring/process_alert_service.rb",
             "laravel": "App\\Services\\UsageMonitoring\\ProcessAlertService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/UsageMonitoring/ProcessAlertAndWebhookTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:UsageMonitoring.ProcessAllSubscriptionActivitiesService",
             "source": "app/services/usage_monitoring/process_all_subscription_activities_service.rb",
             "laravel": "App\\Services\\UsageMonitoring\\ProcessAllSubscriptionActivitiesService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/UsageMonitoring/ProcessAlertAndWebhookTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:UsageMonitoring.ProcessLifetimeUsageAlertService",
             "source": "app/services/usage_monitoring/process_lifetime_usage_alert_service.rb",
             "laravel": "App\\Services\\UsageMonitoring\\ProcessLifetimeUsageAlertService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/UsageMonitoring/ProcessLifetimeUsageAlertTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:UsageMonitoring.ProcessOrganizationSubscriptionActivitiesService",
             "source": "app/services/usage_monitoring/process_organization_subscription_activities_service.rb",
             "laravel": "App\\Services\\UsageMonitoring\\ProcessOrganizationSubscriptionActivitiesService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/UsageMonitoring/ProcessAlertAndWebhookTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:UsageMonitoring.ProcessSubscriptionActivityService",
             "source": "app/services/usage_monitoring/process_subscription_activity_service.rb",
             "laravel": "App\\Services\\UsageMonitoring\\ProcessSubscriptionActivityService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/UsageMonitoring/ProcessSubscriptionActivityTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:UsageMonitoring.ProcessWalletAlertsService",
             "source": "app/services/usage_monitoring/process_wallet_alerts_service.rb",
             "laravel": "App\\Services\\UsageMonitoring\\ProcessWalletAlertsService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/UsageMonitoring/ProcessAlertAndWebhookTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:UsageMonitoring.TrackSubscriptionActivityService",
             "source": "app/services/usage_monitoring/track_subscription_activity_service.rb",
             "laravel": "App\\Services\\UsageMonitoring\\TrackSubscriptionActivityService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/UsageMonitoring/ProcessAlertAndWebhookTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:UsageMonitoring.UpdateAlertService",
             "source": "app/services/usage_monitoring/update_alert_service.rb",
             "laravel": "App\\Services\\UsageMonitoring\\UpdateAlertService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/UsageMonitoring/CreateAlertServiceTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:UsageThresholds.OverrideService",
             "source": "app/services/usage_thresholds/override_service.rb",
             "laravel": "App\\Services\\UsageThresholds\\OverrideService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/UsageThresholds/UpdateServiceTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:UsageThresholds.UpdateService",
             "source": "app/services/usage_thresholds/update_service.rb",
             "laravel": "App\\Services\\UsageThresholds\\UpdateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/UsageThresholds/UpdateServiceTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:UserDevices.RegisterService",
@@ -29013,12 +29281,14 @@
             "source": "app/services/utils/auth_token.rb",
             "laravel": "App\\Support\\Utils\\AuthToken",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "ported",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Support/AuthTokenTest.php"
+            ],
+            "notes": "Cross-language JWT encode/decode (auth_org: Rails-minted token decodes in Laravel and vice versa). Contract: replayed green via auth_org."
         },
         {
             "id": "svc:Utils.Base64File",
@@ -30539,24 +30809,28 @@
             "source": "app/services/webhooks/subscriptions/usage_thresholds_reached_service.rb",
             "laravel": "App\\Services\\Webhooks\\Subscriptions\\UsageThresholdsReachedService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/LifetimeUsages/CheckThresholdsServiceTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:Webhooks.UsageMonitoring.AlertTriggeredService",
             "source": "app/services/webhooks/usage_monitoring/alert_triggered_service.rb",
             "laravel": "App\\Services\\Webhooks\\UsageMonitoring\\AlertTriggeredService",
             "status": {
-                "code": "todo",
-                "test": "todo",
+                "code": "done",
+                "test": "ported",
                 "contract": "untested"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/UsageMonitoring/ProcessAlertAndWebhookTest.php"
+            ],
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
         },
         {
             "id": "svc:Webhooks.WalletTransactions.CreatedService",

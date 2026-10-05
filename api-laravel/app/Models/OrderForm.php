@@ -14,13 +14,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
- * Minimal read-model scaffold of Rails' OrderForm (app/models/order_form.rb)
- * — only what the ORDERS slice needs (the order → quote_version → quote
- * walk, and the number format the read surface emits).
+ * Port of Rails' OrderForm (app/models/order_form.rb).
  *
- * TODO(port): the full order-forms slice (status enum port, signing /
- * voiding / expiry transitions, signed documents) — this class stays
- * read-only until then.
+ * The signable document over an approved quote version: one order form per
+ * version (unique quote_version_id), signing it creates the order, voiding
+ * or expiring it cascades a void onto the version.
  */
 #[Fillable([
     'organization_id',
@@ -29,6 +27,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
     'number',
     'sequential_id',
     'status',
+    'void_reason',
     'expires_at',
     'signed_at',
     'voided_at',
@@ -41,8 +40,20 @@ class OrderForm extends BaseModel
     use HasUuid;
     use Sequenced;
 
-    /** Rails: STATUSES (order_form.rb). */
-    public const STATUSES = ['generated', 'signed', 'expired', 'voided'];
+    /** Rails: `enum :status, STATUSES, default: :generated`. */
+    public const STATUSES = [
+        'generated' => 'generated',
+        'signed' => 'signed',
+        'expired' => 'expired',
+        'voided' => 'voided',
+    ];
+
+    /** Rails: `enum :void_reason, VOID_REASONS`. */
+    public const VOID_REASONS = [
+        'manual' => 'manual',
+        'expired' => 'expired',
+        'invalid' => 'invalid',
+    ];
 
     // -- Relationships --------------------------------------------------------
 
@@ -69,6 +80,49 @@ class OrderForm extends BaseModel
     {
         return Order::query()->where('order_form_id', $this->getKey())->first();
     }
+
+    // -- Status ---------------------------------------------------------------
+
+    /** Rails: `generated?`. */
+    public function isGenerated(): bool
+    {
+        return $this->status === 'generated';
+    }
+
+    /** Rails: `signed?`. */
+    public function isSigned(): bool
+    {
+        return $this->status === 'signed';
+    }
+
+    /** Rails: `expired?`. */
+    public function isExpired(): bool
+    {
+        return $this->status === 'expired';
+    }
+
+    /** Rails: `voided?`. */
+    public function isVoided(): bool
+    {
+        return $this->status === 'voided';
+    }
+
+    // -- Scopes ---------------------------------------------------------------
+
+    /**
+     * Rails: `scope :expirable` — generated forms whose expiry date (in the
+     * customer billing entity's timezone) has come. The clock-driven
+     * OrderForms::ExpireJob selects with it.
+     */
+    public function scopeExpirable(Builder $query): Builder
+    {
+        return $query
+            ->where('status', 'generated')
+            ->whereNotNull('expires_at')
+            ->where('expires_at', '<=', now());
+    }
+
+    // -- Number ---------------------------------------------------------------
 
     /**
      * Rails: `before_save :ensure_number` — registered after the Sequenced

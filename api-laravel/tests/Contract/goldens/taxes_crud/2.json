@@ -1,0 +1,19 @@
+{
+  "tax": {
+    "lago_id": "a7b932fa-8297-4590-a072-656d85139d06",
+    "name": "Regional Levy",
+    "code": "regional-levy",
+    "rate": 5.5,
+    "description": "org-wide levy",
+    "applied_to_organization": true,
+    "add_ons_count": 0,
+    "customers_count": 0,
+    "plans_count": 0,
+    "charges_count": 0,
+    "commitments_count": 0,
+    "created_at": "2025-06-12T12:00:01Z",
+    "applied_to_billing_entities_codes": [
+      "entity_3b248385-a887-4099-b719-aca253bd4ed4"
+    ]
+  }
+}

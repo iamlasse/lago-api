@@ -23,9 +23,8 @@ use App\Serializers\V1\BillableMetricExpressionResultSerializer;
  * Port of Rails' Api::V1::BillableMetricsController
  * (app/controllers/api/v1/billable_metrics_controller.rb).
  *
- * Not ported (dependencies do not exist yet):
- * - TODO(port): the filters param (the BillableMetricFilters slice — the
- *   create/update services mark the hook).
+ * The filters param is wired to BillableMetricFilters::
+ * CreateOrUpdateBatchService (usage-monitoring slice).
  *
  * evaluate_expression runs on the App\Expression parser port of the
  * lago-expression gem (see EvaluateExpressionService).

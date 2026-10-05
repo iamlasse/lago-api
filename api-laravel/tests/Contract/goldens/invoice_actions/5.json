@@ -1,0 +1,5 @@
+{
+  "status": 405,
+  "error": "Method Not Allowed",
+  "code": "metadata_on_draft_invoice"
+}

@@ -14,7 +14,7 @@ use App\Services\Fees\ChargeService\Aggregator;
 use App\Services\Fees\ChargeService\MeteredItem;
 use App\Models\Billing\Context as BillingContext;
 
-uses()->group('ledger:svc:Fees.ChargeService.Aggregator');
+uses()->group('ledger:svc:Fees.ChargeService');
 
 /**
  * The aggregation decision contract (finding 12): the fee engine's

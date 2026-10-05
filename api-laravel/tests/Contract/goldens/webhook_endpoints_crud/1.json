@@ -1,0 +1,14 @@
+{
+  "webhook_endpoint": {
+    "lago_id": "c6d25bb4-6de9-4c0b-a020-1f848731c4f0",
+    "lago_organization_id": "1a4a0d6e-0000-4000-8000-000000000071",
+    "webhook_url": "https://hooks.example.invalid/lago-a",
+    "signature_algo": "hmac",
+    "name": "Primary Hook",
+    "event_types": [
+      "invoice.created",
+      "customer.created"
+    ],
+    "created_at": "2025-06-12T13:00:00Z"
+  }
+}

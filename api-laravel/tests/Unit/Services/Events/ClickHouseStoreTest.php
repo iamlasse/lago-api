@@ -19,7 +19,7 @@ use App\Models\Billing\Context as BillingContext;
  * container (Http::fake); the real-container smoke test at the bottom
  * requires LAGO_CLICKHOUSE_TEST_HOST.
  */
-uses()->group('ledger:svc:Events.Stores.ClickHouseStore');
+uses()->group('ledger:svc:Events.Stores.ClickhouseStore');
 
 function chOrganization(): Organization
 {

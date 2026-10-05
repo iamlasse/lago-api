@@ -58,7 +58,7 @@ it('creates the override when neither plan nor subscription carries the feature'
 
     expect($override->entitlement_feature_id)->toBe($feature->id)
         ->and($override->values()->sole()->value)->toBe('20');
-})->group('ledger:svc:Entitlements.SubscriptionEntitlementsUpdateService');
+})->group('ledger:svc:Entitlement.SubscriptionEntitlementsUpdateService');
 
 it('removes plan features absent from a full update with a removal tombstone', function (): void {
     [$organization, $plan, $subscription, $feature, $privilege] = subscriptionFixture();
@@ -203,7 +203,7 @@ it('updates a single feature entitlement and returns the merged view', function 
         ->and($result->entitlement->code)->toBe('seats')
         ->and($result->entitlement->privileges[0]->value)->toBe('42')
         ->and($result->entitlement->privileges[0]->planValue)->toBe('10');
-})->group('ledger:svc:Entitlements.SubscriptionEntitlementUpdateService');
+})->group('ledger:svc:Entitlement.SubscriptionEntitlementUpdateService');
 
 it('returns a feature not found failure for an unknown feature code', function (): void {
     [$organization, $plan, $subscription] = subscriptionFixture();

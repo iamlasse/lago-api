@@ -1,0 +1,24 @@
+{
+  "captured_at": "2025-06-15T12:00:00Z",
+  "requests": [
+    {
+      "method": "PATCH",
+      "path": "/api/v1/plans/fixed-charges-patch-plan/fixed_charges/patched-fixed-charge",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000002d1",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "fixed_charge": {
+          "invoice_display_name": "Patched Fixed Charge v2",
+          "charge_model": "standard",
+          "units": 20,
+          "properties": {
+            "amount": "200"
+          }
+        }
+      },
+      "required_headers": {}
+    }
+  ]
+}

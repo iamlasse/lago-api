@@ -1,0 +1,139 @@
+{
+  "captured_at": "2025-06-12T13:00:00Z",
+  "requests": [
+    {
+      "method": "POST",
+      "path": "/api/v1/webhook_endpoints",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ac",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "webhook_endpoint": {
+          "webhook_url": "https://hooks.example.invalid/lago-a",
+          "name": "Primary Hook",
+          "signature_algo": "hmac",
+          "event_types": [
+            "invoice.created",
+            "customer.created"
+          ]
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-12T13:00:00Z"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/webhook_endpoints",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ac",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "webhook_endpoint": {
+          "webhook_url": "https://hooks.example.invalid/lago-b",
+          "name": "All Events Hook",
+          "event_types": [
+            "*"
+          ]
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-12T13:00:01Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/webhook_endpoints",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ac"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-12T13:00:00Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/webhook_endpoints/WEBHOOK_ENDPOINT_ONE_ID",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ac"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-12T13:00:00Z"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/webhook_endpoints/WEBHOOK_ENDPOINT_ONE_ID",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ac",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "webhook_endpoint": {
+          "name": "Primary Hook Renamed",
+          "signature_algo": "jwt",
+          "event_types": [
+            "invoice.created"
+          ]
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-12T13:00:00Z"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/webhook_endpoints",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ac",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "webhook_endpoint": {
+          "webhook_url": "https://hooks.example.invalid/lago-c",
+          "event_types": [
+            "invoice.created",
+            "not_a_real_event"
+          ]
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-12T13:00:00Z"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/webhook_endpoints",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ac",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "webhook_endpoint": {
+          "webhook_url": "https://hooks.example.invalid/lago-d",
+          "event_types": "invoice.created"
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-12T13:00:00Z"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/webhook_endpoints/WEBHOOK_ENDPOINT_TWO_ID",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ac"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-12T13:00:02Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/webhook_endpoints",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ac"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-12T13:00:00Z"
+    }
+  ]
+}

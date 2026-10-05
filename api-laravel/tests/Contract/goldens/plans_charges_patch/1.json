@@ -1,0 +1,24 @@
+{
+  "charge": {
+    "lago_id": "cc413fcd-ceae-4693-bb64-9aa1e3420e03",
+    "lago_billable_metric_id": "1a4a0d6e-0000-4000-8000-000000000182",
+    "code": "patched-charge",
+    "invoice_display_name": "Patched Charge v2",
+    "billable_metric_code": "patch_charge_metric",
+    "created_at": "2025-06-14T11:00:00Z",
+    "charge_model": "standard",
+    "invoiceable": true,
+    "regroup_paid_fees": null,
+    "pay_in_advance": false,
+    "prorated": false,
+    "min_amount_cents": 0,
+    "accepts_target_wallet": false,
+    "properties": {
+      "amount": "20"
+    },
+    "applied_pricing_unit": null,
+    "lago_parent_id": null,
+    "filters": [],
+    "taxes": []
+  }
+}

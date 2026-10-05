@@ -44,7 +44,7 @@ it('discards the entitlement and its values', function (): void {
         ->and($result->entitlement->code ?? $result->entitlement)->not->toBeNull()
         ->and($entitlement->refresh()->deleted_at)->not->toBeNull()
         ->and($value->refresh()->deleted_at)->not->toBeNull();
-})->group('ledger:svc:Entitlements.PlanEntitlementDestroyService');
+})->group('ledger:svc:Entitlement.PlanEntitlementDestroyService');
 
 it('returns a not found failure when the entitlement is missing', function (): void {
     $result = PlanEntitlementDestroyService::call(entitlement: null);

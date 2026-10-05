@@ -1,0 +1,154 @@
+{
+  "captured_at": "2025-06-12T15:00:00Z",
+  "requests": [
+    {
+      "method": "POST",
+      "path": "/api/v1/billable_metrics/evaluate_expression",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ae",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "expression": "round(event.properties.value * event.properties.units)",
+        "event": {
+          "code": "test_code",
+          "timestamp": 1749740400,
+          "properties": {
+            "value": "10.4",
+            "units": "2"
+          }
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-12T15:00:00Z"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/billable_metrics/evaluate_expression",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ae",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "expression": "event.timestamp",
+        "event": {
+          "code": "test_code",
+          "properties": {}
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-12T15:00:00Z"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/billable_metrics/evaluate_expression",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ae",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "expression": "",
+        "event": {
+          "code": "test_code",
+          "properties": {}
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-12T15:00:00Z"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/billable_metrics/evaluate_expression",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ae",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "expression": "invalid_expression",
+        "event": {
+          "code": "test_code",
+          "properties": {}
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-12T15:00:00Z"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/billable_metrics/evaluate_expression",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ae",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "expression": "round(event.properties.value)",
+        "event": {
+          "code": "test_code",
+          "timestamp": 1749740400,
+          "properties": {
+            "value": "invalid_value"
+          }
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-12T15:00:00Z"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/billable_metrics/seeded_gpu_hours",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ae",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "billable_metric": {
+          "description": "patched by the capture",
+          "expression": "round(event.properties.gpu_hours * event.properties.multiplier)",
+          "rounding_function": "round",
+          "rounding_precision": 2
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-12T15:00:00Z"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/billable_metrics/seeded_gpu_hours",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ae",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "billable_metric": {
+          "filters": [
+            {
+              "key": "region",
+              "values": [
+                "us",
+                "eu"
+              ]
+            },
+            {
+              "key": "tier",
+              "values": [
+                "gold"
+              ]
+            }
+          ]
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-12T15:00:00Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/billable_metrics/seeded_gpu_hours",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ae"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-12T15:00:00Z"
+    }
+  ]
+}

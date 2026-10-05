@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+uses()->group(
+    'ledger:svc:DunningCampaigns.CreateService',
+    'ledger:svc:DunningCampaigns.UpdateService',
+    'ledger:svc:DunningCampaigns.DestroyService',
+);
+
 use App\Models\Invoice;
 use App\Models\Customer;
 use App\Models\Organization;
@@ -13,8 +19,8 @@ use App\Services\DunningCampaigns\DestroyService;
 
 /**
  * Ports of Rails' spec/services/dunning_campaigns/{create,update,
- * destroy}_service_spec.rb. Ledger rows: svc:dunning_campaigns:create /
- * update / destroy.
+ * destroy}_service_spec.rb. Ledger rows: svc:DunningCampaigns.CreateService /
+ * UpdateService / DestroyService.
  */
 beforeEach(function (): void {
     config(['lago.license' => 'premium-license-token']);

@@ -126,34 +126,43 @@ class Subscription
     }
 
     /**
-     * Rails: lifetime_usage — nil unless has_progressive_billing? or the
-     * organization enables lifetime usage.
-     *
-     * TODO(port): the LifetimeUsage model and the
-     * organization.lifetime_usage_enabled? flag are not ported; the guard
-     * keeps the Rails shape and resolves null meanwhile.
-     */
-    public function lifetimeUsage(SubscriptionModel $root): mixed
-    {
-        if (! $root->hasProgressiveBilling()) {
-            return null;
-        }
-
-        return $root->lifetime_usage;
-    }
-
-    /**
      * Rails: the usage_thresholds field is a non-null list resolved from the
-     * subscription's applicable thresholds.
-     *
-     * TODO(port): the UsageThreshold model is not ported;
-     * Subscription#applicable_usage_thresholds returns [] meanwhile.
-     *
-     * @return list<mixed>
+     * subscription's applicable thresholds (usage-monitoring slice: WIRED).
      */
     public function usageThresholds(SubscriptionModel $root): array
     {
-        return $root->applicableUsageThresholds();
+        return $root->applicableUsageThresholds()->all();
+    }
+
+    /**
+     * Rails: lifetime_usage — the SubscriptionLifetimeUsage SDL shape, backed
+     * by LifetimeUsages::FindLastAndNextThresholdsService over the
+     * subscription's ledger (usage-monitoring slice).
+     */
+    public function lifetimeUsage(SubscriptionModel $root): ?array
+    {
+        $lifetimeUsage = $root->lifetimeUsage;
+
+        if ($lifetimeUsage === null) {
+            return null;
+        }
+
+        $result = \App\Services\LifetimeUsages\FindLastAndNextThresholdsService::call(
+            lifetimeUsage: $lifetimeUsage,
+        );
+
+        if ($result->failure()) {
+            return null;
+        }
+
+        return [
+            'last_threshold_amount_cents' => $result->last_threshold_amount_cents,
+            'next_threshold_amount_cents' => $result->next_threshold_amount_cents,
+            'next_threshold_ratio' => $result->next_threshold_ratio,
+            'total_usage_amount_cents' => $lifetimeUsage->totalAmountCents(),
+            'total_usage_from_datetime' => (string) $root->subscription_at,
+            'total_usage_to_datetime' => now()->toIso8601String(),
+        ];
     }
 
     /** Rails: charges — the plan's charges, oldest first. */

@@ -1,0 +1,23 @@
+{
+  "captured_at": "2025-06-14T12:00:00Z",
+  "requests": [
+    {
+      "method": "PATCH",
+      "path": "/api/v1/plans/charges-patch-plan/charges/patched-charge",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000002c1",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "charge": {
+          "invoice_display_name": "Patched Charge v2",
+          "charge_model": "standard",
+          "properties": {
+            "amount": "20"
+          }
+        }
+      },
+      "required_headers": {}
+    }
+  ]
+}

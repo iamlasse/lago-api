@@ -16,7 +16,6 @@ use App\Services\Failures\FailedResult;
  * (app/services/billable_metrics/create_service.rb).
  *
  * Not ported (dependencies do not exist yet):
- * - TODO(port): filters args (BillableMetricFilters::CreateOrUpdateBatchService).
  * - TODO(port): SendWebhookJob.perform_after_commit("billable_metric.created")
  *   — webhooks are a later milestone; the emission point is marked below.
  * - TODO(port): SegmentTrackJob "billable_metric_created".
@@ -67,9 +66,14 @@ class CreateService extends BaseService
 
                 $metric->save();
 
-                // TODO(port): filters args — BillableMetricFilters::
-                // CreateOrUpdateBatchService(billable_metric:, filters_params:)
-                // followed by .raise_if_error!.
+                // BillableMetricFilters::CreateOrUpdateBatchService — WIRED
+                // (usage-monitoring slice).
+                if (array_key_exists('filters', $this->args) && $this->args['filters'] !== null) {
+                    \App\Services\BillableMetricFilters\CreateOrUpdateBatchService::callBang(
+                        billableMetric: $metric,
+                        filtersParams: (array) $this->args['filters'],
+                    );
+                }
             });
 
             ExpressionCacheService::expireCache(

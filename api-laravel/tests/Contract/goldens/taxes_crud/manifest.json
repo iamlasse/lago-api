@@ -1,0 +1,140 @@
+{
+  "captured_at": "2025-06-12T12:00:00Z",
+  "requests": [
+    {
+      "method": "POST",
+      "path": "/api/v1/taxes",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ab",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "tax": {
+          "name": "VAT Twenty",
+          "code": "vat-20",
+          "rate": "20.0",
+          "description": "captured VAT"
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-12T12:00:00Z"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/taxes",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ab",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "tax": {
+          "name": "Regional Levy",
+          "code": "regional-levy",
+          "rate": "5.5",
+          "description": "org-wide levy",
+          "applied_to_organization": true
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-12T12:00:01Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/taxes",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ab"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-12T12:00:00Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/taxes/vat-20",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ab"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-12T12:00:00Z"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/taxes/vat-20",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ab",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "tax": {
+          "rate": "22.5",
+          "description": "raised by the capture"
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-12T12:00:00Z"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/taxes/regional-levy",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ab",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "tax": {
+          "applied_to_organization": false
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-12T12:00:00Z"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/taxes",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ab",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "tax": {
+          "name": "Duplicate VAT",
+          "code": "vat-20",
+          "rate": "1.0"
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-12T12:00:00Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/taxes/does-not-exist",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ab"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-12T12:00:00Z"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/taxes/regional-levy",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ab"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-12T12:00:00Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/taxes",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ab"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-12T12:00:00Z"
+    }
+  ]
+}

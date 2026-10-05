@@ -41,6 +41,15 @@ class SubscriptionFactory extends Factory
         ];
     }
 
+    /** Pin the customer (and its organization). */
+    public function forCustomer(Customer $customer): static
+    {
+        return $this->state(fn (): array => [
+            'customer_id' => $customer->id,
+            'organization_id' => $customer->organization_id,
+        ]);
+    }
+
     /** Rails trait :pending. */
     public function pending(): static
     {

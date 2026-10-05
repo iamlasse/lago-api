@@ -1,0 +1,28 @@
+{
+  "plan": {
+    "lago_id": "1ee6d742-12d7-4989-9323-1cc321140292",
+    "name": "Patch Plan Renamed",
+    "invoice_display_name": "Patch Plan Display v2",
+    "created_at": "2025-06-13T11:00:00Z",
+    "code": "patch-plan",
+    "interval": "monthly",
+    "description": "renamed via PATCH",
+    "amount_cents": 2500,
+    "amount_currency": "EUR",
+    "trial_period": null,
+    "pay_in_advance": false,
+    "bill_charges_monthly": null,
+    "bill_fixed_charges_monthly": null,
+    "customers_count": 0,
+    "active_subscriptions_count": 0,
+    "draft_invoices_count": 0,
+    "parent_id": null,
+    "pending_deletion": false,
+    "charges": [],
+    "fixed_charges": [],
+    "entitlements": [],
+    "usage_thresholds": [],
+    "applicable_usage_thresholds": [],
+    "taxes": []
+  }
+}

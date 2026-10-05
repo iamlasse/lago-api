@@ -366,6 +366,42 @@ class Organization extends BaseModel
         return $this->premiumIntegrationEnabled('issue_receipts');
     }
 
+    /** Rails: lifetime_usage_enabled? (premium integration "lifetime_usage"). */
+    public function lifetimeUsageEnabled(): bool
+    {
+        return $this->premiumIntegrationEnabled('lifetime_usage');
+    }
+
+    /** Rails: progressive_billing_enabled? (premium integration "progressive_billing"). */
+    public function progressiveBillingEnabled(): bool
+    {
+        return $this->premiumIntegrationEnabled('progressive_billing');
+    }
+
+    /** Rails: granular_lifetime_usage_enabled? (premium integration "granular_lifetime_usage"). */
+    public function granularLifetimeUsageEnabled(): bool
+    {
+        return $this->premiumIntegrationEnabled('granular_lifetime_usage');
+    }
+
+    /** Rails: using_lifetime_usage? — lifetime usage OR progressive billing. */
+    public function usingLifetimeUsage(): bool
+    {
+        return $this->lifetimeUsageEnabled() || $this->progressiveBillingEnabled();
+    }
+
+    /** Rails: has_many :alerts, class_name: "UsageMonitoring::Alert". */
+    public function alerts(): HasMany
+    {
+        return $this->hasMany(UsageMonitoring\Alert::class);
+    }
+
+    /** Rails: has_many :subscription_activities, class_name: "UsageMonitoring::SubscriptionActivity". */
+    public function subscriptionActivities(): HasMany
+    {
+        return $this->hasMany(UsageMonitoring\SubscriptionActivity::class);
+    }
+
     // -- Lifecycle (port of before_create :set_hmac_key / after_create
     // :generate_document_number_prefix) ----------------------------------
 

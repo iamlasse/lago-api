@@ -14,8 +14,8 @@ use App\Models\WalletTransaction;
  * Port of Rails' Wallets::Balance::DecreaseService
  * (app/services/wallets/balance/decrease_service.rb).
  *
- * TODO(port): UsageMonitoring::ProcessWalletAlertsJob after commit — the
- * usage-monitoring slice.
+ * ProcessWalletAlertsJob — WIRED (the usage-monitoring slice; dispatched
+ * after the balance save below).
  */
 class DecreaseService extends BaseService
 {
@@ -59,6 +59,11 @@ class DecreaseService extends BaseService
 
         // Rails: SendWebhookJob.perform_after_commit("wallet.updated", wallet)
         \App\Jobs\SendWebhookJob::performLater('wallet.updated', $wallet);
+
+        // Rails: UsageMonitoring::ProcessWalletAlertsJob.perform_after_commit(wallet)
+        // — the after-commit scheduling is not ported; dispatches immediately
+        // (same as the other ported services).
+        \App\Jobs\UsageMonitoring\ProcessWalletAlertsJob::dispatch((string) $wallet->id);
 
         $result->wallet = $wallet;
 

@@ -15,11 +15,11 @@ use App\Services\BaseResult;
  * progressive-billing amounts already invoiced during the period from the
  * final subscription invoice.
  *
- * TODO(port): Subscriptions::ProgressiveBilledAmount and
- * CreditNotes::CreateFromProgressiveBillingInvoice are not ported (they
- * belong to the progressive-billing invoice flow, M3); in M1 no progressive
- * billing invoices exist, so the service walks the invoice subscriptions
- * and skips the ones without one — the Rails behavior for a clean ledger.
+ * Subscriptions::ProgressiveBilledAmount — WIRED (usage-monitoring slice).
+ * TODO(port): CreditNotes::CreateFromProgressiveBillingInvoice (when the
+ * credit amount exceeds the period's charge total, Rails first creates a
+ * credit note from the progressive-billing invoice; the port clamps the
+ * credit to the charges total for now).
  */
 class ProgressiveBillingService extends \App\Services\BaseService
 {
@@ -84,20 +84,29 @@ class ProgressiveBillingService extends \App\Services\BaseService
     }
 
     /**
-     * TODO(port): Subscriptions::ProgressiveBilledAmount — returns the last
-     * progressive-billing invoice of the subscription covering the period
-     * and the amount not yet credited. M1 stub: no progressive billing
-     * invoices exist.
+     * Subscriptions::ProgressiveBilledAmount — WIRED (usage-monitoring
+     * slice): the last progressive-billing invoice of the subscription
+     * covering the period.
      */
     private function progressiveBillingInvoice(object $subscription, mixed $chargesFromDatetime): ?Invoice
     {
-        return null;
+        $result = \App\Services\Subscriptions\ProgressiveBilledAmount::call(
+            subscription: $subscription,
+            timestamp: \Carbon\CarbonImmutable::parse($chargesFromDatetime),
+        );
+
+        return $result->progressive_billing_invoice;
     }
 
-    /** TODO(port): Subscriptions::ProgressiveBilledAmount#to_credit_amount. */
+    /** Subscriptions::ProgressiveBilledAmount#to_credit_amount — WIRED. */
     private function toCreditAmount(object $subscription, Invoice $progressiveBillingInvoice): int
     {
-        return 0;
+        $result = \App\Services\Subscriptions\ProgressiveBilledAmount::call(
+            subscription: $subscription,
+            timestamp: \Carbon\CarbonImmutable::parse($progressiveBillingInvoice->invoiceSubscriptions->first()?->charges_from_datetime ?? $progressiveBillingInvoice->created_at),
+        );
+
+        return $result->to_credit_amount;
     }
 
     private function applyCreditToFees(Invoice $progressiveBillingInvoice): void

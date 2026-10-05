@@ -40,6 +40,23 @@ class BillableMetricFilter extends BaseModel
         return $this->hasMany(ChargeFilterValue::class, 'billable_metric_filter_id');
     }
 
+    /** Rails: has_many :charge_filters, through: :filter_values (usage-monitoring slice, appended). */
+    public function chargeFilters()
+    {
+        return $this->belongsToMany(
+            ChargeFilter::class,
+            'charge_filter_values',
+            'billable_metric_filter_id',
+            'charge_filter_id',
+        );
+    }
+
+    /** Rails: has_many :product_filter_values (usage-monitoring slice, appended). */
+    public function productFilterValues(): HasMany
+    {
+        return $this->hasMany(ProductFilterValue::class, 'billable_metric_filter_id');
+    }
+
     /** Rails: default_scope -> { kept } plus `-> { order(:key) }` on the metric side. */
     protected static function booted(): void
     {

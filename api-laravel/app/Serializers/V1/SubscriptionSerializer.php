@@ -15,8 +15,6 @@ use App\Serializers\V1\Concerns\FormatsDatetime;
  *
  * Not ported (dependencies do not exist yet):
  * - TODO(port): entitlements include (Entitlement::SubscriptionEntitlement).
- * - TODO(port): usage_threshold / applicable_usage_thresholds includes
- *   (UsageThreshold models) — emitted as empty collections.
  * - TODO(port): applied_invoice_custom_sections include — empty collection.
  * - TODO(port): activation_rules collection (Subscription::ActivationRule) —
  *   emitted as an empty collection.
@@ -83,15 +81,17 @@ class SubscriptionSerializer extends ModelSerializer
         }
 
         if ($this->include('usage_threshold')) {
-            // TODO(port): V1::UsageThresholdSerializer with
-            // options[:usage_threshold] — only used on the
-            // `subscription.usage_threshold_reached` webhook payload.
-            $payload['usage_threshold'] = null;
+            $payload['usage_threshold'] = ($usageThreshold = $this->options['usage_threshold'] ?? null) !== null
+                ? (new UsageThresholdSerializer($usageThreshold))->serialize()
+                : null;
         }
 
         if ($this->include('applicable_usage_thresholds')) {
-            // TODO(port): V1::ApplicableUsageThresholdSerializer — empty collection.
-            $payload['applicable_usage_thresholds'] = [];
+            $payload['applicable_usage_thresholds'] = $this->model
+                ->applicableUsageThresholds()
+                ->map(fn ($threshold): array => (new ApplicableUsageThresholdSerializer($threshold))->serialize())
+                ->values()
+                ->all();
         }
 
         if ($this->include('applied_invoice_custom_sections')) {

@@ -40,4 +40,14 @@ class QuoteFactory extends Factory
             'organization_id' => $customer->organization_id,
         ]);
     }
+
+    /** Pin the subscription the quote restates (amendments). */
+    public function forSubscription(\App\Models\Subscription $subscription): static
+    {
+        return $this->state(fn (): array => [
+            'subscription_id' => $subscription->id,
+            'customer_id' => $subscription->customer_id,
+            'organization_id' => $subscription->organization_id,
+        ]);
+    }
 }

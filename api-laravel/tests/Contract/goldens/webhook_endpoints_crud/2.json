@@ -1,0 +1,11 @@
+{
+  "webhook_endpoint": {
+    "lago_id": "c04a98cd-d91b-4b43-913a-4a954887ff66",
+    "lago_organization_id": "1a4a0d6e-0000-4000-8000-000000000071",
+    "webhook_url": "https://hooks.example.invalid/lago-b",
+    "signature_algo": "jwt",
+    "name": "All Events Hook",
+    "event_types": null,
+    "created_at": "2025-06-12T13:00:01Z"
+  }
+}

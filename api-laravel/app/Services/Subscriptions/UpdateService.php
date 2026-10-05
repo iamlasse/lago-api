@@ -22,7 +22,6 @@ use Illuminate\Support\Facades\DB;
  *   / Plans::UpdateService-overrides and the fixed-charge units override
  *   promotion are deferred at the marked hook.
  * - TODO(port): Subscriptions::ActivationRules::ApplyService.
- * - TODO(port): UpdateUsageThresholdsService (usage_thresholds).
  * - TODO(port): InvoiceCustomSections::AttachToResourceService.
  * - TODO(port): BillingObjectConnections::AttachToResourceService.
  * - TODO(port): Invoices::CreatePayInAdvanceFixedChargesJob +
@@ -101,6 +100,15 @@ class UpdateService extends BaseService
 
         if (! $this->premium() && array_key_exists('plan_overrides', $params)) {
             return $result->forbiddenFailure();
+        }
+
+        // UpdateUsageThresholdsService.call! — WIRED (usage-monitoring slice).
+        if (array_key_exists('usage_thresholds', $params)) {
+            UpdateUsageThresholdsService::callBang(
+                subscription: $this->subscription,
+                usageThresholdsParams: (array) $params['usage_thresholds'],
+                partial: false,
+            );
         }
 
         if (! blank($params['connections'] ?? null)

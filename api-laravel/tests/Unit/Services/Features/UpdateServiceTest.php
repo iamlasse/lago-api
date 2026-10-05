@@ -48,7 +48,7 @@ it('updates the feature attributes', function (): void {
     expect($result->success())->toBeTrue()
         ->and($result->feature->name)->toBe('New name')
         ->and($result->feature->description)->toBe('New description');
-})->group('ledger:svc:Features.UpdateService');
+})->group('ledger:svc:Entitlement.FeatureUpdateService');
 
 it('does not change attributes missing from a full update', function (): void {
     $organization = CurrentContext::$organization = Organization::factory()->create();

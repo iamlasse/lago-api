@@ -84,7 +84,8 @@ class VoidService extends \App\Services\BaseService
             $invoice->status = InvoiceStatus::Voided;
             $invoice->save();
 
-            // TODO(port): LifetimeUsages::FlagRefreshFromInvoiceService.
+            // FlagRefreshFromInvoiceService — WIRED (usage-monitoring slice).
+            \App\Services\LifetimeUsages\FlagRefreshFromInvoiceService::callBang(invoice: $invoice);
 
             foreach ($invoice->credits as $credit) {
                 if ($credit->applied_coupon_id !== null) {

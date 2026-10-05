@@ -65,6 +65,10 @@ return [
         'footer' => 'This self-billing invoice was issued by the client on behalf of the partner, with their consent. The partner has agreed not to issue their own invoice for this transaction.',
     ],
     'semiannual' => 'Semiannual',
+    // 'invoice.usage_threshold' — Rails' UsageThreshold#invoice_name fallback
+    // (usage-monitoring slice; the Rails en snapshot carries no value, the key
+    // falls back to itself there).
+    'usage_threshold' => 'Usage threshold',
     'sub_total' => 'Subtotal',
     'sub_total_with_tax' => 'Subtotal (incl. tax)',
     'sub_total_without_tax' => 'Subtotal (excl. tax)',

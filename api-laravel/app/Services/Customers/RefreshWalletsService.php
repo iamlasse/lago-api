@@ -22,9 +22,8 @@ use App\Services\Wallets\Balance\AllocateOngoingUsageByWalletsService;
  * The cascade makes every wallet's allocation depend on the others'
  * balances, so all wallets are persisted together.
  *
- * TODO(port): progressive billing fees (Subscriptions::ProgressiveBilledAmount
- * — the progressive-billing slice) are passed as an empty list; streaming
- * destinations (EventDestinations::CustomerUsage) are not ported.
+ * Subscriptions::ProgressiveBilledAmount — WIRED (usage-monitoring slice).
+ * TODO(port): streaming destinations (EventDestinations::CustomerUsage).
  */
 class RefreshWalletsService extends BaseService
 {
@@ -49,7 +48,7 @@ class RefreshWalletsService extends BaseService
             wallets: $wallets,
             currentUsageFees: $this->currentUsageFees(),
             draftInvoicesFees: $this->draftInvoicesFees(),
-            progressiveBillingFees: [],
+            progressiveBillingFees: $this->progressiveBillingFees(),
             payInAdvanceFees: $this->payInAdvanceFees(),
         );
 
@@ -138,9 +137,9 @@ class RefreshWalletsService extends BaseService
     }
 
     /**
-     * One entry per active subscription: its current-usage computation.
-     * Rails also carries the progressively billed invoice subscriptions
-     * (TODO(port), progressive-billing slice).
+     * One entry per active subscription: its current-usage computation plus
+     * the progressively billed invoice subscriptions (Subscriptions::
+     * ProgressiveBilledAmount — usage-monitoring slice).
      *
      * @return list<array{subscription: \App\Models\Subscription, invoice: \App\Models\Invoice, usage: \App\Support\SubscriptionUsage}>
      */
@@ -162,13 +161,44 @@ class RefreshWalletsService extends BaseService
 
             $usageResult->raiseIfError();
 
+            // Subscriptions::ProgressiveBilledAmount — WIRED
+            // (usage-monitoring slice): the already-billed progressive
+            // invoice subscriptions net already-billed amounts out of the
+            // ongoing usage.
+            $billedProgressiveInvoiceSubscriptions = \App\Services\Subscriptions\ProgressiveBilledAmount::call(
+                subscription: $subscription,
+                includeGeneratingInvoices: $this->includeGeneratingInvoices,
+            )->invoice_subscriptions;
+
             $entries[] = [
                 'subscription' => $subscription,
                 'invoice' => $usageResult->invoice,
                 'usage' => $usageResult->usage,
+                'billed_progressive_invoice_subscriptions' => $billedProgressiveInvoiceSubscriptions,
             ];
         }
 
         return $this->subscriptionUsages = $entries;
+    }
+
+    /**
+     * Rails: #progressive_billing_fees — the fees of every progressively
+     * billed invoice subscription.
+     *
+     * @return list<Fee>
+     */
+    private function progressiveBillingFees(): array
+    {
+        $fees = [];
+
+        foreach ($this->subscriptionUsages() as $entry) {
+            foreach ($entry['billed_progressive_invoice_subscriptions'] as $invoiceSubscription) {
+                foreach ($invoiceSubscription->invoice->fees as $fee) {
+                    $fees[] = $fee;
+                }
+            }
+        }
+
+        return $fees;
     }
 }

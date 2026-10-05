@@ -17,7 +17,6 @@ use function array_key_exists;
  * (app/services/billable_metrics/update_service.rb).
  *
  * Not ported (dependencies do not exist yet):
- * - TODO(port): filters params (BillableMetricFilters::CreateOrUpdateBatchService).
  * - TODO(port): SendWebhookJob.perform_after_commit("billable_metric.updated").
  * - TODO(port): activity log middleware (activity_loggable).
  */
@@ -59,9 +58,14 @@ class UpdateService extends BaseService
                     $locked->description = $params['description'];
                 }
 
-                // TODO(port): filters params — BillableMetricFilters::
-                // CreateOrUpdateBatchService(billable_metric:, filters_params:)
-                // followed by .raise_if_error!.
+                // BillableMetricFilters::CreateOrUpdateBatchService — WIRED
+                // (usage-monitoring slice).
+                if (array_key_exists('filters', $this->params) && $this->params['filters'] !== null) {
+                    \App\Services\BillableMetricFilters\CreateOrUpdateBatchService::callBang(
+                        billableMetric: $locked,
+                        filtersParams: (array) $this->params['filters'],
+                    );
+                }
 
                 // NOTE: Only name and description are editable if billable
                 // metric is attached to a plan.

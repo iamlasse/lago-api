@@ -1,0 +1,5 @@
+{
+  "status": 405,
+  "error": "Method Not Allowed",
+  "code": "update_on_voided_invoice"
+}

@@ -59,7 +59,7 @@ it('discards the subscription override and records the tombstone when inherited'
 
     expect($removal->entitlement_feature_id)->toBe($feature->id)
         ->and($removal->subscription_id)->toBe($subscription->id);
-})->group('ledger:svc:Entitlements.SubscriptionFeatureRemoveService');
+})->group('ledger:svc:Entitlement.SubscriptionFeatureRemoveService');
 
 it('creates no tombstone when the feature is not on the plan', function (): void {
     [$organization, $plan, $subscription, $feature, $privilege] = removalFixture();

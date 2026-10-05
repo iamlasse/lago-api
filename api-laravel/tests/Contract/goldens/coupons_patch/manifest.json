@@ -1,0 +1,22 @@
+{
+  "captured_at": "2025-06-12T12:00:00Z",
+  "requests": [
+    {
+      "method": "PATCH",
+      "path": "/api/v1/coupons/patch-coupon",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000002a1",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "coupon": {
+          "name": "Patch Coupon Renamed",
+          "description": "renamed via PATCH",
+          "amount_cents": 1200,
+          "expiration_at": "2025-09-12T00:00:00Z"
+        }
+      },
+      "required_headers": {}
+    }
+  ]
+}

@@ -1,0 +1,188 @@
+{
+  "captured_at": "2025-06-12T14:00:00Z",
+  "requests": [
+    {
+      "method": "POST",
+      "path": "/api/v1/invoices",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ad",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "invoice": {
+          "external_customer_id": "invoice-actions-customer",
+          "currency": "EUR",
+          "fees": [
+            {
+              "add_on_code": "setup-fee",
+              "invoice_display_name": "One-off setup",
+              "unit_amount_cents": 1200,
+              "units": "2",
+              "description": "capture one-off fee",
+              "tax_codes": [
+                "actions-vat-20"
+              ]
+            }
+          ]
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-12T14:00:00Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/invoices/ONE_OFF_INVOICE_ID",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ad"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-12T14:00:00Z"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/invoices/ONE_OFF_INVOICE_ID",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ad",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "invoice": {
+          "payment_status": "succeeded"
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-12T14:00:00Z"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/invoices/1a4a0d6e-0000-4000-8000-000000000084/refresh",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ad"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-12T14:00:00Z"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/invoices/1a4a0d6e-0000-4000-8000-000000000084",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ad",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "invoice": {
+          "metadata": [
+            {
+              "key": "po-number",
+              "value": "PO-77"
+            }
+          ]
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-12T14:00:00Z"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/invoices/1a4a0d6e-0000-4000-8000-000000000084/finalize",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ad"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-12T14:00:00Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/invoices/1a4a0d6e-0000-4000-8000-000000000084",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ad"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-12T14:00:00Z"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/invoices/1a4a0d6e-0000-4000-8000-000000000084/payment_url",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ad"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-12T14:00:00Z"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/invoices/1a4a0d6e-0000-4000-8000-000000000084/resend_email",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ad",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "to": [
+          "billing@example.invalid"
+        ]
+      },
+      "required_headers": {},
+      "at": "2025-06-12T14:00:00Z"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/invoices/1a4a0d6e-0000-4000-8000-000000000084/lose_dispute",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ad"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-12T14:00:00Z"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/invoices/1a4a0d6e-0000-4000-8000-000000000084/void",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ad"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-12T14:00:00Z"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/invoices/1a4a0d6e-0000-4000-8000-000000000084",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ad",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "invoice": {
+          "payment_status": "failed"
+        }
+      },
+      "required_headers": {},
+      "at": "2025-06-12T14:00:00Z"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/invoices/1a4a0d6e-0000-4000-8000-000000000084/retry",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ad"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-12T14:00:00Z"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/invoices",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000ad"
+      },
+      "body": null,
+      "required_headers": {},
+      "at": "2025-06-12T14:00:00Z"
+    }
+  ]
+}

@@ -58,6 +58,40 @@ class QuoteVersionFactory extends Factory
         ]);
     }
 
+    /** Rails trait :voided. */
+    public function voided(string $reason = 'manual'): static
+    {
+        return $this->state(fn (): array => [
+            'status' => 'voided',
+            'void_reason' => $reason,
+            'voided_at' => now(),
+        ]);
+    }
+
+    /**
+     * A subscription_creation snapshot over the given catalog plan: the
+     * payload keys are camelCase, the frozen shape the validators replay.
+     *
+     * @param  array<string, mixed>  $payload
+     */
+    public function withPlanBillingItems(\App\Models\Plan $plan, array $payload = []): static
+    {
+        return $this->state(fn (): array => [
+            'currency' => $plan->amount_currency ?? 'EUR',
+            'billing_items' => [
+                'plans' => [
+                    [
+                        'id' => $plan->id,
+                        'type' => 'plan',
+                        'payload' => array_merge([
+                            'code' => $plan->code,
+                        ], $payload),
+                    ],
+                ],
+            ],
+        ]);
+    }
+
     public function forQuote(Quote $quote): static
     {
         return $this->state(fn (): array => [

@@ -18,6 +18,8 @@ use Firebase\JWT\SignatureInvalidException;
  * (Rails-minted token authenticating in Laravel and vice versa) happens in
  * the auth_org contract scenario (tests/Contract).
  */
+uses()->group('ledger:svc:Utils.AuthToken');
+
 it('encodes a 3-segment base64url HS256 token with a sub and 3h exp', function (): void {
     $token = AuthToken::encode(userId: '0199d4f2-7d3a-7de1-b5ee-0242ac120002');
 

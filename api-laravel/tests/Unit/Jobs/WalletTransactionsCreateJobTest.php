@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 require_once __DIR__.'/../Services/Wallets/WalletsTestHelpers.php';
 
-uses()->group('ledger:jobs:WalletTransactions.CreateJob');
+uses()->group('ledger:job:WalletTransactions.CreateJob');
 
 use App\Models\Wallet;
 use App\Enums\WalletStatus;

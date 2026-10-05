@@ -96,6 +96,37 @@ class LagoHttpClient
         return $this->request('POST', $encodedBody, $headers);
     }
 
+    /**
+     * Rails: `post_url_encoded(params, headers)` — POSTs the params as
+     * application/x-www-form-urlencoded and JSON-parses the body
+     * (`response.body.presence || "{}"`); raises LagoHttpError for
+     * non-success codes. The Okta/Entra SSO token exchanges go through this
+     * (app/services/auth/okta/base_service.rb, entra_id/base_service.rb).
+     *
+     * @param  array<string, mixed>  $params
+     * @param  array<string, string>  $headers
+     */
+    public function postUrlEncoded(array $params, array $headers = []): mixed
+    {
+        $this->guardAddress();
+
+        $response = Http::withHeaders($headers)
+            ->asForm()
+            ->when($this->readTimeout !== null, fn ($http) => $http->timeout($this->readTimeout))
+            ->when($this->openTimeout !== null, fn ($http) => $http->connectTimeout($this->openTimeout))
+            ->post($this->url, $params);
+
+        $code = $response->status();
+        if (! in_array($code, self::RESPONSE_SUCCESS_CODES, true)) {
+            throw new LagoHttpError($code, $response->body(), $this->url, $response->headers());
+        }
+
+        // Rails: JSON.parse(response.body.presence || "{}").
+        $body = $response->body();
+
+        return json_decode($body === '' ? '{}' : $body, true, 512, JSON_THROW_ON_ERROR);
+    }
+
     /** @param  array<string, string>  $headers
      *  @param  array<string, mixed>|null  $params */
     protected function getOnce(array $headers, ?array $params): mixed

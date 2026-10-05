@@ -50,7 +50,7 @@ it('increases the balance by the transaction amounts and resets consumed credits
         ->and($wallet->consumed_amount_cents)->toBe(0)
         ->and($wallet->last_balance_sync_at)->not->toBeNull()
         ->and($customer->refresh()->awaiting_wallet_refresh)->toBeTrue();
-})->group('ledger:svc:Wallets.Balance');
+})->group('ledger:svc:Wallets.Balance.IncreaseService');
 
 it('decreases the balance and accumulates consumed credits', function (): void {
     [$organization, $customer] = walletSetup();
@@ -77,7 +77,7 @@ it('decreases the balance and accumulates consumed credits', function (): void {
         ->and($wallet->consumed_credits)->toBe('4.00000')
         ->and($wallet->consumed_amount_cents)->toBe(400)
         ->and($wallet->last_consumed_credit_at)->not->toBeNull();
-})->group('ledger:svc:Wallets.Balance');
+})->group('ledger:svc:Wallets.Balance.DecreaseService');
 
 it('refreshes the ongoing usage and toggles the depleted flag', function (): void {
     [$organization, $customer] = walletSetup();
@@ -105,7 +105,7 @@ it('refreshes the ongoing usage and toggles the depleted flag', function (): voi
     // Usage drops back: the flag clears.
     RefreshOngoingUsageService::call(wallet: $wallet, ongoingUsageAmountCents: 100);
     expect($wallet->refresh()->depleted_ongoing_balance)->toBeFalse();
-})->group('ledger:svc:Wallets.Balance');
+})->group('ledger:svc:Wallets.Balance.RefreshOngoingUsageService');
 
 it('allocates ongoing usage across wallets in priority order with a last-wallet overflow', function (): void {
     [$organization, $customer] = walletSetup();
@@ -137,7 +137,7 @@ it('allocates ongoing usage across wallets in priority order with a last-wallet 
     // absorbs the overflow and may go negative.
     expect($allocations[$low->id])->toBe(100)
         ->and($allocations[$high->id])->toBe(250);
-})->group('ledger:svc:Wallets.Balance');
+})->group('ledger:svc:Wallets.Balance.AllocateOngoingUsageByWalletsService');
 
 it('restricts allocations to the wallet targets', function (): void {
     [$organization, $customer] = walletSetup();
@@ -193,4 +193,4 @@ it('restricts allocations to the wallet targets', function (): void {
     // other fee (100) is only applicable to the unrestricted wallet.
     expect($allocations[$restricted->id])->toBe(100)
         ->and($allocations[$unrestricted->id])->toBe(200);
-})->group('ledger:svc:Wallets.Balance');
+})->group('ledger:svc:Wallets.Balance.AllocateOngoingUsageByWalletsService');

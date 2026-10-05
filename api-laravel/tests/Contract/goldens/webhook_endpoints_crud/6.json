@@ -1,0 +1,10 @@
+{
+  "status": 422,
+  "error": "Unprocessable Entity",
+  "code": "validation_errors",
+  "error_details": {
+    "event_types": [
+      "contains invalid types: [\"not_a_real_event\"]"
+    ]
+  }
+}
