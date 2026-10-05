@@ -40,6 +40,13 @@ class Organization extends BaseModel
 {
     use HasFactory;
 
+    /** Rails: `MULTI_ENTITIES_MAX` (organization.rb:19). */
+    public const MULTI_ENTITIES_MAX = [
+        'default' => 1,
+        'pro' => 2,
+        'enterprise' => null, // Float::INFINITY — unused while the premium flags are unported.
+    ];
+
     public const EMAIL_SETTINGS = [
         'invoice.finalized',
         'credit_note.created',
@@ -242,6 +249,46 @@ class Organization extends BaseModel
             ->oldest('created_at');
     }
 
+    /**
+     * Rails: `remaining_billing_entities` — the multi-entities allowance
+     * minus the active count, chosen by the premium feature flags
+     * (organization.rb:328-334).
+     */
+    public function remainingBillingEntities(): int
+    {
+        if ($this->multiEntitiesEnterpriseEnabled()) {
+            return PHP_INT_MAX;
+        }
+
+        $cap = $this->multiEntitiesProEnabled()
+            ? self::MULTI_ENTITIES_MAX['pro']
+            : self::MULTI_ENTITIES_MAX['default'];
+
+        return $cap - $this->billingEntities()->count();
+    }
+
+    /** Rails: `can_create_billing_entity?`. */
+    public function canCreateBillingEntity(): bool
+    {
+        return $this->remainingBillingEntities() > 0;
+    }
+
+    /**
+     * Rails: `multi_entities_pro_enabled?` / `multi_entities_enterprise_enabled?`
+     * (HasFeatureFlags) — the flags the license server turns on; OSS orgs
+     * carry none. Dev can enable them on the organizations.feature_flags
+     * varchar[] column directly.
+     */
+    public function multiEntitiesProEnabled(): bool
+    {
+        return in_array('multi_entities_pro', (array) $this->feature_flags, true);
+    }
+
+    public function multiEntitiesEnterpriseEnabled(): bool
+    {
+        return in_array('multi_entities_enterprise', (array) $this->feature_flags, true);
+    }
+
     /** Rails: `has_many :all_billing_entities` (no active scope). */
     public function allBillingEntities(): HasMany
     {
@@ -393,7 +440,7 @@ class Organization extends BaseModel
     /** Rails: has_many :integrations (Integrations::BaseIntegration). */
     public function integrations(): HasMany
     {
-        return $this->hasMany(\App\Models\Integration::class);
+        return $this->hasMany(Integration::class);
     }
 
     /** Rails: avalara_enabled? (premium integration "avalara"; anrok is non-premium). */
