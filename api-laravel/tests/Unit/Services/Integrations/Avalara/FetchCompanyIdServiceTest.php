@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
+use Illuminate\Support\Facades\Http;
 use App\Models\Integrations\AvalaraIntegration;
 use App\Services\Integrations\Avalara\FetchCompanyIdService;
-use Illuminate\Support\Facades\Http;
 
 /**
  * Port of Rails' spec/services/integrations/avalara/

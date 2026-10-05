@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-use App\Models\Integrations\AvalaraIntegration;
 use App\Models\Organization;
 use App\Models\WebhookEndpoint;
-use App\Services\Integrations\Aggregator\Taxes\Avalara\FetchCompanyIdService;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
+use App\Models\Integrations\AvalaraIntegration;
+use App\Services\Integrations\Aggregator\Taxes\Avalara\FetchCompanyIdService;
 
 /**
  * Port of Rails' spec/services/integrations/aggregator/taxes/avalara/
@@ -45,7 +45,7 @@ it('fails with company_not_found and delivers the integration error webhook', fu
     $organization = Organization::factory()->create();
     $integration = AvalaraIntegration::factory()->create(['organization_id' => $organization->id]);
 
-    \App\Models\WebhookEndpoint::factory()->create(['organization_id' => $organization->id]);
+    WebhookEndpoint::factory()->create(['organization_id' => $organization->id]);
 
     Http::fake([
         'https://api.nango.dev/v1/avalara/companies' => Http::response(
@@ -58,7 +58,7 @@ it('fails with company_not_found and delivers the integration error webhook', fu
     expect($result->failure())->toBeTrue()
         ->and($result->getError()->code)->toBe('company_not_found');
 
-    Queue::assertPushed(\App\Jobs\SendWebhookJob::class, fn ($job) => $job->webhookType === 'integration.provider_error');
+    Queue::assertPushed(App\Jobs\SendWebhookJob::class, fn ($job) => $job->webhookType === 'integration.provider_error');
 });
 
 it('maps a nango server error onto the error result', function (): void {
@@ -67,7 +67,7 @@ it('maps a nango server error onto the error result', function (): void {
     $organization = Organization::factory()->create();
     $integration = AvalaraIntegration::factory()->create(['organization_id' => $organization->id]);
 
-    \App\Models\WebhookEndpoint::factory()->create(['organization_id' => $organization->id]);
+    WebhookEndpoint::factory()->create(['organization_id' => $organization->id]);
 
     Http::fake([
         'https://api.nango.dev/v1/avalara/companies' => Http::response(

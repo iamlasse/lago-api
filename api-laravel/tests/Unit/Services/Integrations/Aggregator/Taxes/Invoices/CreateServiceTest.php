@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-use App\Models\AddOn;
-use App\Models\Customer;
 use App\Models\Fee;
+use App\Models\AddOn;
 use App\Models\Invoice;
-use App\Models\IntegrationCustomers\AnrokCustomer;
-use App\Models\IntegrationCustomers\AvalaraCustomer;
-use App\Models\Integrations\AnrokIntegration;
-use App\Models\Integrations\AvalaraIntegration;
+use App\Models\Customer;
 use App\Models\Organization;
 use App\Models\WebhookEndpoint;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Queue;
+use App\Models\Integrations\AnrokIntegration;
+use App\Models\Integrations\AvalaraIntegration;
+use App\Models\IntegrationCustomers\AnrokCustomer;
+use App\Models\IntegrationCustomers\AvalaraCustomer;
 use App\Services\Integrations\Aggregator\BadGatewayError;
 use App\Services\Integrations\Aggregator\OutOfMemoryError;
 use App\Services\Integrations\Aggregator\ServerContentionError;
 use App\Services\Integrations\Aggregator\Taxes\Invoices\CreateService;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Queue;
 
 /**
  * Port of Rails' spec/services/integrations/aggregator/taxes/invoices/
@@ -249,7 +249,7 @@ it('fails with the provider validation code and delivers the tax error webhook',
         'external_customer_id' => null,
     ]);
 
-    \App\Models\WebhookEndpoint::factory()->create(['organization_id' => $organization->id]);
+    WebhookEndpoint::factory()->create(['organization_id' => $organization->id]);
 
     Http::fake([
         'https://api.nango.dev/v1/anrok/finalized_invoices' => Http::response(taxFailureResponse()),
@@ -264,7 +264,7 @@ it('fails with the provider validation code and delivers the tax error webhook',
     // The external customer id was not stamped on failure.
     expect($customer->taxCustomer()->refresh()->external_customer_id)->toBeNull();
 
-    Queue::assertPushed(\App\Jobs\SendWebhookJob::class, function ($job) use ($integration): bool {
+    Queue::assertPushed(App\Jobs\SendWebhookJob::class, function ($job) use ($integration): bool {
         return $job->webhookType === 'customer.tax_provider_error'
             && $job->options['provider'] === 'anrok'
             && $job->options['provider_code'] === $integration->code

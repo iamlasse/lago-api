@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 use App\Models\Fee;
 use App\Models\Organization;
-use App\Services\Integrations\Aggregator\Taxes\Invoices\ChargeFeeGroup;
-use App\Services\Integrations\Aggregator\Taxes\TaxBreakdownItem;
 use App\Services\Integrations\Aggregator\Taxes\TaxResult;
+use App\Services\Integrations\Aggregator\Taxes\TaxBreakdownItem;
+use App\Services\Integrations\Aggregator\Taxes\Invoices\ChargeFeeGroup;
 
 /**
  * Port of Rails' spec/services/integrations/aggregator/taxes/invoices/
@@ -43,7 +43,7 @@ it('groups fees by charge, preserving order and unrelated fees', function (): vo
     $lineItems = ChargeFeeGroup::build([$fee1, $addOnFee, $fee2]);
 
     expect(count($lineItems))->toBe(2)
-        ->and($lineItems[0])->toBeInstanceOf(\App\Services\Integrations\Aggregator\Taxes\Invoices\ChargeFeeGroup::class)
+        ->and($lineItems[0])->toBeInstanceOf(ChargeFeeGroup::class)
         ->and($lineItems[0]->fees)->toBe([$fee1, $fee2])
         ->and($lineItems[1])->toBeInstanceOf(Fee::class)
         ->and($lineItems[1]->id)->toBe($addOnFee->id);

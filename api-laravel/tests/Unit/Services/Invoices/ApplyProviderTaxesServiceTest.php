@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-use App\Models\Customer;
 use App\Models\Fee;
-use App\Models\FeeAppliedTax;
 use App\Models\Invoice;
+use App\Models\Customer;
 use App\Models\Organization;
+use App\Models\FeeAppliedTax;
 use App\Services\Invoices\ApplyProviderTaxesService;
-use App\Services\Integrations\Aggregator\Taxes\TaxBreakdownItem;
 use App\Services\Integrations\Aggregator\Taxes\TaxResult;
+use App\Services\Integrations\Aggregator\Taxes\TaxBreakdownItem;
 
 /**
  * Port of Rails' spec/services/invoices/apply_provider_taxes_service_spec.rb

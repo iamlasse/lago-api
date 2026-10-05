@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use App\Models\Integrations\AvalaraIntegration;
 use App\Models\Organization;
-use App\Services\Integrations\Avalara\UpdateService;
-use App\Services\Failures\MethodNotAllowedFailure;
 use App\Services\Failures\NotFoundFailure;
+use App\Models\Integrations\AvalaraIntegration;
+use App\Services\Failures\MethodNotAllowedFailure;
+use App\Services\Integrations\Avalara\UpdateService;
 
 /**
  * Port of Rails' spec/services/integrations/avalara/update_service_spec.rb.

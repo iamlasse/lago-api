@@ -7,8 +7,8 @@ namespace Database\Factories;
 use App\Models\Customer;
 use App\Models\Integration;
 use App\Models\IntegrationCustomer;
-use App\Models\IntegrationCustomers\AvalaraCustomer;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\IntegrationCustomers\AvalaraCustomer;
 
 /**
  * Port of Rails' :avalara_customer factory — a tax-kind integration customer

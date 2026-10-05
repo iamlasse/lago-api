@@ -5,10 +5,9 @@ declare(strict_types=1);
 require_once __DIR__.'/GraphQLHelpers.php';
 require_once __DIR__.'/AuthPlumbingTest.php';
 
+use App\Models\Organization;
 use App\Models\Integrations\AnrokIntegration;
 use App\Models\Integrations\AvalaraIntegration;
-use App\Models\Organization;
-use App\Models\User;
 
 /**
  * Ports of Rails' spec/graphql/mutations/integrations/{anrok,avalara}/ and
@@ -180,4 +179,3 @@ it('destroys an integration', function (): void {
     expect($payload['id'])->toBe($integration->id)
         ->and(AnrokIntegration::query()->count())->toBe(0);
 });
-

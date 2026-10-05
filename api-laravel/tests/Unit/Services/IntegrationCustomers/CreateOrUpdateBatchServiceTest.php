@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-use App\Jobs\IntegrationCustomers\CreateJob;
 use App\Models\Customer;
-use App\Models\IntegrationCustomers\AnrokCustomer;
-use App\Models\Integrations\AnrokIntegration;
-use App\Models\Integrations\AvalaraIntegration;
 use App\Models\Organization;
-use App\Services\IntegrationCustomers\CreateOrUpdateBatchService;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
+use App\Jobs\IntegrationCustomers\CreateJob;
+use App\Models\Integrations\AnrokIntegration;
+use App\Models\Integrations\AvalaraIntegration;
+use App\Models\IntegrationCustomers\AnrokCustomer;
+use App\Services\IntegrationCustomers\CreateOrUpdateBatchService;
 
 /**
  * Port of Rails' spec/services/integration_customers specs (the tax-provider

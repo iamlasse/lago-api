@@ -2,12 +2,11 @@
 
 declare(strict_types=1);
 
-use App\Models\Integrations\AnrokIntegration;
-use App\Models\Organization;
-use App\Services\Integrations\Anrok\UpdateService;
-use App\Services\Failures\ForbiddenFailure;
 use App\Services\Failures\NotFoundFailure;
+use App\Services\Failures\ForbiddenFailure;
 use App\Services\Failures\ValidationFailure;
+use App\Models\Integrations\AnrokIntegration;
+use App\Services\Integrations\Anrok\UpdateService;
 
 /**
  * Port of Rails' spec/services/integrations/anrok/update_service_spec.rb.

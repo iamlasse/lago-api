@@ -2,19 +2,18 @@
 
 declare(strict_types=1);
 
-use App\Enums\InvoiceStatus;
-use App\Enums\InvoiceTaxStatus;
-use App\Jobs\Invoices\ProviderTaxes\PullTaxesAndApplyJob;
-use App\Models\Customer;
 use App\Models\Fee;
-use App\Models\FeeAppliedTax;
 use App\Models\Invoice;
-use App\Models\IntegrationCustomers\AnrokCustomer;
-use App\Models\Integrations\AnrokIntegration;
+use App\Models\Customer;
+use App\Enums\InvoiceStatus;
 use App\Models\Organization;
-use App\Services\Invoices\ProviderTaxes\PullTaxesAndApplyService;
+use App\Models\FeeAppliedTax;
+use App\Enums\InvoiceTaxStatus;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
+use App\Models\Integrations\AnrokIntegration;
+use App\Models\IntegrationCustomers\AnrokCustomer;
+use App\Services\Invoices\ProviderTaxes\PullTaxesAndApplyService;
 
 /**
  * Port of Rails' spec/services/invoices/provider_taxes/
@@ -164,8 +163,8 @@ it('pulls the provider taxes and finalizes a pending invoice', function (): void
         ->and($invoice->appliedTaxes()->count())->toBe(1);
 
     // Post-finalize emissions.
-    Queue::assertPushed(\App\Jobs\SendWebhookJob::class, fn ($job) => $job->webhookType === 'invoice.created');
-    Queue::assertPushed(\App\Jobs\Invoices\GenerateDocumentsJob::class);
+    Queue::assertPushed(App\Jobs\SendWebhookJob::class, fn ($job) => $job->webhookType === 'invoice.created');
+    Queue::assertPushed(App\Jobs\Invoices\GenerateDocumentsJob::class);
 });
 
 it('marks the invoice failed and keeps the draft when the provider taxes fail', function (): void {
@@ -213,7 +212,7 @@ it('marks the invoice failed and keeps the draft when the provider taxes fail', 
         'amount_currency' => 'EUR',
     ]);
 
-    \App\Models\WebhookEndpoint::factory()->create(['organization_id' => $organization->id]);
+    App\Models\WebhookEndpoint::factory()->create(['organization_id' => $organization->id]);
 
     Http::fake([
         'https://api.nango.dev/v1/anrok/draft_invoices' => Http::response([
@@ -232,5 +231,5 @@ it('marks the invoice failed and keeps the draft when the provider taxes fail', 
         // A draft keeps its status and only announces ready_to_finalize.
         ->and($invoice->status)->toBe(InvoiceStatus::Draft);
 
-    Queue::assertPushed(\App\Jobs\SendWebhookJob::class, fn ($job) => $job->webhookType === 'invoice.ready_to_finalize');
+    Queue::assertPushed(App\Jobs\SendWebhookJob::class, fn ($job) => $job->webhookType === 'invoice.ready_to_finalize');
 });

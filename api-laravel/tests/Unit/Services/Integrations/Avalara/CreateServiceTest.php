@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-use App\Models\Integrations\AvalaraIntegration;
 use App\Models\Organization;
+use Illuminate\Support\Facades\Queue;
+use App\Services\Failures\ValidationFailure;
+use App\Models\Integrations\AvalaraIntegration;
+use App\Services\Failures\MethodNotAllowedFailure;
 use App\Jobs\Integrations\Avalara\FetchCompanyIdJob;
 use App\Services\Integrations\Avalara\CreateService;
-use App\Services\Failures\MethodNotAllowedFailure;
-use App\Services\Failures\ValidationFailure;
-use Illuminate\Support\Facades\Queue;
 
 /**
  * Port of Rails' spec/services/integrations/avalara/create_service_spec.rb —

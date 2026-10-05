@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use App\Models\Integrations\AnrokIntegration;
 use App\Models\Organization;
-use App\Services\Integrations\Anrok\CreateService;
 use App\Services\Failures\ForbiddenFailure;
 use App\Services\Failures\ValidationFailure;
+use App\Models\Integrations\AnrokIntegration;
+use App\Services\Integrations\Anrok\CreateService;
 
 /**
  * Port of Rails' spec/services/integrations/anrok/create_service_spec.rb —
