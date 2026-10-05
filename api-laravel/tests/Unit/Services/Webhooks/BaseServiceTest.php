@@ -59,7 +59,7 @@ it('creates a pending webhook', function (): void {
         ->and($webhook->organization_id)->toBe($this->organization->id);
 
     Queue::assertPushed(SendHttpWebhookJob::class, 1);
-});
+})->group('ledger:svc:Webhooks.BaseService');
 
 it('creates one webhook row per webhook endpoint', function (): void {
     WebhookEndpoint::factory()->forOrganization($this->organization)->create();
@@ -70,7 +70,7 @@ it('creates one webhook row per webhook endpoint', function (): void {
     expect(Webhook::query()->count())->toBe(2);
 
     Queue::assertPushed(SendHttpWebhookJob::class, 2);
-});
+})->group('ledger:svc:Webhooks.BaseService');
 
 it('does not fan out when the organization has no webhook endpoint', function (): void {
     WebhookEndpoint::query()->where('organization_id', $this->organization->id)->delete();
@@ -80,7 +80,7 @@ it('does not fan out when the organization has no webhook endpoint', function ()
     expect(Webhook::query()->where('object_id', $this->customer->id)->doesntExist())->toBeTrue();
 
     Queue::assertNothingPushed();
-});
+})->group('ledger:svc:Webhooks.BaseService');
 
 it('skips the fan-out early when the organization has no webhook endpoints', function (): void {
     $organization = Organization::factory()->withoutWebhookEndpoint()->create();
@@ -89,7 +89,7 @@ it('skips the fan-out early when the organization has no webhook endpoints', fun
     DummyWebhookService::call(object: $customer);
 
     expect(Webhook::query()->where('object_id', $customer->id)->doesntExist())->toBeTrue();
-});
+})->group('ledger:svc:Webhooks.BaseService');
 
 it('creates only one webhook when an endpoint was deleted mid fan-out', function (): void {
     $extraEndpoint = WebhookEndpoint::factory()->forOrganization($this->organization)->create();
@@ -104,7 +104,7 @@ it('creates only one webhook when an endpoint was deleted mid fan-out', function
     expect(Webhook::query()->count())->toBe(1);
 
     Queue::assertPushed(SendHttpWebhookJob::class, 1);
-});
+})->group('ledger:svc:Webhooks.BaseService');
 
 it('filters webhooks by the endpoint event types', function (): void {
     // Not matching: skipped.
@@ -116,7 +116,7 @@ it('filters webhooks by the endpoint event types', function (): void {
     expect(Webhook::query()->where('object_id', $this->customer->id)->doesntExist())->toBeTrue();
 
     Queue::assertNothingPushed();
-});
+})->group('ledger:svc:Webhooks.BaseService');
 
 it('creates the webhook when the event type matches', function (): void {
     DB::table('webhook_endpoints')->where('id', $this->endpoint->id)->update(['event_types' => '{dummy.test}']);
@@ -127,7 +127,7 @@ it('creates the webhook when the event type matches', function (): void {
     expect(Webhook::query()->where('object_id', $this->customer->id)->exists())->toBeTrue();
 
     Queue::assertPushed(SendHttpWebhookJob::class, 1);
-});
+})->group('ledger:svc:Webhooks.BaseService');
 
 it('does not create the webhook when event_types is empty', function (): void {
     DB::table('webhook_endpoints')->where('id', $this->endpoint->id)->update(['event_types' => '{}']);
@@ -136,7 +136,7 @@ it('does not create the webhook when event_types is empty', function (): void {
     DummyWebhookService::call(object: $this->customer);
 
     expect(Webhook::query()->where('object_id', $this->customer->id)->doesntExist())->toBeTrue();
-});
+})->group('ledger:svc:Webhooks.BaseService');
 
 it('creates the webhook when event_types is null', function (): void {
     DB::table('webhook_endpoints')->where('id', $this->endpoint->id)->update(['event_types' => null]);
@@ -145,10 +145,10 @@ it('creates the webhook when event_types is null', function (): void {
     DummyWebhookService::call(object: $this->customer);
 
     expect(Webhook::query()->where('object_id', $this->customer->id)->exists())->toBeTrue();
-});
+})->group('ledger:svc:Webhooks.BaseService');
 
 it('routes the http job on the webhook queue', function (): void {
     DummyWebhookService::call(object: $this->customer);
 
     Queue::assertPushed(SendHttpWebhookJob::class, fn ($job) => $job->queue === 'webhook');
-});
+})->group('ledger:svc:Webhooks.BaseService');

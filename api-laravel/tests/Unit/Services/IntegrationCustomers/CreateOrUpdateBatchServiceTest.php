@@ -10,6 +10,7 @@ use App\Jobs\IntegrationCustomers\CreateJob;
 use App\Models\Integrations\AnrokIntegration;
 use App\Models\Integrations\AvalaraIntegration;
 use App\Models\IntegrationCustomers\AnrokCustomer;
+use App\Models\Integrations\SalesforceIntegration;
 use App\Services\IntegrationCustomers\CreateOrUpdateBatchService;
 
 /**
@@ -134,4 +135,41 @@ it('skips partner accounts', function (): void {
     );
 
     Queue::assertNothingPushed();
+});
+
+it('runs the salesforce create job inline (SYNC_INTEGRATIONS)', function (): void {
+    Queue::fake();
+
+    $organization = Organization::factory()->create();
+    $integration = SalesforceIntegration::factory()->create([
+        'organization_id' => $organization->id,
+        'code' => 'salesforce',
+    ]);
+    $customer = Customer::factory()->create(['organization_id' => $organization->id]);
+
+    CreateOrUpdateBatchService::call(
+        integration_customers: [[
+            'integration_code' => 'salesforce',
+            'integration_type' => 'salesforce',
+            'sync_with_provider' => true,
+        ]],
+        customer: $customer,
+        new_customer: true,
+    );
+
+    // Rails: salesforce doesn't need to reach a provider so it runs
+    // perform_now (dispatchSync). The fake records it; run the job in
+    // place to prove the inline path produces the row without a worker.
+    Queue::assertPushed(CreateJob::class, 1);
+
+    $job = Queue::pushedJobs()[CreateJob::class][0]['job'];
+    $job->handle();
+
+    expect(App\Models\IntegrationCustomers\SalesforceCustomer::query()->count())->toBe(1);
+
+    $integrationCustomer = App\Models\IntegrationCustomers\SalesforceCustomer::query()->firstOrFail();
+
+    expect($integrationCustomer->integration_id)->toBe($integration->id)
+        ->and($integrationCustomer->customer_id)->toBe($customer->id)
+        ->and($integrationCustomer->settings['sync_with_provider'])->toBeTrue();
 });

@@ -127,7 +127,7 @@ it('creates the charge fee from the live event aggregation and rolls up totals',
         ->and($invoice->taxes_amount_cents)->toBe(0)
         // nonzero total → payment pending
         ->and($invoice->paymentStatusEnum()->label())->toBe('pending');
-});
+})->group('ledger:svc:Invoices.CalculateFeesService');
 
 it('applies taxes through the chain and writes the invoice snapshot rows', function (): void {
     $f = invoicePipelineFixture();
@@ -170,7 +170,7 @@ it('applies taxes through the chain and writes the invoice snapshot rows', funct
     expect($fee->appliedTaxes()->count())->toBe(1)
         ->and((int) $fee->appliedTaxes()->first()->amount_cents)->toBe(200)
         ->and((int) $fee->taxes_amount_cents)->toBe(200);
-});
+})->group('ledger:svc:Invoices.CalculateFeesService', 'ledger:svc:Fees.ApplyTaxesService', 'ledger:svc:Invoices.ComputeTaxesAndTotalsService');
 
 it('applies a percentage coupon before VAT', function (): void {
     $f = invoicePipelineFixture();
@@ -199,7 +199,7 @@ it('applies a percentage coupon before VAT', function (): void {
     // credit weighted over the fee
     $fee = $invoice->fees()->charge()->first();
     expect((float) $fee->precise_coupons_amount_cents)->toBe(200.0);
-});
+})->group('ledger:svc:Invoices.CalculateFeesService');
 
 it('finalizes a draft invoice assigning number and sequential id via Sequenced', function (): void {
     $f = invoicePipelineFixture();
@@ -219,7 +219,7 @@ it('finalizes a draft invoice assigning number and sequential id via Sequenced',
         // per-customer numbering: PREFIX-<customer seq>-<invoice seq>
         ->and(preg_match('/^\S+-\d{3}-\d{3}$/', $result->invoice->number))->toBe(1)
         ->and($result->invoice->search_terms)->not->toBeNull();
-});
+})->group('ledger:svc:Invoices.FinalizeService');
 
 it('computes zero total invoices as succeeded and closed per setting', function (): void {
     $f = invoicePipelineFixture();
@@ -229,4 +229,4 @@ it('computes zero total invoices as succeeded and closed per setting', function 
 
     expect($result->success())->toBeTrue()
         ->and((int) $result->invoice->total_amount_cents)->toBe(0);
-});
+})->group('ledger:svc:Invoices.ComputeTaxesAndTotalsService');

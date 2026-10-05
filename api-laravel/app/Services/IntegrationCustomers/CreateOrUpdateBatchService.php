@@ -16,8 +16,8 @@ use App\Jobs\IntegrationCustomers\UpdateJob;
  * (app/services/integration_customers/create_or_update_batch_service.rb) —
  * the integration_customers array on the customer payloads: for each entry,
  * find the matching integration by code, then dispatch the create or update
- * job (Rails' SYNC_INTEGRATIONS run inline; the ported tax providers are
- * queued).
+ * job (Rails' SYNC_INTEGRATIONS — Salesforce — run inline; everything else
+ * is queued).
  */
 class CreateOrUpdateBatchService extends \App\Services\BaseService
 {
@@ -61,17 +61,35 @@ class CreateOrUpdateBatchService extends \App\Services\BaseService
             $existing = $this->existingIntegrationCustomer($integration, $params);
 
             if ($this->shouldCreate($params, $existing)) {
-                CreateJob::dispatch(
-                    integration_customer_params: $params,
-                    integration: $integration,
-                    customer: $this->customer,
-                );
+                // Rails: salesforce doesn't need to reach a provider so it
+                // can be done sync (SYNC_INTEGRATIONS run perform_now).
+                if (in_array($integration->type, self::SYNC_INTEGRATIONS, true)) {
+                    CreateJob::dispatchSync(
+                        integration_customer_params: $params,
+                        integration: $integration,
+                        customer: $this->customer,
+                    );
+                } else {
+                    CreateJob::dispatch(
+                        integration_customer_params: $params,
+                        integration: $integration,
+                        customer: $this->customer,
+                    );
+                }
             } elseif (! $this->new_customer && $existing !== null) {
-                UpdateJob::dispatch(
-                    integration_customer_params: $params,
-                    integration: $integration,
-                    integration_customer: $existing,
-                );
+                if (in_array($integration->type, self::SYNC_INTEGRATIONS, true)) {
+                    UpdateJob::dispatchSync(
+                        integration_customer_params: $params,
+                        integration: $integration,
+                        integration_customer: $existing,
+                    );
+                } else {
+                    UpdateJob::dispatch(
+                        integration_customer_params: $params,
+                        integration: $integration,
+                        integration_customer: $existing,
+                    );
+                }
             }
         }
 

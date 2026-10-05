@@ -64,7 +64,7 @@ it('marks the webhook as succeeded', function (): void {
         ->and($webhook->retries)->toBe(0);
 
     Queue::assertNothingPushed();
-});
+})->group('ledger:svc:Webhooks.SendHttpService');
 
 it('sends the signature headers', function (): void {
     $this->endpoint->update(['signature_algo' => 1]); // :hmac
@@ -85,7 +85,7 @@ it('sends the signature headers', function (): void {
             && $request->hasHeader('X-Lago-Unique-Key', $this->webhook->id)
             && $request->hasHeader('Content-Type', 'application/json');
     });
-});
+})->group('ledger:svc:Webhooks.SendHttpService');
 
 it('re-points the endpoint at the endpoint record url before sending', function (): void {
     $this->endpoint->update(['webhook_url' => 'https://wh-updated.test.com']);
@@ -94,7 +94,7 @@ it('re-points the endpoint at the endpoint record url before sending', function 
     SendHttpService::call(webhook: $this->webhook);
 
     expect($this->webhook->fresh()->endpoint)->toBe('https://wh-updated.test.com');
-});
+})->group('ledger:svc:Webhooks.SendHttpService');
 
 // -- HTTP error ----------------------------------------------------------------
 
@@ -112,7 +112,7 @@ it('creates a retrying webhook on an http error', function (): void {
         ->and($webhook->last_retried_at)->not->toBeNull();
 
     Queue::assertPushed(SendHttpWebhookJob::class, 1);
-});
+})->group('ledger:svc:Webhooks.SendHttpService');
 
 it('keeps retrying an already retried webhook', function (): void {
     $this->webhook->update(['retries' => 1, 'status' => 3]); // :retrying
@@ -127,7 +127,7 @@ it('keeps retrying an already retried webhook', function (): void {
         ->and($webhook->retries)->toBe(2);
 
     Queue::assertPushed(SendHttpWebhookJob::class, 1);
-});
+})->group('ledger:svc:Webhooks.SendHttpService');
 
 it('fails the webhook after the attempt limit and stops re-enqueueing', function (): void {
     $this->webhook->update(['retries' => 2, 'status' => 3]); // :retrying
@@ -142,7 +142,7 @@ it('fails the webhook after the attempt limit and stops re-enqueueing', function
         ->and($webhook->retries)->toBe(3);
 
     Queue::assertNothingPushed();
-});
+})->group('ledger:svc:Webhooks.SendHttpService');
 
 it('honours a configured attempt limit', function (): void {
     config(['lago.webhook.attempts' => 2]);
@@ -154,7 +154,7 @@ it('honours a configured attempt limit', function (): void {
     expect($this->webhook->fresh()->failed())->toBeTrue();
 
     Queue::assertNothingPushed();
-});
+})->group('ledger:svc:Webhooks.SendHttpService');
 
 // -- Connection failures ---------------------------------------------------------
 
@@ -172,7 +172,7 @@ it('stores a generic message when the connection fails', function (): void {
         ->and($webhook->http_status)->toBeNull();
 
     Queue::assertPushed(SendHttpWebhookJob::class, 1);
-});
+})->group('ledger:svc:Webhooks.SendHttpService');
 
 it('does not send the webhook when the endpoint resolves to a private address', function (): void {
     unset($_ENV['LAGO_WEBHOOK_ALLOW_PRIVATE_URLS'], $_SERVER['LAGO_WEBHOOK_ALLOW_PRIVATE_URLS']);
@@ -188,7 +188,7 @@ it('does not send the webhook when the endpoint resolves to a private address', 
 
     expect($webhook->retrying())->toBeTrue()
         ->and($webhook->responseJson())->toBe('Destination address is not allowed');
-});
+})->group('ledger:svc:Webhooks.SendHttpService');
 
 it('sends when LAGO_WEBHOOK_ALLOW_PRIVATE_URLS allows a private address', function (): void {
     $this->endpoint->update(['webhook_url' => 'http://127.0.0.1:9381/hook']);
@@ -198,7 +198,7 @@ it('sends when LAGO_WEBHOOK_ALLOW_PRIVATE_URLS allows a private address', functi
     SendHttpService::call(webhook: $this->webhook);
 
     expect($this->webhook->fresh()->succeeded())->toBeTrue();
-});
+})->group('ledger:svc:Webhooks.SendHttpService');
 
 // -- Response capping and scrubbing ------------------------------------------------
 
@@ -209,7 +209,7 @@ it('caps the stored response at 64KB', function (): void {
 
     expect($this->webhook->fresh()->responseJson())
         ->toBe(str_repeat('a', SendHttpService::MAX_STORED_RESPONSE_BYTES));
-});
+})->group('ledger:svc:Webhooks.SendHttpService');
 
 it('drops a multibyte character cut by the byte cap', function (): void {
     // 'é' is 2 bytes; put it straddling the 64KB boundary.
@@ -220,7 +220,7 @@ it('drops a multibyte character cut by the byte cap', function (): void {
 
     expect($this->webhook->fresh()->succeeded())->toBeTrue()
         ->and($this->webhook->fresh()->responseJson())->toBe(str_repeat('a', SendHttpService::MAX_STORED_RESPONSE_BYTES - 1));
-});
+})->group('ledger:svc:Webhooks.SendHttpService');
 
 it('stores the valid part of a non-UTF-8 response', function (): void {
     Http::fake(['https://wh.test.com' => Http::response("ok\xFF", 200)]);
@@ -229,7 +229,7 @@ it('stores the valid part of a non-UTF-8 response', function (): void {
 
     expect($this->webhook->fresh()->succeeded())->toBeTrue()
         ->and($this->webhook->fresh()->responseJson())->toBe('ok');
-});
+})->group('ledger:svc:Webhooks.SendHttpService');
 
 // -- Backoff ---------------------------------------------------------------------
 
@@ -250,7 +250,7 @@ it('computes the exponential backoff with jitter', function (): void {
     $wait = $waitValue->invoke($service);
     expect($wait)->toBeGreaterThanOrEqual(83.0)
         ->and($wait)->toBeLessThanOrEqual(83 + 81 * 0.15);
-});
+})->group('ledger:svc:Webhooks.SendHttpService');
 
 it('enqueues the retry with a delay', function (): void {
     Http::fake(['https://wh.test.com' => Http::response('nope', 403)]);
@@ -260,7 +260,7 @@ it('enqueues the retry with a delay', function (): void {
     Queue::assertPushed(SendHttpWebhookJob::class, function ($job) {
         return $job->delay instanceof DateTimeInterface;
     });
-});
+})->group('ledger:svc:Webhooks.SendHttpService');
 
 // -- Client construction -----------------------------------------------------------
 
@@ -275,4 +275,4 @@ it('builds the http client with the configured timeouts and the SSRF guard', fun
         ->and($client->readTimeout)->toBe(45)
         ->and($client->writeTimeout)->toBe(45)
         ->and($client->blockPrivateAddresses)->toBeTrue();
-});
+})->group('ledger:svc:Webhooks.SendHttpService');

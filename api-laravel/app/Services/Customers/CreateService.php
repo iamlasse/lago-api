@@ -12,6 +12,7 @@ use App\Services\BaseService;
 use Illuminate\Support\Facades\DB;
 use App\Enums\FinalizeZeroAmountInvoice;
 use App\Services\BillingEntities\ResolveService;
+use App\Services\IntegrationCustomers\CreateOrUpdateBatchService;
 
 use function is_array;
 use function array_key_exists;
@@ -24,7 +25,6 @@ use function array_key_exists;
  * - TODO(port): payment provider customers (PaymentProviderCustomers::*,
  *   PaymentProviders::FindService) — `provider_customer` /
  *   `payment_provider_customers` args are accepted but ignored.
- * - TODO(port): IntegrationCustomers::CreateOrUpdateBatchService.
  * - TODO(port): activity log middleware.
  */
 class CreateService extends BaseService
@@ -154,8 +154,14 @@ class CreateService extends BaseService
 
             // TODO(port): create_billing_configuration — payment provider
             // customer records (Stripe/Gocardless/…) are a later milestone.
+            CreateOrUpdateBatchService::call(
+                integration_customers: $args['integration_customers'] ?? null,
+                customer: $customer,
+                new_customer: true,
+            );
+
             // Rails: SendWebhookJob.perform_later("customer.created", customer)
-            // — right after the transaction block.
+            // — right after the integration-customers batch.
             SendWebhookJob::performLater('customer.created', $customer);
 
             $result->customer = $customer;

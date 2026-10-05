@@ -14,6 +14,7 @@ use App\Models\CustomerMetadata;
 use Illuminate\Support\Facades\DB;
 use App\Enums\FinalizeZeroAmountInvoice;
 use App\Services\BillingEntities\ResolveService;
+use App\Services\IntegrationCustomers\CreateOrUpdateBatchService;
 
 use function is_array;
 use function array_key_exists;
@@ -32,7 +33,6 @@ use function array_key_exists;
  * - The payment-provider branch of handle_api_billing_configuration is
  *   ported (PaymentBillingConfigurationService); PaymentProviderCustomers::UpdateService
  *   and the non-stripe provider legs remain TODO(port) inside it.
- * - TODO(port): IntegrationCustomers::CreateOrUpdateBatchService.
  * - TODO(port): RefreshInvoicesSearchTermsJob + error_details tax cleanup.
  * - TODO(port): ManageInvoiceCustomSectionsService.
  */
@@ -206,10 +206,15 @@ class UpsertFromApiService extends BaseService
                 newCustomer: $newCustomer,
             )->raiseIfError();
 
-            // TODO(port): IntegrationCustomers::CreateOrUpdateBatchService.
+            CreateOrUpdateBatchService::call(
+                integration_customers: $params['integration_customers'] ?? null,
+                customer: $customer,
+                new_customer: $newCustomer,
+            );
+
             // Rails: SendWebhookJob.perform_later("customer.created" (new) /
-            // "customer.updated" (existing)) — right after the transaction
-            // block. TODO(port): activity log entry.
+            // "customer.updated" (existing)) — right after the integration-
+            // customers batch. TODO(port): activity log entry.
             SendWebhookJob::performLater(
                 $newCustomer ? 'customer.created' : 'customer.updated',
                 $customer,

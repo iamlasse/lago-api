@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Str;
 
 /**
  * Port of Rails' Integrations::BaseIntegration (app/models/integrations/
@@ -43,8 +43,19 @@ class Integration extends BaseModel
 
     public const AVALARA_TYPE = 'Integrations::AvalaraIntegration';
 
+    public const HUBSPOT_TYPE = 'Integrations::HubspotIntegration';
+
+    public const SALESFORCE_TYPE = 'Integrations::SalesforceIntegration';
+
+    public const XERO_TYPE = 'Integrations::XeroIntegration';
+
+    public const NETSUITE_TYPE = 'Integrations::NetsuiteIntegration';
+
     /** Rails: INTEGRATION_TAX_TYPES (app/models/integrations/base_integration.rb). */
     public const INTEGRATION_TAX_TYPES = [self::ANROK_TYPE, self::AVALARA_TYPE];
+
+    /** Rails: INTEGRATION_ACCOUNTING_TYPES. */
+    public const INTEGRATION_ACCOUNTING_TYPES = [self::NETSUITE_TYPE, self::XERO_TYPE];
 
     public function organization(): BelongsTo
     {

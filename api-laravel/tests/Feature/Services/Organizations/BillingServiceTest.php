@@ -49,7 +49,7 @@ it('bills a monthly calendar subscription on the first of the month', function (
     Illuminate\Support\Facades\Bus::assertDispatched(function (BillSubscriptionJob $job) {
         return $job->invoicingReason === 'subscription_periodic';
     });
-});
+})->group('ledger:svc:Subscriptions.OrganizationBillingService');
 
 it('does not bill the same subscription twice on one day (already_billed_today CTE)', function () {
     $f = billerFixture();
@@ -72,7 +72,7 @@ it('does not bill the same subscription twice on one day (already_billed_today C
     BillingService::call(organization: $f['organization'], billingAt: billerAt('2026-10-01 15:00:00'));
 
     Illuminate\Support\Facades\Bus::assertNotDispatched(BillSubscriptionJob::class);
-});
+})->group('ledger:svc:Subscriptions.OrganizationBillingService');
 
 it('does not bill on a non-billing day', function () {
     $f = billerFixture();
@@ -82,7 +82,7 @@ it('does not bill on a non-billing day', function () {
     BillingService::call(organization: $f['organization'], billingAt: billerAt('2026-10-08 12:00:00'));
 
     Illuminate\Support\Facades\Bus::assertNotDispatched(BillSubscriptionJob::class);
-});
+})->group('ledger:svc:Subscriptions.OrganizationBillingService');
 
 it('bills an anniversary subscription on its monthly anniversary day', function () {
     $f = billerFixture();
@@ -98,7 +98,7 @@ it('bills an anniversary subscription on its monthly anniversary day', function 
     BillingService::call(organization: $f['organization'], billingAt: billerAt('2026-10-05 12:00:00'));
 
     Illuminate\Support\Facades\Bus::assertDispatched(BillSubscriptionJob::class);
-});
+})->group('ledger:svc:Subscriptions.OrganizationBillingService');
 
 it('terminates the current subscription when a downgrade is pending today', function () {
     $f = billerFixture();
@@ -128,7 +128,7 @@ it('terminates the current subscription when a downgrade is pending today', func
 
     Illuminate\Support\Facades\Bus::assertDispatched(TerminateJob::class);
     Illuminate\Support\Facades\Bus::assertNotDispatched(BillSubscriptionJob::class);
-});
+})->group('ledger:svc:Subscriptions.OrganizationBillingService');
 
 it('groups subscriptions by currency and consolidation into separate invoices', function () {
     $organization = App\Models\Organization::factory()->create();
@@ -162,4 +162,4 @@ it('groups subscriptions by currency and consolidation into separate invoices', 
     Illuminate\Support\Facades\Bus::assertDispatched(function (BillSubscriptionJob $job) use ($b) {
         return count($job->subscriptions) === 1 && $job->subscriptions[0]->id === $b->id;
     });
-});
+})->group('ledger:svc:Subscriptions.OrganizationBillingService');

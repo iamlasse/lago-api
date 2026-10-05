@@ -262,7 +262,7 @@
         {
             "id": "gql:mutation:createApiKey",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\CreateApiKey",
+            "laravel": "App\\GraphQL\\Mutations\\CreateApiKey",
             "status": {
                 "code": "done",
                 "test": "ported",
@@ -271,7 +271,7 @@
             "tests": [
                 "tests/Feature/GraphQL/Mutations/ApiKeysMutationTest.php"
             ],
-            "notes": ""
+            "notes": "Contract left untested: the premium-license validator tests in ApiKeysMutationTest (refuses to create without a license) currently fail on in-flight feature-gating work outside this slice; the remaining grouped tests replay green."
         },
         {
             "id": "gql:mutation:createAppliedCoupon",
@@ -398,16 +398,16 @@
         {
             "id": "gql:mutation:createCreditNote",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\CreateCreditNote",
+            "laravel": "App\\GraphQL\\Mutations\\CreateCreditNote",
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/CreditNotesTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via CreditNotesTest."
         },
         {
             "id": "gql:mutation:createCreditNotesDataExport",
@@ -424,16 +424,16 @@
         {
             "id": "gql:mutation:createCustomer",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\CreateCustomer",
+            "laravel": "App\\GraphQL\\Mutations\\CreateCustomer",
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/Mutations/CustomerMutationsTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via CustomerMutationsTest."
         },
         {
             "id": "gql:mutation:createCustomerPortalWalletTransaction",
@@ -998,7 +998,7 @@
         {
             "id": "gql:mutation:destroyApiKey",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\DestroyApiKey",
+            "laravel": "App\\GraphQL\\Mutations\\DestroyApiKey",
             "status": {
                 "code": "done",
                 "test": "ported",
@@ -1096,16 +1096,16 @@
         {
             "id": "gql:mutation:destroyCustomer",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\DestroyCustomer",
+            "laravel": "App\\GraphQL\\Mutations\\DestroyCustomer",
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/Mutations/CustomerMutationsTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via CustomerMutationsTest."
         },
         {
             "id": "gql:mutation:destroyCustomerWalletAlert",
@@ -1624,16 +1624,16 @@
         {
             "id": "gql:mutation:finalizeInvoice",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\FinalizeInvoice",
+            "laravel": "App\\GraphQL\\Mutations\\FinalizeInvoice",
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/Mutations/InvoiceMutationsTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via InvoiceMutationsTest."
         },
         {
             "id": "gql:mutation:generateCheckoutUrl",
@@ -1834,16 +1834,16 @@
         {
             "id": "gql:mutation:registerUser",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\RegisterUser",
+            "laravel": "App\\GraphQL\\Mutations\\RegisterUser",
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/RegisterUserMutationTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via RegisterUserMutationTest."
         },
         {
             "id": "gql:mutation:removeSubscriptionEntitlement",
@@ -2016,7 +2016,7 @@
         {
             "id": "gql:mutation:rotateApiKey",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\RotateApiKey",
+            "laravel": "App\\GraphQL\\Mutations\\RotateApiKey",
             "status": {
                 "code": "done",
                 "test": "ported",
@@ -2025,7 +2025,7 @@
             "tests": [
                 "tests/Feature/GraphQL/Mutations/ApiKeysMutationTest.php"
             ],
-            "notes": ""
+            "notes": "Contract left untested: the premium-license validator test in ApiKeysMutationTest (refuses rotating with provided expires_at) currently fails on in-flight feature-gating work outside this slice; the remaining grouped tests replay green."
         },
         {
             "id": "gql:mutation:setIntegrationCustomerAsDefault",
@@ -2214,7 +2214,7 @@
         {
             "id": "gql:mutation:updateApiKey",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\UpdateApiKey",
+            "laravel": "App\\GraphQL\\Mutations\\UpdateApiKey",
             "status": {
                 "code": "done",
                 "test": "ported",
@@ -2338,30 +2338,30 @@
         {
             "id": "gql:mutation:updateCreditNote",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\UpdateCreditNote",
+            "laravel": "App\\GraphQL\\Mutations\\UpdateCreditNote",
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/CreditNotesTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via CreditNotesTest."
         },
         {
             "id": "gql:mutation:updateCustomer",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\UpdateCustomer",
+            "laravel": "App\\GraphQL\\Mutations\\UpdateCustomer",
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/Mutations/CustomerMutationsTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via CustomerMutationsTest."
         },
         {
             "id": "gql:mutation:updateCustomerInvoiceGracePeriod",
@@ -2632,7 +2632,7 @@
         {
             "id": "gql:mutation:updateOrganization",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\UpdateOrganization",
+            "laravel": "App\\GraphQL\\Mutations\\UpdateOrganization",
             "status": {
                 "code": "done",
                 "test": "ported",
@@ -2641,7 +2641,7 @@
             "tests": [
                 "tests/Feature/GraphQL/Mutations/UpdateOrganizationMutationTest.php"
             ],
-            "notes": "Contract:  replayed green via UpdateOrganizationMutationTest."
+            "notes": "Contract: replayed green via UpdateOrganizationMutationTest."
         },
         {
             "id": "gql:mutation:updatePaymentProviderCustomer",
@@ -2928,16 +2928,16 @@
         {
             "id": "gql:mutation:voidCreditNote",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\VoidCreditNote",
+            "laravel": "App\\GraphQL\\Mutations\\VoidCreditNote",
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/CreditNotesTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via CreditNotesTest."
         },
         {
             "id": "gql:mutation:voidInvoice",
@@ -3128,30 +3128,30 @@
         {
             "id": "gql:query:apiKey",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\ApiKey",
+            "laravel": "App\\GraphQL\\Queries\\ApiKey",
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/Resolvers/ApiKeysResolverTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via ApiKeysResolverTest."
         },
         {
             "id": "gql:query:apiKeys",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\ApiKeys",
+            "laravel": "App\\GraphQL\\Queries\\ApiKeys",
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/Resolvers/ApiKeysResolverTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via ApiKeysResolverTest."
         },
         {
             "id": "gql:query:apiLog",
@@ -3336,30 +3336,30 @@
         {
             "id": "gql:query:creditNote",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\CreditNote",
+            "laravel": "App\\GraphQL\\Queries\\CreditNote",
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/CreditNotesTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via CreditNotesTest."
         },
         {
             "id": "gql:query:creditNoteEstimate",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\CreditNoteEstimate",
+            "laravel": "App\\GraphQL\\Queries\\CreditNoteEstimate",
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/CreditNotesTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via CreditNotesTest."
         },
         {
             "id": "gql:query:creditNotes",
@@ -3376,7 +3376,7 @@
         {
             "id": "gql:query:currentUser",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\CurrentUser",
+            "laravel": "App\\GraphQL\\Queries\\CurrentUser",
             "status": {
                 "code": "done",
                 "test": "written",
@@ -3385,35 +3385,35 @@
             "tests": [
                 "tests/Feature/GraphQL/AuthPlumbingTest.php"
             ],
-            "notes": "Contract: replayed green via auth_org (Rails-minted JWT authenticates the query)."
+            "notes": "Contract: replayed green via AuthPlumbingTest."
         },
         {
             "id": "gql:query:currentVersion",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\CurrentVersion",
+            "laravel": "App\\GraphQL\\Queries\\CurrentVersion",
             "status": {
                 "code": "done",
                 "test": "written",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/AuthPlumbingTest.php"
             ],
-            "notes": "Written-first tests (resolver exercised via GraphQL request tests)."
+            "notes": "Contract: replayed green via AuthPlumbingTest."
         },
         {
             "id": "gql:query:customer",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\Customer",
+            "laravel": "App\\GraphQL\\Queries\\Customer",
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/Resolvers/CustomersResolverTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via CustomersResolverTest."
         },
         {
             "id": "gql:query:customerInvoices",
@@ -3586,16 +3586,16 @@
         {
             "id": "gql:query:customers",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\Customers",
+            "laravel": "App\\GraphQL\\Queries\\Customers",
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/Resolvers/CustomersResolverTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via CustomersResolverTest."
         },
         {
             "id": "gql:query:dataApiMrrs",
@@ -3900,16 +3900,16 @@
         {
             "id": "gql:query:invoice",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\Invoice",
+            "laravel": "App\\GraphQL\\Queries\\Invoice",
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/Resolvers/InvoicesResolverTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via InvoicesResolverTest."
         },
         {
             "id": "gql:query:invoiceBuildRegenerationPreview",
@@ -3938,17 +3938,17 @@
         {
             "id": "gql:query:invoiceCreditNotes",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\InvoiceCreditNotes",
+            "laravel": "App\\GraphQL\\Queries\\InvoiceCreditNotes",
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/CreditNotesTest.php",
                 "tests/Feature/GraphQL/Resolvers/InvoicesResolverTest.php"
             ],
-            "notes": "Null-stub: the schema root field resolves to null until the credit-notes slice (asserted in tests/Feature/GraphQL/Resolvers/InvoicesResolverTest.php) — code stays todo."
+            "notes": "Contract: replayed green via CreditNotesTest + InvoicesResolverTest."
         },
         {
             "id": "gql:query:invoiceCustomSection",
@@ -3989,16 +3989,16 @@
         {
             "id": "gql:query:invoices",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\Invoices",
+            "laravel": "App\\GraphQL\\Queries\\Invoices",
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/Resolvers/InvoicesResolverTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via InvoicesResolverTest."
         },
         {
             "id": "gql:query:memberships",
@@ -4077,7 +4077,7 @@
         {
             "id": "gql:query:organization",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\Organization",
+            "laravel": "App\\GraphQL\\Queries\\Organization",
             "status": {
                 "code": "done",
                 "test": "ported",
@@ -4086,7 +4086,7 @@
             "tests": [
                 "tests/Feature/GraphQL/Resolvers/OrganizationQueryTest.php"
             ],
-            "notes": "Contract:  replayed green via OrganizationQueryTest."
+            "notes": "Contract: replayed green via AuthPlumbingTest."
         },
         {
             "id": "gql:query:overdueBalances",
@@ -4477,16 +4477,16 @@
         {
             "id": "gql:query:subscription",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\Subscription",
+            "laravel": "App\\GraphQL\\Queries\\Subscription",
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/Resolvers/SubscriptionsResolverTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via SubscriptionsResolverTest."
         },
         {
             "id": "gql:query:subscriptionAlert",
@@ -4539,16 +4539,16 @@
         {
             "id": "gql:query:subscriptions",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\Subscriptions",
+            "laravel": "App\\GraphQL\\Queries\\Subscriptions",
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/Resolvers/SubscriptionsResolverTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via SubscriptionsResolverTest."
         },
         {
             "id": "gql:query:supersetDashboards",
@@ -7827,12 +7827,12 @@
             "status": {
                 "code": "done",
                 "test": "written",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Unit/Jobs/SendWebhookJobTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via SendWebhookJobTest (queue_for proxy, construction queue, handle() delivery) + SendHttpServiceTest retry suite."
         },
         {
             "id": "job:SendWebhookJob",
@@ -7841,12 +7841,12 @@
             "status": {
                 "code": "done",
                 "test": "written",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Unit/Jobs/SendWebhookJobTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via SendWebhookJobTest (performLater endpoint gating, queue_for routing, perform dispatch/legacy routing, registry)."
         },
         {
             "id": "job:Subscriptions.ActivationRules.BillCurrentPeriodJob",
@@ -8575,7 +8575,7 @@
         {
             "id": "rest:DELETE:/api/v2/contracts/:external_id",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\Api\\V2\\ContractsController",
+            "laravel": "App\\Http\\Controllers\\Api\\V1\\ContractsController",
             "status": {
                 "code": "done",
                 "test": "ported",
@@ -8921,7 +8921,7 @@
         {
             "id": "rest:DELETE:/api/v2/product_categories/:code",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\Api\\V2\\ProductCategoriesController",
+            "laravel": "App\\Http\\Controllers\\Api\\V1\\ProductCategoriesController",
             "status": {
                 "code": "done",
                 "test": "ported",
@@ -8935,7 +8935,7 @@
         {
             "id": "rest:DELETE:/api/v2/products/:code",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\Api\\V2\\ProductsController",
+            "laravel": "App\\Http\\Controllers\\Api\\V1\\ProductsController",
             "status": {
                 "code": "done",
                 "test": "ported",
@@ -8961,7 +8961,7 @@
         {
             "id": "rest:DELETE:/api/v2/rate_cards/:code",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\Api\\V2\\RateCardsController",
+            "laravel": "App\\Http\\Controllers\\Api\\V1\\RateCardsController",
             "status": {
                 "code": "done",
                 "test": "ported",
@@ -11553,7 +11553,7 @@
         {
             "id": "rest:GET:/api/v2/plans/:code",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\Api\\V2\\PlansController",
+            "laravel": "App\\Http\\Controllers\\Api\\V1\\PlansController",
             "status": {
                 "code": "done",
                 "test": "ported",
@@ -11723,7 +11723,7 @@
         {
             "id": "rest:GET:/api/v2/product_categories",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\Api\\V2\\ProductCategoriesController",
+            "laravel": "App\\Http\\Controllers\\Api\\V1\\ProductCategoriesController",
             "status": {
                 "code": "done",
                 "test": "ported",
@@ -11737,7 +11737,7 @@
         {
             "id": "rest:GET:/api/v2/product_categories/:code",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\Api\\V2\\ProductCategoriesController",
+            "laravel": "App\\Http\\Controllers\\Api\\V1\\ProductCategoriesController",
             "status": {
                 "code": "done",
                 "test": "ported",
@@ -11779,7 +11779,7 @@
         {
             "id": "rest:GET:/api/v2/products/:code/filters",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\Api\\V2\\Products\\FiltersController",
+            "laravel": "App\\Http\\Controllers\\Api\\V1\\Products\\FiltersController",
             "status": {
                 "code": "done",
                 "test": "ported",
@@ -11881,7 +11881,7 @@
         {
             "id": "rest:GET:/api/v2/rate_cards/:code/rates",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\Api\\V2\\RateCards\\RatesController",
+            "laravel": "App\\Http\\Controllers\\Api\\V1\\RateCards\\RatesController",
             "status": {
                 "code": "done",
                 "test": "ported",
@@ -12309,7 +12309,7 @@
         {
             "id": "rest:GET:/health",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\ApplicationController",
+            "laravel": "App\\Http\\Controllers\\HealthController",
             "status": {
                 "code": "done",
                 "test": "ported",
@@ -12323,7 +12323,7 @@
         {
             "id": "rest:GET:/ready",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\ApplicationController",
+            "laravel": "App\\Http\\Controllers\\HealthController",
             "status": {
                 "code": "done",
                 "test": "written",
@@ -12793,7 +12793,7 @@
         {
             "id": "rest:PATCH:/api/v2/contracts/:external_id",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\Api\\V2\\ContractsController",
+            "laravel": "App\\Http\\Controllers\\Api\\V1\\ContractsController",
             "status": {
                 "code": "done",
                 "test": "ported",
@@ -12947,7 +12947,7 @@
         {
             "id": "rest:PATCH:/api/v2/plans/:code",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\Api\\V2\\PlansController",
+            "laravel": "App\\Http\\Controllers\\Api\\V1\\PlansController",
             "status": {
                 "code": "done",
                 "test": "ported",
@@ -13045,7 +13045,7 @@
         {
             "id": "rest:PATCH:/api/v2/product_categories/:code",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\Api\\V2\\ProductCategoriesController",
+            "laravel": "App\\Http\\Controllers\\Api\\V1\\ProductCategoriesController",
             "status": {
                 "code": "done",
                 "test": "ported",
@@ -13059,7 +13059,7 @@
         {
             "id": "rest:PATCH:/api/v2/products/:code",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\Api\\V2\\ProductsController",
+            "laravel": "App\\Http\\Controllers\\Api\\V1\\ProductsController",
             "status": {
                 "code": "done",
                 "test": "ported",
@@ -13085,7 +13085,7 @@
         {
             "id": "rest:PATCH:/api/v2/rate_cards/:code",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\Api\\V2\\RateCardsController",
+            "laravel": "App\\Http\\Controllers\\Api\\V1\\RateCardsController",
             "status": {
                 "code": "done",
                 "test": "ported",
@@ -14769,7 +14769,7 @@
         {
             "id": "rest:POST:/api/v2/products/:code/filters",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\Api\\V2\\Products\\FiltersController",
+            "laravel": "App\\Http\\Controllers\\Api\\V1\\Products\\FiltersController",
             "status": {
                 "code": "done",
                 "test": "ported",
@@ -14833,7 +14833,7 @@
         {
             "id": "rest:POST:/api/v2/rate_cards/:code/rates",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\Api\\V2\\RateCards\\RatesController",
+            "laravel": "App\\Http\\Controllers\\Api\\V1\\RateCards\\RatesController",
             "status": {
                 "code": "done",
                 "test": "ported",
@@ -15585,7 +15585,7 @@
         {
             "id": "rest:PUT:/api/v2/contracts/:external_id",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\Api\\V2\\ContractsController",
+            "laravel": "App\\Http\\Controllers\\Api\\V1\\ContractsController",
             "status": {
                 "code": "done",
                 "test": "ported",
@@ -15809,7 +15809,7 @@
         {
             "id": "rest:PUT:/api/v2/plans/:code",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\Api\\V2\\PlansController",
+            "laravel": "App\\Http\\Controllers\\Api\\V1\\PlansController",
             "status": {
                 "code": "done",
                 "test": "ported",
@@ -15895,7 +15895,7 @@
         {
             "id": "rest:PUT:/api/v2/product_categories/:code",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\Api\\V2\\ProductCategoriesController",
+            "laravel": "App\\Http\\Controllers\\Api\\V1\\ProductCategoriesController",
             "status": {
                 "code": "done",
                 "test": "ported",
@@ -15935,7 +15935,7 @@
         {
             "id": "rest:PUT:/api/v2/rate_cards/:code",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\Api\\V2\\RateCardsController",
+            "laravel": "App\\Http\\Controllers\\Api\\V1\\RateCardsController",
             "status": {
                 "code": "done",
                 "test": "ported",
@@ -22304,12 +22304,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Services/Invoices/CalculateFeesServiceTest.php"
             ],
-            "notes": "Fee-level appliedTaxes rows asserted in the pipeline test."
+            "notes": "Fee-level appliedTaxes rows asserted in the pipeline test. Contract: replayed green via CalculateFeesServiceTest (per-fee taxes + snapshot rows)."
         },
         {
             "id": "svc:Fees.BuildPayInAdvanceFixedChargeService",
@@ -24796,12 +24796,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Services/Invoices/CalculateFeesServiceTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via CalculateFeesServiceTest (fees from the live event aggregation, coupons, tax chain, totals rollup)."
         },
         {
             "id": "svc:Invoices.ComputeAmountsFromFees",
@@ -24824,12 +24824,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Services/Invoices/CalculateFeesServiceTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via CalculateFeesServiceTest (tax rollup + zero-total close)."
         },
         {
             "id": "svc:Invoices.CreateAdvanceChargesInvoiceService",
@@ -24994,12 +24994,13 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
-                "tests/Feature/Services/Invoices/CalculateFeesServiceTest.php"
+                "tests/Feature/Services/Invoices/CalculateFeesServiceTest.php",
+                "tests/Feature/Services/Invoices/FinalizeServiceTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via CalculateFeesServiceTest + FinalizeServiceTest (port of finalize_service_spec.rb: finalize, already-finalized no-op, not-found, save failure, PO retention)."
         },
         {
             "id": "svc:Invoices.GeneratePdfService",
@@ -28804,12 +28805,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Services/Organizations/BillingServiceTest.php"
             ],
-            "notes": "Ledger laravel projection corrected from App\\Services\\Subscriptions\\OrganizationBillingService to the ported class (App\\Services\\Organizations\\BillingService)."
+            "notes": "Contract: replayed green via BillingServiceTest (calendar/anniversary billing, already-billed CTE, non-billing day, pending downgrade, currency/consolidation split)."
         },
         {
             "id": "svc:Subscriptions.PlanDowngradeService",
@@ -29981,12 +29982,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Unit/Services/Webhooks/BaseServiceTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via BaseServiceTest (port of base_service_spec.rb: fan-out, endpoint filtering, mid-fan-out delete race)."
         },
         {
             "id": "svc:Webhooks.BillableMetrics.CreatedService",
@@ -30773,12 +30774,12 @@
             "status": {
                 "code": "done",
                 "test": "written",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Unit/Services/Webhooks/SendHttpServiceTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via SendHttpServiceTest (success/signature/retry/backoff/SSRF/response-capping paths)."
         },
         {
             "id": "svc:Webhooks.Subscriptions.CanceledService",

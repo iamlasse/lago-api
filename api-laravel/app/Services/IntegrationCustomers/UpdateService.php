@@ -54,6 +54,14 @@ class UpdateService extends BaseService
             return $result;
         }
 
+        // Rails: the Salesforce row never reaches the provider on update
+        // either — the account/contact sync rides on the document collectors.
+        if ($integrationCustomer->type === IntegrationCustomer::SALESFORCE_TYPE) {
+            $result->integration_customer = $integrationCustomer;
+
+            return $result;
+        }
+
         if ($this->external_customer_id() !== null) {
             $integrationCustomer->external_customer_id = $this->external_customer_id();
         }
@@ -68,7 +76,9 @@ class UpdateService extends BaseService
         $integrationCustomer->save();
 
         if ($integrationCustomer->external_customer_id !== null) {
-            $updateResult = ContactsUpdateService::call(
+            $updateServiceClass = $this->update_service_class($integrationCustomer);
+
+            $updateResult = $updateServiceClass::call(
                 integration: $this->integration,
                 integration_customer: $integrationCustomer,
             );
@@ -81,5 +91,20 @@ class UpdateService extends BaseService
         $result->integration_customer = $integrationCustomer;
 
         return $result;
+    }
+
+    /**
+     * Rails: `update_service_class` — the collector per the integration
+     * customer type and the targeted object.
+     */
+    private function update_service_class(IntegrationCustomer $integrationCustomer): string
+    {
+        if ($integrationCustomer->type !== IntegrationCustomer::HUBSPOT_TYPE) {
+            return ContactsUpdateService::class;
+        }
+
+        return $integrationCustomer->targetedObject() === 'contacts'
+            ? ContactsUpdateService::class
+            : \App\Services\Integrations\Aggregator\Companies\UpdateService::class;
     }
 }

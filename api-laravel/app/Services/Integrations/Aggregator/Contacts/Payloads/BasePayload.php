@@ -110,4 +110,38 @@ abstract class BasePayload extends AggregatorBasePayload
 
         return mb_trim(implode(' ', array_filter($names, fn ($n) => $n !== null && $n !== ''))) ?: null;
     }
+
+    /**
+     * Rails: `customer_url` — the front-end link to the customer
+     * (config.lago_front_url joined with the org slug and the customer id).
+     */
+    protected function customer_url(): string
+    {
+        $url = (string) config('lago.front_url');
+
+        $base = mb_rtrim($url, '/').'/';
+
+        return $base.$this->customer->organization->slug.'/customer/'.$this->customer->id;
+    }
+
+    /**
+     * Rails: `clean_url` — the host of the url, scheme-prefixed first when
+     * missing; nil for anything unparseable.
+     */
+    protected function clean_url(mixed $url): ?string
+    {
+        if ($url === null || (string) $url === '') {
+            return null;
+        }
+
+        $url = (string) $url;
+
+        if (preg_match('/\Ahttps?:\/\//', $url) !== 1) {
+            $url = 'http://'.$url;
+        }
+
+        $host = parse_url($url, PHP_URL_HOST);
+
+        return is_string($host) && $host !== '' ? $host : null;
+    }
 }

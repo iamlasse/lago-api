@@ -14,10 +14,10 @@ use App\Services\Integrations\Aggregator\Contacts\Payloads\Factory as PayloadsFa
 /**
  * Port of Rails' Integrations::Aggregator::Contacts::CreateService
  * (…/aggregator/contacts/create_service.rb) — the Nango contact creation
- * (the Avalara integration-customer sync legs).
+ * (the Avalara integration-customer and the HubSpot contact legs).
  *
- * TODO(port): the hubspot contacts deploy-properties leg (a no-op for the
- * tax providers) and the Throttling subsystem.
+ * TODO(port): the Throttling subsystem (Rails' multi-provider
+ * `throttle!` call is a no-op here).
  */
 class CreateService extends BaseService
 {
@@ -41,6 +41,10 @@ class CreateService extends BaseService
     public function execute(): BaseResult
     {
         $this->result = BaseResult::of('contact_id', 'email');
+
+        \App\Services\Integrations\Hubspot\Contacts\DeployPropertiesService::call(
+            integration: $this->integration,
+        );
 
         try {
             $response = $this->http_client()->postWithResponse($this->params(), $this->headers());

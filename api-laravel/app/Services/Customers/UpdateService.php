@@ -11,6 +11,7 @@ use App\Services\BaseResult;
 use App\Services\BaseService;
 use Illuminate\Support\Facades\DB;
 use App\Enums\FinalizeZeroAmountInvoice;
+use App\Services\IntegrationCustomers\CreateOrUpdateBatchService;
 
 use function is_array;
 use function array_key_exists;
@@ -200,9 +201,16 @@ class UpdateService extends BaseService
 
             // TODO(port): payment provider customers batch / legacy provider
             // customer handling.
-            // TODO(port): IntegrationCustomers::CreateOrUpdateBatchService.
+            // Rails: the batch runs BEFORE the webhook, right after the
+            // transaction block.
+            CreateOrUpdateBatchService::call(
+                integration_customers: $args['integration_customers'] ?? null,
+                customer: $customer,
+                new_customer: false,
+            );
+
             // Rails: SendWebhookJob.perform_later("customer.updated", customer)
-            // — right after the transaction block.
+            // — right after the integration-customers batch.
             SendWebhookJob::performLater('customer.updated', $customer);
 
             $result->customer = $customer;

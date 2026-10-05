@@ -18,9 +18,10 @@ use App\Jobs\Invoices\GenerateDocumentsJob;
  *
  * TODO(port) emission points left at their exact Rails positions:
  * credit-note finalization + webhooks (credit notes unported),
- * Integrations::Aggregator jobs, Invoices::Payments::CreateService,
+ * Invoices::Payments::CreateService,
  * Utils::SegmentTrack / ActivityLog and error-details cleanup.
- * GenerateDocumentsJob (documents + email) is wired.
+ * GenerateDocumentsJob (documents + email) and the accounting aggregator
+ * create job are wired.
  */
 class RefreshDraftAndFinalizeService extends \App\Services\BaseService
 {
@@ -120,8 +121,11 @@ class RefreshDraftAndFinalizeService extends \App\Services\BaseService
             // should_deliver_email?) — premium license + the billing entity's
             // "invoice.finalized" email setting.
             GenerateDocumentsJob::dispatch($invoice, $this->shouldDeliverEmail($invoice));
+            // Rails: Integrations::Aggregator::Invoices::CreateJob.
+            // perform_later(invoice:) if invoice.should_sync_invoice?
+            // (the Hubspot leg is the Hubspot slice's).
+            \App\Jobs\Integrations\Aggregator\Invoices\CreateJob::dispatchIfShouldSync($invoice);
             // TODO(port): Utils::ActivityLog.produce(invoice, "invoice.created"),
-            // aggregator create jobs,
             // Invoices::Payments::CreateService.call_async and
             // Utils::SegmentTrack.invoice_created.
         }

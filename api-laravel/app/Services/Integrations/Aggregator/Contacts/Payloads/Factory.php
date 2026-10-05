@@ -11,8 +11,8 @@ use App\Models\IntegrationCustomer;
 
 /**
  * Port of Rails' Integrations::Aggregator::Contacts::Payloads::Factory —
- * the tax-provider legs (anrok, avalara); the accounting/CRM payload
- * builders arrive with their own slices.
+ * the tax-provider (anrok, avalara), CRM (hubspot) and accounting (xero,
+ * netsuite) legs.
  */
 final class Factory
 {
@@ -30,6 +30,24 @@ final class Factory
                 subsidiary_id: $subsidiary_id,
             ),
             Integration::AVALARA_TYPE => new Avalara(
+                integration: $integration,
+                customer: $customer,
+                integration_customer: $integration_customer,
+                subsidiary_id: $subsidiary_id,
+            ),
+            Integration::HUBSPOT_TYPE => new Hubspot(
+                integration: $integration,
+                customer: $customer,
+                integration_customer: $integration_customer,
+                subsidiary_id: $subsidiary_id,
+            ),
+            Integration::XERO_TYPE => new Xero(
+                integration: $integration,
+                customer: $customer,
+                integration_customer: $integration_customer,
+                subsidiary_id: $subsidiary_id,
+            ),
+            Integration::NETSUITE_TYPE => new Netsuite(
                 integration: $integration,
                 customer: $customer,
                 integration_customer: $integration_customer,

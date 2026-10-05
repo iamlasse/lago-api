@@ -80,9 +80,19 @@ class CreateService extends BaseService
     private function link_customer(): ?BaseResult
     {
         $type = $this->customer_type();
-        $class = $type === \App\Models\IntegrationCustomer::ANROK_TYPE
-            ? \App\Models\IntegrationCustomers\AnrokCustomer::class
-            : \App\Models\IntegrationCustomers\AvalaraCustomer::class;
+        $class = match ($type) {
+            IntegrationCustomer::ANROK_TYPE => \App\Models\IntegrationCustomers\AnrokCustomer::class,
+            IntegrationCustomer::AVALARA_TYPE => \App\Models\IntegrationCustomers\AvalaraCustomer::class,
+            IntegrationCustomer::HUBSPOT_TYPE => \App\Models\IntegrationCustomers\HubspotCustomer::class,
+            IntegrationCustomer::SALESFORCE_TYPE => \App\Models\IntegrationCustomers\SalesforceCustomer::class,
+            IntegrationCustomer::XERO_TYPE => \App\Models\IntegrationCustomers\XeroCustomer::class,
+            IntegrationCustomer::NETSUITE_TYPE => \App\Models\IntegrationCustomers\NetsuiteCustomer::class,
+            default => \App\Models\IntegrationCustomers\AvalaraCustomer::class,
+        };
+
+        // Rails: only the Salesforce link re-syncs with the provider on the
+        // next document sync (sync_with_provider stays true).
+        $syncWithProvider = $this->integration->type === Integration::SALESFORCE_TYPE;
 
         $newIntegrationCustomer = new $class([
             'organization_id' => $this->integration->organization_id,
@@ -90,8 +100,26 @@ class CreateService extends BaseService
             'customer_id' => $this->customer->id,
             'external_customer_id' => $this->external_customer_id(),
             'type' => $this->customer_type(),
-            'category' => IntegrationCustomer::CATEGORIES['tax'],
+            'category' => $this->categoryFor($type),
+            'settings' => ['sync_with_provider' => $syncWithProvider],
         ]);
+
+        // Rails: the Netsuite link carries the subsidiary (settings).
+        if ($this->integration->type === Integration::NETSUITE_TYPE) {
+            $newIntegrationCustomer->settings = array_merge(
+                (array) ($newIntegrationCustomer->settings ?? []),
+                ['subsidiary_id' => $this->subsidiary_id()],
+            );
+        }
+
+        // Rails: the Hubspot link carries the targeted object (settings).
+        if ($this->integration->type === Integration::HUBSPOT_TYPE) {
+            $newIntegrationCustomer->settings = array_merge(
+                (array) ($newIntegrationCustomer->settings ?? []),
+                ['targeted_object' => $this->targeted_object()],
+            );
+        }
+
         $newIntegrationCustomer->setRelation('integration', $this->integration);
         $newIntegrationCustomer->setRelation('customer', $this->customer);
         $newIntegrationCustomer->save();
@@ -99,6 +127,13 @@ class CreateService extends BaseService
         $this->serviceResult->integration_customer = $newIntegrationCustomer;
 
         return null;
+    }
+
+    /** Rails: BaseCustomer.category_for(customer_type). */
+    private function categoryFor(string $type): string
+    {
+        return IntegrationCustomer::CATEGORY_BY_TYPE[$type]
+            ?? IntegrationCustomer::CATEGORIES['tax'];
     }
 
     private function assign_routing_attributes(IntegrationCustomer $integrationCustomer): void

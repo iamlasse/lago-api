@@ -450,6 +450,20 @@ class Organization extends BaseModel
             && in_array('avalara', (array) ($this->premium_integrations ?? []), true);
     }
 
+    /** Rails: xero_enabled? (premium integration "xero"). */
+    public function xeroEnabled(): bool
+    {
+        return \App\Support\License::premium()
+            && in_array('xero', (array) ($this->premium_integrations ?? []), true);
+    }
+
+    /** Rails: netsuite_enabled? (premium integration "netsuite"). */
+    public function netsuiteEnabled(): bool
+    {
+        return \App\Support\License::premium()
+            && in_array('netsuite', (array) ($this->premium_integrations ?? []), true);
+    }
+
     /** Rails: has_many :alerts, class_name: "UsageMonitoring::Alert". */
     public function alerts(): HasMany
     {

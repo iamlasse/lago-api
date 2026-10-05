@@ -90,6 +90,14 @@ abstract class BasePayload
         return $this->lookup_collection_mapping('tax', with_fallback_item: false);
     }
 
+    /** Rails: `tax_item_complete?` — nexus, type and code all present. */
+    protected function tax_item_complete(): bool
+    {
+        return $this->tax_item()?->tax_nexus !== null
+            && $this->tax_item()?->tax_type !== null
+            && $this->tax_item()?->tax_code !== null;
+    }
+
     /** Rails: `account_item` — lookup_collection_mapping(:account). */
     protected function account_item(): ?object
     {

@@ -155,8 +155,10 @@ class CreateOneOffService extends \App\Services\BaseService
                 // transaction block closes (the Laravel equivalent of the
                 // after-commit position).
                 GenerateDocumentsJob::dispatch($this->invoice, $this->shouldDeliverEmail());
-                // TODO(port): Integrations::Aggregator::Invoices::CreateJob /
-                // Hubspot::CreateJob when invoice.should_sync_invoice?.
+                // Rails: Integrations::Aggregator::Invoices::CreateJob.
+                // perform_after_commit(invoice:) if invoice.should_sync_invoice?
+                // (the Hubspot leg is the Hubspot slice's).
+                \App\Jobs\Integrations\Aggregator\Invoices\CreateJob::dispatchIfShouldSync($this->invoice);
                 if (! $this->invoice->skip_automatic_payment) {
                     // Rails: Invoices::Payments::CreateService.call_async.
                     (new Payments\CreateService(invoice: $this->invoice))->callAsync();
