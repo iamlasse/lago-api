@@ -7,6 +7,7 @@ namespace App\Queries;
 use App\Models\Plan;
 use App\Models\Organization;
 use App\Services\BaseResult;
+use App\GraphQL\Support\Page;
 use App\Services\BaseService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -20,8 +21,6 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
  */
 class PlansQuery extends BaseService
 {
-    private const DEFAULT_PER_PAGE = 100;
-
     public function __construct(
         private readonly Organization $organization,
         private readonly array $pagination = ['page' => null, 'limit' => null],
@@ -80,15 +79,13 @@ class PlansQuery extends BaseService
             $scope = $scope->withTrashed();
         }
 
-        $pageParam = $this->pagination['page'] ?? null;
-        $limitParam = $this->pagination['limit'] ?? null;
-
-        $page = is_numeric((string) $pageParam) && (string) $pageParam !== '' ? max(1, (int) $pageParam) : 1;
-
-        $perPage = self::DEFAULT_PER_PAGE;
-        if ($limitParam !== null && $limitParam !== '') {
-            $perPage = max(1, (int) $limitParam);
-        }
+        // Rails: `scope.page(pagination.page).per(pagination.limit)` — nil
+        // page/limit fall back to the kaminari defaults (page 1, 25 per page)
+        // through Page::normalize.
+        [$page, $perPage] = Page::normalizePageAndLimit(
+            is_numeric($this->pagination['page'] ?? null) ? (int) $this->pagination['page'] : null,
+            is_numeric($this->pagination['limit'] ?? null) ? (int) $this->pagination['limit'] : null,
+        );
 
         return $scope
             ->orderByRaw('plans.deleted_at is not null asc')

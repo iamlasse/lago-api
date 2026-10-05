@@ -12,7 +12,6 @@ use App\Models\Concerns\Sequenced;
 use Illuminate\Support\Facades\DB;
 use App\Enums\InvoicePaymentStatus;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Attributes\Boot;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -638,18 +637,22 @@ class Invoice extends BaseModel
 
     /**
      * Port of `should_assign_sequential_id?` — Rails calls
-     * `status_changed?(from:, to:)`, whose from:/to: kwargs are swallowed by
-     * ActiveModel's generated dirty predicate: the call is literally "the
-     * status attribute changed". On create that means differing from the
-     * column default (finalized); on update, differing from the persisted
-     * value — so a draft invoice keeps its NULL sequential_id until the
-     * generating/draft → finalized save.
+     * `status_changed?(from:, to:)` for every to-finalized transition; the
+     * status attribute is "changed" on the finalizing save. Rails' own flows
+     * never INSERT a finalized invoice: the API creates it as a draft /
+     * generating row and finalizes it with an update, so the dirty check
+     * covers every real transition. A directly-inserted finalized invoice
+     * (spec factories, one-off imports) must number immediately as well —
+     * the frozen SDL types `Invoice.sequentialId` as non-null, so a NULL
+     * would break serialization. Drafts keep their NULL sequential_id until
+     * the generating/draft → finalized save.
      */
     protected function shouldAssignSequentialId(): bool
     {
         if (! $this->exists) {
+            // NULL status falls back to the column default (finalized).
             return ($this->statusEnum()?->value ?? InvoiceStatus::Finalized->value)
-                !== InvoiceStatus::Finalized->value;
+                === InvoiceStatus::Finalized->value;
         }
 
         return $this->isDirty('status');

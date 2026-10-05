@@ -1,0 +1,298 @@
+# The list of permissions to be associated to predefined roles.
+# In the leafs of the tree we keep the array of names of predefined roles.
+# NOTE(port): completed against graphql/frozen-schema.graphql's `type Permissions`
+# (the local Rails clone's yml predates the SDL — admin grants everything regardless).
+addons:
+  create: null
+  delete: null
+  update: null
+  view:
+  - finance
+  - manager
+ai_conversations:
+  create: null
+  view: null
+analytics:
+  view:
+  - finance
+audit_logs:
+  view: null
+authentication_methods:
+  update: null
+  view: null
+billable_metrics:
+  create: null
+  delete: null
+  update: null
+  view: null
+billing_entities:
+  create:
+  - finance
+  delete:
+  - finance
+  update:
+  - finance
+  view:
+  - finance
+  - manager
+charges:
+  create: null
+  delete: null
+  update: null
+contracts:
+  create: null
+  terminate: []
+  update: []
+  view: null
+coupons:
+  attach:
+  - manager
+  create: null
+  delete: null
+  detach:
+  - manager
+  update: null
+  view:
+  - finance
+  - manager
+credit_notes:
+  create:
+  - finance
+  - manager
+  export:
+  - finance
+  - manager
+  send:
+  - finance
+  - manager
+  update:
+  - finance
+  - manager
+  view:
+  - finance
+  - manager
+  void:
+  - finance
+  - manager
+customers:
+  create:
+  - manager
+  delete:
+  - manager
+  update:
+  - manager
+  view:
+  - finance
+  - manager
+data_api:
+  view:
+  - finance
+developers:
+  keys:
+    manage: null
+  manage: null
+developers_keys:
+  manage: []
+dunning_campaigns:
+  create:
+  - finance
+  delete:
+  - finance
+  update:
+  - finance
+  view:
+  - finance
+  - manager
+features:
+  create: null
+  delete: null
+  update: null
+  view: null
+invoice_custom_sections:
+  create:
+  - finance
+  delete:
+  - finance
+  update:
+  - finance
+  view:
+  - finance
+invoices:
+  create:
+  - finance
+  - manager
+  delete: null
+  export:
+  - finance
+  - manager
+  send:
+  - finance
+  - manager
+  update:
+  - finance
+  - manager
+  view:
+  - finance
+  - manager
+  void:
+  - finance
+  - manager
+order_forms:
+  sign:
+  - manager
+  view:
+  - finance
+  - manager
+  void:
+  - manager
+orders:
+  execute:
+  - manager
+  update:
+  - manager
+  view:
+  - finance
+  - manager
+organization:
+  emails:
+    update: null
+    view: null
+  integrations:
+    create:
+    - finance
+    delete:
+    - finance
+    update:
+    - finance
+    view:
+    - finance
+  invoices:
+    update:
+    - finance
+    view:
+    - finance
+  members:
+    create: null
+    delete: null
+    update: null
+    view: null
+  taxes:
+    update: null
+    view: null
+  update:
+  - finance
+  view:
+  - finance
+organization_emails:
+  update: []
+  view: []
+organization_integrations:
+  create: []
+  delete: []
+  update: []
+  view: []
+organization_invoices:
+  update: []
+  view: []
+organization_members:
+  create: []
+  delete: []
+  update: []
+  view: []
+organization_taxes:
+  update: []
+  view: []
+payment_methods:
+  create: null
+  delete: null
+  update: null
+  view: null
+payment_receipts:
+  send:
+  - finance
+  - manager
+  view:
+  - finance
+  - manager
+payments:
+  create:
+  - finance
+  - manager
+  view:
+  - finance
+  - manager
+plans:
+  create: null
+  delete: null
+  update: null
+  view:
+  - finance
+  - manager
+pricing_units:
+  create: null
+  update: null
+  view:
+  - finance
+product_categories:
+  create: null
+  delete: null
+  update: null
+  view: null
+product_filters:
+  create: null
+  delete: null
+  update: null
+  view: null
+products:
+  create: null
+  delete: null
+  update: null
+  view: null
+quotes:
+  approve:
+  - manager
+  clone:
+  - manager
+  create:
+  - manager
+  update:
+  - manager
+  view:
+  - finance
+  - manager
+  void:
+  - manager
+rate_cards:
+  create: null
+  delete: null
+  update: null
+  view: null
+roles:
+  create: null
+  delete: null
+  update: null
+  view: null
+security_logs:
+  view: null
+subscriptions:
+  create:
+  - manager
+  update:
+  - manager
+  view:
+  - finance
+  - manager
+usage_attribution_types:
+  create: []
+  delete: []
+  update: []
+  view: []
+wallets:
+  create:
+  - manager
+  terminate:
+  - manager
+  top_up:
+  - manager
+  update:
+  - manager

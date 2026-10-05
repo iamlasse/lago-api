@@ -26,6 +26,25 @@ class Role extends BaseModel
 {
     use SoftDeletes;
 
+    /**
+     * Port of `permissions_hash` — the base map for this role's name with the
+     * role's explicitly-granted permission keys forced to true.
+     *
+     * @return array<string, bool>
+     */
+    public function permissionsHash(): array
+    {
+        $hash = Permission::permissionsHash($this->name);
+
+        foreach ((array) $this->permissions as $granted) {
+            if (array_key_exists($granted, $hash)) {
+                $hash[$granted] = true;
+            }
+        }
+
+        return $hash;
+    }
+
     protected function casts(): array
     {
         return [

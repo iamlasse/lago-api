@@ -9,6 +9,7 @@ use App\Http\Middleware\SetBetaHeader;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\HealthController;
 use App\Http\Middleware\AuthenticateApiKey;
+use Nuwave\Lighthouse\Http\GraphQLController;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -39,6 +40,18 @@ return Application::configure(basePath: dirname(__DIR__))
             Route::prefix('webhooks')
                 ->name('webhooks.')
                 ->group(__DIR__.'/../routes/webhooks.php');
+
+            // Alias of Lighthouse's `/graphql` (config/lighthouse.php
+            // route.uri): the Lago front computes its endpoint as
+            // `${apiUrl}/graphql`, and its apiUrl is
+            // `https://${LAGO_DOMAIN}/api` whenever window.API_URL is missing
+            // (front envGlobalVar.ts getApiUrl fallback) — so the engine must
+            // answer at both shapes. Registered in `then:` (like Lighthouse's
+            // own loadRoutesFrom) to keep the web group's CSRF off it; same
+            // methods + middleware as Nuwave's registration.
+            Route::match(['GET', 'POST'], 'api/graphql', GraphQLController::class)
+                ->middleware(config('lighthouse.route.middleware') ?? [])
+                ->name('graphql.api-alias');
         },
     )
     ->withMiddleware(function (Middleware $middleware) use ($isApiPath): void {
