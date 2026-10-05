@@ -248,14 +248,16 @@
         {
             "id": "gql:mutation:createAnrokIntegration",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\CreateAnrokIntegration",
+            "laravel": "App\\GraphQL\\Mutations\\CreateAnrokIntegration",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/IntegrationsMutationsTest.php"
+            ],
+            "notes": "Contract:  replayed green via IntegrationsMutationsTest (anrok/avalara legs)."
         },
         {
             "id": "gql:mutation:createApiKey",
@@ -286,14 +288,16 @@
         {
             "id": "gql:mutation:createAvalaraIntegration",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\CreateAvalaraIntegration",
+            "laravel": "App\\GraphQL\\Mutations\\CreateAvalaraIntegration",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/IntegrationsMutationsTest.php"
+            ],
+            "notes": "Contract:  replayed green via IntegrationsMutationsTest (anrok/avalara legs)."
         },
         {
             "id": "gql:mutation:createBillableMetric",
@@ -858,16 +862,16 @@
         {
             "id": "gql:mutation:createSubscription",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\CreateSubscription",
+            "laravel": "App\\GraphQL\\Mutations\\CreateSubscription",
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/Mutations/SubscriptionMutationsTest.php"
             ],
-            "notes": ""
+            "notes": "Contract:  replayed green via SubscriptionMutationsTest (activation_rules validator + apply/clear)."
         },
         {
             "id": "gql:mutation:createSubscriptionAlert",
@@ -2158,16 +2162,16 @@
         {
             "id": "gql:mutation:terminateSubscription",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\TerminateSubscription",
+            "laravel": "App\\GraphQL\\Mutations\\TerminateSubscription",
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/Mutations/SubscriptionMutationsTest.php"
             ],
-            "notes": ""
+            "notes": "Contract:  replayed green via SubscriptionMutationsTest (activation_rules validator + apply/clear)."
         },
         {
             "id": "gql:mutation:updateAddOn",
@@ -2196,14 +2200,16 @@
         {
             "id": "gql:mutation:updateAnrokIntegration",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\UpdateAnrokIntegration",
+            "laravel": "App\\GraphQL\\Mutations\\UpdateAnrokIntegration",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/IntegrationsMutationsTest.php"
+            ],
+            "notes": "Contract:  replayed green via IntegrationsMutationsTest (anrok/avalara legs)."
         },
         {
             "id": "gql:mutation:updateApiKey",
@@ -2222,14 +2228,16 @@
         {
             "id": "gql:mutation:updateAvalaraIntegration",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\UpdateAvalaraIntegration",
+            "laravel": "App\\GraphQL\\Mutations\\UpdateAvalaraIntegration",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/IntegrationsMutationsTest.php"
+            ],
+            "notes": "Contract:  replayed green via IntegrationsMutationsTest (anrok/avalara legs)."
         },
         {
             "id": "gql:mutation:updateBillableMetric",
@@ -2628,12 +2636,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/Mutations/UpdateOrganizationMutationTest.php"
             ],
-            "notes": ""
+            "notes": "Contract:  replayed green via UpdateOrganizationMutationTest."
         },
         {
             "id": "gql:mutation:updatePaymentProviderCustomer",
@@ -2808,16 +2816,16 @@
         {
             "id": "gql:mutation:updateSubscription",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\UpdateSubscription",
+            "laravel": "App\\GraphQL\\Mutations\\UpdateSubscription",
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/Mutations/SubscriptionMutationsTest.php"
             ],
-            "notes": ""
+            "notes": "Contract:  replayed green via SubscriptionMutationsTest (activation_rules validator + apply/clear)."
         },
         {
             "id": "gql:mutation:updateSubscriptionAlert",
@@ -4073,12 +4081,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/Resolvers/OrganizationQueryTest.php"
             ],
-            "notes": ""
+            "notes": "Contract:  replayed green via OrganizationQueryTest."
         },
         {
             "id": "gql:query:overdueBalances",
@@ -4839,14 +4847,14 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Unit/Jobs/BillSubscriptionJobTest.php",
                 "tests/Feature/Jobs/BillSubscriptionJobPipelineTest.php",
                 "tests/Feature/Jobs/BillSubscriptionJobRetryTest.php"
             ],
-            "notes": ""
+            "notes": "Contract:  replayed green via BillSubscriptionJob pipeline + retry suites."
         },
         {
             "id": "job:BillableMetricFilters.DestroyAllJob",
@@ -5335,12 +5343,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Jobs/ClockSubscriptionsBillerJobTest.php"
             ],
-            "notes": ""
+            "notes": "Contract:  replayed green via ClockSubscriptionsBillerJobTest."
         },
         {
             "id": "job:Clock.SubscriptionsToBeTerminatedJob",
@@ -7857,24 +7865,28 @@
             "source": "app/jobs/subscriptions/activation_rules/expire_incomplete_job.rb",
             "laravel": "App\\Jobs\\Subscriptions\\ActivationRules\\ExpireIncompleteJob",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/Subscriptions/ActivationRulesTest.php"
+            ],
+            "notes": "Contract:  replayed green via ActivationRulesTest (STI payment rules + clock paths)."
         },
         {
             "id": "job:Subscriptions.ActivationRules.Payment.ResolveJob",
             "source": "app/jobs/subscriptions/activation_rules/payment/resolve_job.rb",
             "laravel": "App\\Jobs\\Subscriptions\\ActivationRules\\Payment\\ResolveJob",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/Subscriptions/ActivationRulesTest.php"
+            ],
+            "notes": "Contract:  replayed green via ActivationRulesTest (STI payment rules + clock paths)."
         },
         {
             "id": "job:Subscriptions.FlagRefreshedJob",
@@ -8275,12 +8287,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/PlansControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract:  replayed green via plans controller suites."
         },
         {
             "id": "rest:DELETE:/api/v1/plans/:code/charges/:code",
@@ -8289,12 +8301,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/Plans/ChargesControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract:  replayed green via plans controller suites."
         },
         {
             "id": "rest:DELETE:/api/v1/plans/:code/charges/:code/filters/:id",
@@ -8343,12 +8355,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/Plans/FixedChargesControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract:  replayed green via plans controller suites."
         },
         {
             "id": "rest:DELETE:/api/v1/plans/:code/metadata",
@@ -8463,12 +8475,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/TaxesControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via taxes_crud."
         },
         {
             "id": "rest:DELETE:/api/v1/usage_attribution_types/:code",
@@ -8527,12 +8539,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/WebhookEndpointsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via webhook_endpoints_crud."
         },
         {
             "id": "rest:DELETE:/api/v2/add_ons/:code",
@@ -9873,12 +9885,12 @@
             "status": {
                 "code": "done",
                 "test": "written",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/InvoicesControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via invoice_actions."
         },
         {
             "id": "rest:GET:/api/v1/order_forms",
@@ -10175,12 +10187,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/Plans/FixedChargesControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract:  replayed green via plans controller suites."
         },
         {
             "id": "rest:GET:/api/v1/plans/:code/fixed_charges/:code",
@@ -10189,12 +10201,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/Plans/FixedChargesControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract:  replayed green via plans controller suites."
         },
         {
             "id": "rest:GET:/api/v1/plans/new",
@@ -10443,12 +10455,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/TaxesControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via taxes_crud."
         },
         {
             "id": "rest:GET:/api/v1/taxes/:code",
@@ -10457,12 +10469,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/TaxesControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via taxes_crud."
         },
         {
             "id": "rest:GET:/api/v1/taxes/:code/edit",
@@ -10599,12 +10611,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/WebhookEndpointsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via webhook_endpoints_crud."
         },
         {
             "id": "rest:GET:/api/v1/webhook_endpoints/:id",
@@ -10613,12 +10625,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/WebhookEndpointsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via webhook_endpoints_crud."
         },
         {
             "id": "rest:GET:/api/v1/webhooks/json_public_key",
@@ -12365,12 +12377,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/BillableMetricsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via metrics_extras."
         },
         {
             "id": "rest:PATCH:/api/v1/billing_entities/:code",
@@ -12495,12 +12507,12 @@
             "status": {
                 "code": "done",
                 "test": "written",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/InvoicesControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via invoice_actions."
         },
         {
             "id": "rest:PATCH:/api/v1/plans/:code",
@@ -12589,12 +12601,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/SubscriptionsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract:  replayed green via SubscriptionsControllerTest (activation_rules/plan_overrides wiring exercised)."
         },
         {
             "id": "rest:PATCH:/api/v1/subscriptions/:external_id/alerts/:code",
@@ -12681,12 +12693,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/TaxesControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract:  replayed green via TaxesControllerTest."
         },
         {
             "id": "rest:PATCH:/api/v1/usage_attribution_types/:code",
@@ -12731,12 +12743,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/WebhookEndpointsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract:  replayed green via WebhookEndpointsControllerTest."
         },
         {
             "id": "rest:PATCH:/api/v2/add_ons/:code",
@@ -13103,12 +13115,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/SubscriptionsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract:  replayed green via SubscriptionsControllerTest (activation_rules/plan_overrides wiring exercised)."
         },
         {
             "id": "rest:PATCH:/api/v2/subscriptions/:external_id/alerts/:code",
@@ -13335,12 +13347,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/BillableMetricsControllerTest.php"
             ],
-            "notes": "Route + blank-expression validation tested; non-blank expressions answer Rails' invalid_expression envelope until the expression parser ports."
+            "notes": "Route + blank-expression validation tested; non-blank expressions answer Rails' invalid_expression envelope until the expression parser ports. Contract: replayed green via metrics_extras."
         },
         {
             "id": "rest:POST:/api/v1/billing_entities",
@@ -13669,36 +13681,36 @@
             "status": {
                 "code": "done",
                 "test": "written",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/InvoicesControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via invoice_actions."
         },
         {
             "id": "rest:POST:/api/v1/invoices/:id/payment_url",
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\InvoicesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
             "tests": [],
-            "notes": ""
+            "notes": "Contract: replayed green via invoice_actions.  Per-provider checkout legs covered by OtherProviderServicesTest."
         },
         {
             "id": "rest:POST:/api/v1/invoices/:id/resend_email",
             "source": "config/routes.rb (static parse — provisional)",
             "laravel": "App\\Http\\Controllers\\Api\\V1\\InvoicesController",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
             "tests": [],
-            "notes": ""
+            "notes": "Contract: replayed green via invoice_actions."
         },
         {
             "id": "rest:POST:/api/v1/invoices/:id/retry",
@@ -13707,12 +13719,12 @@
             "status": {
                 "code": "done",
                 "test": "written",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/InvoicesControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via invoice_actions."
         },
         {
             "id": "rest:POST:/api/v1/invoices/:id/retry_payment",
@@ -13733,12 +13745,12 @@
             "status": {
                 "code": "done",
                 "test": "written",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/InvoicesControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via invoice_actions."
         },
         {
             "id": "rest:POST:/api/v1/invoices/preview",
@@ -13853,12 +13865,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/Plans/ChargesControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract:  replayed green via plans controller suites."
         },
         {
             "id": "rest:POST:/api/v1/plans/:code/charges/:code/filters",
@@ -13893,12 +13905,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/Plans/FixedChargesControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract:  replayed green via plans controller suites."
         },
         {
             "id": "rest:POST:/api/v1/plans/:code/metadata",
@@ -14073,12 +14085,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/WebhookEndpointsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via webhook_endpoints_crud."
         },
         {
             "id": "rest:POST:/api/v2/add_ons",
@@ -14975,74 +14987,86 @@
         {
             "id": "rest:POST:/webhooks/adyen/:organization_id",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\WebhooksController",
+            "laravel": "App\\Http\\Controllers\\WebhookController",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/ProviderWebhooksTest.php"
+            ],
+            "notes": "Contract:  replayed green via ProviderWebhooksTest (signature verification + payment status handling)."
         },
         {
             "id": "rest:POST:/webhooks/cashfree/:organization_id",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\WebhooksController",
+            "laravel": "App\\Http\\Controllers\\WebhookController",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/ProviderWebhooksTest.php"
+            ],
+            "notes": "Contract:  replayed green via ProviderWebhooksTest (signature verification + payment status handling)."
         },
         {
             "id": "rest:POST:/webhooks/flutterwave/:organization_id",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\WebhooksController",
+            "laravel": "App\\Http\\Controllers\\WebhookController",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/ProviderWebhooksTest.php"
+            ],
+            "notes": "Contract:  replayed green via ProviderWebhooksTest (signature verification + payment status handling)."
         },
         {
             "id": "rest:POST:/webhooks/gocardless/:organization_id",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\WebhooksController",
+            "laravel": "App\\Http\\Controllers\\WebhookController",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/ProviderWebhooksTest.php"
+            ],
+            "notes": "Contract:  replayed green via ProviderWebhooksTest (signature verification + payment status handling)."
         },
         {
             "id": "rest:POST:/webhooks/moneyhash/:organization_id",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\WebhooksController",
+            "laravel": "App\\Http\\Controllers\\WebhookController",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/ProviderWebhooksTest.php"
+            ],
+            "notes": "Contract:  replayed green via ProviderWebhooksTest (signature verification + payment status handling)."
         },
         {
             "id": "rest:POST:/webhooks/stripe/:organization_id",
             "source": "config/routes.rb (static parse — provisional)",
-            "laravel": "App\\Http\\Controllers\\WebhooksController",
+            "laravel": "App\\Http\\Controllers\\WebhookController",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Http/WebhookControllerTest.php"
+            ],
+            "notes": "Contract:  replayed green via WebhookControllerTest stripe leg (Stripe-Signature HMAC)."
         },
         {
             "id": "rest:PUT:/admin/invoices/:id",
@@ -15249,12 +15273,12 @@
             "status": {
                 "code": "done",
                 "test": "written",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/InvoicesControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract:  replayed green via InvoicesControllerTest (update + refresh round-trip)."
         },
         {
             "id": "rest:PUT:/api/v1/invoices/:id/finalize",
@@ -15263,12 +15287,12 @@
             "status": {
                 "code": "done",
                 "test": "written",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/InvoicesControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via invoice_actions."
         },
         {
             "id": "rest:PUT:/api/v1/invoices/:id/refresh",
@@ -15277,12 +15301,12 @@
             "status": {
                 "code": "done",
                 "test": "written",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/InvoicesControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via invoice_actions."
         },
         {
             "id": "rest:PUT:/api/v1/invoices/:id/sync_salesforce_id",
@@ -15331,12 +15355,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/Plans/ChargesControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract:  replayed green via plans controller suites."
         },
         {
             "id": "rest:PUT:/api/v1/plans/:code/charges/:code/filters/:id",
@@ -15357,12 +15381,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/Plans/FixedChargesControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract:  replayed green via plans controller suites."
         },
         {
             "id": "rest:PUT:/api/v1/plans/:code/metadata",
@@ -15461,12 +15485,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/TaxesControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via taxes_crud."
         },
         {
             "id": "rest:PUT:/api/v1/usage_attribution_types/:code",
@@ -15513,12 +15537,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Api/V1/WebhookEndpointsControllerTest.php"
             ],
-            "notes": ""
+            "notes": "Contract: replayed green via webhook_endpoints_crud."
         },
         {
             "id": "rest:PUT:/api/v2/add_ons/:code",
@@ -18266,7 +18290,7 @@
             "status": {
                 "code": "done",
                 "test": "written",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Services/ApiKeysCacheServiceTest.php"
@@ -22240,24 +22264,26 @@
             "status": {
                 "code": "done",
                 "test": "written",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Unit/Services/Fees/AmountsServiceTest.php"
             ],
-            "notes": ""
+            "notes": "Contract:  replayed green via scoped suite."
         },
         {
             "id": "svc:Fees.ApplyProviderTaxesService",
             "source": "app/services/fees/apply_provider_taxes_service.rb",
             "laravel": "App\\Services\\Fees\\ApplyProviderTaxesService",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Fees/ApplyProviderTaxesServiceTest.php"
+            ],
+            "notes": "Contract:  replayed green via Anrok/Avalara tax-provider suite."
         },
         {
             "id": "svc:Fees.ApplyProviderTaxesToStandaloneFeesService",
@@ -22942,24 +22968,28 @@
             "source": "app/services/integration_customers/anrok_service.rb",
             "laravel": "App\\Services\\IntegrationCustomers\\AnrokService",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/IntegrationCustomers/CreateOrUpdateBatchServiceTest.php"
+            ],
+            "notes": "Contract:  replayed green via Anrok/Avalara tax-provider suite."
         },
         {
             "id": "svc:IntegrationCustomers.AvalaraService",
             "source": "app/services/integration_customers/avalara_service.rb",
             "laravel": "App\\Services\\IntegrationCustomers\\AvalaraService",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/IntegrationCustomers/CreateOrUpdateBatchServiceTest.php"
+            ],
+            "notes": "Contract:  replayed green via Anrok/Avalara tax-provider suite."
         },
         {
             "id": "svc:IntegrationCustomers.BaseService",
@@ -22990,12 +23020,14 @@
             "source": "app/services/integration_customers/create_or_update_batch_service.rb",
             "laravel": "App\\Services\\IntegrationCustomers\\CreateOrUpdateBatchService",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/IntegrationCustomers/CreateOrUpdateBatchServiceTest.php"
+            ],
+            "notes": "Contract:  replayed green via Anrok/Avalara tax-provider suite."
         },
         {
             "id": "svc:IntegrationCustomers.CreateService",
@@ -23938,12 +23970,14 @@
             "source": "app/services/integrations/aggregator/taxes/avalara/fetch_company_id_service.rb",
             "laravel": "App\\Services\\Integrations\\Aggregator\\Taxes\\Avalara\\FetchCompanyIdService",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Integrations/Aggregator/Taxes/Avalara/FetchCompanyIdServiceTest.php"
+            ],
+            "notes": "Contract:  replayed green via Anrok/Avalara tax-provider suite."
         },
         {
             "id": "svc:Integrations.Aggregator.Taxes.BasePayload",
@@ -24046,12 +24080,14 @@
             "source": "app/services/integrations/aggregator/taxes/invoices/charge_fee_group.rb",
             "laravel": "App\\Services\\Integrations\\Aggregator\\Taxes\\Invoices\\ChargeFeeGroup",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Integrations/Aggregator/Taxes/Invoices/ChargeFeeGroupTest.php"
+            ],
+            "notes": "Contract:  replayed green via Anrok/Avalara tax-provider suite."
         },
         {
             "id": "svc:Integrations.Aggregator.Taxes.Invoices.CreateDraftService",
@@ -24070,12 +24106,14 @@
             "source": "app/services/integrations/aggregator/taxes/invoices/create_service.rb",
             "laravel": "App\\Services\\Integrations\\Aggregator\\Taxes\\Invoices\\CreateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Integrations/Aggregator/Taxes/Invoices/CreateServiceTest.php"
+            ],
+            "notes": "Contract:  replayed green via Anrok/Avalara tax-provider suite."
         },
         {
             "id": "svc:Integrations.Aggregator.Taxes.Invoices.NegateService",
@@ -24166,60 +24204,70 @@
             "source": "app/services/integrations/anrok/create_service.rb",
             "laravel": "App\\Services\\Integrations\\Anrok\\CreateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Integrations/Anrok/CreateServiceTest.php"
+            ],
+            "notes": "Contract:  replayed green via Anrok/Avalara tax-provider suite."
         },
         {
             "id": "svc:Integrations.Anrok.UpdateService",
             "source": "app/services/integrations/anrok/update_service.rb",
             "laravel": "App\\Services\\Integrations\\Anrok\\UpdateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Integrations/Anrok/UpdateServiceTest.php"
+            ],
+            "notes": "Contract:  replayed green via Anrok/Avalara tax-provider suite."
         },
         {
             "id": "svc:Integrations.Avalara.CreateService",
             "source": "app/services/integrations/avalara/create_service.rb",
             "laravel": "App\\Services\\Integrations\\Avalara\\CreateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Integrations/Avalara/CreateServiceTest.php"
+            ],
+            "notes": "Contract:  replayed green via Anrok/Avalara tax-provider suite."
         },
         {
             "id": "svc:Integrations.Avalara.FetchCompanyIdService",
             "source": "app/services/integrations/avalara/fetch_company_id_service.rb",
             "laravel": "App\\Services\\Integrations\\Avalara\\FetchCompanyIdService",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Integrations/Avalara/FetchCompanyIdServiceTest.php"
+            ],
+            "notes": "Contract:  replayed green via Anrok/Avalara tax-provider suite."
         },
         {
             "id": "svc:Integrations.Avalara.UpdateService",
             "source": "app/services/integrations/avalara/update_service.rb",
             "laravel": "App\\Services\\Integrations\\Avalara\\UpdateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Integrations/Avalara/UpdateServiceTest.php"
+            ],
+            "notes": "Contract:  replayed green via Anrok/Avalara tax-provider suite."
         },
         {
             "id": "svc:Integrations.CreateService",
@@ -24706,12 +24754,14 @@
             "source": "app/services/invoices/apply_provider_taxes_service.rb",
             "laravel": "App\\Services\\Invoices\\ApplyProviderTaxesService",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Invoices/ApplyProviderTaxesServiceTest.php"
+            ],
+            "notes": "Contract:  replayed green via Anrok/Avalara tax-provider suite."
         },
         {
             "id": "svc:Invoices.ApplyTaxesService",
@@ -24800,12 +24850,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Services/Invoices/CreateGeneratingServiceTest.php"
             ],
-            "notes": ""
+            "notes": "Contract:  replayed green via scoped suite."
         },
         {
             "id": "svc:Invoices.CreateInvoiceSubscriptionService",
@@ -25351,12 +25401,14 @@
             "source": "app/services/invoices/provider_taxes/pull_taxes_and_apply_service.rb",
             "laravel": "App\\Services\\Invoices\\ProviderTaxes\\PullTaxesAndApplyService",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Unit/Services/Invoices/ProviderTaxes/PullTaxesAndApplyServiceTest.php"
+            ],
+            "notes": "Contract:  replayed green via Anrok/Avalara tax-provider suite."
         },
         {
             "id": "svc:Invoices.ProviderTaxes.VoidService",
@@ -25455,13 +25507,13 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Services/Invoices/SubscriptionServiceTest.php",
                 "tests/Feature/Jobs/BillSubscriptionJobPipelineTest.php"
             ],
-            "notes": ""
+            "notes": "Contract:  replayed green via scoped suite."
         },
         {
             "id": "svc:Invoices.SyncSalesforceIdService",
@@ -28312,24 +28364,26 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Services/Subscriptions/ActivateServiceTest.php"
             ],
-            "notes": ""
+            "notes": "Contract:  replayed green via ActivateServiceTest (activation-rule gating branch)."
         },
         {
             "id": "svc:Subscriptions.ActivationRules.ApplyService",
             "source": "app/services/subscriptions/activation_rules/apply_service.rb",
             "laravel": "App\\Services\\Subscriptions\\ActivationRules\\ApplyService",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/Subscriptions/ActivationRulesTest.php"
+            ],
+            "notes": "Contract:  replayed green via ActivationRulesTest (STI payment rules + clock paths)."
         },
         {
             "id": "svc:Subscriptions.ActivationRules.BillCurrentPeriodService",
@@ -28348,60 +28402,70 @@
             "source": "app/services/subscriptions/activation_rules/cancel_service.rb",
             "laravel": "App\\Services\\Subscriptions\\ActivationRules\\CancelService",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/Subscriptions/ActivationRulesTest.php"
+            ],
+            "notes": "Contract:  replayed green via ActivationRulesTest (STI payment rules + clock paths)."
         },
         {
             "id": "svc:Subscriptions.ActivationRules.EvaluateService",
             "source": "app/services/subscriptions/activation_rules/evaluate_service.rb",
             "laravel": "App\\Services\\Subscriptions\\ActivationRules\\EvaluateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/Subscriptions/ActivationRulesTest.php"
+            ],
+            "notes": "Contract:  replayed green via ActivationRulesTest (STI payment rules + clock paths)."
         },
         {
             "id": "svc:Subscriptions.ActivationRules.ExpireService",
             "source": "app/services/subscriptions/activation_rules/expire_service.rb",
             "laravel": "App\\Services\\Subscriptions\\ActivationRules\\ExpireService",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/Subscriptions/ActivationRulesTest.php"
+            ],
+            "notes": "Contract:  replayed green via ActivationRulesTest (STI payment rules + clock paths)."
         },
         {
             "id": "svc:Subscriptions.ActivationRules.Payment.EvaluateService",
             "source": "app/services/subscriptions/activation_rules/payment/evaluate_service.rb",
             "laravel": "App\\Services\\Subscriptions\\ActivationRules\\Payment\\EvaluateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/Subscriptions/ActivationRulesTest.php"
+            ],
+            "notes": "Contract:  replayed green via ActivationRulesTest (STI payment rules + clock paths)."
         },
         {
             "id": "svc:Subscriptions.ActivationRules.Payment.ResolveService",
             "source": "app/services/subscriptions/activation_rules/payment/resolve_service.rb",
             "laravel": "App\\Services\\Subscriptions\\ActivationRules\\Payment\\ResolveService",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/Subscriptions/ActivationRulesTest.php"
+            ],
+            "notes": "Contract:  replayed green via ActivationRulesTest (STI payment rules + clock paths)."
         },
         {
             "id": "svc:Subscriptions.ActivationRules.Payment.ValidateService",
@@ -28420,24 +28484,28 @@
             "source": "app/services/subscriptions/activation_rules/resolve_subscription_status_service.rb",
             "laravel": "App\\Services\\Subscriptions\\ActivationRules\\ResolveSubscriptionStatusService",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/Subscriptions/ActivationRulesTest.php"
+            ],
+            "notes": "Contract:  replayed green via ActivationRulesTest (STI payment rules + clock paths)."
         },
         {
             "id": "svc:Subscriptions.ActivationRules.ValidateService",
             "source": "app/services/subscriptions/activation_rules/validate_service.rb",
             "laravel": "App\\Services\\Subscriptions\\ActivationRules\\ValidateService",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/Services/Subscriptions/ActivationRulesTest.php"
+            ],
+            "notes": "Contract:  replayed green via ActivationRulesTest (STI payment rules + clock paths)."
         },
         {
             "id": "svc:Subscriptions.BillingDateQuery",
@@ -28750,12 +28818,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Services/Subscriptions/PlanUpgradeServiceTest.php"
             ],
-            "notes": ""
+            "notes": "Contract:  replayed green via PlanUpgradeServiceTest (override_plan child-plan branch)."
         },
         {
             "id": "svc:Subscriptions.PlanUpgradeService",
@@ -28764,12 +28832,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Services/Subscriptions/PlanUpgradeServiceTest.php"
             ],
-            "notes": ""
+            "notes": "Contract:  replayed green via PlanUpgradeServiceTest (override_plan child-plan branch)."
         },
         {
             "id": "svc:Subscriptions.ProgressiveBilledAmount",

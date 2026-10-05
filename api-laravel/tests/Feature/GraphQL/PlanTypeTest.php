@@ -7,12 +7,12 @@ uses()->group('gql:types:plan', 'gql:types:charge');
 require_once __DIR__.'/GraphQLHelpers.php';
 require_once __DIR__.'/AuthPlumbingTest.php';
 
-use App\Models\Charge;
-use App\Models\Customer;
-use App\Models\Invoice;
 use App\Models\Plan;
-use App\Models\Subscription;
+use App\Models\Charge;
+use App\Models\Invoice;
+use App\Models\Customer;
 use App\Enums\InvoiceStatus;
+use App\Models\Subscription;
 
 /**
  * Ports of the frozen SDL `Plan` / `Charge` type resolvers the Lago front's
@@ -108,7 +108,7 @@ GQL,
     $collection = collect($payload['data']['plans']['collection'] ?? []);
     $row = $collection->firstWhere('code', $plan->code);
 
-    expect($payload["errors"] ?? null)->toBeNull()
+    expect($payload['errors'] ?? null)->toBeNull()
         ->and($row)->not->toBeNull()
         ->and($row['id'])->toBe($plan->id)
         ->and($row['name'])->toBe($plan->name)
@@ -169,7 +169,7 @@ GQL,
     $standard = $charges->firstWhere('code', 'gql_std_charge');
     $graduated = $charges->firstWhere('code', 'gql_graduated_charge');
 
-    expect($payload["errors"] ?? null)->toBeNull()
+    expect($payload['errors'] ?? null)->toBeNull()
         ->and($standard['chargeModel'])->toBe('standard')
         ->and($standard['invoiceable'])->toBeTrue()
         ->and($standard['minAmountCents'])->toBe('0')
@@ -192,6 +192,7 @@ it('maps the integer regroup_paid_fees column to the enum name', function (): vo
         'pay_in_advance' => true,
         'invoiceable' => false,
         'regroup_paid_fees' => 0,
+        'properties' => ['amount' => '50', 'grouped_by' => ['region']],
     ]);
 
     $response = gqlPost(
@@ -202,6 +203,9 @@ query {
             charges {
                 code
                 regroupPaidFees
+                properties {
+                    pricingGroupKeys
+                }
             }
         }
     }
@@ -220,9 +224,11 @@ GQL,
     $charges = collect($payload['data']['plans']['collection'][0]['charges'] ?? []);
     $regrouped = $charges->firstWhere('code', 'gql_regroup_charge');
 
-    expect($payload["errors"] ?? null)->toBeNull()
-        ->and($regrouped['regroupPaidFees'])->toBe('invoice');
-})->coversClass(App\GraphQL\Types\Charge::class);
+    expect($payload['errors'] ?? null)->toBeNull()
+        ->and($regrouped['regroupPaidFees'])->toBe('invoice')
+        ->and($regrouped['properties']['pricingGroupKeys'])->toBe(['region']);
+})->coversClass(App\GraphQL\Types\Charge::class)
+    ->coversClass(App\GraphQL\Types\Properties::class);
 
 it('counts the override children in the plan counts', function (): void {
     [$organization, $user, $plan] = gqlPlanTypeSetup();

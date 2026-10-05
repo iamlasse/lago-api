@@ -263,8 +263,15 @@ return [
     */
 
     'security' => [
-        // Port of LagoApiSchema's `max_depth 15` / `max_complexity 350`.
-        'max_query_complexity' => 350,
+        // Port of LagoApiSchema's `max_depth 15` / `max_complexity 350`. The
+        // complexity ceiling is NOT the literal 350: the two engines score the
+        // same document differently — graphql-ruby's default rule costs 1 per
+        // field with no list multiplier, while webonyx/Lighthouse multiplies
+        // list children — so the front's getPlanForDetailsV2 document
+        // (accepted by Rails at 350) scores 426 here. The ceiling follows the
+        // observable contract ("the production front's queries pass"), not the
+        // Ruby source constant.
+        'max_query_complexity' => (int) env('LIGHTHOUSE_MAX_QUERY_COMPLEXITY', 500),
         'max_query_depth' => 15,
         'disable_introspection' => (bool) env('LIGHTHOUSE_SECURITY_DISABLE_INTROSPECTION', false)
             ? DisableIntrospection::ENABLED
