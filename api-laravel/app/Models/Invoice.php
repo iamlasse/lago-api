@@ -205,6 +205,13 @@ class Invoice extends BaseModel
         return $this->hasMany(InvoiceAppliedTax::class);
     }
 
+    /** Rails: has_many :integration_resources, as: :syncable. */
+    public function integrationResources(): HasMany
+    {
+        return $this->hasMany(IntegrationResource::class, 'syncable_id')
+            ->where('syncable_type', 'Invoice');
+    }
+
     public function taxes(): BelongsToMany
     {
         return $this->belongsToMany(Tax::class, 'invoices_taxes', 'invoice_id', 'tax_id');
@@ -326,6 +333,17 @@ class Invoice extends BaseModel
         return $this->tax_status === InvoiceTaxStatus::Pending->value;
     }
 
+    /**
+     * Port of Rails' `should_apply_provider_tax?` (app/models/invoice.rb):
+     * `fees.any? && Invoices::TransitionToFinalStatusService
+     * .new(invoice: self).should_finalize_invoice?`.
+     */
+    public function shouldApplyProviderTax(): bool
+    {
+        return $this->fees()->exists()
+            && (new \App\Services\Invoices\TransitionToFinalStatusService(invoice: $this))->shouldFinalizeInvoice();
+    }
+
     public function subscriptionGated(): bool
     {
         return $this->subscriptions->contains(fn (Subscription $s) => $s->gated());
@@ -342,6 +360,25 @@ class Invoice extends BaseModel
         }
 
         return (int) $this->total_amount_cents - (int) $this->total_paid_amount_cents;
+    }
+
+    /**
+     * Port of `should_assign_sequential_id?` — Rails calls
+     * `status_changed?(from:, to:)`, whose from:/to: kwargs are swallowed by
+     * ActiveModel's generated dirty predicate: the call is literally "the
+     * status attribute changed". On create that means differing from the
+     * column default (finalized); on update, differing from the persisted
+     * value — so a draft invoice keeps its NULL sequential_id until the
+     * generating/draft → finalized save.
+     */
+    protected function shouldAssignSequentialId(): bool
+    {
+        if (! $this->exists) {
+            return ($this->statusEnum()?->value ?? InvoiceStatus::Finalized->value)
+                !== InvoiceStatus::Finalized->value;
+        }
+
+        return $this->isDirty('status');
     }
 
     /**

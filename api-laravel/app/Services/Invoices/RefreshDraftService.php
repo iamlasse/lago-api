@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace App\Services\Invoices;
 
+use App\Enums\SubscriptionInvoicingReason;
 use App\Models\Fee;
 use App\Models\Invoice;
 use App\Services\BaseResult;
+use App\Services\BaseService;
+use App\Services\Failures\UnknownTaxFailure;
+use App\Services\LifetimeUsages\FlagRefreshFromInvoiceService;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use App\Enums\SubscriptionInvoicingReason;
 
 /**
  * Port of Rails' Invoices::RefreshDraftService
@@ -22,9 +26,9 @@ use App\Enums\SubscriptionInvoicingReason;
  * lifetime-usage / wallet refresh flags, Hubspot update and
  * error_details.discard_all.
  */
-class RefreshDraftService extends \App\Services\BaseService
+class RefreshDraftService extends BaseService
 {
-    private \Illuminate\Support\Collection $invoiceSubscriptions;
+    private Collection $invoiceSubscriptions;
 
     /** @var list<string> */
     private array $subscriptionIds;
@@ -54,7 +58,7 @@ class RefreshDraftService extends \App\Services\BaseService
         $this->invoicingReason = $this->recurring
             ? SubscriptionInvoicingReason::SubscriptionPeriodic->value
             : ($this->invoiceSubscriptions->count() === 1
-                ? ($this->invoiceSubscriptions->first()?->invoicingReason() ?? 'upgrading')
+                ? ($this->invoiceSubscriptions->first()?->invoicingReasonName() ?? 'upgrading')
                 : 'upgrading');
     }
 
@@ -108,14 +112,14 @@ class RefreshDraftService extends \App\Services\BaseService
 
                 $error = $calculateResult->getError();
 
-                if ($error === null || ! $error instanceof \App\Services\Failures\UnknownTaxFailure) {
+                if ($error === null || ! $error instanceof UnknownTaxFailure) {
                     $calculateResult->raiseIfError();
                 }
 
                 if ($oldTotalAmountCents !== (int) $this->invoice->total_amount_cents) {
                     // FlagRefreshFromInvoiceService — WIRED (usage-monitoring
                     // slice). TODO(port): customer.flag_wallets_for_refresh.
-                    \App\Services\LifetimeUsages\FlagRefreshFromInvoiceService::callBang(invoice: $this->invoice);
+                    FlagRefreshFromInvoiceService::callBang(invoice: $this->invoice);
                 }
 
                 // NOTE: In case of a refresh the same day of the termination.
@@ -123,9 +127,16 @@ class RefreshDraftService extends \App\Services\BaseService
                     ->where('invoice_id', $this->invoice->id)
                     ->update(['created_at' => $this->invoice->created_at]);
 
+                // Rails runs CalculateFeesService on invoice.reload — the SAME
+                // model object — so the response serializes fees freshly, with
+                // the stamped created_at. The port refreshed a COPY for the
+                // fee engine; reload here so the cached fees relation (and the
+                // serialized response) sees the update.
+                $this->invoice->refresh();
+
                 $error = $calculateResult->getError();
 
-                if ($error !== null && $error instanceof \App\Services\Failures\UnknownTaxFailure) {
+                if ($error !== null && $error instanceof UnknownTaxFailure) {
                     return;
                 }
 

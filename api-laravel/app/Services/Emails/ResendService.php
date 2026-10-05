@@ -14,9 +14,10 @@ use App\Services\Validators\EmailSanitizer;
  * Port of Rails' Emails::ResendService (app/services/emails/resend_service.rb)
  * — the POST /resend_email endpoints (Rails: `*`/resend_email).
  *
- * Scope of this slice: PaymentReceipt (the only resend target whose
- * controller is ported). Rails' Invoice / CreditNote branches share the same
- * preconditions — they arrive with those controllers' slices.
+ * Scope of this slice: PaymentReceipt (the only resend target whose mailer
+ * is ported). The Rails Invoice / CreditNote branches run through the SAME
+ * precondition chain here (found → finalized → premium → validation
+ * errors); only the send step is receipt-only.
  *
  * Rails order: resource present, valid_status? (a PaymentReceipt is always
  * "finalized"), premium license, free-form validation errors (billing entity
@@ -54,7 +55,7 @@ class ResendService extends BaseService
 
         // Rails: not_allowed_failure!(code: "#{resource_type}_not_finalized")
         // unless valid_status?.
-        if (! $this->resource instanceof PaymentReceipt) {
+        if (! $this->validStatus()) {
             return $result->notAllowedFailure($resourceType.'_not_finalized');
         }
 
@@ -66,6 +67,14 @@ class ResendService extends BaseService
 
         if ($validationErrors !== []) {
             return $result->validationFailure($validationErrors);
+        }
+
+        // TODO(port): the Invoice / CreditNote mailer branches
+        // (InvoiceMailer / CreditNoteMailer with their ensure-PDF
+        // preconditions and the zero-amount-invoice rule) — premium-gated,
+        // so the OSS license never reaches this branch for them.
+        if (! $this->resource instanceof PaymentReceipt) {
+            throw new \LogicException('Invoice/CreditNote resend mailers are not ported — they live with the mailer slice.');
         }
 
         $mailable = new PaymentReceiptCreatedMail(
@@ -84,6 +93,19 @@ class ResendService extends BaseService
         }
 
         return $result;
+    }
+
+    /**
+     * Rails: `valid_status?` — a PaymentReceipt is always valid; Invoice and
+     * CreditNote must be finalized.
+     */
+    private function validStatus(): bool
+    {
+        if ($this->resource instanceof PaymentReceipt) {
+            return true;
+        }
+
+        return (bool) $this->resource?->isFinalized();
     }
 
     /** @return list<string> */

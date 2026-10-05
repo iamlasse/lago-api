@@ -203,19 +203,26 @@ class PaymentBillingConfigurationService extends BaseService
 
         $async = ! (($billing['sync'] ?? null) === true);
 
-        if ($provider === 'stripe') {
-            CreateOrUpdateService::call(
-                customer: $customer,
-                paymentProviderId: $resolved?->id,
-                params: $billing,
-                async: $async,
-            )->raiseIfError();
+        $serviceClass = match ($provider) {
+            'stripe' => CreateOrUpdateService::class,
+            'adyen' => \App\Services\PaymentProviders\Adyen\Customers\CreateService::class,
+            'gocardless' => \App\Services\PaymentProviders\Gocardless\Customers\CreateService::class,
+            'cashfree' => \App\Services\PaymentProviders\Cashfree\Customers\CreateService::class,
+            'flutterwave' => \App\Services\PaymentProviders\Flutterwave\Customers\CreateService::class,
+            'moneyhash' => \App\Services\PaymentProviders\Moneyhash\Customers\CreateService::class,
+            default => null,
+        };
 
+        if ($serviceClass === null) {
             return;
         }
 
-        // TODO(port): the other providers' Customers::CreateService legs
-        // (gocardless / cashfree / adyen / flutterwave / moneyhash).
+        $serviceClass::call(
+            customer: $customer,
+            paymentProviderId: $resolved?->id,
+            params: $billing,
+            async: $async,
+        )->raiseIfError();
     }
 
     /** Rails: customer.provider_customer for the customer's provider slug. */
@@ -227,6 +234,11 @@ class PaymentBillingConfigurationService extends BaseService
 
         $type = match ($customer->payment_provider) {
             'stripe' => 'PaymentProviderCustomers::StripeCustomer',
+            'adyen' => 'PaymentProviderCustomers::AdyenCustomer',
+            'gocardless' => 'PaymentProviderCustomers::GocardlessCustomer',
+            'cashfree' => 'PaymentProviderCustomers::CashfreeCustomer',
+            'flutterwave' => 'PaymentProviderCustomers::FlutterwaveCustomer',
+            'moneyhash' => 'PaymentProviderCustomers::MoneyhashCustomer',
             default => null,
         };
 

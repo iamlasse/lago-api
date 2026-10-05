@@ -300,7 +300,7 @@ class SubscriptionService extends \App\Services\BaseService
             $this->customer()->applicableTimezone(),
         );
 
-        return (string) ($daysToBill * $this->singleDayPrice($this->subscription));
+        return MoneyMath::floatToDecimal($daysToBill * $this->singleDayPrice($this->subscription));
     }
 
     /**
@@ -334,7 +334,7 @@ class SubscriptionService extends \App\Services\BaseService
             ?->setTimezone($this->customer()->applicableTimezone())
             ->startOfDay();
 
-        return (string) ($numberOfDaysToBill * $this->singleDayPrice($this->subscription, $optionalFromDate));
+        return MoneyMath::floatToDecimal($numberOfDaysToBill * $this->singleDayPrice($this->subscription, $optionalFromDate));
     }
 
     private function upgradedAmount(): string
@@ -363,7 +363,7 @@ class SubscriptionService extends \App\Services\BaseService
         // NOTE: We only bill the days between the upgrade date and the end of
         // the period. A credit note will apply the amount of days from the
         // previous plan that were not consumed.
-        return (string) ($numberOfDaysToBill * $this->singleDayPrice($this->subscription));
+        return MoneyMath::floatToDecimal($numberOfDaysToBill * $this->singleDayPrice($this->subscription));
     }
 
     private function fullPeriodAmount(): string
@@ -391,7 +391,7 @@ class SubscriptionService extends \App\Services\BaseService
                     ?->setTimezone($this->customer()->applicableTimezone())
                     ->startOfDay();
 
-                return (string) ($numberOfDaysToBill * $this->singleDayPrice($this->subscription, $optionalFromDate));
+                return MoneyMath::floatToDecimal($numberOfDaysToBill * $this->singleDayPrice($this->subscription, $optionalFromDate));
             }
         }
 

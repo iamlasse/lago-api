@@ -8,6 +8,8 @@ use App\Models\Tax;
 use App\Services\BaseResult;
 use App\Services\BaseService;
 use App\Services\Failures\FailedResult;
+use App\Services\BillingEntities\Taxes\ApplyTaxesService;
+use App\Services\BillingEntities\Taxes\RemoveTaxesService;
 
 use function array_unique;
 use function array_values;
@@ -15,11 +17,6 @@ use function array_key_exists;
 
 /**
  * Port of Rails' Taxes::UpdateService (app/services/taxes/update_service.rb).
- *
- * Not ported (dependencies do not exist yet):
- * - TODO(port): BillingEntities::Taxes::{Apply,Remove}TaxesService —
- *   maintaining the default billing entity's applied taxes when
- *   `applied_to_organization` changes; the hook point is marked below.
  */
 class UpdateService extends BaseService
 {
@@ -98,15 +95,25 @@ class UpdateService extends BaseService
      * Rails: `manage_taxes_on_billing_entity` — apply or remove the tax on
      * the organization's default billing entity to mirror
      * `applied_to_organization`.
-     *
-     * TODO(port): BillingEntities::Taxes::{Apply,Remove}TaxesService.
      */
     protected function manageTaxesOnBillingEntity(Tax $tax): void
     {
-        // TODO(port): when $tax->applied_to_organization —
-        //   BillingEntities::Taxes::ApplyTaxesService.call(
-        //     billing_entity: $tax->organization->defaultBillingEntity,
-        //     tax_codes: [$tax->code]); otherwise the matching
-        //   BillingEntities::Taxes::RemoveTaxesService.call.
+        $billingEntity = $tax->organization->defaultBillingEntity;
+
+        if ($billingEntity === null) {
+            return;
+        }
+
+        if ($tax->applied_to_organization) {
+            ApplyTaxesService::call(
+                billingEntity: $billingEntity,
+                taxCodes: [$tax->code],
+            );
+        } else {
+            RemoveTaxesService::call(
+                billingEntity: $billingEntity,
+                taxCodes: [$tax->code],
+            );
+        }
     }
 }

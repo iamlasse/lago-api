@@ -90,6 +90,60 @@ class PaymentProviderCustomer extends BaseModel
         return $this->belongsTo(PaymentProvider::class);
     }
 
+    /** Rails: MoneyhashCustomer#mh_billing_data — derived from the customer. */
+    public function mhBillingData(): array
+    {
+        $customer = $this->customer;
+
+        $billingData = array_filter([
+            'name' => $customer?->name,
+            'first_name' => $customer?->firstname,
+            'last_name' => $customer?->lastname,
+            'email' => $customer?->email,
+            'phone_number' => $customer?->phone,
+            'address' => $customer?->address_line1,
+            'address1' => $customer?->address_line2,
+            'city' => $customer?->city,
+            'state' => $customer?->state,
+            'country' => $customer?->country,
+            'postal_code' => $customer?->zipcode,
+        ], fn (mixed $value): bool => $value !== null && $value !== '');
+
+        /** @var array<string, mixed> $billingData */
+        return $billingData;
+    }
+
+    /** Rails: MoneyhashCustomer#mh_custom_fields — derived from the customer. */
+    public function mhCustomFields(): array
+    {
+        $customer = $this->customer;
+
+        return [
+            // connection
+            'lago_mh_connection_id' => $this->payment_provider_id,
+            'lago_mh_connection_code' => $this->paymentProvider?->code,
+            // customer
+            'lago_customer_id' => $customer?->id,
+            'lago_customer_external_id' => (string) ($customer?->external_id ?? ''),
+            'lago_customer_name' => (string) ($customer?->name ?? ''),
+            'lago_customer_currency' => (string) ($customer?->currency ?? ''),
+            'lago_customer_legal_name' => (string) ($customer?->legal_name ?? ''),
+            'lago_customer_legal_number' => (string) ($customer?->legal_number ?? ''),
+            'lago_customer_tax_identification_number' => (string) ($customer?->tax_identification_number ?? ''),
+            'lago_customer_provider_customer_id' => (string) ($this->provider_customer_id ?? ''),
+            // organization
+            'lago_organization_id' => $customer?->organization_id,
+        ];
+    }
+
+    /** Rails: MoneyhashCustomer settings_accessors :payment_method_id. */
+    public function moneyhashPaymentMethodId(): ?string
+    {
+        $value = $this->getFromSettings('payment_method_id');
+
+        return $value === null ? null : (string) $value;
+    }
+
     protected function casts(): array
     {
         return [

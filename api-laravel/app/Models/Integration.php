@@ -7,6 +7,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 /**
  * Port of Rails' Integrations::BaseIntegration (app/models/integrations/
@@ -37,9 +39,31 @@ class Integration extends BaseModel
 
     public const ENTRA_ID_TYPE = 'Integrations::EntraIdIntegration';
 
+    public const ANROK_TYPE = 'Integrations::AnrokIntegration';
+
+    public const AVALARA_TYPE = 'Integrations::AvalaraIntegration';
+
+    /** Rails: INTEGRATION_TAX_TYPES (app/models/integrations/base_integration.rb). */
+    public const INTEGRATION_TAX_TYPES = [self::ANROK_TYPE, self::AVALARA_TYPE];
+
     public function organization(): BelongsTo
     {
         return $this->belongsTo(Organization::class);
+    }
+
+    /** Rails: has_many :integration_customers, class_name: "IntegrationCustomers::BaseCustomer". */
+    public function integrationCustomers(): HasMany
+    {
+        return $this->hasMany(IntegrationCustomer::class);
+    }
+
+    /**
+     * Rails: `provider_key` — the short provider key, e.g. "anrok",
+     * "avalara" (type.demodulize.delete_suffix("Integration").underscore).
+     */
+    public function providerKey(): string
+    {
+        return Str::snake(preg_replace('/Integration$/', '', Str::afterLast((string) $this->type, '::')));
     }
 
     // -- SettingsStorable / SecretsStorable (app/models/concerns/

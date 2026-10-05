@@ -136,6 +136,34 @@ class Fee extends BaseModel
         return $this->typeEnum() === FeeType::Subscription;
     }
 
+    /**
+     * Port of Rails' `item_key` (app/models/fee.rb): `id || object_id` —
+     * unsaved (preview/usage) fees fall back to the object identity.
+     */
+    public function itemKey(): int|string
+    {
+        return $this->id ?? spl_object_id($this);
+    }
+
+    /** Port of Rails' `item_id`: the item identity per fee kind. */
+    public function itemId(): ?string
+    {
+        return match ($this->typeEnum()) {
+            FeeType::Charge => $this->billable_metric_id,
+            FeeType::AddOn => $this->add_on_id,
+            FeeType::Credit => $this->invoiceable_id,
+            FeeType::FixedCharge => $this->fixedCharge?->add_on_id,
+            FeeType::Product => $this->invoiceable_id,
+            default => $this->subscription_id,
+        };
+    }
+
+    /** Port of Rails' `taxable?`: `!sub_total_excluding_taxes_amount_cents.zero?`. */
+    public function taxable(): bool
+    {
+        return (int) $this->subTotalExcludingTaxesAmountCents() !== 0;
+    }
+
     public function paymentStatusEnum(): ?FeePaymentStatus
     {
         // BUGFIX(port): payment_status is enum-cast — the raw value may

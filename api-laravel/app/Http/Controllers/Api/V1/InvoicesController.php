@@ -17,6 +17,8 @@ use App\Services\Invoices\DeleteService;
 use App\Services\Invoices\UpdateService;
 use App\Exceptions\Api\NotFoundException;
 use App\Serializers\V1\InvoiceSerializer;
+use App\Serializers\V1\PaymentProviders\InvoicePaymentSerializer;
+use App\Services\Invoices\Payments\GeneratePaymentUrlService;
 use App\Exceptions\Api\ForbiddenException;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\Concerns\Pagination;
@@ -34,9 +36,11 @@ use App\Services\Invoices\RefreshDraftAndFinalizeService;
  * uuid format never contains a dot, so the default constraint applies).
  *
  * Not ported (dependencies out of scope): retry_payment
- * (Invoices::Payments::RetryService), resend_email (Emails::ResendService),
- * payment_url (GeneratePaymentUrlService) and sync_salesforce_id — see
- * routes/api.php. Preview answers the premium feature_unavailable envelope.
+ * (Invoices::Payments::RetryService) and sync_salesforce_id — see
+ * routes/api.php. resend_email (Emails::ResendService) and payment_url
+ * (GeneratePaymentUrlService) are wired; payment_url's happy path lives
+ * with the PSP slice (PaymentIntents::FetchService). Preview answers the
+ * premium feature_unavailable envelope.
  */
 class InvoicesController extends ApiController
 {
@@ -334,6 +338,54 @@ class InvoicesController extends ApiController
     public function preview(): never
     {
         throw new ForbiddenException('feature_unavailable');
+    }
+
+    /**
+     * Rails: `resend_email` — Emails::ResendService; success answers
+     * head(:ok) (no body).
+     */
+    public function resendEmail(Request $request): JsonResponse
+    {
+        $invoice = $this->visibleInvoice($request);
+
+        $result = \App\Services\Emails\ResendService::call(
+            resource: $invoice,
+            to: $this->listParam($request, 'to'),
+            cc: $this->listParam($request, 'cc'),
+            bcc: $this->listParam($request, 'bcc'),
+        );
+
+        if ($result->success()) {
+            return response()->json(null, 200);
+        }
+
+        $this->renderErrorResponse($result);
+    }
+
+    /**
+     * Rails: `payment_url` —
+     * Invoices::Payments::GeneratePaymentUrlService; success renders the
+     * invoice_payment_details serializer.
+     */
+    public function paymentUrl(Request $request): JsonResponse
+    {
+        $invoice = $this->visibleInvoice($request);
+
+        $invoiceWithCustomer = $invoice?->loadMissing('customer');
+
+        $result = GeneratePaymentUrlService::call(invoice: $invoiceWithCustomer);
+
+        if ($result->success()) {
+            return $this->renderSerializerJson((new InvoicePaymentSerializer(
+                $invoiceWithCustomer,
+                [
+                    'root_name' => 'invoice_payment_details',
+                    'payment_url' => $result->payment_url,
+                ],
+            ))->toJson());
+        }
+
+        $this->renderErrorResponse($result);
     }
 
     // -- Helpers ---------------------------------------------------------------------

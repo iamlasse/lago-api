@@ -18,7 +18,13 @@ use App\Services\Fees\ApplyTaxesService as FeeApplyTaxesService;
  */
 class ComputeAmountsFromFees extends \App\Services\BaseService
 {
-    public function __construct(private readonly Invoice $invoice) {}
+    /**
+     * @param  list<\App\Services\Integrations\Aggregator\Taxes\TaxResult>|null  $provider_taxes
+     */
+    public function __construct(
+        private readonly Invoice $invoice,
+        private readonly ?array $provider_taxes = null,
+    ) {}
 
     public function execute(): BaseResult
     {
@@ -26,7 +32,14 @@ class ComputeAmountsFromFees extends \App\Services\BaseService
 
         if ($this->shouldApplyFeeTaxes()) {
             foreach ($this->invoice->fees as $fee) {
-                FeeApplyTaxesService::call(fee: $fee)->raiseIfError();
+                if ($this->shouldApplyProviderTaxes()) {
+                    \App\Services\Fees\ApplyProviderTaxesService::call(
+                        fee: $fee,
+                        fee_taxes: $this->fee_taxes($fee),
+                    )->raiseIfError();
+                } else {
+                    FeeApplyTaxesService::call(fee: $fee)->raiseIfError();
+                }
 
                 if ($this->invoice->exists) {
                     $fee->save();
@@ -44,7 +57,14 @@ class ComputeAmountsFromFees extends \App\Services\BaseService
             - (int) $this->invoice->progressive_billing_credit_amount_cents
             - (int) $this->invoice->coupons_amount_cents;
 
-        ApplyTaxesService::call(invoice: $this->invoice)->raiseIfError();
+        if ($this->shouldApplyProviderTaxes()) {
+            \App\Services\Invoices\ApplyProviderTaxesService::call(
+                invoice: $this->invoice,
+                provider_taxes: $this->provider_taxes,
+            )->raiseIfError();
+        } else {
+            ApplyTaxesService::call(invoice: $this->invoice)->raiseIfError();
+        }
 
         $this->invoice->sub_total_including_taxes_amount_cents =
             (int) $this->invoice->sub_total_excluding_taxes_amount_cents
@@ -57,6 +77,28 @@ class ComputeAmountsFromFees extends \App\Services\BaseService
         $result->invoice = $this->invoice;
 
         return $result;
+    }
+
+    private function shouldApplyProviderTaxes(): bool
+    {
+        return $this->provider_taxes !== null
+            && $this->invoice->customer->taxCustomer() !== null
+            && $this->invoice->shouldApplyProviderTax();
+    }
+
+    /**
+     * Rails: `fee_taxes(fee)` — the provider answer whose item_id matches
+     * the fee.
+     */
+    private function fee_taxes(object $fee): ?object
+    {
+        foreach ($this->provider_taxes ?? [] as $item) {
+            if ($item->itemId == $fee->id) {
+                return $item;
+            }
+        }
+
+        return null;
     }
 
     private function shouldApplyFeeTaxes(): bool

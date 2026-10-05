@@ -270,12 +270,13 @@ $sharedApi = function (): void {
         // void/retry/lose_dispute/download_* are POST.
         //
         // Not registered yet (dependencies do not exist): retry_payment
-        // (Invoices::Payments::RetryService), payment_url
-        // (GeneratePaymentUrlService), resend_email (Emails::ResendService)
-        // and sync_salesforce_id (SyncSalesforceIdService) — each has its
-        // ledger row and lands with its milestone. Preview IS registered but
-        // premium-gated (Rails: PremiumFeatureOnly → 403 feature_unavailable
-        // in the OSS image).
+        // (Invoices::Payments::RetryService) and sync_salesforce_id
+        // (SyncSalesforceIdService) — each has its ledger row and lands with
+        // its milestone. Preview IS registered but premium-gated (Rails:
+        // PremiumFeatureOnly → 403 feature_unavailable in the OSS image);
+        // resend_email is premium-gated inside Emails::ResendService and
+        // payment_url's happy path lives with the PSP slice
+        // (PaymentIntents::FetchService).
         Route::prefix('invoices')->as('invoices:')->group(function () {
             Route::get('', [InvoicesController::class, 'index']);
             Route::post('', [InvoicesController::class, 'create']);
@@ -287,6 +288,8 @@ $sharedApi = function (): void {
             Route::post('{id}/void', [InvoicesController::class, 'void']);
             Route::post('{id}/retry', [InvoicesController::class, 'retry']);
             Route::post('{id}/lose_dispute', [InvoicesController::class, 'loseDispute']);
+            Route::post('{id}/resend_email', [InvoicesController::class, 'resendEmail']);
+            Route::post('{id}/payment_url', [InvoicesController::class, 'paymentUrl']);
             Route::post('{id}/download', [InvoicesController::class, 'downloadPdf']);
             Route::post('{id}/download_pdf', [InvoicesController::class, 'downloadPdf']);
             Route::post('{id}/download_xml', [InvoicesController::class, 'downloadXml']);

@@ -9,17 +9,12 @@ use App\Models\Organization;
 use App\Services\BaseResult;
 use App\Services\BaseService;
 use App\Services\Failures\FailedResult;
+use App\Services\BillingEntities\Taxes\ApplyTaxesService;
 
 use function array_key_exists;
 
 /**
  * Port of Rails' Taxes::CreateService (app/services/taxes/create_service.rb).
- *
- * Not ported (dependencies do not exist yet):
- * - TODO(port): BillingEntities::Taxes::ApplyTaxesService — applying the tax
- *   to the organization's default billing entity (billing_entities_taxes)
- *   when `applied_to_organization` is true; the emission point is marked
- *   below.
  */
 class CreateService extends BaseService
 {
@@ -72,13 +67,18 @@ class CreateService extends BaseService
      * Rails: `apply_taxes_on_billing_entity` —
      * BillingEntities::Taxes::ApplyTaxesService.call(billing_entity:
      * organization.default_billing_entity, tax_codes: [code]).
-     *
-     * TODO(port): BillingEntities::Taxes::ApplyTaxesService.
      */
     protected function applyTaxesOnBillingEntity(Tax $tax): void
     {
-        // TODO(port): BillingEntities::Taxes::ApplyTaxesService.call(
-        //   billing_entity: $this->organization->defaultBillingEntity,
-        //   tax_codes: [$tax->code]).
+        $billingEntity = $this->organization->defaultBillingEntity;
+
+        if ($billingEntity === null) {
+            return;
+        }
+
+        ApplyTaxesService::call(
+            billingEntity: $billingEntity,
+            taxCodes: [$tax->code],
+        );
     }
 }

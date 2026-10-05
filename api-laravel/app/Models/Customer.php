@@ -349,6 +349,41 @@ class Customer extends BaseModel
         return $this->document_locale ?: $this->billingEntity?->document_locale;
     }
 
+    /**
+     * Rails: `tax_customer` — the customer's tax provider connection (anrok
+     * or avalara integration customer), or nil.
+     */
+    public function taxCustomer(): ?\App\Models\IntegrationCustomer
+    {
+        return $this->integrationCustomers()
+            ->whereIn('type', \App\Models\IntegrationCustomer::PROVIDER_TYPES)
+            ->first();
+    }
+
+    /**
+     * Rails: `effective_shipping_address` — the shipping columns falling back
+     * to the billing address ones.
+     *
+     * @return array<string, string|null>
+     */
+    public function effectiveShippingAddress(): array
+    {
+        return [
+            'address_line1' => $this->shipping_address_line1 ?: $this->address_line1,
+            'address_line2' => $this->shipping_address_line2 ?: $this->address_line2,
+            'city' => $this->shipping_city ?: $this->city,
+            'zipcode' => $this->shipping_zipcode ?: $this->zipcode,
+            'state' => $this->shipping_state ?: $this->state,
+            'country' => $this->shipping_country ?: $this->country,
+        ];
+    }
+
+    /** Rails: `taxable?` — a tax identification number makes the contact taxable. */
+    public function taxable(): bool
+    {
+        return $this->tax_identification_number !== null && $this->tax_identification_number !== '';
+    }
+
     // -- Validations ------------------------------------------------------------
 
     /**

@@ -33,10 +33,20 @@ trait Sequenced
     public static function bootSequenced(): void
     {
         static::saving(function ($model): void {
-            if ($model->sequential_id === null) {
+            if ($model->sequential_id === null && $model->shouldAssignSequentialId()) {
                 $model->sequential_id = $model->generateSequentialId();
             }
         });
+    }
+
+    /**
+     * Port of `should_assign_sequential_id?` — override in the model
+     * (Rails' Invoice gates the assignment on status_changed_to_finalized?,
+     * so a draft keeps its NULL sequential_id until it is finalized).
+     */
+    protected function shouldAssignSequentialId(): bool
+    {
+        return true;
     }
 
     #[Scope]

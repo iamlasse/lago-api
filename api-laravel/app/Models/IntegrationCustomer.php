@@ -38,9 +38,34 @@ class IntegrationCustomer extends BaseModel
         'crm' => 'crm',
     ];
 
+    /** Rails STI type strings (frozen `type` column values). */
+    public const ANROK_TYPE = 'IntegrationCustomers::AnrokCustomer';
+
+    public const AVALARA_TYPE = 'IntegrationCustomers::AvalaraCustomer';
+
+    /** Rails: BaseCustomer.customer_type(:anrok) — the STI type per provider key. */
+    public const PROVIDER_TYPES = [
+        'anrok' => self::ANROK_TYPE,
+        'avalara' => self::AVALARA_TYPE,
+    ];
+
+    /**
+     * Rails: BaseCustomer#tax_kind? — the customer_type is one of the tax
+     * provider kinds (anrok / avalara).
+     */
+    public function taxKind(): bool
+    {
+        return in_array($this->type, [self::ANROK_TYPE, self::AVALARA_TYPE], true);
+    }
+
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
+    }
+
+    public function integration(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Integration::class);
     }
 
     protected function casts(): array

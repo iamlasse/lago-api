@@ -127,6 +127,93 @@ final class MoneyMath
     }
 
     /**
+     * Port of Rails' `Float#to_d` (BigDecimal(float) with no precision, the
+     * capture image's Ruby 4) — the double's exact binary expansion
+     * TRUNCATED at 16 significant digits, rendered fixed-notation
+     * ("4900.fdiv(31)" → 158.06451612903225|6 → "158.0645161290322").
+     * PHP's `(string) float` casts to 14 significant digits instead, which
+     * silently truncates every float that flows into a precise_* column.
+     */
+    public static function floatToDecimal(float $value): string
+    {
+        $negative = $value < 0.0 ? '-' : '';
+
+        // %.30F emits the double's exact decimal expansion for every
+        // magnitude that reaches a precise_* column (doubles are exact to
+        // ~17 significant digits; 30 decimals carries well past that).
+        [$intPart, $fraction] = explode('.', sprintf('%.30F', abs($value)));
+
+        if ($intPart !== '0') {
+            $digits = $intPart.$fraction;
+            $digits = mb_substr($digits, 0, 16);
+            // BigDecimal's digit representation carries no trailing zeros
+            // ("24.0", not "24.00000000000000").
+            $digits = rtrim($digits, '0');
+            if ($digits === '') {
+                return '0';
+            }
+            $point = mb_strlen($intPart);
+
+            if ($point >= mb_strlen($digits)) {
+                return $negative.$digits.str_repeat('0', $point - mb_strlen($digits)).'.0';
+            }
+
+            return $negative.mb_substr($digits, 0, $point).'.'.mb_substr($digits, $point);
+        }
+
+        $stripped = ltrim($fraction, '0');
+
+        if ($stripped === '') {
+            return '0';
+        }
+
+        $digits = rtrim(mb_substr($stripped, 0, 16), '0');
+        $leadingZeros = mb_strlen($fraction) - mb_strlen($stripped);
+
+        if ($digits === '') {
+            return '0';
+        }
+
+        return $negative.'0.'.str_repeat('0', $leadingZeros).$digits;
+    }
+
+    /**
+     * Port of Rails' BigDecimal#/ (BigDecimal#fdiv with a BigDecimal
+     * divisor) — the exact quotient TRUNCATED at 16 significant digits
+     * ("189.67741935483864".fdiv(100.to_d) → "1.896774193548386", not
+     * "...3864"). Non-terminating quotients are beyond the fee columns'
+     * numeric(40,15) scale, so the truncation is the only visible rule.
+     */
+    public static function truncateSignificant(string $numeric, int $digits = 16): string
+    {
+        $negative = str_starts_with($numeric, '-') ? '-' : '';
+        $numeric = ltrim($numeric, '-');
+
+        if (! str_contains($numeric, '.')) {
+            $numeric .= '.0';
+        }
+
+        [$int, $fraction] = explode('.', $numeric);
+        $all = $int.$fraction;
+        $stripped = ltrim($all, '0');
+
+        if ($stripped === '') {
+            return '0';
+        }
+
+        $firstSignificant = mb_strlen($all) - mb_strlen($stripped);
+        $keep = max(mb_strlen($int), $firstSignificant + $digits);
+
+        $kept = mb_strlen($all) >= $keep
+            ? mb_substr($all, 0, $keep)
+            : $all.str_repeat('0', $keep - mb_strlen($all));
+
+        $result = mb_substr($kept, 0, mb_strlen($int)).'.'.mb_substr($kept, mb_strlen($int));
+
+        return $negative.$result;
+    }
+
+    /**
      * Port of Rails' BigDecimal#to_s("F") — the JSON form ActiveSupport uses
      * for BigDecimal in jsonb / API payloads: fixed notation, trailing
      * FRACTIONAL zeros trimmed, at least one fractional digit.

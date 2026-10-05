@@ -390,6 +390,19 @@ class Organization extends BaseModel
         return $this->lifetimeUsageEnabled() || $this->progressiveBillingEnabled();
     }
 
+    /** Rails: has_many :integrations (Integrations::BaseIntegration). */
+    public function integrations(): HasMany
+    {
+        return $this->hasMany(\App\Models\Integration::class);
+    }
+
+    /** Rails: avalara_enabled? (premium integration "avalara"; anrok is non-premium). */
+    public function avalaraEnabled(): bool
+    {
+        return \App\Support\License::premium()
+            && in_array('avalara', (array) ($this->premium_integrations ?? []), true);
+    }
+
     /** Rails: has_many :alerts, class_name: "UsageMonitoring::Alert". */
     public function alerts(): HasMany
     {

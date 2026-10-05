@@ -60,20 +60,29 @@ class FeeSerializer extends ModelSerializer
             'amount_cents' => $model->amount_cents,
             'amount_currency' => $model->amount_currency,
             // Rails serializes BigDecimal attributes as fixed-notation
-            // strings ("24.0", "28.8") — see decimalToF.
+            // strings ("24.0", "28.8") — see decimalToF. Rails divides the
+            // BigDecimal by subunit_to_unit.to_d — a BigDecimal divisor, so
+            // #fdiv is BigDecimal division: the exact quotient TRUNCATED at
+            // 16 significant digits (MoneyMath::truncateSignificant).
             'precise_amount' => MoneyMath::toF(
-                bcdiv((string) $model->precise_amount_cents, (string) $subunitToUnit, 10),
+                MoneyMath::truncateSignificant(
+                    bcdiv((string) $model->precise_amount_cents, (string) $subunitToUnit, 20),
+                ),
             ),
             'precise_total_amount' => MoneyMath::toF(
-                bcdiv(
-                    bcadd((string) $model->precise_amount_cents, (string) $model->taxes_precise_amount_cents, 15),
-                    (string) $subunitToUnit,
-                    10,
+                MoneyMath::truncateSignificant(
+                    bcdiv(
+                        bcadd((string) $model->precise_amount_cents, (string) $model->taxes_precise_amount_cents, 15),
+                        (string) $subunitToUnit,
+                        20,
+                    ),
                 ),
             ),
             'taxes_amount_cents' => $model->taxes_amount_cents,
             'taxes_precise_amount' => MoneyMath::toF(
-                bcdiv((string) $model->taxes_precise_amount_cents, (string) $subunitToUnit, 10),
+                MoneyMath::truncateSignificant(
+                    bcdiv((string) $model->taxes_precise_amount_cents, (string) $subunitToUnit, 20),
+                ),
             ),
             'taxes_rate' => $model->taxes_rate,
             'total_aggregated_units' => $model->total_aggregated_units === null

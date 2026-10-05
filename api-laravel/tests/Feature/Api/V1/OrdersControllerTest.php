@@ -411,6 +411,10 @@ it('returns not_found when the executed order does not exist', function (): void
 });
 
 it('returns forbidden on execute without a premium license', function (): void {
+    // The config default may carry a token (premium by default in this
+    // environment) — the scenario needs the gate closed.
+    config(['lago.license' => null]);
+
     [$organization, $apiKey] = orderEndpointOrganization(['feature_flags' => ['order_forms']]);
 
     $customer = Customer::factory()->create([

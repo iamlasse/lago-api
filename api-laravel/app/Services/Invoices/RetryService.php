@@ -65,8 +65,8 @@ class RetryService extends \App\Services\BaseService
             return $result->notAllowedFailure('invalid_status');
         }
 
-        // TODO(port): Invoices::ProviderTaxes::PullTaxesAndApplyJob
-        // .perform_later(invoice:).
+        // Rails: Invoices::ProviderTaxes::PullTaxesAndApplyJob.perform_later(invoice:).
+        \App\Jobs\Invoices\ProviderTaxes\PullTaxesAndApplyJob::dispatch($updated ?? $this->invoice);
 
         $result->invoice = $updated ?? $this->invoice;
 

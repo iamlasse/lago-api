@@ -90,6 +90,18 @@ class LagoHttpClient
         return $this->request('POST', json_encode($body, JSON_UNESCAPED_SLASHES), $headers);
     }
 
+    /**
+     * Rails: `put_with_response` — same contract as post_with_response over
+     * PUT. The aggregator contacts update calls go through this.
+     *
+     * @param  array<string, mixed>  $body
+     * @param  array<string, string>  $headers
+     */
+    public function putWithResponse(array $body, array $headers): Response
+    {
+        return $this->request('PUT', json_encode($body, JSON_UNESCAPED_SLASHES), $headers);
+    }
+
     /** Rails: `post_with_response` with an already-encoded body. */
     public function postRawWithResponse(string $encodedBody, array $headers): Response
     {

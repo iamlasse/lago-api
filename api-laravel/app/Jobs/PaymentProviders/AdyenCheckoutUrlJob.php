@@ -1,0 +1,40 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Jobs\PaymentProviders;
+
+use App\Models\PaymentProviderCustomer;
+use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use App\Services\PaymentProviderCustomers\AdyenService;
+
+/**
+ * Port of Rails' PaymentProviderCustomers::AdyenCheckoutUrlJob (queue
+ * :providers, retry_on Adyen::AdyenError 6 attempts polynomially longer).
+ */
+class AdyenCheckoutUrlJob implements ShouldQueue
+{
+    use Queueable;
+
+    public int $tries = 6;
+
+    public int $maxExceptions = 6;
+
+    public function __construct(
+        public readonly PaymentProviderCustomer $providerCustomer,
+    ) {
+        $this->onQueue(filter_var(env('SIDEKIQ_PROVIDERS'), FILTER_VALIDATE_BOOL) ? 'providers' : 'default');
+    }
+
+    /** Rails: `wait: :polynomially_longer`. */
+    public function backoff(): array
+    {
+        return [15, 60, 135, 240, 375];
+    }
+
+    public function handle(): void
+    {
+        AdyenService::callBang(action: AdyenService::GENERATE_CHECKOUT_URL, providerCustomer: $this->providerCustomer);
+    }
+}
