@@ -251,6 +251,12 @@ Use the [self-hosted deployment guide](https://doc.getlago.com/guide/lago-self-h
 
 Lago is built in the open. Read the [contributing guide](./CONTRIBUTING.md) and [development environment setup](./docs/dev_environment.md) to get started.
 
+## Repository layout
+
+- `api/` — Rails billing API (the reference implementation).
+- `api-laravel/` — Laravel port of the Rails API: drop-in replacement served on the same port, environment names, and frozen database schema. See [api-laravel/DEPLOY.md](./api-laravel/DEPLOY.md).
+- `front/`, `connectors/`, `events-processor/` — Lago UI, connectors, and event processing.
+
 Look for issues labeled [`beginner`](https://github.com/getlago/lago/issues?q=is%3Aissue%20state%3Aopen%20label%3Abeginner) or [`help-wanted`](https://github.com/getlago/lago/issues?q=is%3Aissue%20state%3Aopen%20label%3Ahelp-wanted), or join the [Lago Slack community](https://www.getlago.com/slack).
 
 ## License
