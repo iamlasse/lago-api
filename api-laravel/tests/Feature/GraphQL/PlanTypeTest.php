@@ -284,6 +284,12 @@ it('surfaces isOverridden on an override child plan', function (): void {
         'parent_id' => $plan->id,
         'code' => $plan->code.'_child2',
     ]);
+    $childCustomer = Customer::factory()->for($organization)->create();
+    $childSubscription = Subscription::factory()->for($childCustomer)->for($childPlan)->create([
+        'organization_id' => $organization->id,
+        'external_id' => 'gql-plan-type-sub-child2',
+        'status' => 1,
+    ]);
 
     $response = gqlPost(
         <<<'GQL'
@@ -297,7 +303,7 @@ query($id: ID!) {
     }
 }
 GQL,
-        ['id' => $childPlan->subscriptions()->first()?->id ?? $childPlan->id],
+        ['id' => $childSubscription->id],
         gqlAuthHeaders($user, $organization->id),
     );
 
