@@ -148,15 +148,23 @@ class CreateService extends BaseService
                     }
                 }
 
-                if (($args['minimum_commitment'] ?? null) !== null && $this->premium()) {
-                    $minimumCommitment = $this->createCommitment($plan, (array) $args['minimum_commitment']);
+                // Rails: `args[:minimum_commitment].present?` — an EMPTY hash
+                // is blank and skips the branch entirely. The front's
+                // serializeMinimumCommitment sends `{}` when the user added
+                // no commitment, so a presence check (not a !== null check)
+                // is load-bearing: otherwise every commitment-less plan
+                // create crashes on the commitment insert.
+                $minimumCommitmentInput = $args['minimum_commitment'] ?? null;
 
-                    if ((array_key_exists('tax_codes', $args['minimum_commitment'] ?? [])
-                        && $args['minimum_commitment']['tax_codes'] !== null
-                        && $args['minimum_commitment']['tax_codes'] !== [])) {
+                if (is_array($minimumCommitmentInput) && $minimumCommitmentInput !== [] && $this->premium()) {
+                    $minimumCommitment = $this->createCommitment($plan, $minimumCommitmentInput);
+
+                    if ((array_key_exists('tax_codes', $minimumCommitmentInput)
+                        && $minimumCommitmentInput['tax_codes'] !== null
+                        && $minimumCommitmentInput['tax_codes'] !== [])) {
                         CommitmentsApplyTaxesService::call(
                             commitment: $minimumCommitment,
-                            taxCodes: (array) $args['minimum_commitment']['tax_codes'],
+                            taxCodes: (array) $minimumCommitmentInput['tax_codes'],
                         )->raiseIfError();
                     }
                 }
@@ -201,6 +209,18 @@ class CreateService extends BaseService
      */
     private function createCommitment(Plan $plan, array $args): Commitment
     {
+        // Rails: Commitment validates `amount_cents` numericality > 0
+        // (allow_nil: false) — the front always submits the block, even when
+        // the user added no commitment, and the RecordInvalid maps to
+        // record_validation_failure instead of a raw SQL not-null error.
+        $amountCents = $args['amount_cents'] ?? null;
+
+        if ($amountCents === null || (int) $amountCents <= 0) {
+            static::makeResult('plan')
+                ->recordValidationFailure(['amount_cents' => ['invalid_amount']])
+                ->raiseIfError();
+        }
+
         $commitment = new Commitment([
             'organization_id' => $plan->organization_id,
             'plan_id' => $plan->id,
