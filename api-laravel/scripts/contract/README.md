@@ -103,10 +103,10 @@ PAO_DISABLE=1 DB_DATABASE=lago_laravel_golden ./vendor/bin/pest tests/Contract
 | `events_ingestion` | 9 | red (findings 19, 20) | duplicate dedup, expression metric, mixed batch, show/index |
 | `entitlements_crud` | 13 | red (findings 21, 22) | typed privileges, plan PATCH/POST, subscription override |
 | `catalog_crud` | 16 | red (findings 23, 24) | /api/v2 surface, product_catalog flag, pending contract, rate phases |
-| `taxes_crud` | 10 | pending (replay slice) | tax CRUD by code, applied_to_organization billing-entity attach/detach, duplicate-code 422, destroy |
-| `webhook_endpoints_crud` | 9 | pending (replay slice) | endpoint CRUD + event_types semantics, invalid/must_be_array 422s, minted-id TOKENS on show/update/destroy |
-| `metrics_extras` | 8 | pending (replay slice) | evaluate_expression (success + 3 error envelopes), PATCH expression/rounding, filters batch upsert |
-| `invoice_actions` | 14 | pending (replay slice) | one-off show/PATCH (TOKEN), draft refresh → finalize → lose_dispute → void, 405/422 envelopes, premium resend_email |
+| `taxes_crud` | 10 | green | finding 25 CLOSED (billing-entity tax attach/detach) |
+| `webhook_endpoints_crud` | 9 | green | event_types `["*"]`→null normalization, scalar must_be_array, minted-id tokens |
+| `metrics_extras` | 8 | green | evaluate_expression F-notation strings + error envelopes, PATCH vs PUT filters batch |
+| `invoice_actions` | 14 | green | findings 26-28 CLOSED (Float#to_d / BigDecimal division / sequenced numbering) |
 
 The five per-charge-model scenarios (`invoice_graduated`, `invoice_package`,
 `invoice_percentage`, `invoice_volume`, `invoice_graduated_percentage`) share
@@ -616,6 +616,76 @@ minted by manifest request #1, so each runtime echoes its own id (unit test:
     the 1-row Rails state; with 23 fixed the meta matches. GET /credit_notes
     (v1) never reproduced after the finding-17/18 fixes — its index meta
     was already correct (the README note predated the serializer repairs).
+
+### Findings from the 2025-06-12 wave replays (taxes / webhook_endpoints / metrics_extras / invoice_actions)
+
+25. ~~**`taxes_crud` — `applied_to_organization` never attached the tax to
+    the billing entity.**~~ CLOSED: the TODO(port) at the hook point is now
+    filled — `app/Services/BillingEntities/Taxes/{Apply,Remove}TaxesService`
+    port Rails' same-named services (the `billing_entities_taxes` join is
+    written directly — no BillingEntityAppliedTax model, the same
+    convention as `Tax::billingEntities`), plus their
+    `RefreshDraftInvoicesJob` (dispatched, never run, under the replay's
+    `Queue::fake()`). Wired into Taxes::{Create,Update}Service exactly at
+    Rails' `apply_taxes_on_billing_entity` / `manage_taxes_on_billing_entity`
+    call points.
+
+26. ~~**`invoice_actions` — fee precise_* decimals truncated (and then
+    mis-rounded).**~~ CLOSED, two port bugs sharing one root:
+    - Rails computes the subscription proration as a FLOAT
+      (`single_day_price` is `amount_cents.fdiv(duration)`) and stores
+      `Float#to_d` — the capture image's Ruby 4 truncates the double's
+      exact binary expansion at 16 significant digits
+      ("158.06451612903226" → "158.0645161290322"). The port stringified
+      with PHP's `(string)` cast — 14 significant digits — losing two
+      digits before anything else ran. Fix:
+      `MoneyMath::floatToDecimal()` (the Float#to_d port, used at the four
+      `Fees::SubscriptionService` proration sites).
+    - The serializers then divided by the subunit at bcmath scale 10. The
+      Rails serializer divides by `subunit_to_unit.to_d` — a BigDecimal
+      divisor, so `#fdiv` is BigDecimal DIVISION, which truncates the
+      exact quotient at 16 significant digits ("1.8967741935483864" →
+      "1.896774193548386"). Fix: `MoneyMath::truncateSignificant()` applied
+      to `FeeSerializer`'s precise_amount / precise_total_amount /
+      taxes_precise_amount.
+
+27. ~~**`invoice_actions` — the draft invoice numbered itself on refresh.**~~
+    CLOSED: two halves. Rails' Sequenced concern gates
+    `ensure_sequential_id` on `should_assign_sequential_id?`, which Invoice
+    overrides with `status_changed_to_finalized?` — whose
+    `status_changed?(from:, to:)` kwargs are SWALLOWED by ActiveModel's
+    generated dirty predicate, so the real gate is "the status attribute
+    changed" (draft keeps NULL until the → finalized save). Ported as
+    `Sequenced::ensureSequentialId()` + `shouldAssignSequentialId()`
+    (Invoice: dirty-on-status, default-aware for new records). Second half:
+    Rails registers Sequenced's callback at `include Sequenced` — BEFORE
+    the model's own before_save hooks — so `ensure_number` formats the id
+    assigned in the same save ("…-001-002"). Laravel's trait-vs-#[Boot]
+    order is not guaranteed, so `Invoice`'s saving hook calls
+    `ensureSequentialId()` inline first.
+
+28. ~~**`invoice_actions` — refresh serialized stale fee timestamps.**~~
+    CLOSED: Rails runs `CalculateFeesService` on `invoice.reload` — the
+    SAME object — so the `invoice.fees.update_all(created_at:
+    invoice.created_at)` stamp (the degenerate-period fee carries the
+    invoice's created_at) is visible to the serializer. The port refreshed
+    a COPY for the fee engine and serialized the original object's cached
+    fees relation. `RefreshDraftService` now reloads the invoice after the
+    stamp.
+
+    Also fixed en route (goldens are truth):
+    - `resend_email` is premium-gated — the replay flips
+      `config(['lago.license' => null])` (the OSS capture stack has no
+      license; the 403 premium_license_required envelope IS the contract).
+      `Emails::ResendService` also ran its precondition chain in the wrong
+      order for invoices — Rails checks found → valid_status? (an invoice
+      must be FINALIZED; a receipt always is) → premium → validation.
+    - `payment_url` / `resend_email` routes + controller actions are
+      registered (`GeneratePaymentUrlService` port; its happy path lives
+      with the PSP slice — `PaymentIntents::FetchService`).
+    - `RefreshDraftService` called `$invoiceSubscription->invoicingReason()`
+      — a method that does not exist (500 on every refresh/finalize); the
+      model's Rails-`invoicing_reason` accessor is `invoicingReasonName()`.
 
 
 

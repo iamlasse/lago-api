@@ -50,3 +50,10 @@ Schedule::job(new App\Jobs\Clock\RefreshLifetimeUsagesJob)->everyFiveMinutes();
 
 // every(1.hour, "schedule:expire_order_forms", at: "*:40") — "40 */1 * * *"
 Schedule::job(new App\Jobs\Clock\ExpireOrderFormsJob)->hourlyAt(40);
+
+// Activation-rules slice (clock.rb entries):
+// every(1.hour, "schedule:expire_incomplete_subscriptions", at: "*:20") — "20 */1 * * *"
+Schedule::job(new App\Jobs\Clock\ExpireIncompleteSubscriptionsJob)->hourlyAt(20);
+
+// every(1.hour, "schedule:bill_ended_trial_subscriptions", at: "*:35") — "35 */1 * * *"
+Schedule::job(new App\Jobs\Clock\FreeTrialSubscriptionsBillerJob)->hourlyAt(35);

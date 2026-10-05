@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Emails;
 
+use LogicException;
 use App\Services\BaseResult;
 use App\Services\BaseService;
 use App\Models\PaymentReceipt;
@@ -74,7 +75,7 @@ class ResendService extends BaseService
         // preconditions and the zero-amount-invoice rule) — premium-gated,
         // so the OSS license never reaches this branch for them.
         if (! $this->resource instanceof PaymentReceipt) {
-            throw new \LogicException('Invoice/CreditNote resend mailers are not ported — they live with the mailer slice.');
+            throw new LogicException('Invoice/CreditNote resend mailers are not ported — they live with the mailer slice.');
         }
 
         $mailable = new PaymentReceiptCreatedMail(

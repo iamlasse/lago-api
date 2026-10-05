@@ -79,7 +79,12 @@ class CreateService extends BaseService
 
     private function link_customer(): ?BaseResult
     {
-        $newIntegrationCustomer = new IntegrationCustomer([
+        $type = $this->customer_type();
+        $class = $type === \App\Models\IntegrationCustomer::ANROK_TYPE
+            ? \App\Models\IntegrationCustomers\AnrokCustomer::class
+            : \App\Models\IntegrationCustomers\AvalaraCustomer::class;
+
+        $newIntegrationCustomer = new $class([
             'organization_id' => $this->integration->organization_id,
             'integration_id' => $this->integration->id,
             'customer_id' => $this->customer->id,

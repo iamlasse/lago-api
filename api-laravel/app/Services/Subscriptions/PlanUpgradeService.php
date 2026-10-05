@@ -50,7 +50,10 @@ class PlanUpgradeService extends BaseService
 
         DB::transaction(function () use ($result): void {
             if ($this->currentSubscription->startingInTheFuture()) {
-                // TODO(port): apply_activation_rules when params[:activation_rules].
+                if (array_key_exists('activation_rules', $this->params)) {
+                    $this->applyActivationRules($this->currentSubscription);
+                }
+
                 $this->updatePendingSubscription();
 
                 $result->subscription = $this->currentSubscription;
@@ -67,7 +70,9 @@ class PlanUpgradeService extends BaseService
             $newSubscription->status = SubscriptionStatus::Pending->value;
             $newSubscription->save();
 
-            // TODO(port): apply_activation_rules when params[:activation_rules].present?.
+            if (! blank($this->params['activation_rules'] ?? null)) {
+                $this->applyActivationRules($newSubscription);
+            }
 
             ActivateService::callBang(subscription: $newSubscription);
 
@@ -79,6 +84,24 @@ class PlanUpgradeService extends BaseService
 
     // -- Helpers ---------------------------------------------------------------------
 
+    /** Rails: `apply_activation_rules`. */
+    protected function applyActivationRules(Subscription $subscription): void
+    {
+        ActivationRules\ApplyService::callBang(
+            subscription: $subscription,
+            activationRules: (array) ($this->params['activation_rules'] ?? []),
+        );
+    }
+
+    /** Rails: `override_plan` — the plan_overrides child plan. */
+    protected function overridePlan(): Plan
+    {
+        return \App\Services\Plans\OverrideService::callBang(
+            plan: $this->plan,
+            params: (array) $this->params['plan_overrides'],
+        )->plan;
+    }
+
     protected function newSubscriptionWithOverrides(): Subscription
     {
         // TODO(port): resolved_entity = resolve_billing_entity(...) — the new
@@ -88,8 +111,10 @@ class PlanUpgradeService extends BaseService
         $newSubscription = new Subscription([
             'organization_id' => $this->currentSubscription->customer->organization_id,
             'customer_id' => $this->currentSubscription->customer->id,
-            // TODO(port): params.key?(:plan_overrides) ? override_plan : plan
-            'plan_id' => $this->plan->id,
+            // Rails: params.key?(:plan_overrides) ? override_plan : plan
+            'plan_id' => array_key_exists('plan_overrides', $this->params)
+                ? $this->overridePlan()->id
+                : $this->plan->id,
             'name' => $this->name,
             'external_id' => $this->currentSubscription->external_id,
             'previous_subscription_id' => $this->currentSubscription->id,

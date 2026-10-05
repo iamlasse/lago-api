@@ -54,7 +54,7 @@ it('creates the anrok integration customer row through the job', function (): vo
         customer: $customer,
         subsidiary_id: null,
         params: [],
-    )->create();
+    );
 
     expect($result->success())->toBeTrue()
         ->and($result->integration_customer)->toBeInstanceOf(AnrokCustomer::class)
@@ -88,13 +88,13 @@ it('creates the avalara integration customer from the provider contact', functio
         customer: $customer,
         subsidiary_id: null,
         params: [],
-    )->create();
+    );
 
     expect($result->success())->toBeTrue()
         ->and($result->integration_customer->external_customer_id)->toBe('contact-123');
 
     // The contact payload carried the avalara company id and the address.
-    $sent = Http::recorded()[0][1]->data();
+    $sent = Http::recorded()[0][0]->data();
 
     expect($sent[0]['company_id'])->toBe(42)
         ->and($sent[0]['external_id'])->toBe($customer->id)

@@ -28,6 +28,7 @@ class ApplyProviderTaxesService extends \App\Services\BaseService
     public function execute(): BaseResult
     {
         $result = BaseResult::of('applied_taxes');
+        $result->applied_taxes = [];
         $applied = [];
 
         $appliedTaxes = $this->fee->appliedTaxes;

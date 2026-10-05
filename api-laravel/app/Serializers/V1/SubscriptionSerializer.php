@@ -99,8 +99,12 @@ class SubscriptionSerializer extends ModelSerializer
             $payload['applied_invoice_custom_sections'] = [];
         }
 
-        // TODO(port): activation_rules collection serializer — empty collection.
-        $payload['activation_rules'] = [];
+        // Rails: activation_rules — CollectionSerializer over the rules.
+        $payload['activation_rules'] = (new \App\Serializers\Base\CollectionSerializer(
+            $this->model->activationRules()->get(),
+            Subscriptions\ActivationRuleSerializer::class,
+            ['collection_name' => 'activation_rules'],
+        ))->serialize()['activation_rules'] ?? [];
 
         $payload['connections'] = $this->model->connectionRouting();
 

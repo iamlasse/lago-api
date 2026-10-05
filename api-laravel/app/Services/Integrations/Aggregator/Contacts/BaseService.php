@@ -14,6 +14,14 @@ use App\Services\Integrations\Aggregator\BaseService as AggregatorBaseService;
  */
 abstract class BaseService extends AggregatorBaseService
 {
+    /** The per-service result the processing writes into (set by the subclass). */
+    protected \App\Services\BaseResult $result;
+
+    protected function result(): \App\Services\BaseResult
+    {
+        return $this->result;
+    }
+
     abstract protected function customer(): ?Customer;
 
     protected function headers(): array

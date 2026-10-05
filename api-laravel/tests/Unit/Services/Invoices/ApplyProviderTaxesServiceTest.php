@@ -105,8 +105,6 @@ it('creates the grouped invoice applied taxes', function (): void {
         ->and($tax2->amount_cents)->toBe(240)
         ->and($tax2->fees_amount_cents)->toBe(2000);
 
-    $invoice->refresh();
-
     expect($invoice->taxes_amount_cents)->toBe(540)
         ->and((float) $invoice->taxes_rate)->toBe(18.0);
 });
@@ -131,8 +129,6 @@ it('prorates the rate over the fees that carry a tax, not every fee', function (
 
     expect($result->success())->toBeTrue();
 
-    $invoice->refresh();
-
     expect((float) $invoice->taxes_rate)->toBe(10.0);
 });
 
@@ -155,8 +151,6 @@ it('prorates the rate over the fee count when the invoice subtotal is zero', fun
     $result = ApplyProviderTaxesService::call(invoice: $invoice, provider_taxes: $providerTaxes);
 
     expect($result->success())->toBeTrue();
-
-    $invoice->refresh();
 
     // The taxed fee carries the whole (zero-subtotal) rate: 10% x 1/1.
     expect((float) $invoice->taxes_rate)->toBe(10.0);

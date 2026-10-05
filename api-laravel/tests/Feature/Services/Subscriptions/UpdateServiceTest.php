@@ -155,6 +155,10 @@ it('keeps a future subscription pending when subscription_at moves further out',
 });
 
 it('rejects plan_overrides without a premium license', function (): void {
+    // The config default may carry a token (premium by default in this
+    // environment) — the scenario needs the gate closed.
+    config(['lago.license' => null]);
+
     $subscription = updatableSubscription();
 
     $result = UpdateService::call(subscription: $subscription, params: [

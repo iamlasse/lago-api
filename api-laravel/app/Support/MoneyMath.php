@@ -148,7 +148,7 @@ final class MoneyMath
             $digits = mb_substr($digits, 0, 16);
             // BigDecimal's digit representation carries no trailing zeros
             // ("24.0", not "24.00000000000000").
-            $digits = rtrim($digits, '0');
+            $digits = mb_rtrim($digits, '0');
             if ($digits === '') {
                 return '0';
             }
@@ -161,13 +161,13 @@ final class MoneyMath
             return $negative.mb_substr($digits, 0, $point).'.'.mb_substr($digits, $point);
         }
 
-        $stripped = ltrim($fraction, '0');
+        $stripped = mb_ltrim($fraction, '0');
 
         if ($stripped === '') {
             return '0';
         }
 
-        $digits = rtrim(mb_substr($stripped, 0, 16), '0');
+        $digits = mb_rtrim(mb_substr($stripped, 0, 16), '0');
         $leadingZeros = mb_strlen($fraction) - mb_strlen($stripped);
 
         if ($digits === '') {
@@ -187,7 +187,7 @@ final class MoneyMath
     public static function truncateSignificant(string $numeric, int $digits = 16): string
     {
         $negative = str_starts_with($numeric, '-') ? '-' : '';
-        $numeric = ltrim($numeric, '-');
+        $numeric = mb_ltrim($numeric, '-');
 
         if (! str_contains($numeric, '.')) {
             $numeric .= '.0';
@@ -195,7 +195,7 @@ final class MoneyMath
 
         [$int, $fraction] = explode('.', $numeric);
         $all = $int.$fraction;
-        $stripped = ltrim($all, '0');
+        $stripped = mb_ltrim($all, '0');
 
         if ($stripped === '') {
             return '0';

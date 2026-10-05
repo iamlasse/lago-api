@@ -57,10 +57,18 @@ class ActivateService extends BaseService
         }
 
         DB::transaction(function (): void {
-            // Rails: ActivationRules::EvaluateService.call! if pending? &&
-            // pending_rules? → gate_subscription. TODO(port): activation rules
-            // are not ported; subscriptions activate directly.
-            $this->activateSubscription();
+            // Rails: ActivationRules::EvaluateService.call! if pending?
+            if ($this->subscription->pending()) {
+                ActivationRules\EvaluateService::callBang(
+                    subscription: $this->subscription,
+                );
+            }
+
+            if ($this->subscription->pending() && $this->subscription->pendingRules()) {
+                $this->gateSubscription();
+            } else {
+                $this->activateSubscription();
+            }
         });
 
         $result->subscription = $this->subscription;
@@ -68,10 +76,37 @@ class ActivateService extends BaseService
         return $result;
     }
 
+    /**
+     * Rails: `gate_subscription` — the subscription waits on its activation
+     * rules: it moves to incomplete and stays there until the rules resolve
+     * (ResolveSubscriptionStatusService finishes the job).
+     */
+    protected function gateSubscription(): void
+    {
+        $this->subscription->markAsIncomplete($this->timestamp);
+        $this->subscription->save();
+
+        // TODO(port): emit_fixed_charge_events (EmitFixedChargeEventsService).
+
+        // Rails after_commit:
+        if ($this->subscription->paymentGated()) {
+            // TODO(port): bill_subscription(skip_charges: true) — the billing
+            // side (BillSubscriptionJob wiring for this path) is task 9.
+        }
+
+        \App\Jobs\SendWebhookJob::performLater('subscription.incomplete', $this->subscription);
+
+        // TODO(port): Utils::ActivityLog.produce(subscription,
+        // "subscription.incomplete").
+    }
+
     protected function activateSubscription(): void
     {
-        // Rails: return if incomplete? && activation_rules.rejected.exists? —
-        // TODO(port): activation rules; there are no rejected rules meanwhile.
+        // Rails: return if incomplete? && activation_rules.rejected.exists?
+        if ($this->subscription->incomplete()
+            && $this->subscription->activationRules()->rejected()->exists()) {
+            return;
+        }
 
         if ($this->upgrade()) {
             $this->activateForUpgrade();
@@ -86,9 +121,8 @@ class ActivateService extends BaseService
     {
         $fromIncomplete = $this->subscription->incomplete();
 
-        // TODO(port): billed_during_gating = from_incomplete &&
-        //   subscription.activation_rules.payment.any?
-        $billedDuringGating = false;
+        $billedDuringGating = $fromIncomplete
+            && $this->subscription->activationRules()->where('type', 'payment')->exists();
 
         $previousSubscription = $this->subscription->previousSubscription;
 
@@ -129,9 +163,8 @@ class ActivateService extends BaseService
     {
         $fromIncomplete = $this->subscription->incomplete();
 
-        // TODO(port): billed_during_gating = from_incomplete &&
-        //   subscription.activation_rules.payment.any?
-        $billedDuringGating = false;
+        $billedDuringGating = $fromIncomplete
+            && $this->subscription->activationRules()->where('type', 'payment')->exists();
 
         $previousSubscription = $this->subscription->previousSubscription;
 

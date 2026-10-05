@@ -31,9 +31,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * are Rails-ignored — they are deliberately NOT fillable and not read.
  *
  * Not ported (dependencies do not exist yet):
- * - TODO(port): activation_rules (Subscription::ActivationRule) — pending
- *   payment gating; pendingRules()/paymentGated() are stubbed false.
- * - TODO(port): entitlements, fixed_charge_events,
+ * - entitlements, fixed_charge_events,
  *   fixed_charge_units_overrides, integration_resources,
  *   billing_object_connections, applied_invoice_custom_sections,
  *   Clickhouse activity logs.
@@ -381,9 +379,9 @@ class Subscription extends BaseModel
     /** Rails: `pending_rules?` — any activation rule still pending. */
     public function pendingRules(): bool
     {
-        // TODO(port): activation_rules.pending.any? — Subscription::ActivationRule
-        // model is not ported yet; no subscription is gated meanwhile.
-        return false;
+        return $this->activationRules()
+            ->where('subscription_activation_rules.status', 'pending')
+            ->exists();
     }
 
     /** Rails: `gated?`. */
@@ -395,8 +393,18 @@ class Subscription extends BaseModel
     /** Rails: `payment_gated?`. */
     public function paymentGated(): bool
     {
-        // TODO(port): activation_rules.payment.pending.any?
-        return false;
+        return $this->activationRules()
+            ->where('subscription_activation_rules.type', 'payment')
+            ->where('subscription_activation_rules.status', 'pending')
+            ->exists();
+    }
+
+    /**
+     * Rails: `has_many :activation_rules, class_name: "Subscription::ActivationRule"`.
+     */
+    public function activationRules(): HasMany
+    {
+        return $this->hasMany(Subscription\ActivationRule::class);
     }
 
     /** Rails: `upgraded?`. */

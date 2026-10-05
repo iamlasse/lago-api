@@ -33,10 +33,23 @@ trait Sequenced
     public static function bootSequenced(): void
     {
         static::saving(function ($model): void {
-            if ($model->sequential_id === null && $model->shouldAssignSequentialId()) {
-                $model->sequential_id = $model->generateSequentialId();
-            }
+            $model->ensureSequentialId();
         });
+    }
+
+    /**
+     * Port of `ensure_sequential_id`. Public so a model's own saving hook
+     * can run it INLINE: Rails registers this callback at `include Sequenced`
+     * — before the model's own before_save hooks, which then READ the
+     * assigned id (Invoice#ensure_number formats sequential_id into the
+     * number). The trait-vs-#[Boot] registration order in Laravel is not
+     * guaranteed to match, so the model calls this itself first.
+     */
+    public function ensureSequentialId(): void
+    {
+        if ($this->sequential_id === null && $this->shouldAssignSequentialId()) {
+            $this->sequential_id = $this->generateSequentialId();
+        }
     }
 
     /**

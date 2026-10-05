@@ -4,24 +4,24 @@ declare(strict_types=1);
 
 uses()->group('ledger:webhooks:providers');
 
-use App\Models\Invoice;
-use App\Models\Payment;
-use App\Models\Customer;
-use App\Models\Organization;
-use App\Models\PaymentProvider;
-use App\Values\CashfreePayment;
-use App\Values\FlutterwavePayment;
-use App\Services\Invoices\Payments\AdyenService;
-use App\Services\Invoices\Payments\CashfreeService;
-use App\Services\Invoices\Payments\FlutterwaveService;
-use App\Services\Invoices\Payments\GocardlessService;
 use App\Jobs\PaymentProviders\AdyenHandleEventJob;
 use App\Jobs\PaymentProviders\CashfreeHandleEventJob;
 use App\Jobs\PaymentProviders\FlutterwaveHandleEventJob;
 use App\Jobs\PaymentProviders\GocardlessHandleEventJob;
 use App\Jobs\PaymentProviders\MoneyhashHandleEventJob;
+use App\Models\Customer;
+use App\Models\InboundWebhook;
+use App\Models\Invoice;
+use App\Models\Organization;
+use App\Models\Payment;
+use App\Models\PaymentProvider;
+use App\Services\Invoices\Payments\CashfreeService;
 use App\Services\PaymentProviders\Adyen\HandleEventService as AdyenHandleEvent;
+use App\Services\PaymentProviders\Flutterwave\Webhooks\ChargeCompletedService;
 use App\Services\PaymentProviders\Gocardless\HandleEventService as GocardlessHandleEvent;
+use App\Services\PaymentProviders\Moneyhash\HandleEventService;
+use App\Values\CashfreePayment;
+use Illuminate\Support\Facades\Http;
 
 /**
  * Port of Rails' spec/requests/webhooks_controller_spec.rb (the non-stripe
@@ -324,8 +324,8 @@ it('verifies the flutterwave transaction and settles the invoice on charge.compl
     [$organization, $provider] = providerOrganization('flutterwave', ['secret_key' => 'sk', 'webhook_secret' => 'flw_hash']);
     [$customer, $invoice] = providerInvoice($organization, $provider, ['total_amount_cents' => 1000, 'ready_for_payment_processing' => true]);
 
-    \Illuminate\Support\Facades\Http::fake([
-        '*/transactions/tx_9/verify' => \Illuminate\Support\Facades\Http::response([
+    Http::fake([
+        '*/transactions/tx_9/verify' => Http::response([
             'status' => 'success',
             'data' => [
                 'id' => 9001,
@@ -351,7 +351,7 @@ it('verifies the flutterwave transaction and settles the invoice on charge.compl
         ],
     ];
 
-    $result = \App\Services\PaymentProviders\Flutterwave\Webhooks\ChargeCompletedService::call(
+    $result = ChargeCompletedService::call(
         organizationId: $organization->id,
         eventJson: json_encode($event, JSON_THROW_ON_ERROR),
     );
@@ -381,7 +381,7 @@ it('accepts a moneyhash webhook with a valid t/v3 signature and stores the paylo
         'HTTP_MONEYHASH_SIGNATURE' => $signature,
     ], $payloadJson)->assertOk();
 
-    expect(App\Models\InboundWebhook::query()->where('source', 'moneyhash')->exists())->toBeTrue();
+    expect(InboundWebhook::query()->where('source', 'moneyhash')->exists())->toBeTrue();
 
     Queue::assertPushed(MoneyhashHandleEventJob::class);
 });
@@ -423,7 +423,7 @@ it('moves the moneyhash payment on an intent.processed event', function (): void
         ],
     ];
 
-    $result = App\Services\PaymentProviders\Moneyhash\HandleEventService::call(
+    $result = HandleEventService::call(
         organization: $organization,
         eventJson: json_encode($event, JSON_THROW_ON_ERROR),
     );
@@ -439,7 +439,7 @@ it('moves the moneyhash payment on an intent.processed event', function (): void
 it('services-fails an unknown moneyhash event code', function (): void {
     [$organization, $provider] = providerOrganization('moneyhash', ['api_key' => 'mh_key', 'signature_key' => 'mh_sig_key'], ['flow_id' => 'flow']);
 
-    $result = App\Services\PaymentProviders\Moneyhash\HandleEventService::call(
+    $result = HandleEventService::call(
         organization: $organization,
         eventJson: json_encode(['type' => 'totally.unknown'], JSON_THROW_ON_ERROR),
     );

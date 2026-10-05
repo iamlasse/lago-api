@@ -29,9 +29,11 @@ class DestroyIntegration
 
         $organization = LagoContext::currentOrganization($context);
 
+        $input = \App\GraphQL\Support\Args::input($args);
+
         $integration = Integration::query()
             ->where('organization_id', $organization->id)
-            ->find($args['id'] ?? null);
+            ->find($input['id'] ?? null);
 
         $result = DestroyService::call(integration: $integration);
 

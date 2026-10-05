@@ -6,6 +6,7 @@ namespace App\Services\Invoices;
 
 use App\Models\Invoice;
 use App\Jobs\SendWebhookJob;
+use App\Models\Subscription;
 use App\Services\BaseResult;
 use Illuminate\Support\Facades\DB;
 use App\Enums\InvoicePaymentStatus;
@@ -193,8 +194,19 @@ class UpdateService extends \App\Services\BaseService
             return;
         }
 
-        // TODO(port): find the incomplete subscription and enqueue ResolveJob
-        // (subscription, invoice, payment_status).
+        // Rails: invoice.subscriptions.find(&:incomplete?) — the gated
+        // subscription this invoice settles.
+        $subscription = $this->invoice->subscriptions->first(fn (Subscription $s) => $s->incomplete());
+
+        if ($subscription === null) {
+            return;
+        }
+
+        \App\Jobs\Subscriptions\ActivationRules\Payment\ResolveJob::dispatch(
+            $subscription,
+            $this->invoice,
+            $paymentStatus === InvoicePaymentStatus::Succeeded ? 'succeeded' : 'failed',
+        );
     }
 
     private function deliverWebhook(): void

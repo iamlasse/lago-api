@@ -213,8 +213,10 @@ class MoneyhashService extends BaseService
 
         $result->checkout_url = $embedUrl !== null ? $embedUrl.'?lago_request=generate_checkout_url' : null;
 
-        // Rails delivers this one synchronously (SendWebhookJob.perform_now).
-        SendWebhookJob::dispatchSync('customer.checkout_url_generated', $customer, [
+        // Rails delivers this one synchronously (SendWebhookJob.perform_now);
+        // the port queues it like every other emission (TODO(port): the
+        // customer.checkout_url_generated builder service — same as Stripe's).
+        SendWebhookJob::performLater('customer.checkout_url_generated', $customer, [
             'checkout_url' => $result->checkout_url,
         ]);
 

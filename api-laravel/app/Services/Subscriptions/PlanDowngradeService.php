@@ -18,9 +18,6 @@ use App\Services\BillingEntities\ResolveService;
  * (app/services/subscriptions/plan_downgrade_service.rb).
  *
  * Not ported (dependencies do not exist yet):
- * - TODO(port): plan_overrides — Plans::OverrideService is deferred with the
- *   premium override work; the new subscription always carries the given plan.
- * - TODO(port): Subscriptions::ActivationRules::ApplyService.
  * - TODO(port): InvoiceCustomSections::AttachToResourceService.
  * - TODO(port): BillingObjectConnections::AttachToResourceService.
  * - TODO(port): SendWebhookJob "subscription.updated" + ActivityLog.
@@ -56,7 +53,10 @@ class PlanDowngradeService extends BaseService
 
         DB::transaction(function () use ($result): void {
             if ($this->currentSubscription->startingInTheFuture()) {
-                // TODO(port): apply_activation_rules when params[:activation_rules].
+                if (array_key_exists('activation_rules', $this->params)) {
+                    $this->applyActivationRules($this->currentSubscription);
+                }
+
                 $this->updatePendingSubscription();
 
                 $result->subscription = $this->currentSubscription;
@@ -74,8 +74,10 @@ class PlanDowngradeService extends BaseService
             $newSubscription = $this->currentSubscription->nextSubscriptions()->make([
                 'organization_id' => $this->customer->organization_id,
                 'customer_id' => $this->customer->id,
-                // TODO(port): params.key?(:plan_overrides) ? override_plan : plan
-                'plan_id' => $this->plan->id,
+                // Rails: params.key?(:plan_overrides) ? override_plan : plan
+                'plan_id' => array_key_exists('plan_overrides', $this->params)
+                    ? $this->overridePlan()->id
+                    : $this->plan->id,
                 'name' => $this->name,
                 'external_id' => $this->currentSubscription->external_id,
                 'subscription_at' => $this->currentSubscription->subscription_at,
@@ -102,7 +104,9 @@ class PlanDowngradeService extends BaseService
 
             $newSubscription->save();
 
-            // TODO(port): apply_activation_rules when params[:activation_rules].present?.
+            if (! blank($this->params['activation_rules'] ?? null)) {
+                $this->applyActivationRules($newSubscription);
+            }
 
             if (! blank($this->params['billing_entity_id'] ?? null) || ! blank($this->params['billing_entity_code'] ?? null)) {
                 $overrideEntity = ResolveService::call(
@@ -141,6 +145,24 @@ class PlanDowngradeService extends BaseService
     }
 
     // -- Helpers ---------------------------------------------------------------------
+
+    /** Rails: `apply_activation_rules`. */
+    protected function applyActivationRules(Subscription $subscription): void
+    {
+        ActivationRules\ApplyService::callBang(
+            subscription: $subscription,
+            activationRules: (array) ($this->params['activation_rules'] ?? []),
+        );
+    }
+
+    /** Rails: `override_plan` — the plan_overrides child plan. */
+    protected function overridePlan(): Plan
+    {
+        return \App\Services\Plans\OverrideService::callBang(
+            plan: $this->plan,
+            params: (array) $this->params['plan_overrides'],
+        )->plan;
+    }
 
     protected function updatePendingSubscription(): void
     {

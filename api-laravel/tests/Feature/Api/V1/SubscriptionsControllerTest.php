@@ -467,6 +467,26 @@ it('cancels an incomplete subscription when status is given', function (): void 
         'activated_at' => null,
     ]);
 
+    // A real incomplete subscription is a payment-gated one: it carries a
+    // pending activation rule and an open gating invoice — both are needed
+    // for the cancellation to run (Rails: ActivationRules::CancelService).
+    Subscription\ActivationRule\Payment::factory()->create([
+        'organization_id' => $organization->id,
+        'subscription_id' => $subscription->id,
+        'status' => 'pending',
+    ]);
+
+    $invoice = App\Models\Invoice::factory()->create([
+        'organization_id' => $organization->id,
+        'customer_id' => $customer->id,
+        'invoice_type' => App\Enums\InvoiceType::Subscription,
+        'status' => App\Enums\InvoiceStatus::Open,
+    ]);
+    App\Models\InvoiceSubscription::factory()->create([
+        'invoice_id' => $invoice->id,
+        'subscription_id' => $subscription->id,
+    ]);
+
     $this->deleteJson('/api/v1/subscriptions/'.$subscription->external_id, [
         'status' => 'incomplete',
     ], ['Authorization' => 'Bearer '.$apiKey->value])
@@ -474,7 +494,9 @@ it('cancels an incomplete subscription when status is given', function (): void 
         ->assertJsonPath('subscription.status', 'canceled')
         ->assertJsonPath('subscription.cancellation_reason', 'manual');
 
-    expect($subscription->fresh()->statusName())->toBe('canceled');
+    expect($subscription->fresh()->statusName())->toBe('canceled')
+        ->and($invoice->fresh()->status)->toBe(App\Enums\InvoiceStatus::Closed)
+        ->and($subscription->fresh()->activationRules()->first()->status)->toBe('declined');
 });
 
 it('returns not_found when the terminated subscription does not exist', function (): void {

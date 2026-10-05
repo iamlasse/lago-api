@@ -41,13 +41,8 @@ class ExecuteService extends BaseService
 
         return match (true) {
             $orderType === Quote::ORDER_TYPES['one_off'] => OneOffExecuteService::call(order: $order),
-            // TODO(port): the subscription_creation / subscription_amendment
-            // branches — both depend on the quotes/order-forms slice
-            // (Plans::OverrideService plan overrides, usage thresholds,
-            // wallet appliesTo limitations) that does not exist yet; Rails
-            // creates subscriptions / plan changes here. Until that slice
-            // lands the dispatch answers the same failure shape the
-            // unknown-type branch does.
+            $orderType === Quote::ORDER_TYPES['subscription_creation'] => SubscriptionCreation\ExecuteService::call(order: $order),
+            $orderType === Quote::ORDER_TYPES['subscription_amendment'] => SubscriptionAmendment\ExecuteService::call(order: $order),
             default => $result->singleValidationFailure('unsupported_order_type', 'order_type'),
         };
     }

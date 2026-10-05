@@ -8,6 +8,7 @@ use App\Models\Customer;
 use App\Models\Integration;
 use App\Services\BaseResult;
 use App\Models\IntegrationCustomer;
+use App\Models\IntegrationCustomers\AvalaraCustomer;
 use App\Services\Integrations\Aggregator\Contacts\CreateService as ContactsCreateService;
 
 /**
@@ -48,7 +49,7 @@ class AvalaraService extends \App\Services\BaseService
             return $createResult;
         }
 
-        $newIntegrationCustomer = new IntegrationCustomer([
+        $newIntegrationCustomer = new AvalaraCustomer([
             'organization_id' => $this->integration->organization_id,
             'integration_id' => $this->integration->id,
             'customer_id' => $this->customer->id,

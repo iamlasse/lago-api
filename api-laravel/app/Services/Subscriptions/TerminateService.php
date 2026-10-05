@@ -174,15 +174,18 @@ class TerminateService extends BaseService
 
     protected function cancelIncomplete(BaseResult $result): void
     {
-        // TODO(port): Subscriptions::ActivationRules::CancelService.call!(
-        //   subscription:, rule_status: :declined, cancellation_reason: :manual)
-        // — activation rules and gating invoices are not ported; the
-        // subscription is canceled directly meanwhile.
-        $this->subscription->markAsCanceled();
-        $this->subscription->cancellation_reason = 'manual';
-        $this->subscription->save();
+        $cancelResult = ActivationRules\CancelService::call(
+            subscription: $this->subscription,
+            ruleStatus: 'declined',
+            cancellationReason: 'manual',
+        );
 
-        $result->subscription = $this->subscription;
+        // Rails: cancel_result.raise_if_error! — an incomplete subscription
+        // whose gating invoice is not ready fails the termination.
+        $cancelResult->raiseIfError();
+
+        $result->subscription = $cancelResult->subscription;
+
     }
 
     protected function cancelNextSubscription(): void

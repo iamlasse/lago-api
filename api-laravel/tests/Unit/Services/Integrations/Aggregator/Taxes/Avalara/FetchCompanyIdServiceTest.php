@@ -45,7 +45,7 @@ it('fails with company_not_found and delivers the integration error webhook', fu
     $organization = Organization::factory()->create();
     $integration = AvalaraIntegration::factory()->create(['organization_id' => $organization->id]);
 
-    WebhookEndpoint::factory()->create(['organization_id' => $organization->id]);
+    \App\Models\WebhookEndpoint::factory()->create(['organization_id' => $organization->id]);
 
     Http::fake([
         'https://api.nango.dev/v1/avalara/companies' => Http::response(
@@ -67,7 +67,7 @@ it('maps a nango server error onto the error result', function (): void {
     $organization = Organization::factory()->create();
     $integration = AvalaraIntegration::factory()->create(['organization_id' => $organization->id]);
 
-    WebhookEndpoint::factory()->create(['organization_id' => $organization->id]);
+    \App\Models\WebhookEndpoint::factory()->create(['organization_id' => $organization->id]);
 
     Http::fake([
         'https://api.nango.dev/v1/avalara/companies' => Http::response(

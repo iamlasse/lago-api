@@ -17,8 +17,6 @@ use App\Services\Invoices\DeleteService;
 use App\Services\Invoices\UpdateService;
 use App\Exceptions\Api\NotFoundException;
 use App\Serializers\V1\InvoiceSerializer;
-use App\Serializers\V1\PaymentProviders\InvoicePaymentSerializer;
-use App\Services\Invoices\Payments\GeneratePaymentUrlService;
 use App\Exceptions\Api\ForbiddenException;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\Concerns\Pagination;
@@ -28,6 +26,8 @@ use App\Services\Invoices\CreateOneOffService;
 use App\Services\Invoices\RefreshDraftService;
 use App\Exceptions\Api\MethodNotAllowedException;
 use App\Services\Invoices\RefreshDraftAndFinalizeService;
+use App\Services\Invoices\Payments\GeneratePaymentUrlService;
+use App\Serializers\V1\PaymentProviders\InvoicePaymentSerializer;
 
 /**
  * Port of Rails' Api::V1::InvoicesController

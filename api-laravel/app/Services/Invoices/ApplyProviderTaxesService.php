@@ -70,6 +70,8 @@ class ApplyProviderTaxesService extends \App\Services\BaseService
 
             // NOTE: when applied on user current usage, the invoice is
             //       not created in DB
+            $appliedTax->invoice_id = $this->invoice->id;
+
             if ($this->invoice->exists) {
                 $appliedTax->save();
             }
@@ -178,7 +180,7 @@ class ApplyProviderTaxesService extends \App\Services\BaseService
     private function fees_amount_cents(array $fees): int
     {
         return array_sum(array_map(
-            fn ($fee) => (int) $fee->sub_total_excluding_taxes_amount_cents,
+            fn ($fee) => (int) $fee->subTotalExcludingTaxesAmountCents(),
             $fees,
         ));
     }
@@ -189,7 +191,7 @@ class ApplyProviderTaxesService extends \App\Services\BaseService
     private function taxable_base_amount_cents(array $fees): float
     {
         return array_sum(array_map(
-            fn ($fee) => (int) $fee->sub_total_excluding_taxes_amount_cents * (float) $fee->taxes_base_rate,
+            fn ($fee) => (int) $fee->subTotalExcludingTaxesAmountCents() * (float) $fee->taxes_base_rate,
             $fees,
         ));
     }

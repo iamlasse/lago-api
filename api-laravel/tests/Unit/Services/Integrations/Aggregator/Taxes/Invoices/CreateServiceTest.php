@@ -249,7 +249,7 @@ it('fails with the provider validation code and delivers the tax error webhook',
         'external_customer_id' => null,
     ]);
 
-    WebhookEndpoint::factory()->create(['organization_id' => $organization->id]);
+    \App\Models\WebhookEndpoint::factory()->create(['organization_id' => $organization->id]);
 
     Http::fake([
         'https://api.nango.dev/v1/anrok/finalized_invoices' => Http::response(taxFailureResponse()),

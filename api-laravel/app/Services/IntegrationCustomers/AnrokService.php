@@ -8,6 +8,7 @@ use App\Models\Customer;
 use App\Models\Integration;
 use App\Services\BaseResult;
 use App\Models\IntegrationCustomer;
+use App\Models\IntegrationCustomers\AnrokCustomer;
 
 /**
  * Port of Rails' IntegrationCustomers::AnrokService
@@ -37,7 +38,7 @@ class AnrokService extends \App\Services\BaseService
     {
         $result = BaseResult::of('integration_customer');
 
-        $newIntegrationCustomer = new IntegrationCustomer([
+        $newIntegrationCustomer = new AnrokCustomer([
             'organization_id' => $this->integration->organization_id,
             'integration_id' => $this->integration->id,
             'customer_id' => $this->customer->id,

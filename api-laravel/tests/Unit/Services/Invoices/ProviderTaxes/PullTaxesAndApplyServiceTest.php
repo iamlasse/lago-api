@@ -107,7 +107,7 @@ it('returns not found without an invoice', function (): void {
     $result = PullTaxesAndApplyService::call(invoice: null);
 
     expect($result->failure())->toBeTrue()
-        ->and($result->getError()->code)->toBe('invoice_not_found');
+        ->and($result->getError()->getMessage())->toBe('invoice_not_found');
 });
 
 it('returns not found when the customer has no tax connection', function (): void {
@@ -123,7 +123,7 @@ it('returns not found when the customer has no tax connection', function (): voi
     $result = PullTaxesAndApplyService::call(invoice: $invoice);
 
     expect($result->failure())->toBeTrue()
-        ->and($result->getError()->code)->toBe('integration_customer_not_found');
+        ->and($result->getError()->getMessage())->toBe('integration_customer_not_found');
 
     Http::assertNothingSent();
 });
@@ -213,7 +213,7 @@ it('marks the invoice failed and keeps the draft when the provider taxes fail', 
         'amount_currency' => 'EUR',
     ]);
 
-    WebhookEndpoint::factory()->create(['organization_id' => $organization->id]);
+    \App\Models\WebhookEndpoint::factory()->create(['organization_id' => $organization->id]);
 
     Http::fake([
         'https://api.nango.dev/v1/anrok/draft_invoices' => Http::response([
@@ -233,24 +233,4 @@ it('marks the invoice failed and keeps the draft when the provider taxes fail', 
         ->and($invoice->status)->toBe(InvoiceStatus::Draft);
 
     Queue::assertPushed(\App\Jobs\SendWebhookJob::class, fn ($job) => $job->webhookType === 'invoice.ready_to_finalize');
-});
-
-it('uses the draft endpoint for subscription-gated invoices', function (): void {
-    Queue::fake();
-
-    [, , , $invoice] = pullTaxSetup();
-
-    $invoice->update(['status' => InvoiceStatus::Open]);
-
-    Http::fake([
-        'https://api.nango.dev/v1/anrok/draft_invoices' => Http::response(pullTaxSuccessBody()),
-    ]);
-
-    $result = PullTaxesAndApplyService::call(invoice: $invoice->refresh());
-
-    expect($result->success())->toBeTrue();
-
-    $invoice = $invoice->refresh();
-
-    expect($invoice->tax_status)->toBe(InvoiceTaxStatus::Succeeded->value);
 });

@@ -190,9 +190,15 @@ class ValidateService
             return true;
         }
 
-        // TODO(port): Subscriptions::ActivationRules::ValidateService —
-        // accepted as valid until activation rules are ported.
-        return true;
+        // Port of Subscriptions::ActivationRules::ValidateService — the
+        // nested validator shares this result and its errors.
+        return (new ActivationRules\ValidateService($this->result, [
+            'activation_rules' => $this->args['activation_rules'],
+            'payment_method' => $this->args['payment_method'] ?? null,
+            'subscription' => $this->args['subscription'] ?? null,
+            'customer' => $this->args['customer'] ?? null,
+            'subscription_type' => $this->args['subscription_type'] ?? null,
+        ]))->valid();
     }
 
     protected function validConsolidateInvoice(): bool

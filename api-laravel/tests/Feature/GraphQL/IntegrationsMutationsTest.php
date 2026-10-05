@@ -17,6 +17,9 @@ use App\Models\User;
  */
 function gqlIntegrationsSetup(): array
 {
+    // Rails spec runs these under the :premium tag (license on).
+    config()->set('lago.license', 'premium-token');
+
     $organization = gqlCreateOrganization();
     App\Models\BillingEntity::factory()->create(['organization_id' => $organization->id]);
     $user = gqlCreateUser('integrations@example.com');
@@ -27,8 +30,7 @@ function gqlIntegrationsSetup(): array
 
 function gqlPremiumOrganization(): Organization
 {
-    // Rails' :premium trait is the ENV license + premium_integrations flag;
-    // the port's license gate reads config("lago.license").
+    // Rails' :premium trait is the ENV license + premium_integrations flag.
     config()->set('lago.license', 'premium-token');
 
     $organization = gqlCreateOrganization('Premium Org');
@@ -166,15 +168,16 @@ it('destroys an integration', function (): void {
     $integration = AnrokIntegration::factory()->create(['organization_id' => $organization->id]);
 
     $response = gqlPost(<<<'GQL'
-    mutation($id: ID!) {
-        destroyIntegration(id: $id) {
+    mutation($input: DestroyIntegrationInput!) {
+        destroyIntegration(input: $input) {
             id
         }
     }
-    GQL, ['id' => $integration->id], gqlAuthHeaders($user, $organization->id));
+    GQL, ['input' => ['id' => $integration->id]], gqlAuthHeaders($user, $organization->id));
 
     $payload = $response->json('data.destroyIntegration');
 
     expect($payload['id'])->toBe($integration->id)
         ->and(AnrokIntegration::query()->count())->toBe(0);
 });
+

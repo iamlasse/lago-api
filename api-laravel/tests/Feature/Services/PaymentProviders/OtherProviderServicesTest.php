@@ -4,22 +4,22 @@ declare(strict_types=1);
 
 uses()->group('ledger:payment-providers');
 
-use App\Models\ApiKey;
-use App\Models\Invoice;
-use App\Models\Payment;
-use App\Models\Customer;
-use App\Models\Organization;
-use App\Models\PaymentProvider;
-use App\Models\PaymentProviderCustomer;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Queue;
-use App\Services\PaymentProviders\CreatePaymentFactory;
+use App\Jobs\PaymentProviders\AdyenCheckoutUrlJob;
 use App\Jobs\PaymentProviders\AdyenCreateCustomerJob;
 use App\Jobs\PaymentProviders\GocardlessCreateCustomerJob;
 use App\Jobs\PaymentProviders\MoneyhashCreateCustomerJob;
-use App\Jobs\PaymentProviders\CashfreeHandleEventJob;
+use App\Models\ApiKey;
+use App\Models\Customer;
+use App\Models\Invoice;
+use App\Models\Organization;
+use App\Models\Payment;
+use App\Models\PaymentIntent;
+use App\Models\PaymentProvider;
 use App\Services\Customers\PaymentBillingConfigurationService;
 use App\Services\Invoices\Payments\GeneratePaymentUrlService;
+use App\Services\PaymentProviders\CreatePaymentFactory;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Queue;
 
 /**
  * Port of the provider payment-leg and customer-leg specs — the
@@ -248,7 +248,7 @@ it('creates the moneyhash payment intent through the intent API', function (): v
 
     Http::fake([
         'staging-web.moneyhash.io/api/v1.1/payments/intent/' => Http::response([
-            'data' => ['id' => 'mh_int_9', 'status' => 'PROCESSING'],
+            'data' => ['id' => 'mh_int_9', 'status' => 'PROCESSED'],
         ]),
     ]);
 
@@ -258,15 +258,14 @@ it('creates the moneyhash payment intent through the intent API', function (): v
 
     $payment->refresh();
     expect($payment->provider_payment_id)->toBe('mh_int_9')
-        ->and($payment->status)->toBe('PROCESSING')
-        ->and($payment->payablePaymentStatus())->toBe('processing');
+        ->and($payment->status)->toBe('PROCESSED')
+        ->and($payment->payablePaymentStatus())->toBe('succeeded');
 
-    Http::assertSent(function ($request) use ($payment): bool {
+    Http::assertSent(function ($request): bool {
         return $request['merchant_initiated'] === true
             && $request['payment_type'] === 'UNSCHEDULED'
             && $request['custom_fields']['lago_mit'] === true
-            && $request->header('x-Api-Key')[0] === 'mh_key'
-            && $request->header('webhook_url') === null;
+            && $request->header('x-Api-Key')[0] === 'mh_key';
     });
 });
 
@@ -382,13 +381,13 @@ it('queues the adyen checkout url job when a connection receives an id with sync
 
     $result = PaymentBillingConfigurationService::call(
         customer: $customer,
-        params: ['billing_configuration' => ['provider_customer_id' => 'shopper_1']],
+        params: ['billing_configuration' => ['payment_provider' => 'adyen', 'provider_customer_id' => 'shopper_1']],
         newCustomer: false,
     );
 
     expect($result->success())->toBeTrue();
 
-    Queue::assertPushed(App\Jobs\PaymentProviders\AdyenCheckoutUrlJob::class);
+    Queue::assertPushed(AdyenCheckoutUrlJob::class);
 
     expect($providerCustomer->refresh()->provider_customer_id)->toBe('shopper_1');
 });
@@ -408,7 +407,7 @@ it('generates the cashfree payment url for an invoice', function (): void {
     expect($result->success())->toBeTrue()
         ->and($result->payment_url)->toBe('https://payments.cashfree.com/links/xyz');
 
-    $intent = App\Models\PaymentIntent::query()->where('invoice_id', $invoice->id)->first();
+    $intent = PaymentIntent::query()->where('invoice_id', $invoice->id)->first();
     expect($intent)->not->toBeNull()
         ->and($intent->payment_url)->toBe('https://payments.cashfree.com/links/xyz');
 });

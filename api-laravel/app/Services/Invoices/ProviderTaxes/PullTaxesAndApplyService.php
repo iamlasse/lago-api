@@ -9,7 +9,7 @@ use App\Enums\InvoiceStatus;
 use App\Jobs\SendWebhookJob;
 use App\Services\BaseResult;
 use App\Enums\InvoiceTaxStatus;
-use App\Jobs\GenerateDocumentsJob;
+use App\Jobs\Invoices\GenerateDocumentsJob;
 use Illuminate\Support\Facades\DB;
 use App\Enums\InvoicePaymentStatus;
 use Illuminate\Support\Facades\Date;
@@ -133,14 +133,14 @@ class PullTaxesAndApplyService extends \App\Services\BaseService
         $invoice = $result->invoice ?? $invoice;
 
         if ($invoice->subscriptionGated()) {
-            InvoicePaymentsCreateService::call(invoice: $invoice)->callAsync();
+            (new InvoicePaymentsCreateService(invoice: $invoice))->callAsync();
         } elseif ($invoice->isFinalized()) {
             SendWebhookJob::performLater('invoice.created', $invoice);
             // Rails: Utils::ActivityLog.produce(invoice, "invoice.created") — TODO(port).
             GenerateDocumentsJob::dispatch($invoice, $this->should_deliver_email($invoice));
             // Rails: aggregator invoice sync + hubspot create jobs — TODO(port)
             // with the accounting integrations slice.
-            InvoicePaymentsCreateService::call(invoice: $invoice)->callAsync();
+            (new InvoicePaymentsCreateService(invoice: $invoice))->callAsync();
             // Rails: Utils::SegmentTrack.invoice_created(invoice) — TODO(port).
         } elseif ($invoice->isDraft()) {
             $this->notify_ready_to_finalize($invoice);

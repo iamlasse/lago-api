@@ -109,6 +109,13 @@ class CreateService extends BaseService
             return $result->forbiddenFailure();
         }
 
+        // Rails: plan_overrides on a product-catalog organization is refused.
+        if (array_key_exists('plan_overrides', $params)
+            && in_array('product_catalog', (array) ($this->plan->organization->feature_flags ?? []), true)
+        ) {
+            return $result->singleValidationFailure('legacy_billing_disabled', 'plan_overrides');
+        }
+
         if ($this->connectionsRequested() && ! $this->organizationFlagEnabled($this->customer->organization, 'multi_connection')) {
             return $result->forbiddenFailure();
         }
@@ -125,6 +132,19 @@ class CreateService extends BaseService
                 'plan_overrides.usage_thresholds' => ['incompatible_params'],
                 'usage_thresholds' => ['incompatible_params'],
             ]);
+        }
+
+        // Rails: plan.amount_currency = plan_overrides[:amount_currency] if ...
+        //   plan.amount_cents = plan_overrides[:amount_cents] if ... — the
+        //   negotiated amounts are stamped on the plan handed to the service
+        //   (and hence to Plans::OverrideService's dup and the currency
+        //   resolution below).
+        $planOverrides = is_array($params['plan_overrides'] ?? null) ? $params['plan_overrides'] : [];
+        if (($planOverrides['amount_currency'] ?? null) !== null) {
+            $this->plan->amount_currency = $planOverrides['amount_currency'];
+        }
+        if (($planOverrides['amount_cents'] ?? null) !== null) {
+            $this->plan->amount_cents = $planOverrides['amount_cents'];
         }
 
         $billingTimeValue = null;
@@ -280,7 +300,7 @@ class CreateService extends BaseService
         $newSubscription = new Subscription([
             'organization_id' => $customer->organization_id,
             'customer_id' => $customer->id,
-            'plan_id' => $this->plan->id,
+            'plan_id' => $this->targetPlanForNewSubscription()->id,
             'subscription_at' => $this->subscriptionAt,
             'name' => $this->name,
             'external_id' => $this->externalId,
@@ -291,9 +311,11 @@ class CreateService extends BaseService
             'consolidate_invoice' => $this->consolidateInvoice(),
         ]);
 
-        // TODO(port): plan_overrides — target_plan_for_new_subscription
-        // (Plans::OverrideService) and the units-only fixed-charge overrides
-        // branch are deferred with the premium override work.
+        // Rails: units_only_plan_overrides_change? → status pending + save +
+        //   create_fixed_charge_units_overrides (the units-only branch). The
+        //   units write is deferred with the fixed-charge-units-override
+        //   slice; a units-only request is detected in
+        //   unitsOnlyPlanOverridesChange() meanwhile.
 
         $paymentMethod = $this->params['payment_method'] ?? null;
         if (is_array($paymentMethod)) {
@@ -340,7 +362,7 @@ class CreateService extends BaseService
         $newSubscription->status = SubscriptionStatus::Pending->value;
         $newSubscription->save();
 
-        // TODO(port): apply_activation_rules — Subscription::ActivationRules::ApplyService.
+        $this->applyActivationRules($newSubscription);
 
         ActivateService::call(
             subscription: $newSubscription,
@@ -367,7 +389,94 @@ class CreateService extends BaseService
         $newSubscription->status = SubscriptionStatus::Pending->value;
         $newSubscription->save();
 
-        // TODO(port): apply_activation_rules — Subscription::ActivationRules::ApplyService.
+        $this->applyActivationRules($newSubscription);
+    }
+
+    /**
+     * Rails: `apply_activation_rules` — replaces the subscription's rules
+     * when the params carry activation_rules.
+     */
+    protected function applyActivationRules(Subscription $subscription): void
+    {
+        if (blank($this->params['activation_rules'] ?? null)) {
+            return;
+        }
+
+        ActivationRules\ApplyService::callBang(
+            subscription: $subscription,
+            activationRules: (array) $this->params['activation_rules'],
+        );
+    }
+
+    /**
+     * Rails: `target_plan_for_new_subscription` — the override plan when
+     * plan_overrides are requested, the catalog plan otherwise. The
+     * units-only branch (units overrides ride the subscription, no child
+     * plan) keeps the catalog plan: the units write is deferred with the
+     * fixed-charge-units-override slice.
+     */
+    protected function targetPlanForNewSubscription(): Plan
+    {
+        if ($this->unitsOnlyPlanOverridesChange()) {
+            return $this->plan;
+        }
+
+        if (array_key_exists('plan_overrides', $this->params)) {
+            return \App\Services\Plans\OverrideService::callBang(
+                plan: $this->plan,
+                params: (array) $this->params['plan_overrides'],
+                subscription: null,
+            )->plan;
+        }
+
+        return $this->plan;
+    }
+
+    /**
+     * Rails: `units_only_plan_overrides_change?` — !plan.parent_id &&
+     * plan_overrides present && units-only fixed charges only.
+     */
+    protected function unitsOnlyPlanOverridesChange(): bool
+    {
+        if ($this->plan->parent_id !== null) {
+            return false;
+        }
+
+        if (! array_key_exists('plan_overrides', $this->params)) {
+            return false;
+        }
+
+        return $this->unitsOnlyFixedChargesPlanOverrides($this->params['plan_overrides']);
+    }
+
+    /** @see UpdateService::unitsOnlyFixedChargesPlanOverrides() */
+    protected function unitsOnlyFixedChargesPlanOverrides(mixed $planOverrides): bool
+    {
+        $planOverrides = is_array($planOverrides) ? $planOverrides : null;
+
+        if ($planOverrides === null || array_keys($planOverrides) !== ['fixed_charges']) {
+            return false;
+        }
+
+        $fixedCharges = $planOverrides['fixed_charges'];
+
+        if (! is_array($fixedCharges) || $fixedCharges === []) {
+            return false;
+        }
+
+        foreach ($fixedCharges as $entry) {
+            $entry = is_array($entry) ? $entry : null;
+
+            if ($entry === null
+                || ! array_key_exists('id', $entry)
+                || ! array_key_exists('units', $entry)
+                || array_diff(array_keys($entry), ['id', 'units', 'apply_units_immediately']) !== []
+            ) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

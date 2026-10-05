@@ -363,25 +363,6 @@ class Invoice extends BaseModel
     }
 
     /**
-     * Port of `should_assign_sequential_id?` — Rails calls
-     * `status_changed?(from:, to:)`, whose from:/to: kwargs are swallowed by
-     * ActiveModel's generated dirty predicate: the call is literally "the
-     * status attribute changed". On create that means differing from the
-     * column default (finalized); on update, differing from the persisted
-     * value — so a draft invoice keeps its NULL sequential_id until the
-     * generating/draft → finalized save.
-     */
-    protected function shouldAssignSequentialId(): bool
-    {
-        if (! $this->exists) {
-            return ($this->statusEnum()?->value ?? InvoiceStatus::Finalized->value)
-                !== InvoiceStatus::Finalized->value;
-        }
-
-        return $this->isDirty('status');
-    }
-
-    /**
      * Port of `status_changed_to_finalized?` — the from-states Rails
      * enumerates (draft, generating, open, failed, pending) → finalized.
      */
@@ -642,14 +623,36 @@ class Invoice extends BaseModel
 
     // -- Rails before_save hooks ----------------------------------------------
 
-    #[Boot]
-    protected static function bootInvoice(): void
+    protected static function booted(): void
     {
         static::saving(function (self $invoice): void {
+            // Rails callback order: Sequenced#ensure_sequential_id first
+            // (registered at `include Sequenced`), then the model's own
+            // before_save hooks — ensure_number formats the assigned id.
+            $invoice->ensureSequentialId();
             $invoice->ensureBillingEntitySequentialId();
             $invoice->ensureNumber();
             $invoice->setFinalizedAt();
         });
+    }
+
+    /**
+     * Port of `should_assign_sequential_id?` — Rails calls
+     * `status_changed?(from:, to:)`, whose from:/to: kwargs are swallowed by
+     * ActiveModel's generated dirty predicate: the call is literally "the
+     * status attribute changed". On create that means differing from the
+     * column default (finalized); on update, differing from the persisted
+     * value — so a draft invoice keeps its NULL sequential_id until the
+     * generating/draft → finalized save.
+     */
+    protected function shouldAssignSequentialId(): bool
+    {
+        if (! $this->exists) {
+            return ($this->statusEnum()?->value ?? InvoiceStatus::Finalized->value)
+                !== InvoiceStatus::Finalized->value;
+        }
+
+        return $this->isDirty('status');
     }
 
     // -- Rails scopes ----------------------------------------------------------
