@@ -147,3 +147,59 @@ it('answers unauthorized without a signed-in user', function (): void {
         ->assertOk()
         ->assertJsonPath('errors.0.extensions.code', 'unauthorized');
 });
+
+// -- mutation createPlan ------------------------------------------------------------------
+
+const CREATE_PLAN_MUTATION = <<<'GQL'
+mutation($input: CreatePlanInput!) {
+    createPlan(input: $input) {
+        id
+        code
+        name
+        interval
+        amountCents
+        amountCurrency
+        payInAdvance
+    }
+}
+GQL;
+
+it('creates a plan through createPlan', function (): void {
+    [$organization, $user] = gqlPlansSetup();
+
+    $payload = gqlPost(CREATE_PLAN_MUTATION, ['input' => [
+        'name' => 'Basic plan',
+        'code' => 'basic',
+        'interval' => 'monthly',
+        'amountCents' => 4990,
+        'amountCurrency' => 'EUR',
+        'payInAdvance' => false,
+        'charges' => [],
+    ]], gqlAuthHeaders($user, $organization->id))->assertOk()->json('data.createPlan');
+
+    expect($payload['code'])->toBe('basic')
+        ->and($payload['name'])->toBe('Basic plan')
+        ->and($payload['interval'])->toBe('monthly')
+        ->and($payload['amountCents'])->toBe('4990')
+        ->and($payload['amountCurrency'])->toBe('EUR');
+
+    expect(Plan::query()->where('organization_id', $organization->id)->count())->toBe(1);
+})->group('gql:mutation:createPlan');
+
+it('answers a validation error on a duplicated plan code', function (): void {
+    [$organization, $user] = gqlPlansSetup();
+
+    Plan::factory()->create(['organization_id' => $organization->id, 'code' => 'basic']);
+
+    $response = gqlPost(CREATE_PLAN_MUTATION, ['input' => [
+        'name' => 'Another basic',
+        'code' => 'basic',
+        'interval' => 'monthly',
+        'amountCents' => 100,
+        'amountCurrency' => 'EUR',
+        'charges' => [],
+    ]], gqlAuthHeaders($user, $organization->id));
+
+    expect($response->json('errors'))->toBeArray()
+        ->and($response->json('data.createPlan'))->toBeNull();
+});

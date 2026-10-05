@@ -130,3 +130,33 @@ it('answers validation errors on resend without recipients', function (): void {
 
     expect($extensions['status'])->toBe(422);
 });
+
+const DOWNLOAD_XML_RECEIPT_MUTATION = <<<'GQL'
+mutation($input: DownloadXMLPaymentReceiptInput!) {
+    downloadXmlPaymentReceipt(input: $input) { id number }
+}
+GQL;
+
+it('answers the receipt through downloadXmlPaymentReceipt', function (): void {
+    [$organization, $user] = receiptGqlOrganization();
+    $receipt = receiptGqlReceipt($organization);
+
+    // The UBL renderer is a later slice: the service answers success without
+    // a file, exactly like the ported invoice download_xml endpoint.
+    $payload = gqlPost(DOWNLOAD_XML_RECEIPT_MUTATION, ['input' => ['id' => $receipt->id]], gqlAuthHeaders($user, $organization->id))
+        ->assertOk()->json('data.downloadXmlPaymentReceipt');
+
+    expect($payload['id'])->toBe($receipt->id)
+        ->and($payload['number'])->toBe($receipt->number);
+})->group('gql:mutation:downloadXmlPaymentReceipt');
+
+it('answers not_found when downloading XML of an unknown receipt', function (): void {
+    [$organization, $user] = receiptGqlOrganization();
+
+    $response = gqlPost(DOWNLOAD_XML_RECEIPT_MUTATION, ['input' => [
+        'id' => '00000000-0000-0000-0000-000000000000',
+    ]], gqlAuthHeaders($user, $organization->id));
+
+    expect($response->json('errors.0.extensions.status'))->toBe(404)
+        ->and($response->json('errors.0.extensions.code'))->toBe('not_found');
+})->group('gql:mutation:downloadXmlPaymentReceipt');

@@ -380,3 +380,59 @@ it('removes the subscription entitlement', function (): void {
     expect($payload['featureCode'])->toBe('seats')
         ->and(SubscriptionFeatureRemoval::query()->count())->toBe(1);
 })->group('gql:mutation:removeSubscriptionEntitlement');
+
+// -- query subscriptionEntitlement (single) ---------------------------------------------
+
+const SUBSCRIPTION_ENTITLEMENT_QUERY = <<<'GQL'
+query($subscriptionId: ID!, $featureCode: String!) {
+    subscriptionEntitlement(subscriptionId: $subscriptionId, featureCode: $featureCode) {
+        code
+        name
+        description
+        privileges { code value }
+    }
+}
+GQL;
+
+it('fetches a single subscription entitlement merged view', function (): void {
+    [$organization, $user] = gqlFeaturesSetup();
+    [$feature, $privilege] = gqlFeaturesFeature($organization);
+    [$plan, $subscription] = gqlSubscriptionFixture($organization);
+
+    $planEntitlement = Entitlement::factory()->forOrganization($organization)->forFeature($feature)->forPlan($plan)->create();
+    EntitlementValue::factory()->forEntitlementAndPrivilege($planEntitlement, $privilege)->create(['value' => '30']);
+
+    // The subscription override wins in the merged view.
+    $override = Entitlement::factory()->forOrganization($organization)->forFeature($feature)->forSubscription($subscription)->create();
+    EntitlementValue::factory()->forEntitlementAndPrivilege($override, $privilege)->create(['value' => '42']);
+
+    $payload = gqlPost(SUBSCRIPTION_ENTITLEMENT_QUERY, [
+        'subscriptionId' => $subscription->id,
+        'featureCode' => 'seats',
+    ], gqlAuthHeaders($user, $organization->id))->assertOk()->json('data.subscriptionEntitlement');
+
+    expect($payload['code'])->toBe('seats')
+        ->and($payload['name'])->toBe('Feature Name')
+        ->and($payload['privileges'][0]['code'])->toBe('max')
+        ->and($payload['privileges'][0]['value'])->toBe('42');
+})->group('gql:query:subscriptionEntitlement');
+
+it('answers not_found for an unknown entitlement on subscriptionEntitlement', function (): void {
+    [$organization, $user] = gqlFeaturesSetup();
+    [$plan, $subscription] = gqlSubscriptionFixture($organization);
+
+    gqlPost(SUBSCRIPTION_ENTITLEMENT_QUERY, [
+        'subscriptionId' => $subscription->id,
+        'featureCode' => 'nonexistent',
+    ], gqlAuthHeaders($user, $organization->id))
+        ->assertOk()
+        ->assertJsonPath('errors.0.extensions.code', 'not_found');
+
+    // An unknown subscription answers the same envelope.
+    gqlPost(SUBSCRIPTION_ENTITLEMENT_QUERY, [
+        'subscriptionId' => '00000000-0000-0000-0000-000000000000',
+        'featureCode' => 'seats',
+    ], gqlAuthHeaders($user, $organization->id))
+        ->assertOk()
+        ->assertJsonPath('errors.0.extensions.code', 'not_found');
+})->group('gql:query:subscriptionEntitlement');

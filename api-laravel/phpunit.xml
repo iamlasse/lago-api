@@ -35,6 +35,10 @@
         <env name="MAIL_MAILER" value="array"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="cookie"/>
+        <!-- License::premium() keys off a configured LAGO_LICENSE token; keep
+             the suite hermetic against a developer's local .env (which may set
+             a dev token). Rails specs stub License.premium? instead. -->
+        <env name="LAGO_LICENSE" value="null"/>
         <!-- AuthToken::encode (HS256) rejects keys < 32 bytes; Rails reads
              SECRET_KEY_BASE from credentials. -->
         <env name="SECRET_KEY_BASE" value="test-secret-key-base-0123456789abcdef0123456789abcdef"/>

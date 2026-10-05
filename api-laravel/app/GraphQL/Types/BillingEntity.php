@@ -24,4 +24,13 @@ class BillingEntity
     {
         return $root->appliedDunningCampaign;
     }
+
+    /**
+     * Rails: Types::BillingEntities::Object#is_default — the organization's
+     * default (first active) billing entity. No column: computed.
+     */
+    public function isDefault(\App\Models\BillingEntity $root): bool
+    {
+        return $root->organization->defaultBillingEntity?->id === $root->id;
+    }
 }

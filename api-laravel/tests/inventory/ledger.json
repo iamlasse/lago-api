@@ -142,12 +142,12 @@
             "status": {
                 "code": "done",
                 "test": "written",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/QuotesAndOrderFormsTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via QuotesAndOrderFormsTest."
         },
         {
             "id": "gql:mutation:askFinanceAssistant",
@@ -200,26 +200,30 @@
         {
             "id": "gql:mutation:cloneQuoteVersion",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\CloneQuoteVersion",
+            "laravel": "App\\GraphQL\\Mutations\\CloneQuoteVersion",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/QuotesAndOrderFormsTest.php"
+            ],
+            "notes": "Contract: replayed green via QuotesAndOrderFormsTest."
         },
         {
             "id": "gql:mutation:createAddOn",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\CreateAddOn",
+            "laravel": "App\\GraphQL\\Mutations\\CreateAddOn",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/AddOnsTest.php"
+            ],
+            "notes": "Contract: replayed green via AddOnsTest."
         },
         {
             "id": "gql:mutation:createAdjustedFee",
@@ -276,14 +280,16 @@
         {
             "id": "gql:mutation:createAppliedCoupon",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\CreateAppliedCoupon",
+            "laravel": "App\\GraphQL\\Mutations\\CreateAppliedCoupon",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/Mutations/CouponsMutationsTest.php"
+            ],
+            "notes": "Contract: replayed green via CouponsMutationsTest."
         },
         {
             "id": "gql:mutation:createAvalaraIntegration",
@@ -302,26 +308,30 @@
         {
             "id": "gql:mutation:createBillableMetric",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\CreateBillableMetric",
+            "laravel": "App\\GraphQL\\Mutations\\CreateBillableMetric",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/CreateBillableMetricTest.php"
+            ],
+            "notes": "Contract: replayed green via CreateBillableMetricTest."
         },
         {
             "id": "gql:mutation:createBillingEntity",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\CreateBillingEntity",
+            "laravel": "App\\GraphQL\\Mutations\\CreateBillingEntity",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/BillingEntitiesTest.php"
+            ],
+            "notes": "Contract: replayed green via BillingEntitiesTest."
         },
         {
             "id": "gql:mutation:createCatalogPlan",
@@ -386,14 +396,16 @@
         {
             "id": "gql:mutation:createCoupon",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\CreateCoupon",
+            "laravel": "App\\GraphQL\\Mutations\\CreateCoupon",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/Mutations/CouponsMutationsTest.php"
+            ],
+            "notes": "Contract: replayed green via CouponsMutationsTest."
         },
         {
             "id": "gql:mutation:createCreditNote",
@@ -450,14 +462,16 @@
         {
             "id": "gql:mutation:createCustomerWallet",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\CreateCustomerWallet",
+            "laravel": "App\\GraphQL\\Mutations\\CreateCustomerWallet",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/WalletsMutationsTest.php"
+            ],
+            "notes": "Contract: replayed green via WalletsMutationsTest."
         },
         {
             "id": "gql:mutation:createCustomerWalletAlert",
@@ -466,36 +480,40 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/UsageMonitoringAlertsTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringAlertsTest."
         },
         {
             "id": "gql:mutation:createCustomerWalletTransaction",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\CreateCustomerWalletTransaction",
+            "laravel": "App\\GraphQL\\Mutations\\CreateCustomerWalletTransaction",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/WalletsMutationsTest.php"
+            ],
+            "notes": "Contract: replayed green via WalletsMutationsTest."
         },
         {
             "id": "gql:mutation:createDunningCampaign",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\CreateDunningCampaign",
+            "laravel": "App\\GraphQL\\Mutations\\CreateDunningCampaign",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/DunningCampaignsTest.php"
+            ],
+            "notes": "Contract: replayed green via DunningCampaignsTest."
         },
         {
             "id": "gql:mutation:createEntraIdIntegration",
@@ -512,14 +530,16 @@
         {
             "id": "gql:mutation:createFeature",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\CreateFeature",
+            "laravel": "App\\GraphQL\\Mutations\\CreateFeature",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/FeaturesTest.php"
+            ],
+            "notes": "Contract: replayed green via FeaturesTest."
         },
         {
             "id": "gql:mutation:createFixedCharge",
@@ -536,14 +556,16 @@
         {
             "id": "gql:mutation:createHubspotIntegration",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\CreateHubspotIntegration",
+            "laravel": "App\\GraphQL\\Mutations\\CreateHubspotIntegration",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/CrmIntegrationsMutationsTest.php"
+            ],
+            "notes": "Contract: replayed green via CrmIntegrationsMutationsTest."
         },
         {
             "id": "gql:mutation:createIntegrationCollectionMapping",
@@ -632,14 +654,16 @@
         {
             "id": "gql:mutation:createNetsuiteIntegration",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\CreateNetsuiteIntegration",
+            "laravel": "App\\GraphQL\\Mutations\\CreateNetsuiteIntegration",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/AccountingIntegrationsMutationsTest.php"
+            ],
+            "notes": "Contract: replayed green via AccountingIntegrationsMutationsTest."
         },
         {
             "id": "gql:mutation:createOktaIntegration",
@@ -656,14 +680,16 @@
         {
             "id": "gql:mutation:createOrUpdateSubscriptionEntitlement",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\CreateOrUpdateSubscriptionEntitlement",
+            "laravel": "App\\GraphQL\\Mutations\\CreateOrUpdateSubscriptionEntitlement",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/FeaturesTest.php"
+            ],
+            "notes": "Contract: replayed green via FeaturesTest."
         },
         {
             "id": "gql:mutation:createPasswordReset",
@@ -716,14 +742,16 @@
         {
             "id": "gql:mutation:createPlan",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\CreatePlan",
+            "laravel": "App\\GraphQL\\Mutations\\CreatePlan",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/PlansTest.php"
+            ],
+            "notes": "Contract: replayed green via PlansTest."
         },
         {
             "id": "gql:mutation:createPlanAppliedRateCard",
@@ -740,14 +768,16 @@
         {
             "id": "gql:mutation:createPricingUnit",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\CreatePricingUnit",
+            "laravel": "App\\GraphQL\\Mutations\\CreatePricingUnit",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/PricingUnitsTest.php"
+            ],
+            "notes": "Contract: replayed green via PricingUnitsTest."
         },
         {
             "id": "gql:mutation:createProduct",
@@ -792,12 +822,12 @@
             "status": {
                 "code": "done",
                 "test": "written",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/QuotesAndOrderFormsTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via QuotesAndOrderFormsTest."
         },
         {
             "id": "gql:mutation:createRateCard",
@@ -850,14 +880,16 @@
         {
             "id": "gql:mutation:createSalesforceIntegration",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\CreateSalesforceIntegration",
+            "laravel": "App\\GraphQL\\Mutations\\CreateSalesforceIntegration",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/CrmIntegrationsMutationsTest.php"
+            ],
+            "notes": "Contract: replayed green via CrmIntegrationsMutationsTest."
         },
         {
             "id": "gql:mutation:createSubscription",
@@ -880,12 +912,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/UsageMonitoringAlertsTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringAlertsTest."
         },
         {
             "id": "gql:mutation:createSubscriptionChargeFilter",
@@ -950,14 +982,16 @@
         {
             "id": "gql:mutation:createXeroIntegration",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\CreateXeroIntegration",
+            "laravel": "App\\GraphQL\\Mutations\\CreateXeroIntegration",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/AccountingIntegrationsMutationsTest.php"
+            ],
+            "notes": "Contract: replayed green via AccountingIntegrationsMutationsTest."
         },
         {
             "id": "gql:mutation:deleteInvoice",
@@ -969,19 +1003,21 @@
                 "contract": "untested"
             },
             "tests": [],
-            "notes": ""
+            "notes": "Resolver is a deliberate null stub (see InvoiceMutationsTest stub-semantics group); the ported finalizeInvoice row is the implemented one. Not flipped."
         },
         {
             "id": "gql:mutation:destroyAddOn",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\DestroyAddOn",
+            "laravel": "App\\GraphQL\\Mutations\\DestroyAddOn",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/AddOnsTest.php"
+            ],
+            "notes": "Contract: replayed green via AddOnsTest."
         },
         {
             "id": "gql:mutation:destroyAdjustedFee",
@@ -1024,14 +1060,16 @@
         {
             "id": "gql:mutation:destroyBillingEntity",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\DestroyBillingEntity",
+            "laravel": "App\\GraphQL\\Mutations\\DestroyBillingEntity",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/BillingEntitiesTest.php"
+            ],
+            "notes": "Contract: replayed green via BillingEntitiesTest."
         },
         {
             "id": "gql:mutation:destroyCatalogPlan",
@@ -1084,14 +1122,16 @@
         {
             "id": "gql:mutation:destroyCoupon",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\DestroyCoupon",
+            "laravel": "App\\GraphQL\\Mutations\\DestroyCoupon",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/Mutations/CouponsMutationsTest.php"
+            ],
+            "notes": "Contract: replayed green via CouponsMutationsTest."
         },
         {
             "id": "gql:mutation:destroyCustomer",
@@ -1114,36 +1154,40 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/UsageMonitoringAlertsTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringAlertsTest."
         },
         {
             "id": "gql:mutation:destroyDunningCampaign",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\DestroyDunningCampaign",
+            "laravel": "App\\GraphQL\\Mutations\\DestroyDunningCampaign",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/DunningCampaignsTest.php"
+            ],
+            "notes": "Contract: replayed green via DunningCampaignsTest."
         },
         {
             "id": "gql:mutation:destroyFeature",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\DestroyFeature",
+            "laravel": "App\\GraphQL\\Mutations\\DestroyFeature",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/FeaturesTest.php"
+            ],
+            "notes": "Contract: replayed green via FeaturesTest."
         },
         {
             "id": "gql:mutation:destroyFixedCharge",
@@ -1160,14 +1204,16 @@
         {
             "id": "gql:mutation:destroyIntegration",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\DestroyIntegration",
+            "laravel": "App\\GraphQL\\Mutations\\DestroyIntegration",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/IntegrationsMutationsTest.php"
+            ],
+            "notes": "Contract: replayed green via IntegrationsMutationsTest."
         },
         {
             "id": "gql:mutation:destroyIntegrationCollectionMapping",
@@ -1368,12 +1414,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/UsageMonitoringAlertsTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringAlertsTest."
         },
         {
             "id": "gql:mutation:destroySubscriptionChargeFilter",
@@ -1457,7 +1503,7 @@
                 "contract": "untested"
             },
             "tests": [],
-            "notes": ""
+            "notes": "Resolver is a deliberate null stub (see InvoiceMutationsTest stub-semantics group); the ported finalizeInvoice row is the implemented one. Not flipped."
         },
         {
             "id": "gql:mutation:downloadInvoiceXml",
@@ -1474,14 +1520,16 @@
         {
             "id": "gql:mutation:downloadPaymentReceipt",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\DownloadPaymentReceipt",
+            "laravel": "App\\GraphQL\\Mutations\\DownloadPaymentReceipt",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/PaymentReceiptsTest.php"
+            ],
+            "notes": "Contract: replayed green via PaymentReceiptsTest."
         },
         {
             "id": "gql:mutation:downloadXmlCreditNote",
@@ -1498,14 +1546,16 @@
         {
             "id": "gql:mutation:downloadXmlPaymentReceipt",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\DownloadXmlPaymentReceipt",
+            "laravel": "App\\GraphQL\\Mutations\\DownloadXmlPaymentReceipt",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/PaymentReceiptsTest.php"
+            ],
+            "notes": "Contract: replayed green via PaymentReceiptsTest."
         },
         {
             "id": "gql:mutation:entraIdAcceptInvite",
@@ -1514,12 +1564,12 @@
             "status": {
                 "code": "done",
                 "test": "written",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/SsoMutationsTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via SsoMutationsTest."
         },
         {
             "id": "gql:mutation:entraIdAuthorize",
@@ -1528,12 +1578,12 @@
             "status": {
                 "code": "done",
                 "test": "written",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/SsoMutationsTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via SsoMutationsTest."
         },
         {
             "id": "gql:mutation:entraIdLogin",
@@ -1542,24 +1592,26 @@
             "status": {
                 "code": "done",
                 "test": "written",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/SsoMutationsTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via SsoMutationsTest."
         },
         {
             "id": "gql:mutation:executeOrder",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\ExecuteOrder",
+            "laravel": "App\\GraphQL\\Mutations\\ExecuteOrder",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/QuotesAndOrderFormsTest.php"
+            ],
+            "notes": "Contract: replayed green via QuotesAndOrderFormsTest."
         },
         {
             "id": "gql:mutation:exportFinanceAssistantResult",
@@ -1678,12 +1730,12 @@
             "status": {
                 "code": "done",
                 "test": "written",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/SsoMutationsTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via SsoMutationsTest."
         },
         {
             "id": "gql:mutation:googleLoginUser",
@@ -1692,12 +1744,12 @@
             "status": {
                 "code": "done",
                 "test": "written",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/SsoMutationsTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via SsoMutationsTest."
         },
         {
             "id": "gql:mutation:googleRegisterUser",
@@ -1706,12 +1758,12 @@
             "status": {
                 "code": "done",
                 "test": "written",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/SsoMutationsTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via SsoMutationsTest."
         },
         {
             "id": "gql:mutation:loginUser",
@@ -1746,12 +1798,12 @@
             "status": {
                 "code": "done",
                 "test": "written",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/QuotesAndOrderFormsTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via QuotesAndOrderFormsTest."
         },
         {
             "id": "gql:mutation:oktaAcceptInvite",
@@ -1760,12 +1812,12 @@
             "status": {
                 "code": "done",
                 "test": "written",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/SsoMutationsTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via SsoMutationsTest."
         },
         {
             "id": "gql:mutation:oktaAuthorize",
@@ -1774,12 +1826,12 @@
             "status": {
                 "code": "done",
                 "test": "written",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/SsoMutationsTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via SsoMutationsTest."
         },
         {
             "id": "gql:mutation:oktaLogin",
@@ -1788,12 +1840,12 @@
             "status": {
                 "code": "done",
                 "test": "written",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/SsoMutationsTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via SsoMutationsTest."
         },
         {
             "id": "gql:mutation:previewAdjustedFee",
@@ -1817,7 +1869,7 @@
                 "contract": "untested"
             },
             "tests": [],
-            "notes": ""
+            "notes": "Resolver is a deliberate null stub (see InvoiceMutationsTest stub-semantics group); the ported finalizeInvoice row is the implemented one. Not flipped."
         },
         {
             "id": "gql:mutation:regenerateFromVoided",
@@ -1848,14 +1900,16 @@
         {
             "id": "gql:mutation:removeSubscriptionEntitlement",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\RemoveSubscriptionEntitlement",
+            "laravel": "App\\GraphQL\\Mutations\\RemoveSubscriptionEntitlement",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/FeaturesTest.php"
+            ],
+            "notes": "Contract: replayed green via FeaturesTest."
         },
         {
             "id": "gql:mutation:resendCreditNoteEmail",
@@ -1884,14 +1938,16 @@
         {
             "id": "gql:mutation:resendPaymentReceiptEmail",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\ResendPaymentReceiptEmail",
+            "laravel": "App\\GraphQL\\Mutations\\ResendPaymentReceiptEmail",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/PaymentReceiptsTest.php"
+            ],
+            "notes": "Contract: replayed green via PaymentReceiptsTest."
         },
         {
             "id": "gql:mutation:resetPassword",
@@ -1939,7 +1995,7 @@
                 "contract": "untested"
             },
             "tests": [],
-            "notes": ""
+            "notes": "Resolver is a deliberate null stub (see InvoiceMutationsTest stub-semantics group); the ported finalizeInvoice row is the implemented one. Not flipped."
         },
         {
             "id": "gql:mutation:retryInvoicePayment",
@@ -2114,14 +2170,16 @@
         {
             "id": "gql:mutation:terminateAppliedCoupon",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\TerminateAppliedCoupon",
+            "laravel": "App\\GraphQL\\Mutations\\TerminateAppliedCoupon",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/Mutations/CouponsMutationsTest.php"
+            ],
+            "notes": "Contract: replayed green via CouponsMutationsTest."
         },
         {
             "id": "gql:mutation:terminateContract",
@@ -2138,26 +2196,30 @@
         {
             "id": "gql:mutation:terminateCoupon",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\TerminateCoupon",
+            "laravel": "App\\GraphQL\\Mutations\\TerminateCoupon",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/Mutations/CouponsMutationsTest.php"
+            ],
+            "notes": "Contract: replayed green via CouponsMutationsTest."
         },
         {
             "id": "gql:mutation:terminateCustomerWallet",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\TerminateCustomerWallet",
+            "laravel": "App\\GraphQL\\Mutations\\TerminateCustomerWallet",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/WalletsMutationsTest.php"
+            ],
+            "notes": "Contract: replayed green via WalletsMutationsTest."
         },
         {
             "id": "gql:mutation:terminateSubscription",
@@ -2176,14 +2238,16 @@
         {
             "id": "gql:mutation:updateAddOn",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\UpdateAddOn",
+            "laravel": "App\\GraphQL\\Mutations\\UpdateAddOn",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/AddOnsTest.php"
+            ],
+            "notes": "Contract: replayed green via AddOnsTest."
         },
         {
             "id": "gql:mutation:updateAdyenPaymentProvider",
@@ -2254,14 +2318,16 @@
         {
             "id": "gql:mutation:updateBillingEntity",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\UpdateBillingEntity",
+            "laravel": "App\\GraphQL\\Mutations\\UpdateBillingEntity",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/BillingEntitiesTest.php"
+            ],
+            "notes": "Contract: replayed green via BillingEntitiesTest."
         },
         {
             "id": "gql:mutation:updateCashfreePaymentProvider",
@@ -2326,14 +2392,16 @@
         {
             "id": "gql:mutation:updateCoupon",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\UpdateCoupon",
+            "laravel": "App\\GraphQL\\Mutations\\UpdateCoupon",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/Mutations/CouponsMutationsTest.php"
+            ],
+            "notes": "Contract: replayed green via CouponsMutationsTest."
         },
         {
             "id": "gql:mutation:updateCreditNote",
@@ -2390,14 +2458,16 @@
         {
             "id": "gql:mutation:updateCustomerWallet",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\UpdateCustomerWallet",
+            "laravel": "App\\GraphQL\\Mutations\\UpdateCustomerWallet",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/WalletsMutationsTest.php"
+            ],
+            "notes": "Contract: replayed green via WalletsMutationsTest."
         },
         {
             "id": "gql:mutation:updateCustomerWalletAlert",
@@ -2406,24 +2476,26 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/UsageMonitoringAlertsTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringAlertsTest."
         },
         {
             "id": "gql:mutation:updateDunningCampaign",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\UpdateDunningCampaign",
+            "laravel": "App\\GraphQL\\Mutations\\UpdateDunningCampaign",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/DunningCampaignsTest.php"
+            ],
+            "notes": "Contract: replayed green via DunningCampaignsTest."
         },
         {
             "id": "gql:mutation:updateEntraIdIntegration",
@@ -2440,14 +2512,16 @@
         {
             "id": "gql:mutation:updateFeature",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\UpdateFeature",
+            "laravel": "App\\GraphQL\\Mutations\\UpdateFeature",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/FeaturesTest.php"
+            ],
+            "notes": "Contract: replayed green via FeaturesTest."
         },
         {
             "id": "gql:mutation:updateFixedCharge",
@@ -2488,14 +2562,16 @@
         {
             "id": "gql:mutation:updateHubspotIntegration",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\UpdateHubspotIntegration",
+            "laravel": "App\\GraphQL\\Mutations\\UpdateHubspotIntegration",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/CrmIntegrationsMutationsTest.php"
+            ],
+            "notes": "Contract: replayed green via CrmIntegrationsMutationsTest."
         },
         {
             "id": "gql:mutation:updateIntegrationCollectionMapping",
@@ -2596,14 +2672,16 @@
         {
             "id": "gql:mutation:updateNetsuiteIntegration",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\UpdateNetsuiteIntegration",
+            "laravel": "App\\GraphQL\\Mutations\\UpdateNetsuiteIntegration",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/AccountingIntegrationsMutationsTest.php"
+            ],
+            "notes": "Contract: replayed green via AccountingIntegrationsMutationsTest."
         },
         {
             "id": "gql:mutation:updateOktaIntegration",
@@ -2670,14 +2748,16 @@
         {
             "id": "gql:mutation:updatePricingUnit",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\UpdatePricingUnit",
+            "laravel": "App\\GraphQL\\Mutations\\UpdatePricingUnit",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/PricingUnitsTest.php"
+            ],
+            "notes": "Contract: replayed green via PricingUnitsTest."
         },
         {
             "id": "gql:mutation:updateProduct",
@@ -2718,14 +2798,16 @@
         {
             "id": "gql:mutation:updateQuote",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\UpdateQuote",
+            "laravel": "App\\GraphQL\\Mutations\\UpdateQuote",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/QuotesAndOrderFormsTest.php"
+            ],
+            "notes": "Contract: replayed green via QuotesAndOrderFormsTest."
         },
         {
             "id": "gql:mutation:updateQuoteVersion",
@@ -2734,12 +2816,12 @@
             "status": {
                 "code": "done",
                 "test": "written",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/QuotesAndOrderFormsTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via QuotesAndOrderFormsTest."
         },
         {
             "id": "gql:mutation:updateRateCard",
@@ -2792,14 +2874,16 @@
         {
             "id": "gql:mutation:updateSalesforceIntegration",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\UpdateSalesforceIntegration",
+            "laravel": "App\\GraphQL\\Mutations\\UpdateSalesforceIntegration",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/CrmIntegrationsMutationsTest.php"
+            ],
+            "notes": "Contract: replayed green via CrmIntegrationsMutationsTest."
         },
         {
             "id": "gql:mutation:updateStripePaymentProvider",
@@ -2834,12 +2918,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/UsageMonitoringAlertsTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringAlertsTest."
         },
         {
             "id": "gql:mutation:updateSubscriptionCharge",
@@ -2916,14 +3000,16 @@
         {
             "id": "gql:mutation:updateXeroIntegration",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\UpdateXeroIntegration",
+            "laravel": "App\\GraphQL\\Mutations\\UpdateXeroIntegration",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/AccountingIntegrationsMutationsTest.php"
+            ],
+            "notes": "Contract: replayed green via AccountingIntegrationsMutationsTest."
         },
         {
             "id": "gql:mutation:voidCreditNote",
@@ -2949,7 +3035,7 @@
                 "contract": "untested"
             },
             "tests": [],
-            "notes": ""
+            "notes": "Resolver is a deliberate null stub (see InvoiceMutationsTest stub-semantics group); the ported finalizeInvoice row is the implemented one. Not flipped."
         },
         {
             "id": "gql:mutation:voidOrderForm",
@@ -2958,24 +3044,26 @@
             "status": {
                 "code": "done",
                 "test": "written",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/QuotesAndOrderFormsTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via QuotesAndOrderFormsTest."
         },
         {
             "id": "gql:mutation:voidQuoteVersion",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Mutation\\VoidQuoteVersion",
+            "laravel": "App\\GraphQL\\Mutations\\VoidQuoteVersion",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/QuotesAndOrderFormsTest.php"
+            ],
+            "notes": "Contract: replayed green via QuotesAndOrderFormsTest."
         },
         {
             "id": "gql:query:activityLog",
@@ -3004,26 +3092,30 @@
         {
             "id": "gql:query:addOn",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\AddOn",
+            "laravel": "App\\GraphQL\\Queries\\AddOn",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/AddOnsTest.php"
+            ],
+            "notes": "Contract: replayed green via AddOnsTest."
         },
         {
             "id": "gql:query:addOns",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\AddOns",
+            "laravel": "App\\GraphQL\\Queries\\AddOns",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/AddOnsTest.php"
+            ],
+            "notes": "Contract: replayed green via AddOnsTest."
         },
         {
             "id": "gql:query:adminAuditLogs",
@@ -3104,12 +3196,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/UsageMonitoringAlertsTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringAlertsTest."
         },
         {
             "id": "gql:query:alerts",
@@ -3118,12 +3210,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/UsageMonitoringAlertsTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringAlertsTest."
         },
         {
             "id": "gql:query:apiKey",
@@ -3180,14 +3272,16 @@
         {
             "id": "gql:query:appliedCoupons",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\AppliedCoupons",
+            "laravel": "App\\GraphQL\\Queries\\AppliedCoupons",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/Resolvers/CouponsResolverTest.php"
+            ],
+            "notes": "Contract: replayed green via CouponsResolverTest."
         },
         {
             "id": "gql:query:billableMetric",
@@ -3216,26 +3310,30 @@
         {
             "id": "gql:query:billingEntities",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\BillingEntities",
+            "laravel": "App\\GraphQL\\Queries\\BillingEntities",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/BillingEntitiesTest.php"
+            ],
+            "notes": "Contract: replayed green via BillingEntitiesTest."
         },
         {
             "id": "gql:query:billingEntity",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\BillingEntity",
+            "laravel": "App\\GraphQL\\Queries\\BillingEntity",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/BillingEntitiesTest.php"
+            ],
+            "notes": "Contract: replayed green via BillingEntitiesTest."
         },
         {
             "id": "gql:query:billingEntityTaxes",
@@ -3312,26 +3410,30 @@
         {
             "id": "gql:query:coupon",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\Coupon",
+            "laravel": "App\\GraphQL\\Queries\\Coupon",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/Resolvers/CouponsResolverTest.php"
+            ],
+            "notes": "Contract: replayed green via CouponsResolverTest."
         },
         {
             "id": "gql:query:coupons",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\Coupons",
+            "laravel": "App\\GraphQL\\Queries\\Coupons",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/Resolvers/CouponsResolverTest.php"
+            ],
+            "notes": "Contract: replayed green via CouponsResolverTest."
         },
         {
             "id": "gql:query:creditNote",
@@ -3708,26 +3810,30 @@
         {
             "id": "gql:query:dunningCampaign",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\DunningCampaign",
+            "laravel": "App\\GraphQL\\Queries\\DunningCampaign",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/DunningCampaignsTest.php"
+            ],
+            "notes": "Contract: replayed green via DunningCampaignsTest."
         },
         {
             "id": "gql:query:dunningCampaigns",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\DunningCampaigns",
+            "laravel": "App\\GraphQL\\Queries\\DunningCampaigns",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/DunningCampaignsTest.php"
+            ],
+            "notes": "Contract: replayed green via DunningCampaignsTest."
         },
         {
             "id": "gql:query:event",
@@ -3768,26 +3874,30 @@
         {
             "id": "gql:query:feature",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\Feature",
+            "laravel": "App\\GraphQL\\Queries\\Feature",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/FeaturesTest.php"
+            ],
+            "notes": "Contract: replayed green via FeaturesTest."
         },
         {
             "id": "gql:query:features",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\Features",
+            "laravel": "App\\GraphQL\\Queries\\Features",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/FeaturesTest.php"
+            ],
+            "notes": "Contract: replayed green via FeaturesTest."
         },
         {
             "id": "gql:query:googleAuthUrl",
@@ -4027,14 +4137,16 @@
         {
             "id": "gql:query:order",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\Order",
+            "laravel": "App\\GraphQL\\Queries\\Order",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/QuotesAndOrderFormsTest.php"
+            ],
+            "notes": "Contract: replayed green via QuotesAndOrderFormsTest."
         },
         {
             "id": "gql:query:orderForm",
@@ -4055,24 +4167,26 @@
             "status": {
                 "code": "done",
                 "test": "written",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/QuotesAndOrderFormsTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via QuotesAndOrderFormsTest."
         },
         {
             "id": "gql:query:orders",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\Orders",
+            "laravel": "App\\GraphQL\\Queries\\Orders",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/AddOnsTest.php"
+            ],
+            "notes": "Contract: replayed green via AddOnsTest."
         },
         {
             "id": "gql:query:organization",
@@ -4115,14 +4229,16 @@
         {
             "id": "gql:query:payment",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\Payment",
+            "laravel": "App\\GraphQL\\Queries\\Payment",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/PaymentReceiptsTest.php"
+            ],
+            "notes": "Contract: replayed green via PaymentReceiptsTest."
         },
         {
             "id": "gql:query:paymentMethods",
@@ -4187,14 +4303,16 @@
         {
             "id": "gql:query:plan",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\Plan",
+            "laravel": "App\\GraphQL\\Queries\\Plan",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/PlanTypeTest.php"
+            ],
+            "notes": "Contract: replayed green via PlanTypeTest."
         },
         {
             "id": "gql:query:planAppliedRateCards",
@@ -4211,38 +4329,44 @@
         {
             "id": "gql:query:plans",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\Plans",
+            "laravel": "App\\GraphQL\\Queries\\Plans",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/PlansTest.php"
+            ],
+            "notes": "Contract: replayed green via PlansTest."
         },
         {
             "id": "gql:query:pricingUnit",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\PricingUnit",
+            "laravel": "App\\GraphQL\\Queries\\PricingUnit",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/PricingUnitsTest.php"
+            ],
+            "notes": "Contract: replayed green via PricingUnitsTest."
         },
         {
             "id": "gql:query:pricingUnits",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\PricingUnits",
+            "laravel": "App\\GraphQL\\Queries\\PricingUnits",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/PricingUnitsTest.php"
+            ],
+            "notes": "Contract: replayed green via PricingUnitsTest."
         },
         {
             "id": "gql:query:product",
@@ -4319,26 +4443,30 @@
         {
             "id": "gql:query:quote",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\Quote",
+            "laravel": "App\\GraphQL\\Queries\\Quote",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/QuotesAndOrderFormsTest.php"
+            ],
+            "notes": "Contract: replayed green via QuotesAndOrderFormsTest."
         },
         {
             "id": "gql:query:quoteVersion",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\QuoteVersion",
+            "laravel": "App\\GraphQL\\Queries\\QuoteVersion",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/QuotesAndOrderFormsTest.php"
+            ],
+            "notes": "Contract: replayed green via QuotesAndOrderFormsTest."
         },
         {
             "id": "gql:query:quotes",
@@ -4347,12 +4475,12 @@
             "status": {
                 "code": "done",
                 "test": "written",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/QuotesAndOrderFormsTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via QuotesAndOrderFormsTest."
         },
         {
             "id": "gql:query:rateCard",
@@ -4515,26 +4643,30 @@
         {
             "id": "gql:query:subscriptionEntitlement",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\SubscriptionEntitlement",
+            "laravel": "App\\GraphQL\\Queries\\SubscriptionEntitlement",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/FeaturesTest.php"
+            ],
+            "notes": "Contract: replayed green via FeaturesTest."
         },
         {
             "id": "gql:query:subscriptionEntitlements",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\SubscriptionEntitlements",
+            "laravel": "App\\GraphQL\\Queries\\SubscriptionEntitlements",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/FeaturesTest.php"
+            ],
+            "notes": "Contract: replayed green via FeaturesTest."
         },
         {
             "id": "gql:query:subscriptions",
@@ -4613,14 +4745,16 @@
         {
             "id": "gql:query:wallet",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\Wallet",
+            "laravel": "App\\GraphQL\\Queries\\Wallet",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/Resolvers/WalletsResolverTest.php"
+            ],
+            "notes": "Contract: replayed green via WalletsResolverTest."
         },
         {
             "id": "gql:query:walletAlert",
@@ -4649,14 +4783,16 @@
         {
             "id": "gql:query:walletTransaction",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\WalletTransaction",
+            "laravel": "App\\GraphQL\\Queries\\WalletTransaction",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/Resolvers/WalletsResolverTest.php"
+            ],
+            "notes": "Contract: replayed green via WalletsResolverTest."
         },
         {
             "id": "gql:query:walletTransactionConsumptions",
@@ -4685,26 +4821,30 @@
         {
             "id": "gql:query:walletTransactions",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\WalletTransactions",
+            "laravel": "App\\GraphQL\\Queries\\WalletTransactions",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/Resolvers/WalletsResolverTest.php"
+            ],
+            "notes": "Contract: replayed green via WalletsResolverTest."
         },
         {
             "id": "gql:query:wallets",
             "source": "schema.json",
-            "laravel": "App\\GraphQL\\Query\\Wallets",
+            "laravel": "App\\GraphQL\\Queries\\Wallets",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "done",
+                "test": "written",
+                "contract": "pass"
             },
-            "tests": [],
-            "notes": ""
+            "tests": [
+                "tests/Feature/GraphQL/Resolvers/WalletsResolverTest.php"
+            ],
+            "notes": "Contract: replayed green via WalletsResolverTest."
         },
         {
             "id": "gql:query:webhook",
@@ -4759,12 +4899,12 @@
             "source": "schema.json",
             "laravel": "App\\GraphQL\\Subscription\\AiConversationStreamed",
             "status": {
-                "code": "todo",
-                "test": "todo",
-                "contract": "untested"
+                "code": "n/a",
+                "test": "n/a",
+                "contract": "n/a"
             },
             "tests": [],
-            "notes": ""
+            "notes": "N/A: the served schema intentionally drops the subscription root (ActionCable-only, whitelisted in graphql/FULL_SCHEMA_NOTES.md, asserted by IntrospectionDiffTest). No resolver can ever satisfy this row against the served surface."
         },
         {
             "id": "job:Admin.SlackNotificationJob",
@@ -8181,12 +8321,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Http/UsageMonitoringRestTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringRestTest."
         },
         {
             "id": "rest:DELETE:/api/v1/customers/:external_id/wallets/:code/alerts/:code",
@@ -8195,12 +8335,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Http/UsageMonitoringRestTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringRestTest."
         },
         {
             "id": "rest:DELETE:/api/v1/customers/:external_id/wallets/:code/metadata",
@@ -8407,12 +8547,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Http/UsageMonitoringRestTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringRestTest."
         },
         {
             "id": "rest:DELETE:/api/v1/subscriptions/:external_id/alerts/:code",
@@ -8421,12 +8561,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Http/UsageMonitoringRestTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringRestTest."
         },
         {
             "id": "rest:DELETE:/api/v1/subscriptions/:external_id/charges/:code/filters/:id",
@@ -8703,12 +8843,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Http/UsageMonitoringRestTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringRestTest."
         },
         {
             "id": "rest:DELETE:/api/v2/customers/:external_id/wallets/:code/alerts/:code",
@@ -8717,12 +8857,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Http/UsageMonitoringRestTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringRestTest."
         },
         {
             "id": "rest:DELETE:/api/v2/customers/:external_id/wallets/:code/metadata",
@@ -9005,12 +9145,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Http/UsageMonitoringRestTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringRestTest."
         },
         {
             "id": "rest:DELETE:/api/v2/subscriptions/:external_id/alerts/:code",
@@ -9019,12 +9159,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Http/UsageMonitoringRestTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringRestTest."
         },
         {
             "id": "rest:DELETE:/api/v2/subscriptions/:external_id/charges/:code/filters/:id",
@@ -9749,12 +9889,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Http/UsageMonitoringRestTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringRestTest."
         },
         {
             "id": "rest:GET:/api/v1/customers/:external_id/wallets/:code/alerts/:code",
@@ -9763,12 +9903,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Http/UsageMonitoringRestTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringRestTest."
         },
         {
             "id": "rest:GET:/api/v1/events",
@@ -10327,12 +10467,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Http/UsageMonitoringRestTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringRestTest."
         },
         {
             "id": "rest:GET:/api/v1/subscriptions/:external_id/alerts/:code",
@@ -10341,12 +10481,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Http/UsageMonitoringRestTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringRestTest."
         },
         {
             "id": "rest:GET:/api/v1/subscriptions/:external_id/charges",
@@ -10441,12 +10581,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Http/UsageMonitoringRestTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringRestTest."
         },
         {
             "id": "rest:GET:/api/v1/taxes",
@@ -11259,12 +11399,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Http/UsageMonitoringRestTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringRestTest."
         },
         {
             "id": "rest:GET:/api/v2/customers/:external_id/wallets/:code/alerts/:code",
@@ -11273,12 +11413,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Http/UsageMonitoringRestTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringRestTest."
         },
         {
             "id": "rest:GET:/api/v2/events",
@@ -11963,12 +12103,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Http/UsageMonitoringRestTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringRestTest."
         },
         {
             "id": "rest:GET:/api/v2/subscriptions/:external_id/alerts/:code",
@@ -11977,12 +12117,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Http/UsageMonitoringRestTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringRestTest."
         },
         {
             "id": "rest:GET:/api/v2/subscriptions/:external_id/charges",
@@ -12075,12 +12215,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Http/UsageMonitoringRestTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringRestTest."
         },
         {
             "id": "rest:GET:/api/v2/taxes",
@@ -12455,12 +12595,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Http/UsageMonitoringRestTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringRestTest."
         },
         {
             "id": "rest:PATCH:/api/v1/customers/:external_id/wallets/:code/metadata",
@@ -12615,12 +12755,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Http/UsageMonitoringRestTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringRestTest."
         },
         {
             "id": "rest:PATCH:/api/v1/subscriptions/:external_id/charges/:code",
@@ -12679,12 +12819,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Http/UsageMonitoringRestTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringRestTest."
         },
         {
             "id": "rest:PATCH:/api/v1/taxes/:code",
@@ -12885,12 +13025,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Http/UsageMonitoringRestTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringRestTest."
         },
         {
             "id": "rest:PATCH:/api/v2/customers/:external_id/wallets/:code/metadata",
@@ -13129,12 +13269,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Http/UsageMonitoringRestTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringRestTest."
         },
         {
             "id": "rest:PATCH:/api/v2/subscriptions/:external_id/charges/:code",
@@ -13191,12 +13331,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Http/UsageMonitoringRestTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringRestTest."
         },
         {
             "id": "rest:PATCH:/api/v2/taxes/:code",
@@ -13521,12 +13661,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Http/UsageMonitoringRestTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringRestTest."
         },
         {
             "id": "rest:POST:/api/v1/customers/:external_id/wallets/:code/metadata",
@@ -13981,12 +14121,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Http/UsageMonitoringRestTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringRestTest."
         },
         {
             "id": "rest:POST:/api/v1/subscriptions/:external_id/charges/:code/filters",
@@ -14345,12 +14485,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Http/UsageMonitoringRestTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringRestTest."
         },
         {
             "id": "rest:POST:/api/v2/customers/:external_id/wallets/:code/metadata",
@@ -14865,12 +15005,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Http/UsageMonitoringRestTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringRestTest."
         },
         {
             "id": "rest:POST:/api/v2/subscriptions/:external_id/charges/:code/filters",
@@ -15221,12 +15361,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Http/UsageMonitoringRestTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringRestTest."
         },
         {
             "id": "rest:PUT:/api/v1/customers/:external_id/wallets/:code/metadata",
@@ -15421,12 +15561,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Http/UsageMonitoringRestTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringRestTest."
         },
         {
             "id": "rest:PUT:/api/v1/subscriptions/:external_id/charges/:code",
@@ -15471,12 +15611,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Http/UsageMonitoringRestTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringRestTest."
         },
         {
             "id": "rest:PUT:/api/v1/taxes/:code",
@@ -15701,12 +15841,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Http/UsageMonitoringRestTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringRestTest."
         },
         {
             "id": "rest:PUT:/api/v2/customers/:external_id/wallets/:code/metadata",
@@ -15977,12 +16117,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Http/UsageMonitoringRestTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringRestTest."
         },
         {
             "id": "rest:PUT:/api/v2/subscriptions/:external_id/charges/:code",
@@ -16027,12 +16167,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Http/UsageMonitoringRestTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringRestTest."
         },
         {
             "id": "rest:PUT:/api/v2/taxes/:code",
@@ -17408,12 +17548,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Http/UsageMonitoringRestTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringRestTest."
         },
         {
             "id": "ser:V1.MembershipSerializer",
@@ -17782,12 +17922,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Http/UsageMonitoringRestTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringRestTest."
         },
         {
             "id": "ser:V1.UsageMonitoring.TriggeredAlertSerializer",
@@ -25845,12 +25985,12 @@
             "status": {
                 "code": "done",
                 "test": "written",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/QuotesAndOrderFormsTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via QuotesAndOrderFormsTest."
         },
         {
             "id": "svc:OrderForms.ExecutionSettingsValidation",
@@ -25859,12 +25999,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/QuotesAndOrderFormsTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via QuotesAndOrderFormsTest."
         },
         {
             "id": "svc:OrderForms.ExpireService",
@@ -25887,12 +26027,12 @@
             "status": {
                 "code": "done",
                 "test": "written",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/QuotesAndOrderFormsTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via QuotesAndOrderFormsTest."
         },
         {
             "id": "svc:OrderForms.Premium",
@@ -25915,12 +26055,12 @@
             "status": {
                 "code": "done",
                 "test": "written",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/QuotesAndOrderFormsTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via QuotesAndOrderFormsTest."
         },
         {
             "id": "svc:Orders.BaseExecuteService",
@@ -27727,12 +27867,12 @@
             "status": {
                 "code": "done",
                 "test": "written",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/GraphQL/QuotesAndOrderFormsTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via QuotesAndOrderFormsTest."
         },
         {
             "id": "svc:QuoteVersions.CreateService",
@@ -29082,12 +29222,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Http/UsageMonitoringRestTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringRestTest."
         },
         {
             "id": "svc:UsageMonitoring.Alerts.DestroyAllService",
@@ -29096,12 +29236,12 @@
             "status": {
                 "code": "done",
                 "test": "ported",
-                "contract": "untested"
+                "contract": "pass"
             },
             "tests": [
                 "tests/Feature/Http/UsageMonitoringRestTest.php"
             ],
-            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests]"
+            "notes": "[2026-10-05 wave integration: flipped from passing ledger:-grouped tests] Contract: replayed green via UsageMonitoringRestTest."
         },
         {
             "id": "svc:UsageMonitoring.BaseService",

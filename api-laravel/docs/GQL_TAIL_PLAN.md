@@ -37,6 +37,19 @@ Earlier "blocked on payment providers pt 2 / dunning / entitlements" rows are
 
 ## Slice 0 — Ledger reconciliation (do first, effort S, no code)
 
+**Status: done (2026-10-05).** The 0a rows are flipped except the five
+invoice mutations (`deleteInvoice`/`downloadInvoice`/`refreshInvoice`/
+`retryInvoice`/`voidInvoice`) — the plan's stale-unflipped claim was wrong for
+those five: they are deliberate null stubs (see the stub-semantics group in
+`InvoiceMutationsTest`), so they stay open. All 0b rows are closed: tests were
+added (quotes/order-form fetches + updateQuote/clone/void/executeOrder, plan,
+createPlan, billing entities, subscriptionEntitlement, createBillableMetric,
+pricing units) and `PricingUnits/UpdateService` + the `UpdatePricingUnit`
+resolver were ported (the one real gap). The row audit also fixed a real
+contract bug the new billing-entity tests caught: `BillingEntity.isDefault`
+had no resolver (Rails: `organization.default_billing_entity&.id == id`).
+`gql:subscription:aiConversationStreamed` is marked N/A in the ledger.
+
 ### 0a. Stale-unflipped — 54 rows, code + GraphQL test both exist
 
 Every row below has its resolver class in `app/GraphQL/**` **and** is exercised
@@ -91,8 +104,9 @@ Add small `tests/Feature/GraphQL/*Test.php` cases, then flip:
   exist, no GQL test)
 - Pricing units: `gql:mutation:createPricingUnit`, `gql:mutation:updatePricingUnit`¹,
   `gql:query:pricingUnit`, `gql:query:pricingUnits`
-  ¹ `updatePricingUnit` resolver is absent — `PricingUnits/UpdateService` needs a
-  port from Rails `services/pricing_units/update_service.rb` first (S).
+  ¹ DONE — `PricingUnits/UpdateService` ported from Rails
+  `services/pricing_units/update_service.rb` with the `UpdatePricingUnit`
+  resolver (2026-10-05).
 - Billing entities: `gql:mutation:createBillingEntity`, `gql:mutation:updateBillingEntity`,
   `gql:mutation:destroyBillingEntity`, `gql:query:billingEntity`, `gql:query:billingEntities`
 - `gql:query:subscriptionEntitlement` (FeaturesTest covers only the plural),
@@ -113,7 +127,7 @@ Add small `tests/Feature/GraphQL/*Test.php` cases, then flip:
 | Products (15) | `gql:query:product` `gql:query:products` `gql:query:productCategory` `gql:query:productCategories` `gql:query:productFilter` `gql:query:productFilters` `gql:mutation:createProduct` `gql:mutation:updateProduct` `gql:mutation:destroyProduct` `gql:mutation:createProductCategory` `gql:mutation:updateProductCategory` `gql:mutation:destroyProductCategory` `gql:mutation:createProductFilter` `gql:mutation:updateProductFilter` `gql:mutation:destroyProductFilter` | `mutations/{products,product_categories,product_filters}`, matching resolvers | `Services/Products`, `ProductCategories`, `ProductFilters` + `app/Queries/*Query` — present |
 | Rate cards (13) | `gql:query:rateCard` `gql:query:rateCards` `gql:query:rateCardRate` `gql:query:rateCardRates` `gql:mutation:createRateCard` `gql:mutation:updateRateCard` `gql:mutation:destroyRateCard` `gql:mutation:createRateCardRate` `gql:mutation:updateRateCardRate` `gql:mutation:destroyRateCardRate` `gql:mutation:createRatePhase` `gql:mutation:updateRatePhase` `gql:mutation:destroyRatePhase` | `mutations/{rate_cards,rate_card_rates,rate_phases}`, `resolvers/rate_card*` | `Services/RateCards`, `RateCardRates`, `RatePhases` — present |
 | Applied rate cards + contracts (11) | `gql:query:planAppliedRateCards` `gql:query:contractAppliedRateCards` `gql:query:contract` `gql:query:contracts` `gql:mutation:createPlanAppliedRateCard` `gql:mutation:destroyPlanAppliedRateCard` `gql:mutation:createContractAppliedRateCard` `gql:mutation:destroyContractAppliedRateCard` `gql:mutation:createContract` `gql:mutation:updateContract` `gql:mutation:terminateContract` | `mutations/{plan_applied_rate_cards,contract_applied_rate_cards,contracts}`, `resolvers/{contract,contracts,contract_applied_rate_cards,plan_applied_rate_cards}` | `Services/PlanRateCards`, `ContractRateCards`, `Contracts` — present |
-| Plan mutations (3) | `gql:mutation:updatePlan` `gql:mutation:destroyPlan` `gql:mutation:updatePricingUnit` | `mutations/{plans,pricing_units}` | `Services/Plans/{Update,Destroy}` present; **gap:** port `PricingUnits/UpdateService` (S) |
+| Plan mutations (3) | `gql:mutation:updatePlan` `gql:mutation:destroyPlan` `gql:mutation:updatePricingUnit` | `mutations/{plans,pricing_units}` | `Services/Plans/{Update,Destroy}` present; `PricingUnits/UpdateService` + `UpdatePricingUnit` resolver landed (2026-10-05) |
 | Charges (14) | `gql:mutation:createCharge` `gql:mutation:updateCharge` `gql:mutation:destroyCharge` `gql:mutation:createChargeFilter` `gql:mutation:updateChargeFilter` `gql:mutation:destroyChargeFilter` `gql:mutation:createFixedCharge` `gql:mutation:updateFixedCharge` `gql:mutation:destroyFixedCharge` `gql:mutation:updateSubscriptionCharge` `gql:mutation:updateSubscriptionFixedCharge` `gql:mutation:createSubscriptionChargeFilter` `gql:mutation:updateSubscriptionChargeFilter` `gql:mutation:destroySubscriptionChargeFilter` | `mutations/{charges,charge_filters,fixed_charges}`, `mutations/subscriptions/{create_charge_filter,destroy_charge_filter,update_charge_filter,update_charge,update_fixed_charge}` | `Services/Charges`, `FixedCharges`, `Charges/OverrideService`, `FixedCharges/OverrideService` present; **gap:** `Services/ChargeFilters` only has `CreateOrUpdateBatchService` — split out per-id create/update/destroy (S) |
 
 ---

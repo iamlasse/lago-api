@@ -326,3 +326,35 @@ GQL,
         ->and($planData['isOverridden'])->toBeTrue()
         ->and($planData['hasOverriddenPlans'])->toBeFalse();
 });
+
+// -- query plan (single root fetch, ported in the plan-query slice) ----------------------
+
+it('fetches a single plan through plan and answers not_found for an unknown id', function (): void {
+    [$organization, $user, $plan] = gqlPlanTypeSetup();
+    $headers = gqlAuthHeaders($user, $organization->id);
+
+    $payload = gqlPost(
+        <<<'GQL'
+query($id: ID!) {
+    plan(id: $id) { id code name interval amountCents amountCurrency }
+}
+GQL,
+        ['id' => $plan->id],
+        $headers,
+    )->assertOk()->json('data.plan');
+
+    expect($payload['id'])->toBe($plan->id)
+        ->and($payload['code'])->toBe($plan->code)
+        ->and($payload['interval'])->toBe('monthly');
+
+    // Rails: current_organization.plans.find(id) — the not_found envelope.
+    gqlPost(
+        <<<'GQL'
+query($id: ID!) {
+    plan(id: $id) { id }
+}
+GQL,
+        ['id' => '00000000-0000-0000-0000-000000000000'],
+        $headers,
+    )->assertOk()->assertJsonPath('errors.0.extensions.code', 'not_found');
+})->group('gql:query:plan');

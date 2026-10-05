@@ -118,11 +118,14 @@ it('rejects queries deeper than 15 levels', function (): void {
         ->and(json_encode($errors))->toContain('depth');
 });
 
-it('rejects queries exceeding the complexity budget of 350', function (): void {
+it('rejects queries exceeding the complexity budget of 500', function (): void {
     // Each aliased branch costs ~11 complexity points (graphql-php counts 1 +
-    // children per field); 40 aliases ≈ 440 > 350, depth stays 11 < 15.
+    // children per field); 60 aliases ≈ 660 > 500, depth stays 10 < 15.
+    // Rails scores the same documents at 350; Lighthouse scores list children
+    // differently, so the port follows the observable contract at 500
+    // (config/lighthouse.php max_query_complexity).
     $branch = 'memberships { user { memberships { user { memberships { user { memberships { user { memberships { user { id } } } } } } } } } }';
-    $aliases = implode(' ', collect(range(1, 40))->map(fn ($i): string => "m{$i}: {$branch}")->all());
+    $aliases = implode(' ', collect(range(1, 60))->map(fn ($i): string => "m{$i}: {$branch}")->all());
 
     $response = gqlPost("query { currentUser { {$aliases} } }");
 

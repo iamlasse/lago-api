@@ -11,22 +11,22 @@ per the ledger rules (`code=done` requires `test ∈ {ported, written}`).
 | Metric | Count |
 | --- | --- |
 | Ledger rows (Rails surface under coverage) | 2625 |
-| Done | 627 |
+| Done | 866 |
 | In progress | 5 |
-| Todo | 1993 |
-| Contract goldens replaying green (`contract=pass`) | 85 |
-| Tests ported from Rails specs | 522 |
-| Tests written first (no Rails spec to port) | 105 |
+| Todo | 1753 |
+| Contract goldens replaying green (`contract=pass`) | 333 |
+| Tests ported from Rails specs | 635 |
+| Tests written first (no Rails spec to port) | 231 |
 
 ## Progress by kind
 
 | Kind | Rows | Done | In progress | Contract pass |
 | --- | --- | --- | --- | --- |
-| `rest` (provisional inventory) | 625 | 239 | 0 | 82 |
-| `gql` | 387 | 31 | 0 | 2 |
-| `svc` | 1044 | 168 | 5 | 1 |
-| `ser` | 154 | 26 | 0 | 0 |
-| `job` | 269 | 17 | 0 | 0 |
+| `rest` (provisional inventory) | 625 | 281 | 0 | 156 |
+| `gql` | 387 | 129 | 0 | 125 |
+| `svc` | 1044 | 257 | 5 | 44 |
+| `ser` | 154 | 31 | 0 | 2 |
+| `job` | 269 | 22 | 0 | 6 |
 | `table` | 146 | 146 | 0 | 0 |
 
 `table` rows are the frozen schema itself (all done by construction — the
@@ -39,54 +39,8 @@ loader builds the database from Rails' `db/structure.sql`).
 `code=done`, `test ∈ {ported, written}`, `contract=pass`).
 
 - Done: 85 / 85
-- Contract pass: 39 / 85
-- Gate: red — 46 scope rows still below the gate:
-  - `rest:PATCH:/api/v1/billable_metrics/:code (code=done, contract=untested)`
-  - `rest:POST:/api/v1/billable_metrics/evaluate_expression (code=done, contract=untested)`
-  - `rest:GET:/api/v1/taxes (code=done, contract=untested)`
-  - `rest:GET:/api/v1/taxes/:code (code=done, contract=untested)`
-  - `rest:PUT:/api/v1/taxes/:code (code=done, contract=untested)`
-  - `rest:PATCH:/api/v1/taxes/:code (code=done, contract=untested)`
-  - `rest:DELETE:/api/v1/taxes/:code (code=done, contract=untested)`
-  - `rest:DELETE:/api/v1/plans/:code (code=done, contract=untested)`
-  - `rest:POST:/api/v1/plans/:code/charges (code=done, contract=untested)`
-  - `rest:PUT:/api/v1/plans/:code/charges/:code (code=done, contract=untested)`
-  - `rest:DELETE:/api/v1/plans/:code/charges/:code (code=done, contract=untested)`
-  - `rest:GET:/api/v1/plans/:code/fixed_charges (code=done, contract=untested)`
-  - `rest:POST:/api/v1/plans/:code/fixed_charges (code=done, contract=untested)`
-  - `rest:GET:/api/v1/plans/:code/fixed_charges/:code (code=done, contract=untested)`
-  - `rest:PUT:/api/v1/plans/:code/fixed_charges/:code (code=done, contract=untested)`
-  - `rest:DELETE:/api/v1/plans/:code/fixed_charges/:code (code=done, contract=untested)`
-  - `rest:PATCH:/api/v1/subscriptions/:external_id (code=done, contract=untested)`
-  - `rest:GET:/api/v1/invoices/:id (code=done, contract=untested)`
-  - `rest:PUT:/api/v1/invoices/:id (code=done, contract=untested)`
-  - `rest:PATCH:/api/v1/invoices/:id (code=done, contract=untested)`
-  - `rest:POST:/api/v1/invoices/:id/void (code=done, contract=untested)`
-  - `rest:PUT:/api/v1/invoices/:id/finalize (code=done, contract=untested)`
-  - `rest:PUT:/api/v1/invoices/:id/refresh (code=done, contract=untested)`
-  - `rest:POST:/api/v1/webhook_endpoints (code=done, contract=untested)`
-  - `rest:GET:/api/v1/webhook_endpoints (code=done, contract=untested)`
-  - `rest:GET:/api/v1/webhook_endpoints/:id (code=done, contract=untested)`
-  - `rest:PUT:/api/v1/webhook_endpoints/:id (code=done, contract=untested)`
-  - `rest:PATCH:/api/v1/webhook_endpoints/:id (code=done, contract=untested)`
-  - `rest:DELETE:/api/v1/webhook_endpoints/:id (code=done, contract=untested)`
-  - `gql:query:organization (code=done, contract=untested)`
-  - `gql:mutation:updateOrganization (code=done, contract=untested)`
-  - `job:Clock.SubscriptionsBillerJob (code=done, contract=untested)`
-  - `job:BillSubscriptionJob (code=done, contract=untested)`
-  - `job:SendWebhookJob (code=done, contract=untested)`
-  - `job:SendHttpWebhookJob (code=done, contract=untested)`
-  - `svc:Subscriptions.OrganizationBillingService (code=done, contract=untested)`
-  - `svc:Invoices.SubscriptionService (code=done, contract=untested)`
-  - `svc:Invoices.CreateGeneratingService (code=done, contract=untested)`
-  - `svc:Invoices.CalculateFeesService (code=done, contract=untested)`
-  - `svc:Invoices.ComputeTaxesAndTotalsService (code=done, contract=untested)`
-  - `svc:Invoices.FinalizeService (code=done, contract=untested)`
-  - `svc:Fees.ApplyTaxesService (code=done, contract=untested)`
-  - `svc:Fees.AmountsService (code=done, contract=untested)`
-  - `svc:ApiKeys.CacheService (code=done, contract=untested)`
-  - `svc:Webhooks.BaseService (code=done, contract=untested)`
-  - `svc:Webhooks.SendHttpService (code=done, contract=untested)`
+- Contract pass: 85 / 85
+- Gate: green — the whole M1 scope meets the gate.
 
 ## Remaining backlog
 
@@ -109,7 +63,7 @@ have no Laravel counterpart and are deliberately left `todo`:
 - `svc:Events.Stores.Utils.ClickhouseConnection` (todo)
 - `svc:Events.Stores.Utils.ClickhouseSqlHelpers` (todo)
 
-### Done without a contract scenario (397 rows)
+### Done without a contract scenario (388 rows)
 
 Rows whose code and tests are in, but whose behavior no captured golden
 scenario covers yet (`contract=untested`). The contract harness
@@ -120,11 +74,11 @@ diff, not by contract goldens.
 
 | Kind | Done, contract untested |
 | --- | --- |
-| `rest` | 158 |
-| `gql` | 29 |
-| `svc` | 167 |
-| `ser` | 26 |
-| `job` | 17 |
+| `rest` | 126 |
+| `gql` | 4 |
+| `svc` | 213 |
+| `ser` | 29 |
+| `job` | 16 |
 
 ### Open domains
 
@@ -133,27 +87,27 @@ services/jobs/serializers by their first namespace segment).
 
 | Domain | Open rows |
 | --- | --- |
-| `rest` | 386 |
-| `gql` | 356 |
-| `Integrations` | 133 |
+| `rest` | 344 |
+| `gql` | 258 |
+| `Integrations` | 125 |
 | `PaymentProviders` | 77 |
-| `Invoices` | 74 |
-| `V1` | 74 |
-| `Webhooks` | 70 |
+| `Invoices` | 71 |
+| `V1` | 69 |
+| `Webhooks` | 68 |
 | `DatabaseMigrations` | 65 |
 | `EInvoices` | 45 |
 | `Events` | 41 |
-| `Subscriptions` | 36 |
-| `Clock` | 28 |
+| `Clock` | 27 |
 | `PaymentProviderCustomers` | 26 |
-| `QuoteVersions` | 23 |
+| `Subscriptions` | 24 |
 | `CreditNotes` | 19 |
 | `BillableMetrics` | 18 |
 | `PaymentRequests` | 18 |
-| `UsageMonitoring` | 18 |
 | `Charges` | 17 |
-| `IntegrationCustomers` | 17 |
-| …98 smaller domains | 457 |
+| `Fees` | 16 |
+| `Utils` | 16 |
+| `Wallets` | 16 |
+| …96 smaller domains | 399 |
 
 ## Test gates
 

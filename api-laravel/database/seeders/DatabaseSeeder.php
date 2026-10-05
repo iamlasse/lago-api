@@ -24,28 +24,46 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        // Rails' 01_base.rb forces premium on for the whole run — the port
+        // must force it through BOTH layers the premium gates read
+        // (App\Support\License's config and BaseService's env read).
+        // RESTORE the previous value afterwards (never just unset): in the
+        // test process phpunit.xml pins LAGO_LICENSE=null, and a blind unset
+        // would let the next app fall back to the developer's .env
+        // (LAGO_LICENSE=dev-license) — silently flipping the whole suite
+        // premium from this seeder on.
+        $previousLicense = getenv('LAGO_LICENSE');
+
         config(['lago.license' => 'dev-seed-license']);
         putenv('LAGO_LICENSE=dev-seed-license');
         $_ENV['LAGO_LICENSE'] = 'dev-seed-license';
         $_SERVER['LAGO_LICENSE'] = 'dev-seed-license';
 
-        $this->call([
-            BaseSeeder::class,
-            JohnDoeSeeder::class,
-            EntitlementsSeeder::class,
-            AlertingSeeder::class,
-            SecurityLogsSeeder::class,
-            ProgressiveBillingSeeder::class,
-            SubscriptionsSeeder::class,
-            EventsSeeder::class,
-            ProductCatalogSeeder::class,
-            InvoicesSeeder::class,
-            EmailActivityLogsSeeder::class,
-            OrderFormsSeeder::class,
-        ]);
-
-        // Do not leak the forced license into a long-lived process.
-        putenv('LAGO_LICENSE');
-        unset($_ENV['LAGO_LICENSE'], $_SERVER['LAGO_LICENSE']);
+        try {
+            $this->call([
+                BaseSeeder::class,
+                JohnDoeSeeder::class,
+                EntitlementsSeeder::class,
+                AlertingSeeder::class,
+                SecurityLogsSeeder::class,
+                ProgressiveBillingSeeder::class,
+                SubscriptionsSeeder::class,
+                EventsSeeder::class,
+                ProductCatalogSeeder::class,
+                InvoicesSeeder::class,
+                EmailActivityLogsSeeder::class,
+                OrderFormsSeeder::class,
+            ]);
+        } finally {
+            // Do not leak the forced license into a long-lived process.
+            if ($previousLicense === false) {
+                putenv('LAGO_LICENSE');
+                unset($_ENV['LAGO_LICENSE'], $_SERVER['LAGO_LICENSE']);
+            } else {
+                putenv('LAGO_LICENSE='.$previousLicense);
+                $_ENV['LAGO_LICENSE'] = $previousLicense;
+                $_SERVER['LAGO_LICENSE'] = $previousLicense;
+            }
+        }
     }
 }
