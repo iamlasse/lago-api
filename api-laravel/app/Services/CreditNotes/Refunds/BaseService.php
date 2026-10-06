@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\CreditNotes\Refunds;
 
+use LogicException;
 use App\Models\Refund;
 use App\Models\Invoice;
 use App\Models\Payment;
@@ -11,8 +12,8 @@ use App\Models\Customer;
 use App\Models\CreditNote;
 use App\Services\BaseResult;
 use App\Services\BaseService;
-use App\Services\PaymentProviders\FindService;
 use App\Enums\CreditNoteRefundStatus;
+use App\Services\PaymentProviders\FindService;
 
 /**
  * Shared legs of Rails' CreditNotes::Refunds::{Stripe,Adyen,Gocardless}
@@ -37,11 +38,11 @@ use App\Enums\CreditNoteRefundStatus;
  * Utils::ActivityLog.produce("credit_note.refund_failure") (activity log
  * slice).
  */
-abstract class BaseService extends \App\Services\BaseService
+abstract class BaseService extends BaseService
 {
     public function execute(): BaseResult
     {
-        throw new \LogicException(static::class.' is dispatched through its static entrypoints');
+        throw new LogicException(static::class.' is dispatched through its static entrypoints');
     }
 
     /** Rails: should_process_refund?. */

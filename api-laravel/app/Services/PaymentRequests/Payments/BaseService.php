@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace App\Services\PaymentRequests\Payments;
 
+use LogicException;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\Customer;
-use App\Models\PaymentRequest;
 use App\Services\BaseService;
+use App\Models\PaymentRequest;
+use App\Services\PaymentProviders\FindService;
 use App\Services\PaymentRequests\UpdateService;
 use App\Services\Invoices\UpdateService as InvoiceUpdateService;
-use App\Services\PaymentProviders\FindService;
 
 /**
  * Shared legs of Rails' PaymentRequests::Payments::* services (each Rails
@@ -27,11 +28,11 @@ use App\Services\PaymentProviders\FindService;
  *  - `reset_customer_dunning_campaign_status` (TODO(port) — dunning
  *    campaigns reset leg) and SegmentTrack/mailer legs are deferred.
  */
-abstract class BaseService extends \App\Services\BaseService
+abstract class BaseService extends BaseService
 {
     public function execute(): BaseResult
     {
-        throw new \LogicException(static::class.' is dispatched through its static entrypoints');
+        throw new LogicException(static::class.' is dispatched through its static entrypoints');
     }
 
     /** Rails: update_payable_payment_status. */

@@ -103,8 +103,15 @@ class CreateService extends BaseService
 
         SendWebhookJob::performLater('payment_request.created', $paymentRequest);
 
-        // TODO(port): PaymentRequests::Payments::CreateService.call_async
-        // (auto-charge) + PaymentRequestMailer.requested when it fails.
+        // Rails: PaymentRequests::Payments::CreateService.call_async — the
+        // automatic charge attempt on the freshly created request.
+        (new Payments\CreateService(
+            payable: $paymentRequest,
+            paymentMethodParams: $paymentMethodParams,
+        ))->callAsync();
+
+        // TODO(port): PaymentRequestMailer.requested when the auto-charge
+        // fails (mailer slice).
 
         $result->payment_request = $paymentRequest;
         $result->payment_method = $paymentMethod;

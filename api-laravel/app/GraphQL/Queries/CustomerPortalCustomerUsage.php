@@ -35,7 +35,7 @@ class CustomerPortalCustomerUsage
         // Rails: with_ids(organization_id:, customer_id:, subscription_id:)
         // → customer.active_subscriptions.find(id).
         $subscription = $customer->subscriptions()
-            ->where('status', 0)
+            ->where('status', \App\Enums\SubscriptionStatus::Active->value)
             ->find($args['subscriptionId'] ?? null);
 
         if ($subscription === null) {

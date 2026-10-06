@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\PaymentProviders\Moneyhash;
 
 use Throwable;
+use LogicException;
 use App\Models\Organization;
 use App\Services\BaseResult;
 use App\Services\BaseService;
@@ -143,6 +144,25 @@ class HandleEventService extends BaseService
     }
 
     /**
+     * Rails: payment_service_klass — the payable's service class from the
+     * intent custom_fields; an unknown type is Rails' NameError.
+     *
+     * @param  array<string, mixed>  $event
+     */
+    private static function paymentServiceClass(array $event): string
+    {
+        $payableType = $event['intent']['custom_fields']['lago_payable_type']
+            ?? $event['data']['intent']['custom_fields']['lago_payable_type']
+            ?? 'Invoice';
+
+        return match ($payableType) {
+            'Invoice' => MoneyhashService::class,
+            'PaymentRequest' => \App\Services\PaymentRequests\Payments\MoneyhashService::class,
+            default => throw new LogicException("Invalid lago_payable_type: {$payableType}"),
+        };
+    }
+
+    /**
      * Rails: handle_intent_event — data.intent_id is the provider payment
      * id, data.intent.custom_fields the metadata; the amount is a scalar
      * with data.intent.amount_currency as its sibling.
@@ -151,7 +171,7 @@ class HandleEventService extends BaseService
      */
     private function handleIntentEvent(array $event): BaseResult
     {
-        MoneyhashService::updatePaymentStatus(
+        self::paymentServiceClass($event)::updatePaymentStatus(
             organizationId: $this->organization->id,
             providerPaymentId: (string) ($event['data']['intent_id'] ?? ''),
             status: self::eventToPaymentStatus((string) ($event['type'] ?? '')),
@@ -174,7 +194,7 @@ class HandleEventService extends BaseService
      */
     private function handleTransactionEvent(array $event): BaseResult
     {
-        MoneyhashService::updatePaymentStatus(
+        self::paymentServiceClass($event)::updatePaymentStatus(
             organizationId: $this->organization->id,
             providerPaymentId: (string) ($event['intent']['id'] ?? ''),
             status: self::eventToPaymentStatus((string) ($event['type'] ?? '')),

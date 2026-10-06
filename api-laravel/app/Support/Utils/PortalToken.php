@@ -38,10 +38,10 @@ class PortalToken
     /** Rails: `ActiveSupport::MessageVerifier.new(ENV["SECRET_KEY_BASE"])`. */
     public static function generate(string $customerId): string
     {
-        $data = self::encode([
+        $data = self::encode(json_encode([
             'customer_id' => $customerId,
             'exp' => now()->getTimestamp() + (self::EXPIRES_IN_HOURS * 3600),
-        ]);
+        ], JSON_THROW_ON_ERROR));
 
         return $data.self::SEPARATOR.self::encode(self::signature($data));
     }

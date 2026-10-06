@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Services\PaymentRequests\Payments;
 
 use App\Models\Payment;
-use App\Models\PaymentRequest;
 use App\Services\BaseResult;
+use App\Models\PaymentRequest;
 use App\Services\PaymentProviders\Adyen\Client;
 use App\Services\PaymentProviders\Adyen\AdyenError;
 

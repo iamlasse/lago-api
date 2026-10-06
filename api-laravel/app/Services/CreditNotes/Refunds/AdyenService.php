@@ -10,8 +10,8 @@ use App\Models\CreditNote;
 use App\Services\BaseResult;
 use App\Services\PaymentProviders\Adyen\Client;
 use App\Services\PaymentProviders\Adyen\AdyenError;
-use App\Services\PaymentProviders\Adyen\AuthenticationError;
 use App\Services\PaymentProviders\Adyen\ValidationError;
+use App\Services\PaymentProviders\Adyen\AuthenticationError;
 
 /**
  * Port of Rails' CreditNotes::Refunds::AdyenService — the refund leg of a

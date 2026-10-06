@@ -67,13 +67,17 @@ it('rejects a duplicate mapping in scope of mappable, integration, organization 
 it('accepts the same mappable under another integration, billing entity or mappable type', function (): void {
     [$organization, $integration, $addOn] = mappingFixtures();
 
-    $otherIntegration = \App\Models\Integrations\NetsuiteIntegration::factory()->forOrganization($organization)->create();
+    $otherIntegration = \App\Models\Integrations\NetsuiteIntegration::factory()->forOrganization($organization)->create([
+        'code' => 'netsuite-2',
+    ]);
     $otherAddOn = AddOn::factory()->for($organization, 'organization')->create();
     $otherBillingEntity = BillingEntity::factory()->forOrganization($organization)->create();
     $otherOrganization = Organization::factory()->create();
     $billableMetric = BillableMetric::factory()->create();
 
     // Same shape as the Rails spec: siblings that must NOT collide.
+    // (integrations has a unique (code, organization_id) index — the second
+    // same-org integration gets its own code, like Rails' test data.)
     NetsuiteMapping::factory()->forIntegration($otherIntegration)->forMappable('AddOn', $addOn)->create([
         'organization_id' => $organization->id,
     ]);
@@ -130,6 +134,7 @@ it('validates the billing entity organization', function (): void {
     // Same organization (or no billing entity at all) is fine.
     $foreignEntity->organization_id = $organization->id;
     $foreignEntity->save();
+    $mapping->unsetRelation('billingEntity'); // the relation was cached.
 
     expect($mapping->validateAttributes())->toBe([]);
 

@@ -6,7 +6,6 @@ namespace Database\Factories;
 
 use App\Models\Payment;
 use App\Models\CreditNote;
-use App\Models\Organization;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

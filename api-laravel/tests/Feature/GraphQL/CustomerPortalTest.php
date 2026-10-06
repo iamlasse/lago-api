@@ -114,15 +114,15 @@ it('answers unauthorized on portal fields with an expired portal token', functio
 
     try {
         expect(PortalToken::verify($expired))->toBeNull();
+
+        $response = gqlPost(PORTAL_USER_QUERY, [], ['customer-portal-token' => $expired]);
+
+        $response->assertOk();
+
+        expect($response->json('errors.0.extensions.code'))->toBe('unauthorized');
     } finally {
         test()->travelBack();
     }
-
-    $response = gqlPost(PORTAL_USER_QUERY, [], ['customer-portal-token' => $expired]);
-
-    $response->assertOk();
-
-    expect($response->json('errors.0.extensions.code'))->toBe('unauthorized');
 });
 
 it('answers unauthorized on portal fields with a token of an unknown customer', function (): void {
@@ -141,8 +141,8 @@ it('answers unauthorized on portal fields with a token of an unknown customer', 
 it('rejects a portal token signed with the wrong secret', function (): void {
     $token = PortalToken::generate('9f1aa9e0-0000-4000-8000-000000000099');
 
-    config(['lago' => array_merge(config('lago'), [])]);
-    // The token is HMAC'd over SECRET_KEY_BASE; a tampered payload fails.
+    // The token is HMAC'd over SECRET_KEY_BASE; a tampered payload or
+    // digest fails to verify.
     [$data, $digest] = explode('--', $token);
 
     expect(PortalToken::verify($data.'--'.base64_encode('forged')))->toBeNull()
@@ -385,7 +385,7 @@ function gqlPortalSubscription(object $organization, Customer $customer, array $
         'organization_id' => $organization->id,
         'plan_id' => $plan->id,
         'customer_id' => $customer->id,
-        'status' => 0,
+        'status' => App\Enums\SubscriptionStatus::Active->value,
     ], $attributes));
 }
 
@@ -444,7 +444,7 @@ it('returns the customer subscriptions from the portal', function (): void {
     $active = gqlPortalSubscription($organization, $customer, ['plan' => $plan]);
     $terminated = gqlPortalSubscription($organization, $customer, [
         'plan' => $plan,
-        'status' => 1,
+        'status' => App\Enums\SubscriptionStatus::Terminated->value,
         'terminated_at' => now(),
     ]);
 
@@ -786,7 +786,6 @@ it('creates a wallet transaction from the portal', function (): void {
     [$organization] = gqlPortalSetup();
     $customer = gqlPortalCustomer($organization);
     $wallet = gqlPortalWallet($organization, $customer, [
-        'balance' => 10.0,
         'credits_balance' => 10.0,
     ]);
 
@@ -820,7 +819,6 @@ it('answers unprocessable when the wallet has a minimum top up amount', function
     [$organization] = gqlPortalSetup();
     $customer = gqlPortalCustomer($organization);
     $wallet = gqlPortalWallet($organization, $customer, [
-        'balance' => 10.0,
         'credits_balance' => 10.0,
         'paid_top_up_min_amount_cents' => 1000,
     ]);
@@ -841,7 +839,6 @@ it('answers unprocessable when topping up another customer wallet from the porta
     $customer = gqlPortalCustomer($organization);
     $other = gqlPortalCustomer($organization);
     $foreignWallet = gqlPortalWallet($organization, $other, [
-        'balance' => 10.0,
         'credits_balance' => 10.0,
     ]);
 

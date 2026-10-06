@@ -6,8 +6,8 @@ namespace App\Services\PaymentRequests\Payments;
 
 use Throwable;
 use App\Models\Payment;
-use App\Models\PaymentRequest;
 use App\Services\BaseResult;
+use App\Models\PaymentRequest;
 use App\Values\CashfreePayment;
 use Illuminate\Support\Facades\Http;
 
@@ -26,6 +26,7 @@ class CashfreeService extends BaseService
 
     /** Rails: `update_payment_status`. */
     public static function updatePaymentStatus(
+        string $organizationId,
         string $status,
         CashfreePayment $cashfreePayment,
         ?int $amountCents = null,

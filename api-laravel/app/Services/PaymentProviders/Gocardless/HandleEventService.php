@@ -66,9 +66,8 @@ class HandleEventService extends BaseService
     }
 
     /**
-     * Rails: payment_service_klass — the Invoice service is ported; a
-     * PaymentRequest payable has its own (unported) services and an unknown
-     * type is Rails' NameError.
+     * Rails: payment_service_klass — the payable's service class from the
+     * event metadata; an unknown type is Rails' NameError.
      *
      * @param  array<string, mixed>  $event
      */
@@ -76,11 +75,11 @@ class HandleEventService extends BaseService
     {
         $payableType = $event['metadata']['lago_payable_type'] ?? 'Invoice';
 
-        if ($payableType === 'Invoice') {
-            return GocardlessService::class;
-        }
-
-        throw new LogicException("Invalid lago_payable_type: {$payableType}");
+        return match ($payableType) {
+            'Invoice' => GocardlessService::class,
+            'PaymentRequest' => \App\Services\PaymentRequests\Payments\GocardlessService::class,
+            default => throw new LogicException("Invalid lago_payable_type: {$payableType}"),
+        };
     }
 
     /** Rails: api_originated_event? — details.origin == "api". */

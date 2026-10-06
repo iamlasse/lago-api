@@ -9,6 +9,7 @@ use LogicException;
 use App\Models\Invoice;
 use App\Services\BaseResult;
 use App\Services\BaseService;
+use App\Models\PaymentRequest;
 use App\Values\FlutterwavePayment;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
@@ -97,7 +98,7 @@ class ChargeCompletedService extends BaseService
 
     /**
      * Rails: PAYMENT_SERVICE_CLASS_MAP.fetch(payable_type || "Invoice") —
-     * only the Invoice service is ported.
+     * an unknown type is Rails' NameError.
      *
      * @param  array<string, mixed>  $transactionData
      */
@@ -105,11 +106,11 @@ class ChargeCompletedService extends BaseService
     {
         $payableType = $transactionData['meta']['lago_payable_type'] ?? 'Invoice';
 
-        if ($payableType === 'Invoice') {
-            return FlutterwaveService::class;
-        }
-
-        throw new LogicException("Invalid lago_payable_type: {$payableType}");
+        return match ($payableType) {
+            'Invoice' => FlutterwaveService::class,
+            'PaymentRequest' => \App\Services\PaymentRequests\Payments\FlutterwaveService::class,
+            default => throw new LogicException("Invalid lago_payable_type: {$payableType}"),
+        };
     }
 
     /**
@@ -118,17 +119,15 @@ class ChargeCompletedService extends BaseService
      *
      * @param  array<string, mixed>  $transactionData
      */
-    private static function findPayable(array $transactionData, string $providerPaymentId): ?Invoice
+    private static function findPayable(array $transactionData, string $providerPaymentId): mixed
     {
         $payableType = $transactionData['meta']['lago_payable_type'] ?? 'Invoice';
 
-        if ($payableType === 'Invoice') {
-            return Invoice::query()->find($providerPaymentId);
-        }
-
-        // Rails also looks up PaymentRequest rows; TODO(port) with the
-        // payment-request slice.
-        return null;
+        return match ($payableType) {
+            'Invoice' => Invoice::query()->find($providerPaymentId),
+            'PaymentRequest' => PaymentRequest::query()->find($providerPaymentId),
+            default => null,
+        };
     }
 
     /**
@@ -145,6 +144,7 @@ class ChargeCompletedService extends BaseService
                 ?? $transactionData['meta']['lago_payable_id']
                 ?? $transactionData['tx_ref']
                 ?? null,
+            'lago_payable_id' => $transactionData['meta']['lago_payable_id'] ?? null,
             'lago_payable_type' => $transactionData['meta']['lago_payable_type'] ?? 'Invoice',
             'flutterwave_transaction_id' => $verifiedTransaction['id'],
             'flw_ref' => $verifiedTransaction['reference'],

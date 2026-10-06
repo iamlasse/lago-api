@@ -74,6 +74,19 @@ class HandleEventService extends BaseService
         }
     }
 
+    /**
+     * Rails: PAYMENT_SERVICE_CLASS_MAP — the payable's service class; an
+     * unknown type is Rails' NameError.
+     */
+    private static function paymentServiceClass(?string $payableType): string
+    {
+        return match ($payableType ?? 'Invoice') {
+            'Invoice' => AdyenService::class,
+            'PaymentRequest' => \App\Services\PaymentRequests\Payments\AdyenService::class,
+            default => throw new LogicException("Invalid lago_payable_type: {$payableType}"),
+        };
+    }
+
     /** Rails: the AUTHORISATION arm. */
     private function handleAuthorisation(array $event): BaseResult
     {
@@ -105,18 +118,34 @@ class HandleEventService extends BaseService
 
         $success = ($event['success'] ?? null) === 'true';
 
-        AdyenService::updatePaymentStatus(
-            organizationId: $this->organization->id,
-            providerPaymentId: (string) ($event['pspReference'] ?? ''),
-            status: $success ? 'succeeded' : 'failed',
-            amountCents: isset($event['amount']['value']) ? (int) $event['amount']['value'] : null,
-            metadata: [
-                'payment_type' => $paymentType,
-                'lago_invoice_id' => $event['additionalData']['metadata.lago_invoice_id'] ?? null,
-                'lago_payable_id' => $event['additionalData']['metadata.lago_payable_id'] ?? null,
-                'lago_payable_type' => $event['additionalData']['metadata.lago_payable_type'] ?? null,
-            ],
-        )->raiseIfError();
+        $metadata = [
+            'payment_type' => $paymentType,
+            'lago_invoice_id' => $event['additionalData']['metadata.lago_invoice_id'] ?? null,
+            'lago_payable_id' => $event['additionalData']['metadata.lago_payable_id'] ?? null,
+            'lago_payable_type' => $event['additionalData']['metadata.lago_payable_type'] ?? null,
+        ];
+
+        $serviceClass = self::paymentServiceClass($metadata['lago_payable_type']);
+
+        // NOTE: only the invoice service scopes its payable lookup by
+        // organization, the payment request one still resolves its payable
+        // without it.
+        if ($serviceClass === AdyenService::class) {
+            $serviceClass::updatePaymentStatus(
+                organizationId: $this->organization->id,
+                providerPaymentId: (string) ($event['pspReference'] ?? ''),
+                status: $success ? 'succeeded' : 'failed',
+                amountCents: isset($event['amount']['value']) ? (int) $event['amount']['value'] : null,
+                metadata: $metadata,
+            )->raiseIfError();
+        } else {
+            $serviceClass::updatePaymentStatus(
+                providerPaymentId: (string) ($event['pspReference'] ?? ''),
+                status: $success ? 'succeeded' : 'failed',
+                amountCents: isset($event['amount']['value']) ? (int) $event['amount']['value'] : null,
+                metadata: $metadata,
+            )->raiseIfError();
+        }
 
         return $result;
     }
@@ -143,18 +172,24 @@ class HandleEventService extends BaseService
         }
 
         // Rails resolves the payable's service class from
-        // payment.payable_type (Invoice service only ported — a
-        // PaymentRequest payable has its own unported services).
-        if ($payment->payable_type !== 'Invoice') {
-            throw new LogicException("Invalid lago_payable_type: {$payment->payable_type}");
-        }
+        // payment.payable_type; only the invoice service scopes its payable
+        // lookup by organization.
+        $serviceClass = self::paymentServiceClass($payment->payable_type);
 
-        AdyenService::updatePaymentStatus(
-            organizationId: $this->organization->id,
-            providerPaymentId: $providerPaymentId,
-            status: 'Cancelled',
-            metadata: ['lago_payable_type' => $payment->payable_type],
-        )->raiseIfError();
+        if ($serviceClass === AdyenService::class) {
+            $serviceClass::updatePaymentStatus(
+                organizationId: $this->organization->id,
+                providerPaymentId: $providerPaymentId,
+                status: 'Cancelled',
+                metadata: ['lago_payable_type' => $payment->payable_type],
+            )->raiseIfError();
+        } else {
+            $serviceClass::updatePaymentStatus(
+                providerPaymentId: $providerPaymentId,
+                status: 'Cancelled',
+                metadata: ['lago_payable_type' => $payment->payable_type],
+            )->raiseIfError();
+        }
 
         return $result;
     }

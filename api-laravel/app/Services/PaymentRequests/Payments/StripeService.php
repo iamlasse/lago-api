@@ -15,8 +15,8 @@ use function array_key_exists;
 
 /**
  * Port of Rails' PaymentRequests::Payments::StripeService — the
- * `update_payment_status` leg for a PaymentRequest payable (the
- * generate_payment_url checkout leg is TODO(port)).
+ * `update_payment_status` leg for a PaymentRequest payable and the
+ * generate_payment_url checkout leg (a one-time Stripe Checkout session).
  *
  * On a settled event: the payment row follows the raw provider status, the
  * payment request's payment_status is updated, and every applied invoice
@@ -26,6 +26,8 @@ use function array_key_exists;
  */
 class StripeService extends BaseService
 {
+    public const PROVIDER_NAME = 'Stripe';
+
     public function __construct(
         private readonly string $action,
         private readonly string $organizationId,
@@ -50,6 +52,62 @@ class StripeService extends BaseService
             stripePayment: $stripePayment,
             amountCents: $amountCents,
         ))->execute();
+    }
+
+    /**
+     * Rails: `generate_payment_url` — a one-time Stripe Checkout session
+     * over the payment request's applied invoices.
+     */
+    public static function generatePaymentUrl(PaymentRequest $payable): BaseResult
+    {
+        $result = static::makeResult('payment_url');
+        $customer = $payable->customer;
+        $provider = self::stripePaymentProvider($customer);
+
+        if ($provider === null) {
+            return $result;
+        }
+
+        $stripeCustomer = $customer->paymentProviderCustomers()
+            ->where('payment_provider_id', $provider->id)
+            ->where('type', 'PaymentProviderCustomers::StripeCustomer')
+            ->first();
+
+        $params = [
+            'line_items' => self::lineItems($payable),
+            'mode' => 'payment',
+            'success_url' => self::successRedirectUrl($provider),
+            'customer' => $stripeCustomer?->provider_customer_id,
+            'payment_method_types' => $stripeCustomer?->getFromSettings('provider_payment_methods') ?? [],
+            'payment_intent_data' => [
+                'description' => self::description($payable),
+                'metadata' => [
+                    'lago_customer_id' => $customer->id,
+                    'lago_payable_id' => $payable->id,
+                    'lago_payable_type' => $payable->railsName(),
+                    'payment_type' => 'one-time',
+                ],
+            ],
+        ];
+
+        if ($provider->requireTermsOfServiceConsent()) {
+            $params['consent_collection'] = ['terms_of_service' => 'required'];
+        }
+
+        try {
+            $client = new \App\Services\PaymentProviders\Stripe\Client((string) ($provider->secretKey() ?? ''));
+            $session = $client->call('post', '/v1/checkout/sessions', $params);
+        } catch (\App\Services\PaymentProviders\Stripe\StripeError $e) {
+            return $result->thirdPartyFailure(
+                thirdParty: self::PROVIDER_NAME,
+                errorCode: (string) $e->code(),
+                errorMessage: $e->getMessage(),
+            );
+        }
+
+        $result->payment_url = $session['url'] ?? null;
+
+        return $result;
     }
 
     public function execute(): BaseResult
@@ -97,6 +155,55 @@ class StripeService extends BaseService
         }
 
         return $result;
+    }
+
+    /** Rails: line_items — one line per applied invoice. */
+    private static function lineItems(PaymentRequest $payable): array
+    {
+        return $payable->invoices->map(fn (Invoice $invoice): array => [
+            'quantity' => 1,
+            'price_data' => [
+                'currency' => mb_strtolower((string) $invoice->currency),
+                'unit_amount' => (int) $invoice->totalDueAmountCents(),
+                'product_data' => ['name' => $invoice->number],
+            ],
+        ])->all();
+    }
+
+    /** Rails: description — the checkout-link description. */
+    private static function description(PaymentRequest $payable): string
+    {
+        $customer = $payable->customer;
+        $billingEntityName = $customer->billingEntity?->name ?? '';
+        $reference = $billingEntityName.' - Overdue invoices';
+
+        if ($payable->invoices->count() === 1) {
+            return $reference.': '.$payable->invoices->first()->number;
+        }
+
+        return $reference;
+    }
+
+    /** Rails: success_redirect_url. */
+    private static function successRedirectUrl(\App\Models\PaymentProvider $provider): string
+    {
+        return (string) ($provider->successRedirectUrl() ?: \App\Models\PaymentProvider::STRIPE_SUCCESS_REDIRECT_URL);
+    }
+
+    /** Rails: stripe_payment_provider — Customers::PaymentProviderFinder. */
+    private static function stripePaymentProvider(\App\Models\Customer $customer): ?\App\Models\PaymentProvider
+    {
+        $findResult = \App\Services\PaymentProviders\FindService::call(
+            organizationId: $customer->organization_id,
+            code: $customer->payment_provider_code,
+            paymentProviderType: $customer->payment_provider,
+        );
+
+        if ($findResult->failure()) {
+            return null;
+        }
+
+        return $findResult->payment_provider;
     }
 
     /**

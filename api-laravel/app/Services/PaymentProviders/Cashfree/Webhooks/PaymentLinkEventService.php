@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\PaymentProviders\Cashfree\Webhooks;
 
 use Throwable;
+use LogicException;
 use App\Services\BaseResult;
 use App\Services\BaseService;
 use App\Values\CashfreePayment;
@@ -52,7 +53,7 @@ class PaymentLinkEventService extends BaseService
                 return $result;
             }
 
-            CashfreeService::updatePaymentStatus(
+            self::paymentServiceClass($event['data']['link_notes']['lago_payable_type'] ?? null)::updatePaymentStatus(
                 organizationId: $this->organizationId,
                 status: $linkStatus,
                 cashfreePayment: new CashfreePayment(
@@ -82,6 +83,19 @@ class PaymentLinkEventService extends BaseService
         }
 
         return CashfreeService::amountToCents($raw);
+    }
+
+    /**
+     * Rails: PAYMENT_SERVICE_CLASS_MAP — the payable's service class; an
+     * unknown type is Rails' NameError.
+     */
+    private static function paymentServiceClass(?string $payableType): string
+    {
+        return match ($payableType ?? 'Invoice') {
+            'Invoice' => CashfreeService::class,
+            'PaymentRequest' => \App\Services\PaymentRequests\Payments\CashfreeService::class,
+            default => throw new LogicException("Invalid lago_payable_type: {$payableType}"),
+        };
     }
 
     /**

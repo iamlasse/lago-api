@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Services\PaymentRequests\Payments;
 
-use App\Models\PaymentRequest;
 use App\Jobs\SendWebhookJob;
 use App\Services\BaseResult;
 use App\Services\BaseService;
+use App\Models\PaymentRequest;
 
 /**
  * Port of Rails' PaymentRequests::Payments::DeliverErrorWebhookService —
