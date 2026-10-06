@@ -23,7 +23,7 @@ class AcceptInvite
         $result = AcceptService::call(
             token: $input['token'] ?? null,
             password: $input['password'] ?? null,
-            login_method: AuthenticationMethods::EMAIL_PASSWORD,
+            loginMethod: AuthenticationMethods::EMAIL_PASSWORD,
         );
 
         if ($result->failure()) {

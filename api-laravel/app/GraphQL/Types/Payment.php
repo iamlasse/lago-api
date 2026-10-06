@@ -25,10 +25,16 @@ class Payment
         return $root->paymentProvider?->paymentType();
     }
 
-    /** Rails: payment_type — the pg-enum column stored as its position. */
+    /** Rails: payment_type — the pg-enum column (label string or position). */
     public function paymentType(PaymentModel $root): string
     {
-        return PaymentModel::PAYMENT_TYPES[(int) $root->getRawOriginal('payment_type')] ?? 'provider';
+        $raw = $root->getRawOriginal('payment_type');
+
+        if (is_string($raw) && ! ctype_digit($raw)) {
+            return $raw;
+        }
+
+        return PaymentModel::PAYMENT_TYPES[(int) $raw] ?? 'provider';
     }
 
     /** Rails: payable — the Invoice or PaymentRequest union member. */

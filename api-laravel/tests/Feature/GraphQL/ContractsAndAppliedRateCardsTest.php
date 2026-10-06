@@ -71,14 +71,14 @@ GQL;
 
 const CREATE_PLAN_APPLIED_RATE_CARD_MUTATION = <<<'GQL'
 mutation($input: CreatePlanAppliedRateCardInput!) {
-    createPlanAppliedRateCard(input: $input) { id rateCardCode }
+    createPlanAppliedRateCard(input: $input) { id rateCard { code } }
 }
 GQL;
 
 const PLAN_APPLIED_RATE_CARDS_QUERY = <<<'GQL'
 query($planId: ID) {
     planAppliedRateCards(planId: $planId) {
-        collection { id rateCardCode }
+        collection { id rateCard { code } }
         metadata { totalCount }
     }
 }
@@ -92,14 +92,14 @@ GQL;
 
 const CREATE_CONTRACT_APPLIED_RATE_CARD_MUTATION = <<<'GQL'
 mutation($input: CreateContractAppliedRateCardInput!) {
-    createContractAppliedRateCard(input: $input) { id rateCardCode }
+    createContractAppliedRateCard(input: $input) { id rateCard { code } }
 }
 GQL;
 
 const CONTRACT_APPLIED_RATE_CARDS_QUERY = <<<'GQL'
 query($contractId: ID) {
     contractAppliedRateCards(contractId: $contractId) {
-        collection { id rateCardCode }
+        collection { id rateCard { code } }
         metadata { totalCount }
     }
 }
@@ -145,7 +145,7 @@ it('creates, fetches, updates and terminates a contract', function (): void {
     ]], gqlAuthHeaders($user, $organization->id))->assertOk()->json('data.createContract');
 
     expect($payload['externalId'])->toBe($externalId)
-        ->and($payload['status'])->toBe('pending');
+        ->and($payload['status'])->toBe('active');
 
     // An unknown id answers the not_found error envelope.
     gqlPost(CONTRACT_QUERY, ['id' => Str::uuid()], gqlAuthHeaders($user, $organization->id))
@@ -203,14 +203,17 @@ it('applies and removes a rate card on a plan', function (): void {
         'code' => 'plan_card',
     ]);
 
-    $catalogPlan = CatalogPlan::factory()->create(['organization_id' => $organization->id]);
+    $catalogPlan = CatalogPlan::factory()->create([
+        'organization_id' => $organization->id,
+        'currency' => 'EUR',
+    ]);
 
     $payload = gqlPost(CREATE_PLAN_APPLIED_RATE_CARD_MUTATION, ['input' => [
         'planId' => $catalogPlan->id,
         'rateCardCode' => 'plan_card',
     ]], gqlAuthHeaders($user, $organization->id))->assertOk()->json('data.createPlanAppliedRateCard');
 
-    expect($payload['rateCardCode'])->toBe('plan_card');
+    expect($payload['rateCard']['code'])->toBe('plan_card');
 
     $listed = gqlPost(PLAN_APPLIED_RATE_CARDS_QUERY, ['planId' => $catalogPlan->id], gqlAuthHeaders($user, $organization->id))
         ->assertOk()->json('data.planAppliedRateCards');
@@ -239,13 +242,13 @@ it('attaches and removes a rate card on a pending contract', function (): void {
         'rateCardCode' => 'contract_card',
     ]], gqlAuthHeaders($user, $organization->id))->assertOk()->json('data.createContractAppliedRateCard');
 
-    expect($payload['rateCardCode'])->toBe('contract_card');
+    expect($payload['rateCard']['code'])->toBe('contract_card');
 
     $listed = gqlPost(CONTRACT_APPLIED_RATE_CARDS_QUERY, ['contractId' => $contract->id], gqlAuthHeaders($user, $organization->id))
         ->assertOk()->json('data.contractAppliedRateCards');
 
     expect(count($listed['collection']))->toBe(1)
-        ->and($listed['collection'][0]['rateCardCode'])->toBe('contract_card');
+        ->and($listed['collection'][0]['rateCard']['code'])->toBe('contract_card');
 
     expect(gqlPost(DESTROY_CONTRACT_APPLIED_RATE_CARD_MUTATION, ['input' => ['id' => $payload['id']]], gqlAuthHeaders($user, $organization->id))
         ->assertOk()->json('data.destroyContractAppliedRateCard.id'))->toBe($payload['id']);

@@ -32,7 +32,12 @@ class MembershipsQuery extends BaseService
     {
         $result = static::makeResult('memberships');
 
-        $memberships = $this->organization->memberships()->active();
+        // Rails: organization.memberships.active — spelled on the model
+        // directly (the HasMany + #[Scope] pair does not collapse to a
+        // builder).
+        $memberships = \App\Models\Membership::query()
+            ->where('memberships.organization_id', $this->organization->id)
+            ->where('memberships.status', \App\Enums\MembershipStatus::Active->value);
 
         $searchTerm = $this->searchTerm !== null ? mb_trim($this->searchTerm) : '';
 

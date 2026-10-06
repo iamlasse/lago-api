@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Queries;
 
+use App\Models\Organization;
 use App\Models\PlanRateCard;
 use App\Services\BaseResult;
 use App\Services\BaseService;

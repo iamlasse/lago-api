@@ -6,6 +6,7 @@ namespace App\Services\PaymentProviderCustomers;
 
 use App\Services\BaseResult;
 use App\Services\BaseService;
+use App\Models\PaymentMethod;
 use App\Models\PaymentProviderCustomer;
 use App\Services\PaymentMethods\DestroyService as DestroyPaymentMethodService;
 use Illuminate\Support\Facades\DB;
@@ -37,9 +38,13 @@ class DestroyService extends BaseService
             $this->paymentProviderCustomer->is_default = false;
             $this->paymentProviderCustomer->delete();
 
-            $this->paymentProviderCustomer->paymentMethods->each(function ($paymentMethod): void {
-                DestroyPaymentMethodService::call(paymentMethod: $paymentMethod)->raiseIfError();
-            });
+            // Rails: payment_provider_customer.payment_methods.find_each.
+            PaymentMethod::query()
+                ->where('payment_provider_customer_id', $this->paymentProviderCustomer->id)
+                ->get()
+                ->each(function ($paymentMethod): void {
+                    DestroyPaymentMethodService::call(paymentMethod: $paymentMethod)->raiseIfError();
+                });
 
             // Rails: billing_object_connections.destroy_all — the BillingObjectConnection
             // model has no ported consumers yet (TODO(port) with that slice).

@@ -37,6 +37,12 @@ abstract class AbstractAddUpdatePaymentProvider
 
         $input = Args::snakeKeys(Args::input($args));
 
+        // Str::snake keeps digit boundaries together ("supports3ds"), while
+        // the services read the Rails attribute name ("supports_3ds").
+        if (array_key_exists('supports3ds', $input)) {
+            $input['supports_3ds'] = $input['supports3ds'];
+        }
+
         $result = match ($this->slug()) {
             'stripe' => RegisterService::call(organizationId: $organization->id, args: $input),
             'adyen' => AdyenService::call(organization: $organization, args: $input),

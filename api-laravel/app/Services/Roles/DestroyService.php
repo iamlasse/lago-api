@@ -44,7 +44,7 @@ class DestroyService extends BaseService
             ->join('memberships', 'memberships.id', '=', 'membership_roles.membership_id')
             ->where('membership_roles.role_id', $this->role->id)
             ->where('memberships.status', 0)
-            ->whereNull('memberships.deleted_at')
+            
             ->exists();
 
         if ($assigned) {

@@ -61,6 +61,9 @@ class CreateService extends BaseService
             'name' => $this->normalized_name(),
             'description' => $this->description,
             'permissions' => $this->permissions,
+            // Rails: the column default (false) — spelled out so the
+            // in-memory model serializes non-null.
+            'admin' => false,
         ]);
 
         $role->save();

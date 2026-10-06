@@ -87,7 +87,6 @@ it('records a manual payment on the invoice', function (): void {
 
     $payload = $response->json('data.createPayment');
 
-    fwrite(STDERR, "CP2: ".json_encode($response->json())."\n");
     expect($response->json('errors'))->toBeNull()
         ->and($payload['paymentType'])->toBe('manual')
         ->and($payload['reference'])->toBe('wire-123')
@@ -161,6 +160,7 @@ it('creates the premium payment request over the overdue invoices', function ():
 
 it('answers not_found when the payment request customer is unknown', function (): void {
     [$organization, $user] = gqlPaymentsMutationSetup();
+    config(['lago.license' => 'premium-license-token']);
 
     $response = gqlPost(
         CREATE_PAYMENT_REQUEST_MUTATION,
@@ -169,6 +169,8 @@ it('answers not_found when the payment request customer is unknown', function ()
     );
 
     expect($response->json('errors.0.extensions.code'))->toBe('not_found');
+
+    config(['lago.license' => null]);
 })->group('ledger:gql:mutation:createPaymentRequest');
 
 const DESTROY_PAYMENT_METHOD_MUTATION = <<<'GQL'
@@ -360,7 +362,6 @@ it('destroys the connection and its payment methods, clearing the customer point
         'is_default' => true,
     ]);
     $method = PaymentMethod::factory()->forProviderCustomer($connection)->forCustomer($customer)->create();
-    config(['lighthouse.debug' => 3]);
 
     $response = gqlPost(
         DESTROY_PROVIDER_CUSTOMER_MUTATION,
@@ -368,7 +369,6 @@ it('destroys the connection and its payment methods, clearing the customer point
         gqlAuthHeaders($user, $organization->id),
     );
 
-    fwrite(STDERR, "DPC: ".json_encode($response->json())."\n");
     expect($response->json('data.destroyPaymentProviderCustomer.id'))->toBe($connection->id)
         ->and($connection->refresh()->trashed())->toBeTrue()
         ->and($method->refresh()->trashed())->toBeTrue()

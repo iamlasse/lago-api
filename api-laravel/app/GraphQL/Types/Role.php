@@ -24,10 +24,15 @@ class Role
      */
     public function permissions(RoleModel $root): array
     {
-        return array_keys(array_filter(
-            $root->permissionsHash(),
-            fn (bool $granted): bool => $granted,
-        ));
+        // Rails serializes the "addons:view" keys through PermissionEnum,
+        // whose wire values are the underscored forms.
+        return array_map(
+            fn (string $permission): string => str_replace(':', '_', $permission),
+            array_keys(array_filter(
+                $root->permissionsHash(),
+                fn (bool $granted): bool => $granted,
+            )),
+        );
     }
 
     /**
@@ -42,7 +47,7 @@ class Role
 
         return Membership::query()
             ->where('memberships.status', 0)
-            ->whereNull('memberships.deleted_at')
+            
             ->when($organization !== null, fn ($query) => $query->where('memberships.organization_id', $organization->id))
             ->whereIn('memberships.id', MembershipRole::query()
                 ->whereNull('membership_roles.deleted_at')

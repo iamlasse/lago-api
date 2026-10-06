@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\PaymentProviders;
 
 use App\Models\PaymentProvider;
+use App\Services\BaseResult;
 use Illuminate\Support\Facades\Http;
 
 use function array_key_exists;

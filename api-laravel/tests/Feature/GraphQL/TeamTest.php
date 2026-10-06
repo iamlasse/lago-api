@@ -65,6 +65,7 @@ function gqlCreateRole(Organization $organization, array $attrs = []): Role
         'organization_id' => $organization->id,
         'code' => 'custom'.uniqid(),
         'name' => 'Custom Role',
+        'admin' => false,
         'permissions' => ['memberships_view'],
     ], $attrs));
 }
@@ -141,9 +142,10 @@ it('refuses a duplicate pending invite, an existing member and an unknown role',
 })->group('ledger:gql:mutation:createInvite');
 
 it('refuses granting admin to a non-admin actor', function (): void {
-    // The actor's membership carries a non-admin custom role.
-    [$organization, $user] = gqlTeamSetup();
-    $membership = Membership::query()->where('user_id', $user->id)->firstOrFail();
+    // The actor's membership carries a non-admin custom role only.
+    $organization = gqlCreateOrganization();
+    $user = gqlCreateUser('plain-member@example.com');
+    $membership = gqlCreateMembership($user, $organization);
     $custom = gqlCreateRole($organization);
     MembershipRole::create([
         'organization_id' => $organization->id,
@@ -158,8 +160,7 @@ it('refuses granting admin to a non-admin actor', function (): void {
     GQL, ['input' => ['email' => 'newbie@example.com', 'roles' => ['admin']]],
         gqlAuthHeaders($user, $organization->id));
 
-    expect($response->json('errors.0.extensions.code'))->toBe('forbidden')
-        ->and($response->json('errors.0.extensions.details'))->toBeNull()
+    expect($response->json('errors.0.extensions.code'))->toBe('cannot_grant_admin')
         ->and(Invite::query()->where('email', 'newbie@example.com')->exists())->toBeFalse();
 })->group('ledger:gql:mutation:createInvite');
 
@@ -186,7 +187,10 @@ it('updates the roles of a pending invite', function (): void {
     expect($invite->refresh()->roles)->toBe([$roleB->code]);
 })->group('ledger:gql:mutation:updateInvite');
 
-it('refuses updating an accepted invite', function (): void {
+it('answers not_found when updating a non-pending invite', function (): void {
+    // Rails resolves the invite among the PENDING ones only — an accepted
+    // invite is unreachable for the mutation (the service's
+    // cannot_update_accepted_invite guard only guards concurrent accepts).
     [$organization, $user] = gqlTeamSetup();
     $invite = Invite::create([
         'organization_id' => $organization->id,
@@ -203,7 +207,7 @@ it('refuses updating an accepted invite', function (): void {
     GQL, ['input' => ['id' => $invite->id, 'roles' => ['admin']]],
         gqlAuthHeaders($user, $organization->id));
 
-    expect($response->json('errors.0.extensions.code'))->toBe('forbidden');
+    expect($response->json('errors.0.extensions.code'))->toBe('not_found');
 })->group('ledger:gql:mutation:updateInvite');
 
 it('revokes a pending invite and answers not_found for a revoked one', function (): void {
@@ -265,12 +269,10 @@ it('accepts an invite with an email and password', function (): void {
     expect($invite->refresh()->status->value)->toBe(1); // accepted
 
     // The invitee holds an active membership in the inviting organization.
-    $membership = Membership::query()
-        ->where('organization_id', $organization->id)
-        ->where('user_id', $payload['membership']['id'])
-        ->first();
+    $membership = Membership::query()->find($payload['membership']['id']);
 
-    expect($membership?->status->value)->toBe(0); // active
+    expect($membership?->organization_id)->toBe($organization->id)
+        ->and($membership?->status->value)->toBe(0); // active
 })->group('ledger:gql:mutation:acceptInvite');
 
 it('answers not_found when the invite token is unknown', function (): void {
@@ -419,12 +421,13 @@ it('updates the roles of a membership', function (): void {
 
     $response = gqlPost(<<<'GQL'
     mutation($input: UpdateMembershipInput!) {
-        updateMembership(input: $input) { id roles { code } }
+        updateMembership(input: $input) { id roles }
     }
     GQL, ['input' => ['id' => $membership->id, 'roles' => [$role->code]]],
         gqlAuthHeaders($user, $organization->id));
 
-    expect($response->json('data.updateMembership.roles.0.code'))->toBe($role->code);
+    // Rails: membership.roles.pluck(:name) — the wire carries role names.
+    expect($response->json('data.updateMembership.roles'))->toBe([$role->name]);
 
     expect(MembershipRole::query()
         ->where('membership_id', $membership->id)
@@ -508,7 +511,7 @@ it('updates a custom role and refuses the predefined ones', function (): void {
     GQL, ['input' => ['id' => $predefined->id, 'name' => 'Nope']],
         gqlAuthHeaders($user, $organization->id));
 
-    expect($response->json('errors.0.extensions.code'))->toBe('forbidden');
+    expect($response->json('errors.0.extensions.code'))->toBe('predefined_role');
 })->group('ledger:gql:mutation:updateRole');
 
 it('destroys a custom role but not one assigned to members', function (): void {
@@ -542,7 +545,7 @@ it('destroys a custom role but not one assigned to members', function (): void {
     }
     GQL, ['input' => ['id' => $assigned->id]], gqlAuthHeaders($user, $organization->id));
 
-    expect($response->json('errors.0.extensions.code'))->toBe('forbidden')
+    expect($response->json('errors.0.extensions.code'))->toBe('role_assigned_to_members')
         ->and($assigned->refresh()->deleted_at)->toBeNull();
 })->group('ledger:gql:mutation:destroyRole');
 

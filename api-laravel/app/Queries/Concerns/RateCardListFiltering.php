@@ -161,7 +161,15 @@ trait RateCardListFiltering
      */
     protected function orderByProductCategory(Builder $scope): Builder
     {
+        // Rails: left_outer_joins(rate_card: [:product_filter,
+        // {product: :product_category}]).
+        $table = $scope->getModel()->getTable();
+
         return $scope
+            // The joins' columns share names with the card's (id, name, …);
+            // without the explicit select they clobber the model attributes.
+            ->select($table.'.*')
+            ->leftJoin('rate_cards', 'rate_cards.id', '=', $table.'.rate_card_id')
             ->leftJoin('product_filters', 'product_filters.id', '=', 'rate_cards.product_filter_id')
             ->leftJoin('products', 'products.id', '=', 'rate_cards.product_id')
             ->leftJoin('product_categories', 'product_categories.id', '=', 'products.product_category_id')

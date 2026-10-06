@@ -15,6 +15,14 @@ class Invite
 {
     public function status(InviteModel $root): string
     {
-        return $root->status->label();
+        // A freshly-created row may not carry the enum in memory yet —
+        // read the stored integer position (Rails enum order, pending = 0).
+        $status = $root->status;
+
+        if ($status instanceof \App\Enums\InviteStatus) {
+            return $status->label();
+        }
+
+        return \App\Enums\InviteStatus::from((int) ($root->getRawOriginal('status') ?? 0))->label();
     }
 }
