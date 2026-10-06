@@ -32,7 +32,8 @@ use App\Services\PaymentProviders\Stripe\Webhooks\PaymentIntentPaymentFailedServ
  *    Stripe::Webhooks::CustomerCashBalanceTransactionCreatedService;
  *  - payment_method.detached -> PaymentProviderCustomers::StripeService
  *    (:delete_payment_method);
- *  - charge.refund.updated -> CreditNotes::Refunds::StripeService.
+ *  - charge.refund.updated -> CreditNotes::Refunds::StripeService (ported —
+ *    the credit-note refunds milestone).
  *
  * Subscribed-but-unhandled types log a warning (Rails: logger.warn) and
  * succeed. A NotFoundFailure on a sandbox event (livemode false) is
@@ -77,6 +78,20 @@ class HandleEventService extends BaseService
         }
 
         $handlerClass = self::EVENT_MAPPING[$type] ?? null;
+
+        if ($type === 'charge.refund.updated') {
+            // Rails: CreditNotes::Refunds::StripeService#update_status — the
+            // credit-note refund webhook leg.
+            $object = $event['data']['object'] ?? [];
+
+            \App\Services\CreditNotes\Refunds\StripeService::updateStatus(
+                providerRefundId: (string) ($object['id'] ?? ''),
+                status: (string) ($object['status'] ?? ''),
+                metadata: $object['metadata'] ?? [],
+            );
+
+            return $result;
+        }
 
         if ($handlerClass === null) {
             Log::warning("Stripe event type is not handled yet: {$type}");

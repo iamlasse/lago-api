@@ -187,10 +187,6 @@ abstract class BasePayload
      */
     protected function lookup_mapping(string $mappableType, string|int|null $mappableId): ?object
     {
-        if ($mappableId === null) {
-            return null;
-        }
-
         $matchingMappings = \App\Models\IntegrationMappings\BaseMapping::query()
             ->where('integration_id', $this->integration->id)
             ->where('mappable_type', $mappableType)

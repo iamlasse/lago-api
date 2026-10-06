@@ -31,7 +31,7 @@ class CreateService extends BaseService
         $result = static::makeResult('integration_mapping');
         $args = $this->args;
 
-        $integration = Integration::query()->find($args['integration_id'] ?? null);
+        $integration = Integration::query()->find(self::uuidOrNull($args['integration_id'] ?? null));
 
         if ($integration === null) {
             return $result->notFoundFailure('integration');
@@ -40,10 +40,14 @@ class CreateService extends BaseService
         $billingEntityId = $args['billing_entity_id'] ?? null;
 
         if ($billingEntityId !== null) {
-            // Rails: integration.organization.billing_entities.find_by(id:).
-            $billingEntity = $integration->organization->billingEntities()
-                ->where('id', $billingEntityId)
-                ->first();
+            // Rails: integration.organization.billing_entities.find_by(id:) —
+            // an ill-formed uuid answers not-found like Rails (the uuid cast
+            // yields no record).
+            $billingEntity = self::uuidOrNull($billingEntityId) === null
+                ? null
+                : $integration->organization->billingEntities()
+                    ->where('id', $billingEntityId)
+                    ->first();
 
             if ($billingEntity === null) {
                 return $result->notFoundFailure('billing_entity');
@@ -82,5 +86,16 @@ class CreateService extends BaseService
         $result->integration_mapping = $integrationMapping;
 
         return $result;
+    }
+
+    /**
+     * Rails: the uuid find_by casts an ill-formed id to no record; Postgres
+     * would reject the literal, so the port guards it.
+     */
+    private static function uuidOrNull(mixed $id): ?string
+    {
+        return is_string($id) && preg_match('/^\{?[0-9a-f]{8}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{12}$/i', $id) === 1
+            ? $id
+            : null;
     }
 }

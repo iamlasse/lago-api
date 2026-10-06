@@ -61,4 +61,15 @@ final class Args
 
         return $result;
     }
+
+    /**
+     * Rails' find_by(id:) casts an ill-formed uuid to no record; Postgres
+     * would reject the literal, so wire ids are guarded at the boundary.
+     */
+    public static function uuidOrNull(mixed $id): ?string
+    {
+        return is_string($id) && preg_match('/^\{?[0-9a-f]{8}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{12}$/i', $id) === 1
+            ? $id
+            : null;
+    }
 }

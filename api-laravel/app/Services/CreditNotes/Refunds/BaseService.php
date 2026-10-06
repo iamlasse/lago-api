@@ -11,7 +11,7 @@ use App\Models\Payment;
 use App\Models\Customer;
 use App\Models\CreditNote;
 use App\Services\BaseResult;
-use App\Services\BaseService;
+use App\Services\BaseService as RootBaseService;
 use App\Enums\CreditNoteRefundStatus;
 use App\Services\PaymentProviders\FindService;
 
@@ -38,7 +38,7 @@ use App\Services\PaymentProviders\FindService;
  * Utils::ActivityLog.produce("credit_note.refund_failure") (activity log
  * slice).
  */
-abstract class BaseService extends BaseService
+abstract class BaseService extends RootBaseService
 {
     public function execute(): BaseResult
     {

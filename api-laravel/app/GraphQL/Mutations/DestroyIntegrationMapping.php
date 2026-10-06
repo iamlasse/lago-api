@@ -35,7 +35,7 @@ class DestroyIntegrationMapping
         $integrationMapping = BaseMapping::query()
             ->join('integrations', 'integrations.id', '=', 'integration_mappings.integration_id')
             ->where('integrations.organization_id', $organization->id)
-            ->where('integration_mappings.id', $input['id'] ?? null)
+            ->where('integration_mappings.id', \App\GraphQL\Support\Args::uuidOrNull($input['id'] ?? null))
             ->select('integration_mappings.*')
             ->first();
 

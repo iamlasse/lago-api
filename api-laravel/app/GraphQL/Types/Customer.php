@@ -70,6 +70,18 @@ class Customer
         ];
     }
 
+    /**
+     * Rails: `shipping_address` — the model's six shipping columns as a hash
+     * (the CustomerAddress object type's fields resolve through the snake_case
+     * attribute fallback).
+     *
+     * @return array{address_line1: ?string, address_line2: ?string, city: ?string, zipcode: ?string, state: ?string, country: ?string}|null
+     */
+    public function shippingAddress(CustomerModel $root): ?array
+    {
+        return $root->shippingAddress();
+    }
+
     /** Rails: active_subscriptions_count — subscriptions with status 1. */
     public function activeSubscriptionsCount(CustomerModel $root): int
     {
