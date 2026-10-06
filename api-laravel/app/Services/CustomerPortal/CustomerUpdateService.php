@@ -9,8 +9,8 @@ use App\Models\Customer;
 use App\Services\BaseResult;
 use App\Services\BaseService;
 use Illuminate\Support\Facades\DB;
-use App\Services\Customers\EuAutoTaxesService;
 use App\Services\Customers\ApplyTaxesService;
+use App\Services\Customers\EuAutoTaxesService;
 
 use function array_key_exists;
 

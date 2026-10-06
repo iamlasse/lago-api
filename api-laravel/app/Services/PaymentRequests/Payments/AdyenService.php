@@ -110,7 +110,6 @@ class AdyenService extends BaseService
             'amount_cents' => $payable->totalAmountCents(),
             'amount_currency' => mb_strtoupper((string) $payable->amount_currency),
         ]);
-        $payment->save();
 
         return $payment;
     }

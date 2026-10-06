@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services\IntegrationCollectionMappings;
 
+use App\Models\Integration;
 use App\Services\BaseResult;
 use App\Services\BaseService;
-use App\Models\Integration;
 
 use function array_key_exists;
 

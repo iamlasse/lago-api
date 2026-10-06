@@ -6,11 +6,10 @@ namespace App\GraphQL\Mutations;
 
 use App\GraphQL\Support\Args;
 use App\GraphQL\Execution\Errors;
-use App\GraphQL\Support\LagoContext;
-use App\Services\IntegrationCollectionMappings\CreateService;
 use App\GraphQL\Guards\AuthenticableApiUser;
 use App\GraphQL\Guards\RequiredOrganization;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
+use App\Services\IntegrationCollectionMappings\CreateService;
 
 /**
  * Port of Rails' Mutations::IntegrationCollectionMappings::Create
@@ -28,9 +27,9 @@ class CreateIntegrationCollectionMapping
         AuthenticableApiUser::authorize($context);
         RequiredOrganization::authorize($context);
 
-        $input = $this->preparedInput(Args::input($args));
+        $input = Args::snakeKeys(Args::input($args));
 
-        $result = CreateService::call(params: Args::snakeKeys($input));
+        $result = CreateService::call(params: $this->preparedInput($input));
 
         if ($result->failure()) {
             throw Errors::resultError($result->getError());
@@ -52,7 +51,7 @@ class CreateIntegrationCollectionMapping
 
         if (is_array($currencies)) {
             $codes = array_map(
-                fn (array $item) => $item['currencyCode'] ?? null,
+                fn (array $item) => $item['currency_code'] ?? null,
                 $currencies,
             );
 
@@ -63,7 +62,7 @@ class CreateIntegrationCollectionMapping
                 );
             }
 
-            $input['currencies'] = array_column($currencies, 'currencyExternalCode', 'currencyCode');
+            $input['currencies'] = array_column($currencies, 'currency_external_code', 'currency_code');
         }
 
         return $input;

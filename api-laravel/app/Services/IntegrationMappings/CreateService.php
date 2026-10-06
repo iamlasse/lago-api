@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services\IntegrationMappings;
 
+use App\Models\Integration;
 use App\Services\BaseResult;
 use App\Services\BaseService;
-use App\Models\Integration;
 
 /**
  * Port of Rails' IntegrationMappings::CreateService (app/services/
@@ -17,7 +17,7 @@ class CreateService extends BaseService
     /**
      * @param  array<string, mixed>  $args
      * @param  object|null  $user  Rails passes the membership user; unused in
-     *                         the port (the audit trail is TODO(port)).
+     *                             the port (the audit trail is TODO(port)).
      */
     public function __construct(
         private readonly array $args,

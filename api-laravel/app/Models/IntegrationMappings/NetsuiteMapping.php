@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models\IntegrationMappings;
 
-use Database\Factories\NetsuiteMappingFactory;
 use Illuminate\Database\Eloquent\Builder;
+use Database\Factories\NetsuiteMappingFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 

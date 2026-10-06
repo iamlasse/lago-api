@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\GraphQL\Mutations;
 
-use App\Models\IntegrationMappings\BaseMapping;
 use App\GraphQL\Support\Args;
 use App\GraphQL\Execution\Errors;
 use App\GraphQL\Support\LagoContext;
-use App\Services\IntegrationMappings\DestroyService;
 use App\GraphQL\Guards\AuthenticableApiUser;
 use App\GraphQL\Guards\RequiredOrganization;
+use App\Models\IntegrationMappings\BaseMapping;
+use App\Services\IntegrationMappings\DestroyService;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
 /**
@@ -35,7 +35,7 @@ class DestroyIntegrationMapping
         $integrationMapping = BaseMapping::query()
             ->join('integrations', 'integrations.id', '=', 'integration_mappings.integration_id')
             ->where('integrations.organization_id', $organization->id)
-            ->where('integration_mappings.id', \App\GraphQL\Support\Args::uuidOrNull($input['id'] ?? null))
+            ->where('integration_mappings.id', Args::uuidOrNull($input['id'] ?? null))
             ->select('integration_mappings.*')
             ->first();
 

@@ -9,12 +9,11 @@ use App\Models\Plan;
 use App\Models\Wallet;
 use App\Models\Invoice;
 use App\Models\Customer;
-use App\Models\Organization;
-use App\Models\BillingEntity;
+use App\Enums\InvoiceStatus;
 use App\Models\Subscription;
+use App\Models\BillingEntity;
 use Illuminate\Support\Carbon;
 use App\Support\Utils\PortalToken;
-use App\Enums\InvoiceStatus;
 use App\GraphQL\Guards\CustomerPortalUser as PortalGuard;
 
 /**
@@ -254,7 +253,7 @@ it('returns a single customer from the portal', function (): void {
         ->and($payload['currency'])->toBe('EUR')
         ->and($payload['billingEntityBillingConfiguration']['id'])->toBe($customer->billing_entity_id.'-c1nf')
         ->and($payload['billingEntityBillingConfiguration']['documentLocale'])
-            ->toBe($customer->billingEntity->document_locale);
+        ->toBe($customer->billingEntity->document_locale);
 })->group('ledger:gql:query:customerPortalUser');
 
 // -- query { customerPortalOrganization } ------------------------------------------
@@ -323,7 +322,7 @@ it('returns the customer invoices from the portal', function (): void {
 
     expect($payload['collection'])->toHaveCount(2)
         ->and(collect($payload['collection'])->pluck('id')->sort()->values()->all())
-            ->toBe(collect([$draft->id, $finalized->id])->sort()->values()->all())
+        ->toBe(collect([$draft->id, $finalized->id])->sort()->values()->all())
         ->and($payload['metadata']['currentPage'])->toBe(1)
         ->and($payload['metadata']['totalCount'])->toBe(2);
 })->group('ledger:gql:query:customerPortalInvoices');
@@ -709,7 +708,7 @@ it('updates the portal customer', function (): void {
         ->and($payload['country'])->toBe('PT')
         ->and($payload['billingConfiguration']['documentLocale'])->toBe('fr')
         ->and($payload['billingEntityBillingConfiguration']['documentLocale'])
-            ->toBe($customer->billingEntity->document_locale)
+        ->toBe($customer->billingEntity->document_locale)
         ->and($payload['shippingAddress']['addressLine1'])->toBe('Updated customer shipping addressLine1')
         ->and($payload['shippingAddress']['zipcode'])->toBe('Updated customer shipping zipcode')
         ->and($payload['shippingAddress']['city'])->toBe('Updated customer shipping city')
@@ -765,7 +764,7 @@ it('answers not_found when downloading a foreign or invisible invoice from the p
     $customer = gqlPortalCustomer($organization);
     $other = gqlPortalCustomer($organization);
     $foreign = gqlPortalInvoice($organization, $other);
-    $closed = gqlPortalInvoice($organization, $customer, ['status' => App\Enums\InvoiceStatus::Closed->value]);
+    $closed = gqlPortalInvoice($organization, $customer, ['status' => InvoiceStatus::Closed->value]);
 
     foreach ([$foreign->id, $closed->id] as $id) {
         $response = gqlPost(

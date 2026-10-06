@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\IntegrationCollectionMappings\BaseCollectionMapping;
 use App\Models\IntegrationCollectionMappings\XeroCollectionMapping;
-use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * Port of Rails' :xero_collection_mapping factory (spec/factories/

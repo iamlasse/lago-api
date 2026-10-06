@@ -7,7 +7,6 @@ namespace App\Services\PaymentRequests\Payments;
 use App\Models\Payment;
 use App\Models\Customer;
 use App\Services\BaseResult;
-use App\Services\BaseService;
 use App\Models\PaymentRequest;
 use App\Models\PaymentProviderCustomer;
 use App\Services\Failures\ServiceFailure;

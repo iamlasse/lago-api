@@ -17,7 +17,7 @@ use App\Services\IntegrationMappings\DestroyService;
 function mappingServiceFixtures(): array
 {
     $organization = Organization::factory()->create();
-    $integration = \App\Models\Integrations\NetsuiteIntegration::factory()->forOrganization($organization)->create();
+    $integration = App\Models\Integrations\NetsuiteIntegration::factory()->forOrganization($organization)->create();
     $addOn = AddOn::factory()->for($organization, 'organization')->create();
 
     return [$organization, $integration, $addOn];

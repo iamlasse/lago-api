@@ -158,7 +158,7 @@ it('does not create a refund when the invoice has no refundable payment', functi
 
 it('does not create a refund when the dispute was lost', function (): void {
     [$organization, $provider] = refundOrganization('stripe', ['secret_key' => 'sk_test_1']);
-    [, , , $creditNote] = refundCreditNote($organization, $provider, ['payment_dispute_lost_at' => null]);
+    [, , , $creditNote] = refundCreditNote($organization, $provider);
 
     $creditNote->invoice->update(['payment_dispute_lost_at' => now()]);
 
@@ -431,7 +431,7 @@ it('maps the gocardless provider status onto the credit note status', function (
         ->and(GocardlessService::creditNoteStatus('failed'))->toBe('failed');
 });
 
-it('re-raises a gocardless error but swallows validation errors', function (): void {
+it('re-raises a gocardless error', function (): void {
     [$organization, $provider] = refundOrganization('gocardless', ['access_token' => 'gc_token']);
     [, , , $creditNote] = refundCreditNote($organization, $provider);
 
@@ -450,10 +450,11 @@ it('re-raises a gocardless error but swallows validation errors', function (): v
     }
 
     expect($creditNote->refresh()->refundStatusEnum())->toBe(CreditNoteRefundStatus::Failed);
+});
 
-    // A validation error returns an empty result instead of raising.
-    [$organization2, $provider2] = refundOrganization('gocardless', ['access_token' => 'gc_token']);
-    [, , , $creditNote2] = refundCreditNote($organization2, $provider2);
+it('swallows a gocardless validation error', function (): void {
+    [$organization, $provider] = refundOrganization('gocardless', ['access_token' => 'gc_token']);
+    [, , , $creditNote] = refundCreditNote($organization, $provider);
 
     Http::fake([
         'api-sandbox.gocardless.com/refunds' => Http::response([
@@ -461,7 +462,7 @@ it('re-raises a gocardless error but swallows validation errors', function (): v
         ], 400),
     ]);
 
-    $result = GocardlessService::create($creditNote2);
+    $result = GocardlessService::create($creditNote);
 
     expect($result->success())->toBeTrue()
         ->and($result->refund)->toBeNull();
@@ -530,7 +531,7 @@ it('refunds the payment request payment of a paid invoice', function (): void {
         'amount_currency' => 'EUR',
         'payment_status' => 1, // succeeded
     ]);
-    $invoice->paymentRequests()->attach($paymentRequest->id, ['organization_id' => $organization->id]);
+    $invoice->paymentRequests()->attach($paymentRequest->id, ['organization_id' => $organization->id, 'created_at' => now(), 'updated_at' => now()]);
     $payment->update(['payable_type' => 'PaymentRequest', 'payable_id' => $paymentRequest->id, 'payable_payment_status' => 'succeeded']);
 
     Http::fake([

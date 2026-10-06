@@ -16,7 +16,7 @@ use App\Models\IntegrationCollectionMappings\NetsuiteCollectionMapping;
 function collectionMappingFixtures(): array
 {
     $organization = Organization::factory()->create();
-    $integration = \App\Models\Integrations\NetsuiteIntegration::factory()->forOrganization($organization)->create();
+    $integration = App\Models\Integrations\NetsuiteIntegration::factory()->forOrganization($organization)->create();
 
     return [$organization, $integration];
 }
@@ -30,7 +30,7 @@ it('covers every Rails mapping type', function (): void {
 
 it('validates the mapping type uniqueness in scope of integration, organization and billing entity', function (): void {
     [$organization, $integration] = collectionMappingFixtures();
-    $otherIntegration = \App\Models\Integrations\NetsuiteIntegration::factory()->forOrganization($organization)->create(['code' => 'netsuite-2']);
+    $otherIntegration = App\Models\Integrations\NetsuiteIntegration::factory()->forOrganization($organization)->create(['code' => 'netsuite-2']);
     $otherBillingEntity = BillingEntity::factory()->forOrganization($organization)->create();
 
     // Without billing entity — siblings that must NOT collide.

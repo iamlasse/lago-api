@@ -1,7 +1,7 @@
 {
     "generator": "gen_services",
     "source": "app/services/**/*.rb",
-    "row_count": 1044,
+    "row_count": 1052,
     "rows": [
         {
             "id": "svc:AddOns.ApplyTaxesService",
@@ -5199,9 +5199,49 @@
             "source": "app/services/x402/base58.rb"
         },
         {
+            "id": "svc:X402.Cdp.Jwt",
+            "name": "X402::Cdp::Jwt",
+            "source": "app/services/x402/cdp/jwt.rb"
+        },
+        {
+            "id": "svc:X402.Chain",
+            "name": "X402::Chain",
+            "source": "app/services/x402/chain.rb"
+        },
+        {
+            "id": "svc:X402.Chain.EvmReader",
+            "name": "X402::Chain::EvmReader",
+            "source": "app/services/x402/chain/evm_reader.rb"
+        },
+        {
+            "id": "svc:X402.Chain.RpcClient",
+            "name": "X402::Chain::RpcClient",
+            "source": "app/services/x402/chain/rpc_client.rb"
+        },
+        {
+            "id": "svc:X402.Chain.SolanaTransaction",
+            "name": "X402::Chain::SolanaTransaction",
+            "source": "app/services/x402/chain/solana_transaction.rb"
+        },
+        {
+            "id": "svc:X402.Chain.SvmReader",
+            "name": "X402::Chain::SvmReader",
+            "source": "app/services/x402/chain/svm_reader.rb"
+        },
+        {
             "id": "svc:X402.ExternalIds",
             "name": "X402::ExternalIds",
             "source": "app/services/x402/external_ids.rb"
+        },
+        {
+            "id": "svc:X402.Facilitator",
+            "name": "X402::Facilitator",
+            "source": "app/services/x402/facilitator.rb"
+        },
+        {
+            "id": "svc:X402.Facilitator.CoinbaseCdpAdapter",
+            "name": "X402::Facilitator::CoinbaseCdpAdapter",
+            "source": "app/services/x402/facilitator/coinbase_cdp_adapter.rb"
         },
         {
             "id": "svc:X402.Keccak256",

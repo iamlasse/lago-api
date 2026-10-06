@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\IntegrationCollectionMappings\BaseCollectionMapping;
 use App\Models\IntegrationCollectionMappings\NetsuiteCollectionMapping;
-use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * Port of Rails' :netsuite_collection_mapping / :netsuite_currencies_mapping

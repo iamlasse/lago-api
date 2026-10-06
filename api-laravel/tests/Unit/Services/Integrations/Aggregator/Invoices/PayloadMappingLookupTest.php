@@ -2,25 +2,25 @@
 
 declare(strict_types=1);
 
-use App\Models\AddOn;
-use App\Models\Customer;
 use App\Models\Fee;
+use App\Models\AddOn;
 use App\Models\Invoice;
+use App\Models\Customer;
 use App\Models\Organization;
 use App\Models\BillingEntity;
 use App\Models\BillableMetric;
-use App\Services\Integrations\Aggregator\BasePayload\Failure;
-use App\Services\Integrations\Aggregator\Invoices\Payloads\Factory;
-use App\Services\Integrations\Aggregator\Invoices\Payloads\Netsuite;
-use App\Services\Integrations\Aggregator\Invoices\Payloads\Xero;
 use App\Models\Integrations\XeroIntegration;
+use App\Models\IntegrationMappings\XeroMapping;
 use App\Models\Integrations\NetsuiteIntegration;
 use App\Models\IntegrationCustomers\XeroCustomer;
-use App\Models\IntegrationCustomers\NetsuiteCustomer;
-use App\Models\IntegrationMappings\XeroMapping;
 use App\Models\IntegrationMappings\NetsuiteMapping;
-use App\Models\IntegrationCollectionMappings\NetsuiteCollectionMapping;
+use App\Models\IntegrationCustomers\NetsuiteCustomer;
+use App\Services\Integrations\Aggregator\BasePayload\Failure;
+use App\Services\Integrations\Aggregator\Invoices\Payloads\Xero;
 use App\Models\IntegrationCollectionMappings\XeroCollectionMapping;
+use App\Services\Integrations\Aggregator\Invoices\Payloads\Factory;
+use App\Services\Integrations\Aggregator\Invoices\Payloads\Netsuite;
+use App\Models\IntegrationCollectionMappings\NetsuiteCollectionMapping;
 
 /**
  * The item_code resolution pinned end-to-end through the payload builders —
@@ -55,13 +55,20 @@ function payloadFixture(string $integrationClass): array
 
 function chargeFeeFixture(Organization $organization, Customer $customer, Invoice $invoice): Fee
 {
-    $plan = \App\Models\Plan::factory()->create(['organization_id' => $organization->id]);
+    $plan = App\Models\Plan::factory()->create(['organization_id' => $organization->id]);
     $metric = BillableMetric::factory()->create([
         'organization_id' => $organization->id,
         'code' => 'api',
         'name' => 'API',
     ]);
-    $subscription = \App\Models\Subscription::factory()->create([
+    $charge = App\Models\Charge::factory()->create([
+        'plan_id' => $plan->id,
+        'organization_id' => $organization->id,
+        'billable_metric_id' => $metric->id,
+        'charge_model' => 'standard',
+        'properties' => ['amount' => '1'],
+    ]);
+    $subscription = App\Models\Subscription::factory()->create([
         'customer_id' => $customer->id,
         'plan_id' => $plan->id,
         'organization_id' => $organization->id,
@@ -72,7 +79,9 @@ function chargeFeeFixture(Organization $organization, Customer $customer, Invoic
         'subscription_id' => $subscription->id,
         'organization_id' => $organization->id,
         'billing_entity_id' => $customer->billing_entity_id,
-        'billable_metric_id' => $metric->id,
+        'charge_id' => $charge->id,
+        'invoiceable_type' => 'Charge',
+        'invoiceable_id' => $charge->id,
         'amount_cents' => 100,
         'precise_amount_cents' => '100',
         'amount_currency' => 'EUR',
@@ -87,8 +96,8 @@ function chargeFeeFixture(Organization $organization, Customer $customer, Invoic
 
 function subscriptionFeeFixture(Organization $organization, Customer $customer, Invoice $invoice): Fee
 {
-    $plan = \App\Models\Plan::factory()->create(['organization_id' => $organization->id]);
-    $subscription = \App\Models\Subscription::factory()->create([
+    $plan = App\Models\Plan::factory()->create(['organization_id' => $organization->id]);
+    $subscription = App\Models\Subscription::factory()->create([
         'customer_id' => $customer->id,
         'plan_id' => $plan->id,
         'organization_id' => $organization->id,
@@ -118,7 +127,7 @@ it('resolves the xero item_code through the billable metric mapping end-to-end',
 
     expect(fn () => $payload->body())->toThrow(Failure::class, 'invalid_mapping');
 
-    $metric = $fee->billableMetric;
+    $metric = $fee->charge->billableMetric;
 
     XeroMapping::factory()->forIntegration($integration)->forMappable('BillableMetric', $metric)->create([
         'organization_id' => $integration->organization_id,
@@ -135,7 +144,7 @@ it('resolves the netsuite item line through the billable metric mapping end-to-e
     [, , $invoice, $integration, $integrationCustomer] = payloadFixture(NetsuiteIntegration::class);
     $fee = chargeFeeFixture($invoice->organization, $invoice->customer, $invoice);
 
-    NetsuiteMapping::factory()->forIntegration($integration)->forMappable('BillableMetric', $fee->billableMetric)->create([
+    NetsuiteMapping::factory()->forIntegration($integration)->forMappable('BillableMetric', $fee->charge->billableMetric)->create([
         'organization_id' => $integration->organization_id,
     ]);
 
@@ -172,7 +181,7 @@ it('prefers the billing entity mapping over the organization one', function (): 
     expect($payload->mappedItem($fee)->external_id)->toBe('entity-level');
 
     // Only the org-level one: it answers.
-    \App\Models\IntegrationCollectionMappings\XeroCollectionMapping::query()->delete();
+    XeroCollectionMapping::query()->delete();
     XeroCollectionMapping::factory()->withMappingType('subscription_fee')->forIntegration($integration)->create([
         'organization_id' => $organization->id,
         'settings' => ['external_id' => 'org-level'],
@@ -203,6 +212,7 @@ it('falls back to the fallback_item mapping when no kind mapping exists', functi
         'organization_id' => $organization->id,
         'billing_entity_id' => $customer->billing_entity_id,
         'add_on_id' => $addOn->id,
+        'fee_type' => App\Enums\FeeType::AddOn,
         'amount_cents' => 100,
         'precise_amount_cents' => '100',
         'amount_currency' => 'EUR',
@@ -217,7 +227,12 @@ it('falls back to the fallback_item mapping when no kind mapping exists', functi
 
 it('maps the netsuite invoice currency through the currencies collection mapping', function (): void {
     [$organization, $customer, $invoice, $integration, $integrationCustomer] = payloadFixture(NetsuiteIntegration::class);
-    chargeFeeFixture($organization, $customer, $invoice);
+    $fee = chargeFeeFixture($organization, $customer, $invoice);
+
+    // The fee line itself needs its mapping for body() to build.
+    NetsuiteMapping::factory()->forIntegration($integration)->forMappable('BillableMetric', $fee->charge->billableMetric)->create([
+        'organization_id' => $integration->organization_id,
+    ]);
 
     $payload = new Netsuite($integrationCustomer, $invoice);
 
@@ -235,7 +250,7 @@ it('builds the factory payloads through the mapping rows without errors', functi
     [$organization, $customer, $invoice, $integration, $integrationCustomer] = payloadFixture(XeroIntegration::class);
     $fee = chargeFeeFixture($organization, $customer, $invoice);
 
-    XeroMapping::factory()->forIntegration($integration)->forMappable('BillableMetric', $fee->billableMetric)->create([
+    XeroMapping::factory()->forIntegration($integration)->forMappable('BillableMetric', $fee->charge->billableMetric)->create([
         'organization_id' => $integration->organization_id,
     ]);
 

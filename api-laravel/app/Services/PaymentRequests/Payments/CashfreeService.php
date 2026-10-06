@@ -106,7 +106,6 @@ class CashfreeService extends BaseService
             'amount_currency' => mb_strtoupper((string) $payable->amount_currency),
             'provider_payment_id' => $cashfreePayment->id,
         ]);
-        $payment->save();
 
         return $payment;
     }

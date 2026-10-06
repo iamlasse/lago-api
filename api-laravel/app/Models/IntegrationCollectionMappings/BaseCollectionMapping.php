@@ -57,20 +57,13 @@ class BaseCollectionMapping extends BaseModel
         'currencies',
     ];
 
-    public function integration(): BelongsTo
-    {
-        return $this->belongsTo(\App\Models\Integration::class);
-    }
-
-    public function organization(): BelongsTo
-    {
-        return $this->belongsTo(\App\Models\Organization::class);
-    }
-
-    public function billingEntity(): BelongsTo
-    {
-        return $this->belongsTo(\App\Models\BillingEntity::class);
-    }
+    /** Rails STI: stored `type` strings → the hydrating subclass. */
+    protected const STI_CLASSES = [
+        self::NETSUITE_TYPE => NetsuiteCollectionMapping::class,
+        self::ANROK_TYPE => AnrokCollectionMapping::class,
+        self::AVALARA_TYPE => AvalaraCollectionMapping::class,
+        self::XERO_TYPE => XeroCollectionMapping::class,
+    ];
 
     /**
      * Rails: `enum :mapping_type, MAPPING_TYPES, validate: true` — the
@@ -84,6 +77,42 @@ class BaseCollectionMapping extends BaseModel
     public static function mappingTypeName(int $position): ?string
     {
         return self::MAPPING_TYPES[$position] ?? null;
+    }
+
+    /**
+     * Rails STI: hydrating a row instantiates the subclass named by the
+     * stored `type` column (Laravel has no STI of its own), so the
+     * subclass settings accessors resolve on query-loaded rows.
+     */
+    public function newFromBuilder($attributes = [], $connection = null)
+    {
+        $attributes = (array) $attributes;
+        $class = self::STI_CLASSES[$attributes['type'] ?? ''] ?? null;
+
+        if ($class === null || $class === static::class) {
+            return parent::newFromBuilder($attributes, $connection);
+        }
+
+        $model = (new $class)->newInstance([], true);
+        $model->setRawAttributes($attributes, true);
+        $model->setConnection($connection ?? $this->getConnectionName());
+
+        return $model;
+    }
+
+    public function integration(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Integration::class);
+    }
+
+    public function organization(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Organization::class);
+    }
+
+    public function billingEntity(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\BillingEntity::class);
     }
 
     /** Rails: the enum `currencies?` predicate. */

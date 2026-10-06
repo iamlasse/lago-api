@@ -66,9 +66,11 @@ class GocardlessService extends BaseService
             );
 
             if ($status >= 400) {
+                $error = $response['error'] ?? $response;
+
                 throw new GoCardlessError(
                     self::firstErrorMessage($response),
-                    (string) ($response['error_type'] ?? $response['code'] ?? 'gocardless_error'),
+                    (string) ($error['error_type'] ?? $error['type'] ?? 'gocardless_error'),
                 );
             }
 
@@ -178,7 +180,9 @@ class GocardlessService extends BaseService
             'metadata' => [
                 'lago_credit_note_id' => $creditNote->id,
                 'lago_invoice_id' => $creditNote->invoice_id,
-                'reason' => (string) ($creditNote->reasonEnum()?->value ?? $creditNote->reason),
+                'reason' => (string) ($creditNote->reasonEnum() !== null
+                    ? (\App\Enums\CreditNoteReason::options()[$creditNote->reasonEnum()->value] ?? '')
+                    : ''),
             ],
         ];
     }

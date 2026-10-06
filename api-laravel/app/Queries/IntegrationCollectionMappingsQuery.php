@@ -6,8 +6,8 @@ namespace App\Queries;
 
 use App\Services\BaseResult;
 use App\Services\BaseService;
-use App\Models\IntegrationCollectionMappings\BaseCollectionMapping;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use App\Models\IntegrationCollectionMappings\BaseCollectionMapping;
 
 /**
  * Port of Rails' IntegrationCollectionMappingsQuery (app/queries/

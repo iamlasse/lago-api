@@ -664,7 +664,7 @@ class Invoice extends BaseModel
         return Payment::query()
             ->where('payable_type', 'PaymentRequest')
             ->where('payable_payment_status', 'succeeded')
-            ->whereIn('payable_id', $this->paymentRequests()->where('payment_status', 1)->select('id'))
+            ->whereIn('payable_id', $this->paymentRequests()->where('payment_requests.payment_status', 1)->select('payment_requests.id'))
             ->orderByDesc('created_at')
             ->first();
     }

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models\IntegrationCollectionMappings;
 
-use Database\Factories\AnrokCollectionMappingFactory;
 use Illuminate\Database\Eloquent\Builder;
+use Database\Factories\AnrokCollectionMappingFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 
@@ -19,7 +19,7 @@ class AnrokCollectionMapping extends BaseCollectionMapping
 {
     use HasFactory;
 
-    public const TYPE = BaseCollectionMapping::Anrok_TYPE;
+    public const TYPE = BaseCollectionMapping::ANROK_TYPE;
 
     protected static function booted(): void
     {

@@ -289,6 +289,18 @@ class Organization extends BaseModel
         return in_array('multi_entities_enterprise', (array) $this->feature_flags, true);
     }
 
+    /** Rails: account_tree_enabled? — the account_tree feature flag. */
+    public function accountTreeEnabled(): bool
+    {
+        return in_array('account_tree', (array) $this->feature_flags, true);
+    }
+
+    /** Rails: has_many :usage_attribution_types (kept scope). */
+    public function usageAttributionTypes(): HasMany
+    {
+        return $this->hasMany(UsageAttributionType::class);
+    }
+
     /** Rails: `has_many :all_billing_entities` (no active scope). */
     public function allBillingEntities(): HasMany
     {

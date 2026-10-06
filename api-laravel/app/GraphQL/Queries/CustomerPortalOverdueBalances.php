@@ -6,8 +6,8 @@ namespace App\GraphQL\Queries;
 
 use App\GraphQL\Support\Args;
 use App\GraphQL\Support\LagoContext;
-use App\GraphQL\Guards\CustomerPortalUser;
 use App\Models\Analytics\OverdueBalance;
+use App\GraphQL\Guards\CustomerPortalUser;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
 /**

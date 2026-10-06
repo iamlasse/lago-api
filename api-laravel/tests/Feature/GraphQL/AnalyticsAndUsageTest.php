@@ -191,13 +191,31 @@ it('answers the customer usage queries', function (): void {
 
     expect($response->json('errors.0.extensions.code'))->toBe('no_active_subscription');
 
-    // With an active subscription on an empty plan the usage is zero.
+    // Rails looks the subscription up through customer.active_subscriptions
+    // (status :active) — a pending subscription does not count.
     $plan = App\Models\Plan::factory()->create(['organization_id' => $organization->id, 'amount_cents' => 0]);
+    $pendingSubscription = App\Models\Subscription::factory()->create([
+        'organization_id' => $organization->id,
+        'plan_id' => $plan->id,
+        'customer_id' => $customer->id,
+        'status' => App\Enums\SubscriptionStatus::Pending,
+    ]);
+
+    $response = gqlPost(<<<'GQL'
+    query($customerId: ID, $subscriptionId: ID!) {
+        customerUsage(customerId: $customerId, subscriptionId: $subscriptionId) { amountCents }
+    }
+    GQL, ['customerId' => $customer->id, 'subscriptionId' => $pendingSubscription->id],
+        gqlAuthHeaders($user, $organization->id));
+
+    expect($response->json('errors.0.extensions.code'))->toBe('no_active_subscription');
+
+    // With an active subscription on an empty plan the usage is zero.
     $subscription = App\Models\Subscription::factory()->create([
         'organization_id' => $organization->id,
         'plan_id' => $plan->id,
         'customer_id' => $customer->id,
-        'status' => 0,
+        'status' => App\Enums\SubscriptionStatus::Active,
     ]);
 
     $response = gqlPost(<<<'GQL'

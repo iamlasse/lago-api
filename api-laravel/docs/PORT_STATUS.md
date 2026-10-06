@@ -10,23 +10,23 @@ per the ledger rules (`code=done` requires `test ∈ {ported, written}`).
 
 | Metric | Count |
 | --- | --- |
-| Ledger rows (Rails surface under coverage) | 2625 |
-| Done | 1050 |
-| In progress | 5 |
-| Todo | 1569 |
-| Contract goldens replaying green (`contract=pass`) | 517 |
-| Tests ported from Rails specs | 751 |
-| Tests written first (no Rails spec to port) | 299 |
+| Ledger rows (Rails surface under coverage) | 2636 |
+| Done | 1101 |
+| In progress | 11 |
+| Todo | 1523 |
+| Contract goldens replaying green (`contract=pass`) | 537 |
+| Tests ported from Rails specs | 797 |
+| Tests written first (no Rails spec to port) | 304 |
 
 ## Progress by kind
 
 | Kind | Rows | Done | In progress | Contract pass |
 | --- | --- | --- | --- | --- |
-| `rest` (provisional inventory) | 625 | 281 | 0 | 156 |
-| `gql` | 387 | 313 | 0 | 309 |
-| `svc` | 1044 | 257 | 5 | 44 |
-| `ser` | 154 | 31 | 0 | 2 |
-| `job` | 269 | 22 | 0 | 6 |
+| `rest` (provisional inventory) | 627 | 281 | 0 | 161 |
+| `gql` | 387 | 335 | 5 | 324 |
+| `svc` | 1052 | 284 | 6 | 44 |
+| `ser` | 155 | 32 | 0 | 2 |
+| `job` | 269 | 23 | 0 | 6 |
 | `table` | 146 | 146 | 0 | 0 |
 
 `table` rows are the frozen schema itself (all done by construction — the
@@ -63,7 +63,7 @@ have no Laravel counterpart and are deliberately left `todo`:
 - `svc:Events.Stores.Utils.ClickhouseConnection` (todo)
 - `svc:Events.Stores.Utils.ClickhouseSqlHelpers` (todo)
 
-### Done without a contract scenario (388 rows)
+### Done without a contract scenario (414 rows)
 
 Rows whose code and tests are in, but whose behavior no captured golden
 scenario covers yet (`contract=untested`). The contract harness
@@ -74,11 +74,11 @@ diff, not by contract goldens.
 
 | Kind | Done, contract untested |
 | --- | --- |
-| `rest` | 126 |
-| `gql` | 4 |
-| `svc` | 213 |
-| `ser` | 29 |
-| `job` | 16 |
+| `rest` | 121 |
+| `gql` | 11 |
+| `svc` | 235 |
+| `ser` | 30 |
+| `job` | 17 |
 
 ### Open domains
 
@@ -87,27 +87,27 @@ services/jobs/serializers by their first namespace segment).
 
 | Domain | Open rows |
 | --- | --- |
-| `rest` | 344 |
+| `rest` | 346 |
 | `Integrations` | 125 |
 | `PaymentProviders` | 77 |
-| `gql` | 74 |
 | `Invoices` | 71 |
 | `V1` | 69 |
 | `Webhooks` | 68 |
 | `DatabaseMigrations` | 65 |
+| `gql` | 52 |
 | `EInvoices` | 45 |
 | `Events` | 41 |
 | `Clock` | 27 |
 | `PaymentProviderCustomers` | 26 |
 | `Subscriptions` | 24 |
-| `CreditNotes` | 19 |
 | `BillableMetrics` | 18 |
-| `PaymentRequests` | 18 |
 | `Charges` | 17 |
+| `CreditNotes` | 16 |
 | `Fees` | 16 |
 | `Utils` | 16 |
 | `Wallets` | 16 |
-| …96 smaller domains | 399 |
+| `Customers` | 15 |
+| …92 smaller domains | 385 |
 
 ## Test gates
 

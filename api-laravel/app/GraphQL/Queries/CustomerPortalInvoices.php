@@ -6,8 +6,8 @@ namespace App\GraphQL\Queries;
 
 use App\GraphQL\Support\Page;
 use App\GraphQL\Execution\Errors;
-use App\GraphQL\Guards\CustomerPortalUser;
 use App\GraphQL\Support\LagoContext;
+use App\GraphQL\Guards\CustomerPortalUser;
 use App\Services\Invoices\Query as InvoicesQuery;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 

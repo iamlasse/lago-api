@@ -1,7 +1,7 @@
 {
     "generator": "gen_serializers",
     "source": "app/serializers/**/*.rb",
-    "row_count": 154,
+    "row_count": 155,
     "rows": [
         {
             "id": "ser:ActiveJob.MeteredItemSerializer",
@@ -287,6 +287,11 @@
             "id": "ser:V1.AppliedUsageThresholdSerializer",
             "name": "V1::AppliedUsageThresholdSerializer",
             "source": "app/serializers/v1/applied_usage_threshold_serializer.rb"
+        },
+        {
+            "id": "ser:V1.AttributedUsageSerializer",
+            "name": "V1::AttributedUsageSerializer",
+            "source": "app/serializers/v1/attributed_usage_serializer.rb"
         },
         {
             "id": "ser:V1.BillableMetricExpressionResultSerializer",

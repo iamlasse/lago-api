@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\IntegrationCollectionMappings;
 
+use LogicException;
 use App\Models\Integration;
 
 /**
@@ -25,7 +26,7 @@ class Factory
             'Integrations::AnrokIntegration' => \App\Models\IntegrationCollectionMappings\AnrokCollectionMapping::class,
             'Integrations::AvalaraIntegration' => \App\Models\IntegrationCollectionMappings\AvalaraCollectionMapping::class,
             'Integrations::XeroIntegration' => \App\Models\IntegrationCollectionMappings\XeroCollectionMapping::class,
-            default => throw new \LogicException('NotImplementedError'),
+            default => throw new LogicException('NotImplementedError'),
         };
     }
 }

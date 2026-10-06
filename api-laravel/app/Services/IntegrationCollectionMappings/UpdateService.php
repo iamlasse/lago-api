@@ -17,7 +17,6 @@ use function array_key_exists;
 class UpdateService extends BaseService
 {
     /**
-     * @param  \App\Models\IntegrationCollectionMappings\BaseCollectionMapping|null  $integration_collection_mapping
      * @param  array<string, mixed>  $params
      */
     public function __construct(

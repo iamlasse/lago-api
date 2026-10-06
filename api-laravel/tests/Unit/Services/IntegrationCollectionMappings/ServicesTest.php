@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 use App\Models\Organization;
 use App\Models\BillingEntity;
-use App\Models\IntegrationCollectionMappings\BaseCollectionMapping;
-use App\Models\IntegrationCollectionMappings\NetsuiteCollectionMapping;
 use App\Services\IntegrationCollectionMappings\CreateService;
 use App\Services\IntegrationCollectionMappings\UpdateService;
 use App\Services\IntegrationCollectionMappings\DestroyService;
+use App\Models\IntegrationCollectionMappings\BaseCollectionMapping;
+use App\Models\IntegrationCollectionMappings\NetsuiteCollectionMapping;
 
 /**
  * Ports of Rails' spec/services/integration_collection_mappings/
@@ -17,7 +17,7 @@ use App\Services\IntegrationCollectionMappings\DestroyService;
 function collectionServiceFixtures(): array
 {
     $organization = Organization::factory()->create();
-    $integration = \App\Models\Integrations\NetsuiteIntegration::factory()->forOrganization($organization)->create();
+    $integration = App\Models\Integrations\NetsuiteIntegration::factory()->forOrganization($organization)->create();
 
     return [$organization, $integration];
 }
@@ -38,7 +38,7 @@ it('creates an integration collection mapping', function (): void {
         ->and($result->integration_collection_mapping)->toBeInstanceOf(NetsuiteCollectionMapping::class)
         ->and($result->integration_collection_mapping->organization_id)->toBe($organization->id)
         ->and($result->integration_collection_mapping->mapping_type)
-            ->toBe(BaseCollectionMapping::mappingTypes()['fallback_item'])
+        ->toBe(BaseCollectionMapping::mappingTypes()['fallback_item'])
         ->and($result->integration_collection_mapping->integration_id)->toBe($integration->id)
         ->and($result->integration_collection_mapping->tax_nexus)->toBe('123')
         ->and($result->integration_collection_mapping->tax_code)->toBe('456')

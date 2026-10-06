@@ -38,8 +38,10 @@ class CustomerProjectedUsage
             ->where('id', $args['customerId'] ?? null)
             ->first();
 
+        // Rails: customer.active_subscriptions (subscriptions.active — status
+        // :active), then find_by(id: subscription_id).
         $subscription = $customer?->subscriptions()
-            ->where('status', 0)
+            ->active()
             ->where('id', $args['subscriptionId'] ?? null)
             ->first();
 

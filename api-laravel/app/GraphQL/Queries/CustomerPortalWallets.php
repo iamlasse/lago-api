@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\GraphQL\Queries;
 
+use App\Enums\WalletStatus;
 use App\GraphQL\Support\Page;
 use App\GraphQL\Support\LagoContext;
 use App\GraphQL\Guards\CustomerPortalUser;
-use App\Enums\WalletStatus;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
 /**

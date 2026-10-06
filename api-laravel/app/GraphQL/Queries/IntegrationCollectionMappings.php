@@ -7,9 +7,9 @@ namespace App\GraphQL\Queries;
 use App\GraphQL\Support\Page;
 use App\GraphQL\Execution\Errors;
 use App\GraphQL\Support\LagoContext;
-use App\Queries\IntegrationCollectionMappingsQuery;
 use App\GraphQL\Guards\AuthenticableApiUser;
 use App\GraphQL\Guards\RequiredOrganization;
+use App\Queries\IntegrationCollectionMappingsQuery;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
 /**

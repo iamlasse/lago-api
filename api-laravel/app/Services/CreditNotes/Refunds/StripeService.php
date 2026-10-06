@@ -151,7 +151,11 @@ class StripeService extends BaseService
     /** Rails: stripe_reason — the credit note reason mapped onto Stripe's. */
     private static function reason(CreditNote $creditNote): ?string
     {
-        return match ($creditNote->reasonEnum()?->value ?? $creditNote->reason) {
+        $reason = $creditNote->reasonEnum() !== null
+            ? \App\Enums\CreditNoteReason::options()[$creditNote->reasonEnum()->value] ?? null
+            : null;
+
+        return match ($reason) {
             'duplicated_charge' => 'duplicate',
             'product_unsatisfactory', 'order_change', 'order_cancellation' => 'requested_by_customer',
             'fraudulent_charge' => 'fraudulent',

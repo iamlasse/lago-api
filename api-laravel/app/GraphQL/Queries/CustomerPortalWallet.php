@@ -6,8 +6,8 @@ namespace App\GraphQL\Queries;
 
 use App\GraphQL\Execution\Errors;
 use App\GraphQL\Support\LagoContext;
-use App\GraphQL\Guards\CustomerPortalUser;
 use App\Models\Wallet as WalletModel;
+use App\GraphQL\Guards\CustomerPortalUser;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
 /**

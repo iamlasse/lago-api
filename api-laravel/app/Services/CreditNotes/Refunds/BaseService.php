@@ -11,9 +11,9 @@ use App\Models\Payment;
 use App\Models\Customer;
 use App\Models\CreditNote;
 use App\Services\BaseResult;
-use App\Services\BaseService as RootBaseService;
 use App\Enums\CreditNoteRefundStatus;
 use App\Services\PaymentProviders\FindService;
+use App\Services\BaseService as RootBaseService;
 
 /**
  * Shared legs of Rails' CreditNotes::Refunds::{Stripe,Adyen,Gocardless}

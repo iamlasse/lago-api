@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 use App\Models\AddOn;
-use App\Models\BillableMetric;
 use App\Models\Organization;
 use App\Models\BillingEntity;
+use App\Models\BillableMetric;
 use App\Models\IntegrationMappings\BaseMapping;
 use App\Models\IntegrationMappings\NetsuiteMapping;
 
@@ -17,7 +17,7 @@ use App\Models\IntegrationMappings\NetsuiteMapping;
 function mappingFixtures(): array
 {
     $organization = Organization::factory()->create();
-    $integration = \App\Models\Integrations\NetsuiteIntegration::factory()->forOrganization($organization)->create();
+    $integration = App\Models\Integrations\NetsuiteIntegration::factory()->forOrganization($organization)->create();
     $addOn = AddOn::factory()->for($organization, 'organization')->create();
 
     return [$organization, $integration, $addOn];
@@ -67,7 +67,7 @@ it('rejects a duplicate mapping in scope of mappable, integration, organization 
 it('accepts the same mappable under another integration, billing entity or mappable type', function (): void {
     [$organization, $integration, $addOn] = mappingFixtures();
 
-    $otherIntegration = \App\Models\Integrations\NetsuiteIntegration::factory()->forOrganization($organization)->create([
+    $otherIntegration = App\Models\Integrations\NetsuiteIntegration::factory()->forOrganization($organization)->create([
         'code' => 'netsuite-2',
     ]);
     $otherAddOn = AddOn::factory()->for($organization, 'organization')->create();
@@ -190,5 +190,5 @@ it('scopes subclass queries to the stored STI type', function (): void {
 
     expect($created->type)->toBe(BaseMapping::NETSUITE_TYPE)
         ->and(NetsuiteMapping::query()->whereKey($created->id)->exists())->toBeTrue()
-        ->and(\App\Models\IntegrationMappings\XeroMapping::query()->whereKey($created->id)->exists())->toBeFalse();
+        ->and(App\Models\IntegrationMappings\XeroMapping::query()->whereKey($created->id)->exists())->toBeFalse();
 });

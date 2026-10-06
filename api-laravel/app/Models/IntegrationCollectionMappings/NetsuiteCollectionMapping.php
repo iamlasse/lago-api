@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Models\IntegrationCollectionMappings;
 
 use App\Services\Validators\Currencies;
-use Database\Factories\NetsuiteCollectionMappingFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
+use Database\Factories\NetsuiteCollectionMappingFactory;
 
 /**
  * Port of Rails' IntegrationCollectionMappings::NetsuiteCollectionMapping
@@ -99,6 +99,19 @@ class NetsuiteCollectionMapping extends BaseCollectionMapping
         return $errors;
     }
 
+    protected static function booted(): void
+    {
+        // Rails STI: querying the subclass filters on the stored type string.
+        static::addGlobalScope('stiType', function (Builder $builder): void {
+            $builder->where('type', self::NETSUITE_TYPE);
+        });
+
+        // Rails STI: the stored type column is set on create.
+        static::creating(function (self $mapping): void {
+            $mapping->type = self::NETSUITE_TYPE;
+        });
+    }
+
     /**
      * Rails: `currencies_hash_valid?` — string keys from
      * Currencies::ACCEPTED_CURRENCIES, non-blank string values.
@@ -120,18 +133,5 @@ class NetsuiteCollectionMapping extends BaseCollectionMapping
         }
 
         return true;
-    }
-
-    protected static function booted(): void
-    {
-        // Rails STI: querying the subclass filters on the stored type string.
-        static::addGlobalScope('stiType', function (Builder $builder): void {
-            $builder->where('type', self::NETSUITE_TYPE);
-        });
-
-        // Rails STI: the stored type column is set on create.
-        static::creating(function (self $mapping): void {
-            $mapping->type = self::NETSUITE_TYPE;
-        });
     }
 }

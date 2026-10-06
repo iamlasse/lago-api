@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Support\Utils;
 
+use JsonException;
 use RuntimeException;
 
 /**
@@ -98,7 +99,7 @@ class PortalToken
     /** Rails: `Base64.strict_encode64` of the serialized message. */
     private static function encode(string $raw): string
     {
-        return rtrim(strtr(base64_encode($raw), '+/', '-_'), '=');
+        return mb_rtrim(strtr(base64_encode($raw), '+/', '-_'), '=');
     }
 
     private static function decode(string $encoded): ?string
@@ -123,7 +124,7 @@ class PortalToken
 
         try {
             $payload = json_decode($raw, true, 512, JSON_THROW_ON_ERROR);
-        } catch (\JsonException) {
+        } catch (JsonException) {
             return null;
         }
 

@@ -46,6 +46,35 @@ class BaseMapping extends BaseModel
     /** Rails: MAPPABLE_TYPES. */
     public const MAPPABLE_TYPES = ['AddOn', 'BillableMetric'];
 
+    /** Rails STI: stored `type` strings → the hydrating subclass. */
+    protected const STI_CLASSES = [
+        self::NETSUITE_TYPE => NetsuiteMapping::class,
+        self::ANROK_TYPE => AnrokMapping::class,
+        self::AVALARA_TYPE => AvalaraMapping::class,
+        self::XERO_TYPE => XeroMapping::class,
+    ];
+
+    /**
+     * Rails STI: hydrating a row instantiates the subclass named by the
+     * stored `type` column (Laravel has no STI of its own), so the
+     * subclass settings accessors resolve on query-loaded rows.
+     */
+    public function newFromBuilder($attributes = [], $connection = null)
+    {
+        $attributes = (array) $attributes;
+        $class = self::STI_CLASSES[$attributes['type'] ?? ''] ?? null;
+
+        if ($class === null || $class === static::class) {
+            return parent::newFromBuilder($attributes, $connection);
+        }
+
+        $model = (new $class)->newInstance([], true);
+        $model->setRawAttributes($attributes, true);
+        $model->setConnection($connection ?? $this->getConnectionName());
+
+        return $model;
+    }
+
     public function integration(): BelongsTo
     {
         return $this->belongsTo(\App\Models\Integration::class);

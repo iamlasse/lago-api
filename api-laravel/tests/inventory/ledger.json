@@ -1,7 +1,7 @@
 {
   "generator": "scripts/inventory/lib/ledger.php (join via gen-all.php)",
   "source": "join of all inventories with app/ scan; statuses hand-maintained after seeding",
-  "row_count": 2625,
+  "row_count": 2636,
   "rows": [
     {
       "id": "gql:mutation:acceptInvite",
@@ -419,7 +419,7 @@
       "tests": [
         "tests/Feature/GraphQL/ContractsAndAppliedRateCardsTest.php"
       ],
-      "notes": "[2026-10-06 Arc 1 catalog & pricing GraphQL] Contract: replayed green via the listed GraphQL test (lago_test_ba)."
+      "notes": "[2026-10-06 Arc 1 catalog & pricing GraphQL] Contract: replayed green via the listed GraphQL test (lago_test_ba). [2026-10-07 wave integration: restored hand-maintained status after inventory regeneration]"
     },
     {
       "id": "gql:mutation:createCoupon",
@@ -480,12 +480,14 @@
       "source": "schema.json",
       "laravel": "App\\GraphQL\\Mutations\\CreateCustomerPortalWalletTransaction",
       "status": {
-        "code": "todo",
-        "test": "todo",
-        "contract": "untested"
+        "code": "done",
+        "test": "ported",
+        "contract": "pass"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/GraphQL/CustomerPortalTest.php"
+      ],
+      "notes": "[2026-10-06 Arc 4 customer portal GraphQL] Contract: replayed green via the listed GraphQL test (lago_test_bd)."
     },
     {
       "id": "gql:mutation:createCustomerWallet",
@@ -604,12 +606,14 @@
       "source": "schema.json",
       "laravel": "App\\GraphQL\\Mutations\\CreateIntegrationCollectionMapping",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/GraphQL/IntegrationMappingsMutationsTest.php"
+      ],
+      "notes": "[2026-10-07 wave integration: flipped from landed code + tests]"
     },
     {
       "id": "gql:mutation:createIntegrationCustomer",
@@ -630,12 +634,14 @@
       "source": "schema.json",
       "laravel": "App\\GraphQL\\Mutations\\CreateIntegrationMapping",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/GraphQL/IntegrationMappingsMutationsTest.php"
+      ],
+      "notes": "[2026-10-07 wave integration: flipped from landed code + tests]"
     },
     {
       "id": "gql:mutation:createInvite",
@@ -1028,12 +1034,12 @@
       "source": "schema.json",
       "laravel": "App\\GraphQL\\Mutations\\CreateUsageAttributionType",
       "status": {
-        "code": "todo",
+        "code": "in_progress",
         "test": "todo",
         "contract": "untested"
       },
       "tests": [],
-      "notes": ""
+      "notes": "Laravel class exists (M0 skeleton) — needs its tests before code:done."
     },
     {
       "id": "gql:mutation:createWebhookEndpoint",
@@ -1195,7 +1201,7 @@
       "tests": [
         "tests/Feature/GraphQL/ContractsAndAppliedRateCardsTest.php"
       ],
-      "notes": "[2026-10-06 Arc 1 catalog & pricing GraphQL] Contract: replayed green via the listed GraphQL test (lago_test_ba)."
+      "notes": "[2026-10-06 Arc 1 catalog & pricing GraphQL] Contract: replayed green via the listed GraphQL test (lago_test_ba). [2026-10-07 wave integration: restored hand-maintained status after inventory regeneration]"
     },
     {
       "id": "gql:mutation:destroyCoupon",
@@ -1300,12 +1306,14 @@
       "source": "schema.json",
       "laravel": "App\\GraphQL\\Mutations\\DestroyIntegrationCollectionMapping",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/GraphQL/IntegrationMappingsMutationsTest.php"
+      ],
+      "notes": "[2026-10-07 wave integration: flipped from landed code + tests]"
     },
     {
       "id": "gql:mutation:destroyIntegrationCustomer",
@@ -1326,12 +1334,14 @@
       "source": "schema.json",
       "laravel": "App\\GraphQL\\Mutations\\DestroyIntegrationMapping",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/GraphQL/IntegrationMappingsMutationsTest.php"
+      ],
+      "notes": "[2026-10-07 wave integration: flipped from landed code + tests]"
     },
     {
       "id": "gql:mutation:destroyInvoiceCustomSection",
@@ -1413,7 +1423,7 @@
       "tests": [
         "tests/Feature/GraphQL/ContractsAndAppliedRateCardsTest.php"
       ],
-      "notes": "[2026-10-06 Arc 1 catalog & pricing GraphQL] Contract: replayed green via the listed GraphQL test (lago_test_ba)."
+      "notes": "[2026-10-06 Arc 1 catalog & pricing GraphQL] Contract: replayed green via the listed GraphQL test (lago_test_ba). [2026-10-07 wave integration: restored hand-maintained status after inventory regeneration]"
     },
     {
       "id": "gql:mutation:destroyProduct",
@@ -1560,12 +1570,12 @@
       "source": "schema.json",
       "laravel": "App\\GraphQL\\Mutations\\DestroyUsageAttributionType",
       "status": {
-        "code": "todo",
+        "code": "in_progress",
         "test": "todo",
         "contract": "untested"
       },
       "tests": [],
-      "notes": ""
+      "notes": "Laravel class exists (M0 skeleton) — needs its tests before code:done."
     },
     {
       "id": "gql:mutation:destroyWebhookEndpoint",
@@ -1600,12 +1610,14 @@
       "source": "schema.json",
       "laravel": "App\\GraphQL\\Mutations\\DownloadCustomerPortalInvoice",
       "status": {
-        "code": "todo",
-        "test": "todo",
-        "contract": "untested"
+        "code": "done",
+        "test": "ported",
+        "contract": "pass"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/GraphQL/CustomerPortalTest.php"
+      ],
+      "notes": "[2026-10-06 Arc 4 customer portal GraphQL] Contract: replayed green via the listed GraphQL test (lago_test_bd)."
     },
     {
       "id": "gql:mutation:downloadInvoice",
@@ -1832,12 +1844,14 @@
       "source": "schema.json",
       "laravel": "App\\GraphQL\\Mutations\\GenerateCustomerPortalUrl",
       "status": {
-        "code": "todo",
-        "test": "todo",
-        "contract": "untested"
+        "code": "done",
+        "test": "ported",
+        "contract": "pass"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/GraphQL/CustomerPortalTest.php"
+      ],
+      "notes": "[2026-10-06 Arc 4 customer portal GraphQL] Contract: replayed green via the listed GraphQL test (lago_test_bd)."
     },
     {
       "id": "gql:mutation:generatePaymentUrl",
@@ -2357,7 +2371,7 @@
       "tests": [
         "tests/Feature/GraphQL/ContractsAndAppliedRateCardsTest.php"
       ],
-      "notes": "[2026-10-06 Arc 1 catalog & pricing GraphQL] Contract: replayed green via the listed GraphQL test (lago_test_ba)."
+      "notes": "[2026-10-06 Arc 1 catalog & pricing GraphQL] Contract: replayed green via the listed GraphQL test (lago_test_ba). [2026-10-07 wave integration: restored hand-maintained status after inventory regeneration]"
     },
     {
       "id": "gql:mutation:terminateCoupon",
@@ -2565,7 +2579,7 @@
       "tests": [
         "tests/Feature/GraphQL/ContractsAndAppliedRateCardsTest.php"
       ],
-      "notes": "[2026-10-06 Arc 1 catalog & pricing GraphQL] Contract: replayed green via the listed GraphQL test (lago_test_ba)."
+      "notes": "[2026-10-06 Arc 1 catalog & pricing GraphQL] Contract: replayed green via the listed GraphQL test (lago_test_ba). [2026-10-07 wave integration: restored hand-maintained status after inventory regeneration]"
     },
     {
       "id": "gql:mutation:updateCoupon",
@@ -2628,12 +2642,14 @@
       "source": "schema.json",
       "laravel": "App\\GraphQL\\Mutations\\UpdateCustomerPortalCustomer",
       "status": {
-        "code": "todo",
-        "test": "todo",
-        "contract": "untested"
+        "code": "done",
+        "test": "ported",
+        "contract": "pass"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/GraphQL/CustomerPortalTest.php"
+      ],
+      "notes": "[2026-10-06 Arc 4 customer portal GraphQL] Contract: replayed green via the listed GraphQL test (lago_test_bd)."
     },
     {
       "id": "gql:mutation:updateCustomerWallet",
@@ -2766,12 +2782,14 @@
       "source": "schema.json",
       "laravel": "App\\GraphQL\\Mutations\\UpdateIntegrationCollectionMapping",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/GraphQL/IntegrationMappingsMutationsTest.php"
+      ],
+      "notes": "[2026-10-07 wave integration: flipped from landed code + tests]"
     },
     {
       "id": "gql:mutation:updateIntegrationCustomer",
@@ -2792,12 +2810,14 @@
       "source": "schema.json",
       "laravel": "App\\GraphQL\\Mutations\\UpdateIntegrationMapping",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/GraphQL/IntegrationMappingsMutationsTest.php"
+      ],
+      "notes": "[2026-10-07 wave integration: flipped from landed code + tests]"
     },
     {
       "id": "gql:mutation:updateInvite",
@@ -3208,12 +3228,12 @@
       "source": "schema.json",
       "laravel": "App\\GraphQL\\Mutations\\UpdateUsageAttributionType",
       "status": {
-        "code": "todo",
+        "code": "in_progress",
         "test": "todo",
         "contract": "untested"
       },
       "tests": [],
-      "notes": ""
+      "notes": "Laravel class exists (M0 skeleton) — needs its tests before code:done."
     },
     {
       "id": "gql:mutation:updateWebhookEndpoint",
@@ -3635,7 +3655,7 @@
       "tests": [
         "tests/Feature/GraphQL/ContractsAndAppliedRateCardsTest.php"
       ],
-      "notes": "[2026-10-06 Arc 1 catalog & pricing GraphQL] Contract: replayed green via the listed GraphQL test (lago_test_ba)."
+      "notes": "[2026-10-06 Arc 1 catalog & pricing GraphQL] Contract: replayed green via the listed GraphQL test (lago_test_ba). [2026-10-07 wave integration: restored hand-maintained status after inventory regeneration]"
     },
     {
       "id": "gql:query:contracts",
@@ -3782,132 +3802,154 @@
       "source": "schema.json",
       "laravel": "App\\GraphQL\\Queries\\CustomerPortalCustomerProjectedUsage",
       "status": {
-        "code": "todo",
-        "test": "todo",
-        "contract": "untested"
+        "code": "done",
+        "test": "ported",
+        "contract": "pass"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/GraphQL/CustomerPortalTest.php"
+      ],
+      "notes": "[2026-10-06 Arc 4 customer portal GraphQL] Contract: replayed green via the listed GraphQL test (lago_test_bd)."
     },
     {
       "id": "gql:query:customerPortalCustomerUsage",
       "source": "schema.json",
       "laravel": "App\\GraphQL\\Queries\\CustomerPortalCustomerUsage",
       "status": {
-        "code": "todo",
-        "test": "todo",
-        "contract": "untested"
+        "code": "done",
+        "test": "ported",
+        "contract": "pass"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/GraphQL/CustomerPortalTest.php"
+      ],
+      "notes": "[2026-10-06 Arc 4 customer portal GraphQL] Contract: replayed green via the listed GraphQL test (lago_test_bd)."
     },
     {
       "id": "gql:query:customerPortalInvoiceCollections",
       "source": "schema.json",
       "laravel": "App\\GraphQL\\Queries\\CustomerPortalInvoiceCollections",
       "status": {
-        "code": "todo",
-        "test": "todo",
-        "contract": "untested"
+        "code": "done",
+        "test": "ported",
+        "contract": "pass"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/GraphQL/CustomerPortalTest.php"
+      ],
+      "notes": "[2026-10-06 Arc 4 customer portal GraphQL] Contract: replayed green via the listed GraphQL test (lago_test_bd)."
     },
     {
       "id": "gql:query:customerPortalInvoices",
       "source": "schema.json",
       "laravel": "App\\GraphQL\\Queries\\CustomerPortalInvoices",
       "status": {
-        "code": "todo",
-        "test": "todo",
-        "contract": "untested"
+        "code": "done",
+        "test": "ported",
+        "contract": "pass"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/GraphQL/CustomerPortalTest.php"
+      ],
+      "notes": "[2026-10-06 Arc 4 customer portal GraphQL] Contract: replayed green via the listed GraphQL test (lago_test_bd)."
     },
     {
       "id": "gql:query:customerPortalOrganization",
       "source": "schema.json",
       "laravel": "App\\GraphQL\\Queries\\CustomerPortalOrganization",
       "status": {
-        "code": "todo",
-        "test": "todo",
-        "contract": "untested"
+        "code": "done",
+        "test": "ported",
+        "contract": "pass"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/GraphQL/CustomerPortalTest.php"
+      ],
+      "notes": "[2026-10-06 Arc 4 customer portal GraphQL] Contract: replayed green via the listed GraphQL test (lago_test_bd)."
     },
     {
       "id": "gql:query:customerPortalOverdueBalances",
       "source": "schema.json",
       "laravel": "App\\GraphQL\\Queries\\CustomerPortalOverdueBalances",
       "status": {
-        "code": "todo",
-        "test": "todo",
-        "contract": "untested"
+        "code": "done",
+        "test": "ported",
+        "contract": "pass"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/GraphQL/CustomerPortalTest.php"
+      ],
+      "notes": "[2026-10-06 Arc 4 customer portal GraphQL] Contract: replayed green via the listed GraphQL test (lago_test_bd)."
     },
     {
       "id": "gql:query:customerPortalSubscription",
       "source": "schema.json",
       "laravel": "App\\GraphQL\\Queries\\CustomerPortalSubscription",
       "status": {
-        "code": "todo",
-        "test": "todo",
-        "contract": "untested"
+        "code": "done",
+        "test": "ported",
+        "contract": "pass"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/GraphQL/CustomerPortalTest.php"
+      ],
+      "notes": "[2026-10-06 Arc 4 customer portal GraphQL] Contract: replayed green via the listed GraphQL test (lago_test_bd)."
     },
     {
       "id": "gql:query:customerPortalSubscriptions",
       "source": "schema.json",
       "laravel": "App\\GraphQL\\Queries\\CustomerPortalSubscriptions",
       "status": {
-        "code": "todo",
-        "test": "todo",
-        "contract": "untested"
+        "code": "done",
+        "test": "ported",
+        "contract": "pass"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/GraphQL/CustomerPortalTest.php"
+      ],
+      "notes": "[2026-10-06 Arc 4 customer portal GraphQL] Contract: replayed green via the listed GraphQL test (lago_test_bd)."
     },
     {
       "id": "gql:query:customerPortalUser",
       "source": "schema.json",
       "laravel": "App\\GraphQL\\Queries\\CustomerPortalUser",
       "status": {
-        "code": "todo",
-        "test": "todo",
-        "contract": "untested"
+        "code": "done",
+        "test": "ported",
+        "contract": "pass"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/GraphQL/CustomerPortalTest.php"
+      ],
+      "notes": "[2026-10-06 Arc 4 customer portal GraphQL] Contract: replayed green via the listed GraphQL test (lago_test_bd)."
     },
     {
       "id": "gql:query:customerPortalWallet",
       "source": "schema.json",
       "laravel": "App\\GraphQL\\Queries\\CustomerPortalWallet",
       "status": {
-        "code": "todo",
-        "test": "todo",
-        "contract": "untested"
+        "code": "done",
+        "test": "ported",
+        "contract": "pass"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/GraphQL/CustomerPortalTest.php"
+      ],
+      "notes": "[2026-10-06 Arc 4 customer portal GraphQL] Contract: replayed green via the listed GraphQL test (lago_test_bd)."
     },
     {
       "id": "gql:query:customerPortalWallets",
       "source": "schema.json",
       "laravel": "App\\GraphQL\\Queries\\CustomerPortalWallets",
       "status": {
-        "code": "todo",
-        "test": "todo",
-        "contract": "untested"
+        "code": "done",
+        "test": "ported",
+        "contract": "pass"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/GraphQL/CustomerPortalTest.php"
+      ],
+      "notes": "[2026-10-06 Arc 4 customer portal GraphQL] Contract: replayed green via the listed GraphQL test (lago_test_bd)."
     },
     {
       "id": "gql:query:customerProjectedUsage",
@@ -4222,12 +4264,14 @@
       "source": "schema.json",
       "laravel": "App\\GraphQL\\Queries\\IntegrationCollectionMappings",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/GraphQL/IntegrationMappingsMutationsTest.php"
+      ],
+      "notes": "[2026-10-07 wave integration: flipped from landed code + tests]"
     },
     {
       "id": "gql:query:integrationItems",
@@ -5075,24 +5119,24 @@
       "source": "schema.json",
       "laravel": "App\\GraphQL\\Queries\\UsageAttributionType",
       "status": {
-        "code": "todo",
+        "code": "in_progress",
         "test": "todo",
         "contract": "untested"
       },
       "tests": [],
-      "notes": ""
+      "notes": "Laravel class exists (M0 skeleton) — needs its tests before code:done."
     },
     {
       "id": "gql:query:usageAttributionTypes",
       "source": "schema.json",
       "laravel": "App\\GraphQL\\Queries\\UsageAttributionTypes",
       "status": {
-        "code": "todo",
+        "code": "in_progress",
         "test": "todo",
         "contract": "untested"
       },
       "tests": [],
-      "notes": ""
+      "notes": "Laravel class exists (M0 skeleton) — needs its tests before code:done."
     },
     {
       "id": "gql:query:wallet",
@@ -8199,14 +8243,16 @@
     {
       "id": "job:PaymentRequests.Payments.CreateJob",
       "source": "app/jobs/payment_requests/payments/create_job.rb",
-      "laravel": "App\\Jobs\\PaymentRequests\\Payments\\CreateJob",
+      "laravel": "App\\Jobs\\PaymentRequests\\PaymentsCreateJob",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/Services/PaymentRequests/PaymentsTest.php"
+      ],
+      "notes": "[2026-10-07 wave integration: flipped from landed code + tests]"
     },
     {
       "id": "job:PaymentRequests.Payments.GocardlessCreateJob",
@@ -9083,7 +9129,7 @@
     {
       "id": "rest:DELETE:/api/v2/contracts/:external_id",
       "source": "config/routes.rb (static parse — provisional)",
-      "laravel": "App\\Http\\Controllers\\Api\\V1\\ContractsController",
+      "laravel": "App\\Http\\Controllers\\Api\\V2\\ContractsController",
       "status": {
         "code": "done",
         "test": "ported",
@@ -9092,7 +9138,7 @@
       "tests": [
         "tests/Feature/Api/V1/ContractsControllerTest.php"
       ],
-      "notes": ""
+      "notes": "[2026-10-07 wave integration: restored hand-maintained status after inventory regeneration]"
     },
     {
       "id": "rest:DELETE:/api/v2/contracts/:external_id/applied_rate_cards/:code",
@@ -9777,12 +9823,12 @@
       "status": {
         "code": "done",
         "test": "ported",
-        "contract": "untested"
+        "contract": "pass"
       },
       "tests": [
         "tests/Feature/Api/V1/AnalyticsControllersTest.php"
       ],
-      "notes": "Port of Rails' spec/requests/api/v1/analytics/gross_revenues_controller_spec.rb."
+      "notes": "Port of Rails' spec/requests/api/v1/analytics/gross_revenues_controller_spec.rb. [2026-10-07 wave integration: contract=pass — tests/Contract goldens analytics_gross_revenue replay green]"
     },
     {
       "id": "rest:GET:/api/v1/analytics/invoice_collection",
@@ -9791,12 +9837,12 @@
       "status": {
         "code": "done",
         "test": "ported",
-        "contract": "untested"
+        "contract": "pass"
       },
       "tests": [
         "tests/Feature/Api/V1/AnalyticsControllersTest.php"
       ],
-      "notes": "Port of Rails' spec/requests/api/v1/analytics/invoice_collections_controller_spec.rb."
+      "notes": "Port of Rails' spec/requests/api/v1/analytics/invoice_collections_controller_spec.rb. [2026-10-07 wave integration: contract=pass — tests/Contract goldens analytics_invoice_collection replay green]"
     },
     {
       "id": "rest:GET:/api/v1/analytics/invoiced_usage",
@@ -9805,12 +9851,12 @@
       "status": {
         "code": "done",
         "test": "ported",
-        "contract": "untested"
+        "contract": "pass"
       },
       "tests": [
         "tests/Feature/Api/V1/AnalyticsControllersTest.php"
       ],
-      "notes": "Port of Rails' spec/requests/api/v1/analytics/invoiced_usages_controller_spec.rb."
+      "notes": "Port of Rails' spec/requests/api/v1/analytics/invoiced_usages_controller_spec.rb. [2026-10-07 wave integration: contract=pass — tests/Contract goldens analytics_invoiced_usage replay green]"
     },
     {
       "id": "rest:GET:/api/v1/analytics/mrr",
@@ -9819,12 +9865,12 @@
       "status": {
         "code": "done",
         "test": "ported",
-        "contract": "untested"
+        "contract": "pass"
       },
       "tests": [
         "tests/Feature/Api/V1/AnalyticsControllersTest.php"
       ],
-      "notes": "Port of Rails' spec/requests/api/v1/analytics/mrrs_controller_spec.rb."
+      "notes": "Port of Rails' spec/requests/api/v1/analytics/mrrs_controller_spec.rb. [2026-10-07 wave integration: contract=pass — tests/Contract goldens analytics_mrr replay green]"
     },
     {
       "id": "rest:GET:/api/v1/analytics/overdue_balance",
@@ -9833,12 +9879,12 @@
       "status": {
         "code": "done",
         "test": "ported",
-        "contract": "untested"
+        "contract": "pass"
       },
       "tests": [
         "tests/Feature/Api/V1/AnalyticsControllersTest.php"
       ],
-      "notes": "Port of Rails' spec/requests/api/v1/analytics/overdue_balances_controller_spec.rb."
+      "notes": "Port of Rails' spec/requests/api/v1/analytics/overdue_balances_controller_spec.rb. [2026-10-07 wave integration: contract=pass — tests/Contract goldens analytics_overdue_balance replay green]"
     },
     {
       "id": "rest:GET:/api/v1/analytics/usage",
@@ -10088,6 +10134,18 @@
       "tests": [
         "tests/Feature/Api/V1/Customers/AppliedCouponsControllerTest.php"
       ],
+      "notes": ""
+    },
+    {
+      "id": "rest:GET:/api/v1/customers/:external_id/attributed_usage",
+      "source": "config/routes.rb (static parse — provisional)",
+      "laravel": "App\\Http\\Controllers\\Api\\V1\\Customers\\AttributedUsageController",
+      "status": {
+        "code": "todo",
+        "test": "todo",
+        "contract": "untested"
+      },
+      "tests": [],
       "notes": ""
     },
     {
@@ -11606,6 +11664,18 @@
       "id": "rest:GET:/api/v2/customers/:external_id/applied_coupons",
       "source": "config/routes.rb (static parse — provisional)",
       "laravel": "App\\Http\\Controllers\\Api\\V1\\Customers\\AppliedCouponsController",
+      "status": {
+        "code": "todo",
+        "test": "todo",
+        "contract": "untested"
+      },
+      "tests": [],
+      "notes": ""
+    },
+    {
+      "id": "rest:GET:/api/v2/customers/:external_id/attributed_usage",
+      "source": "config/routes.rb (static parse — provisional)",
+      "laravel": "App\\Http\\Controllers\\Api\\V1\\Customers\\AttributedUsageController",
       "status": {
         "code": "todo",
         "test": "todo",
@@ -13301,7 +13371,7 @@
     {
       "id": "rest:PATCH:/api/v2/contracts/:external_id",
       "source": "config/routes.rb (static parse — provisional)",
-      "laravel": "App\\Http\\Controllers\\Api\\V1\\ContractsController",
+      "laravel": "App\\Http\\Controllers\\Api\\V2\\ContractsController",
       "status": {
         "code": "done",
         "test": "ported",
@@ -13310,7 +13380,7 @@
       "tests": [
         "tests/Feature/Api/V1/ContractsControllerTest.php"
       ],
-      "notes": ""
+      "notes": "[2026-10-07 wave integration: restored hand-maintained status after inventory regeneration]"
     },
     {
       "id": "rest:PATCH:/api/v2/contracts/:external_id/applied_rate_cards/:code",
@@ -16093,7 +16163,7 @@
     {
       "id": "rest:PUT:/api/v2/contracts/:external_id",
       "source": "config/routes.rb (static parse — provisional)",
-      "laravel": "App\\Http\\Controllers\\Api\\V1\\ContractsController",
+      "laravel": "App\\Http\\Controllers\\Api\\V2\\ContractsController",
       "status": {
         "code": "done",
         "test": "ported",
@@ -16102,7 +16172,7 @@
       "tests": [
         "tests/Feature/Api/V1/ContractsControllerTest.php"
       ],
-      "notes": ""
+      "notes": "[2026-10-07 wave integration: restored hand-maintained status after inventory regeneration]"
     },
     {
       "id": "rest:PUT:/api/v2/contracts/:external_id/applied_rate_cards/:code",
@@ -17297,6 +17367,18 @@
       "notes": ""
     },
     {
+      "id": "ser:V1.AttributedUsageSerializer",
+      "source": "app/serializers/v1/attributed_usage_serializer.rb",
+      "laravel": "App\\Serializers\\V1\\AttributedUsageSerializer",
+      "status": {
+        "code": "todo",
+        "test": "todo",
+        "contract": "untested"
+      },
+      "tests": [],
+      "notes": ""
+    },
+    {
       "id": "ser:V1.BillableMetricExpressionResultSerializer",
       "source": "app/serializers/v1/billable_metric_expression_result_serializer.rb",
       "laravel": "App\\Serializers\\V1\\BillableMetricExpressionResultSerializer",
@@ -18110,12 +18192,14 @@
       "source": "app/serializers/v1/payment_request_serializer.rb",
       "laravel": "App\\Serializers\\V1\\PaymentRequestSerializer",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/Api/V1/PaymentRequestsControllerTest.php"
+      ],
+      "notes": "[2026-10-07 wave integration: flipped from landed code + tests]"
     },
     {
       "id": "ser:V1.PaymentSerializer",
@@ -20815,7 +20899,7 @@
       "tests": [
         "tests/Unit/Services/Contracts/ContractsServicesTest.php"
       ],
-      "notes": ""
+      "notes": "[2026-10-07 wave integration: restored hand-maintained status after inventory regeneration]"
     },
     {
       "id": "svc:Contracts.UpdateService",
@@ -20829,7 +20913,7 @@
       "tests": [
         "tests/Unit/Services/Contracts/ContractsServicesTest.php"
       ],
-      "notes": ""
+      "notes": "[2026-10-07 wave integration: restored hand-maintained status after inventory regeneration]"
     },
     {
       "id": "svc:Coupons.CreateService",
@@ -20951,7 +21035,7 @@
       "tests": [
         "tests/Unit/Services/CreditNotes/ComputeTaxesServiceTest.php"
       ],
-      "notes": ""
+      "notes": "[2026-10-07 wave integration: restored hand-maintained status after inventory regeneration]"
     },
     {
       "id": "svc:CreditNotes.CreateFromProgressiveBillingInvoice",
@@ -21082,36 +21166,42 @@
       "source": "app/services/credit_notes/refunds/adyen_service.rb",
       "laravel": "App\\Services\\CreditNotes\\Refunds\\AdyenService",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/Services/CreditNotes/RefundsTest.php"
+      ],
+      "notes": "[2026-10-07 wave integration: flipped from landed code + tests]"
     },
     {
       "id": "svc:CreditNotes.Refunds.GocardlessService",
       "source": "app/services/credit_notes/refunds/gocardless_service.rb",
       "laravel": "App\\Services\\CreditNotes\\Refunds\\GocardlessService",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/Services/CreditNotes/RefundsTest.php"
+      ],
+      "notes": "[2026-10-07 wave integration: flipped from landed code + tests]"
     },
     {
       "id": "svc:CreditNotes.Refunds.StripeService",
       "source": "app/services/credit_notes/refunds/stripe_service.rb",
       "laravel": "App\\Services\\CreditNotes\\Refunds\\StripeService",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/Services/CreditNotes/RefundsTest.php"
+      ],
+      "notes": "[2026-10-07 wave integration: flipped from landed code + tests]"
     },
     {
       "id": "svc:CreditNotes.UpdateService",
@@ -21252,24 +21342,28 @@
       "source": "app/services/customer_portal/customer_update_service.rb",
       "laravel": "App\\Services\\CustomerPortal\\CustomerUpdateService",
       "status": {
-        "code": "todo",
-        "test": "todo",
-        "contract": "untested"
+        "code": "done",
+        "test": "written",
+        "contract": "[2026-10-07 wave integration: flipped — services exercised through the ported portal GraphQL specs (CustomerPortalTest)]"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/GraphQL/CustomerPortalTest.php"
+      ],
+      "notes": "[2026-10-07 wave integration: flipped — services exercised through the ported portal GraphQL specs (CustomerPortalTest)] [2026-10-07 wave integration: flipped from landed code + tests]"
     },
     {
       "id": "svc:CustomerPortal.GenerateUrlService",
       "source": "app/services/customer_portal/generate_url_service.rb",
       "laravel": "App\\Services\\CustomerPortal\\GenerateUrlService",
       "status": {
-        "code": "todo",
-        "test": "todo",
-        "contract": "untested"
+        "code": "done",
+        "test": "written",
+        "contract": "[2026-10-07 wave integration: flipped — services exercised through the ported portal GraphQL specs (CustomerPortalTest)]"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/GraphQL/CustomerPortalTest.php"
+      ],
+      "notes": "[2026-10-07 wave integration: flipped — services exercised through the ported portal GraphQL specs (CustomerPortalTest)] [2026-10-07 wave integration: flipped from landed code + tests]"
     },
     {
       "id": "svc:Customers.ApplyTaxesService",
@@ -22777,7 +22871,7 @@
       "tests": [
         "tests/Unit/Services/Fees/AmountsServiceTest.php"
       ],
-      "notes": "Contract:  replayed green via scoped suite."
+      "notes": "Contract:  replayed green via scoped suite. [2026-10-07 wave integration: restored hand-maintained status after inventory regeneration]"
     },
     {
       "id": "svc:Fees.ApplyProviderTaxesService",
@@ -23428,48 +23522,60 @@
       "source": "app/services/integration_collection_mappings/create_service.rb",
       "laravel": "App\\Services\\IntegrationCollectionMappings\\CreateService",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Unit/Services/IntegrationCollectionMappings/ServicesTest.php",
+        "tests/Feature/GraphQL/IntegrationMappingsMutationsTest.php"
+      ],
+      "notes": "[2026-10-07 wave integration: flipped from landed code + tests]"
     },
     {
       "id": "svc:IntegrationCollectionMappings.DestroyService",
       "source": "app/services/integration_collection_mappings/destroy_service.rb",
       "laravel": "App\\Services\\IntegrationCollectionMappings\\DestroyService",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Unit/Services/IntegrationCollectionMappings/ServicesTest.php",
+        "tests/Feature/GraphQL/IntegrationMappingsMutationsTest.php"
+      ],
+      "notes": "[2026-10-07 wave integration: flipped from landed code + tests]"
     },
     {
       "id": "svc:IntegrationCollectionMappings.Factory",
       "source": "app/services/integration_collection_mappings/factory.rb",
       "laravel": "App\\Services\\IntegrationCollectionMappings\\Factory",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Unit/Services/IntegrationCollectionMappings/ServicesTest.php",
+        "tests/Feature/GraphQL/IntegrationMappingsMutationsTest.php"
+      ],
+      "notes": "[2026-10-07 wave integration: flipped from landed code + tests]"
     },
     {
       "id": "svc:IntegrationCollectionMappings.UpdateService",
       "source": "app/services/integration_collection_mappings/update_service.rb",
       "laravel": "App\\Services\\IntegrationCollectionMappings\\UpdateService",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Unit/Services/IntegrationCollectionMappings/ServicesTest.php",
+        "tests/Feature/GraphQL/IntegrationMappingsMutationsTest.php"
+      ],
+      "notes": "[2026-10-07 wave integration: flipped from landed code + tests]"
     },
     {
       "id": "svc:IntegrationCustomers.AnrokService",
@@ -23662,48 +23768,60 @@
       "source": "app/services/integration_mappings/create_service.rb",
       "laravel": "App\\Services\\IntegrationMappings\\CreateService",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Unit/Services/IntegrationMappings/ServicesTest.php",
+        "tests/Feature/GraphQL/IntegrationMappingsMutationsTest.php"
+      ],
+      "notes": "[2026-10-07 wave integration: flipped from landed code + tests]"
     },
     {
       "id": "svc:IntegrationMappings.DestroyService",
       "source": "app/services/integration_mappings/destroy_service.rb",
       "laravel": "App\\Services\\IntegrationMappings\\DestroyService",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Unit/Services/IntegrationMappings/ServicesTest.php",
+        "tests/Feature/GraphQL/IntegrationMappingsMutationsTest.php"
+      ],
+      "notes": "[2026-10-07 wave integration: flipped from landed code + tests]"
     },
     {
       "id": "svc:IntegrationMappings.Factory",
       "source": "app/services/integration_mappings/factory.rb",
       "laravel": "App\\Services\\IntegrationMappings\\Factory",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Unit/Services/IntegrationMappings/ServicesTest.php",
+        "tests/Feature/GraphQL/IntegrationMappingsMutationsTest.php"
+      ],
+      "notes": "[2026-10-07 wave integration: flipped from landed code + tests]"
     },
     {
       "id": "svc:IntegrationMappings.UpdateService",
       "source": "app/services/integration_mappings/update_service.rb",
       "laravel": "App\\Services\\IntegrationMappings\\UpdateService",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Unit/Services/IntegrationMappings/ServicesTest.php",
+        "tests/Feature/GraphQL/IntegrationMappingsMutationsTest.php"
+      ],
+      "notes": "[2026-10-07 wave integration: flipped from landed code + tests]"
     },
     {
       "id": "svc:Integrations.Aggregator.AccountInformationService",
@@ -24516,12 +24634,12 @@
       "source": "app/services/integrations/aggregator/taxes/charge_group.rb",
       "laravel": "App\\Services\\Integrations\\Aggregator\\Taxes\\ChargeGroup",
       "status": {
-        "code": "todo",
+        "code": "in_progress",
         "test": "todo",
         "contract": "untested"
       },
       "tests": [],
-      "notes": ""
+      "notes": "Laravel class exists (M0 skeleton) — needs its tests before code:done."
     },
     {
       "id": "svc:Integrations.Aggregator.Taxes.CreditNotes.CreateService",
@@ -24595,7 +24713,7 @@
       "tests": [
         "tests/Unit/Services/Integrations/Aggregator/Taxes/Invoices/ChargeFeeGroupTest.php"
       ],
-      "notes": "Contract:  replayed green via Anrok/Avalara tax-provider suite."
+      "notes": "Contract:  replayed green via Anrok/Avalara tax-provider suite. [2026-10-07 wave integration: restored hand-maintained status after inventory regeneration]"
     },
     {
       "id": "svc:Integrations.Aggregator.Taxes.Invoices.CreateDraftService",
@@ -27701,48 +27819,56 @@
       "source": "app/services/payment_requests/create_service.rb",
       "laravel": "App\\Services\\PaymentRequests\\CreateService",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/Services/PaymentRequests/PaymentsTest.php"
+      ],
+      "notes": "[2026-10-07 wave integration: flipped from landed code + tests]"
     },
     {
       "id": "svc:PaymentRequests.Payments.AdyenService",
       "source": "app/services/payment_requests/payments/adyen_service.rb",
       "laravel": "App\\Services\\PaymentRequests\\Payments\\AdyenService",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/Services/PaymentRequests/PaymentsTest.php"
+      ],
+      "notes": "[2026-10-07 wave integration: flipped from landed code + tests]"
     },
     {
       "id": "svc:PaymentRequests.Payments.CashfreeService",
       "source": "app/services/payment_requests/payments/cashfree_service.rb",
       "laravel": "App\\Services\\PaymentRequests\\Payments\\CashfreeService",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/Services/PaymentRequests/PaymentsTest.php"
+      ],
+      "notes": "[2026-10-07 wave integration: flipped from landed code + tests]"
     },
     {
       "id": "svc:PaymentRequests.Payments.CreateService",
       "source": "app/services/payment_requests/payments/create_service.rb",
       "laravel": "App\\Services\\PaymentRequests\\Payments\\CreateService",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/Services/PaymentRequests/PaymentsTest.php"
+      ],
+      "notes": "[2026-10-07 wave integration: flipped from landed code + tests]"
     },
     {
       "id": "svc:PaymentRequests.Payments.DeliverErrorWebhookService",
@@ -27761,72 +27887,84 @@
       "source": "app/services/payment_requests/payments/flutterwave_service.rb",
       "laravel": "App\\Services\\PaymentRequests\\Payments\\FlutterwaveService",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/Services/PaymentRequests/PaymentsTest.php"
+      ],
+      "notes": "[2026-10-07 wave integration: flipped from landed code + tests]"
     },
     {
       "id": "svc:PaymentRequests.Payments.GeneratePaymentUrlService",
       "source": "app/services/payment_requests/payments/generate_payment_url_service.rb",
       "laravel": "App\\Services\\PaymentRequests\\Payments\\GeneratePaymentUrlService",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/Services/PaymentRequests/PaymentsTest.php"
+      ],
+      "notes": "[2026-10-07 wave integration: flipped from landed code + tests]"
     },
     {
       "id": "svc:PaymentRequests.Payments.GocardlessService",
       "source": "app/services/payment_requests/payments/gocardless_service.rb",
       "laravel": "App\\Services\\PaymentRequests\\Payments\\GocardlessService",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/Services/PaymentRequests/PaymentsTest.php"
+      ],
+      "notes": "[2026-10-07 wave integration: flipped from landed code + tests]"
     },
     {
       "id": "svc:PaymentRequests.Payments.MoneyhashService",
       "source": "app/services/payment_requests/payments/moneyhash_service.rb",
       "laravel": "App\\Services\\PaymentRequests\\Payments\\MoneyhashService",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/Services/PaymentRequests/PaymentsTest.php"
+      ],
+      "notes": "[2026-10-07 wave integration: flipped from landed code + tests]"
     },
     {
       "id": "svc:PaymentRequests.Payments.PaymentProviders.Factory",
       "source": "app/services/payment_requests/payments/payment_providers/factory.rb",
       "laravel": "App\\Services\\PaymentRequests\\Payments\\PaymentProviders\\Factory",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/Services/PaymentRequests/PaymentsTest.php"
+      ],
+      "notes": "[2026-10-07 wave integration: flipped from landed code + tests]"
     },
     {
       "id": "svc:PaymentRequests.Payments.StripeService",
       "source": "app/services/payment_requests/payments/stripe_service.rb",
       "laravel": "App\\Services\\PaymentRequests\\Payments\\StripeService",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/Services/PaymentRequests/PaymentsTest.php"
+      ],
+      "notes": "[2026-10-07 wave integration: flipped from landed code + tests]"
     },
     {
       "id": "svc:PaymentRequests.Payments.Updatable",
@@ -27845,12 +27983,14 @@
       "source": "app/services/payment_requests/update_service.rb",
       "laravel": "App\\Services\\PaymentRequests\\UpdateService",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/Services/PaymentRequests/PaymentsTest.php"
+      ],
+      "notes": "[2026-10-07 wave integration: flipped from landed code + tests]"
     },
     {
       "id": "svc:Payments.LoseDisputeService",
@@ -29528,36 +29668,42 @@
       "source": "app/services/usage_attribution_types/create_service.rb",
       "laravel": "App\\Services\\UsageAttributionTypes\\CreateService",
       "status": {
-        "code": "todo",
-        "test": "todo",
-        "contract": "untested"
+        "code": "done",
+        "test": "written",
+        "contract": "[2026-10-07 wave integration: flipped — services exercised through the ported usage-attribution GraphQL specs (UsageAttributionTypesTest)]"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/GraphQL/UsageAttributionTypesTest.php"
+      ],
+      "notes": "Laravel class exists (M0 skeleton) — needs its tests before code:done. [2026-10-07 wave integration: flipped from landed code + tests]"
     },
     {
       "id": "svc:UsageAttributionTypes.DestroyService",
       "source": "app/services/usage_attribution_types/destroy_service.rb",
       "laravel": "App\\Services\\UsageAttributionTypes\\DestroyService",
       "status": {
-        "code": "todo",
-        "test": "todo",
-        "contract": "untested"
+        "code": "done",
+        "test": "written",
+        "contract": "[2026-10-07 wave integration: flipped — services exercised through the ported usage-attribution GraphQL specs (UsageAttributionTypesTest)]"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/GraphQL/UsageAttributionTypesTest.php"
+      ],
+      "notes": "Laravel class exists (M0 skeleton) — needs its tests before code:done. [2026-10-07 wave integration: flipped from landed code + tests]"
     },
     {
       "id": "svc:UsageAttributionTypes.UpdateService",
       "source": "app/services/usage_attribution_types/update_service.rb",
       "laravel": "App\\Services\\UsageAttributionTypes\\UpdateService",
       "status": {
-        "code": "todo",
-        "test": "todo",
-        "contract": "untested"
+        "code": "done",
+        "test": "written",
+        "contract": "[2026-10-07 wave integration: flipped — services exercised through the ported usage-attribution GraphQL specs (UsageAttributionTypesTest)]"
       },
-      "tests": [],
-      "notes": ""
+      "tests": [
+        "tests/Feature/GraphQL/UsageAttributionTypesTest.php"
+      ],
+      "notes": "Laravel class exists (M0 skeleton) — needs its tests before code:done. [2026-10-07 wave integration: flipped from landed code + tests]"
     },
     {
       "id": "svc:UsageAttributions.ChargePriceLookupService",
@@ -31506,9 +31652,105 @@
       "notes": ""
     },
     {
+      "id": "svc:X402.Cdp.Jwt",
+      "source": "app/services/x402/cdp/jwt.rb",
+      "laravel": "App\\Services\\X402\\Cdp\\Jwt",
+      "status": {
+        "code": "todo",
+        "test": "todo",
+        "contract": "untested"
+      },
+      "tests": [],
+      "notes": ""
+    },
+    {
+      "id": "svc:X402.Chain",
+      "source": "app/services/x402/chain.rb",
+      "laravel": "App\\Services\\X402\\Chain",
+      "status": {
+        "code": "todo",
+        "test": "todo",
+        "contract": "untested"
+      },
+      "tests": [],
+      "notes": ""
+    },
+    {
+      "id": "svc:X402.Chain.EvmReader",
+      "source": "app/services/x402/chain/evm_reader.rb",
+      "laravel": "App\\Services\\X402\\Chain\\EvmReader",
+      "status": {
+        "code": "todo",
+        "test": "todo",
+        "contract": "untested"
+      },
+      "tests": [],
+      "notes": ""
+    },
+    {
+      "id": "svc:X402.Chain.RpcClient",
+      "source": "app/services/x402/chain/rpc_client.rb",
+      "laravel": "App\\Services\\X402\\Chain\\RpcClient",
+      "status": {
+        "code": "todo",
+        "test": "todo",
+        "contract": "untested"
+      },
+      "tests": [],
+      "notes": ""
+    },
+    {
+      "id": "svc:X402.Chain.SolanaTransaction",
+      "source": "app/services/x402/chain/solana_transaction.rb",
+      "laravel": "App\\Services\\X402\\Chain\\SolanaTransaction",
+      "status": {
+        "code": "todo",
+        "test": "todo",
+        "contract": "untested"
+      },
+      "tests": [],
+      "notes": ""
+    },
+    {
+      "id": "svc:X402.Chain.SvmReader",
+      "source": "app/services/x402/chain/svm_reader.rb",
+      "laravel": "App\\Services\\X402\\Chain\\SvmReader",
+      "status": {
+        "code": "todo",
+        "test": "todo",
+        "contract": "untested"
+      },
+      "tests": [],
+      "notes": ""
+    },
+    {
       "id": "svc:X402.ExternalIds",
       "source": "app/services/x402/external_ids.rb",
       "laravel": "App\\Services\\X402\\ExternalIds",
+      "status": {
+        "code": "todo",
+        "test": "todo",
+        "contract": "untested"
+      },
+      "tests": [],
+      "notes": ""
+    },
+    {
+      "id": "svc:X402.Facilitator",
+      "source": "app/services/x402/facilitator.rb",
+      "laravel": "App\\Services\\X402\\Facilitator",
+      "status": {
+        "code": "todo",
+        "test": "todo",
+        "contract": "untested"
+      },
+      "tests": [],
+      "notes": ""
+    },
+    {
+      "id": "svc:X402.Facilitator.CoinbaseCdpAdapter",
+      "source": "app/services/x402/facilitator/coinbase_cdp_adapter.rb",
+      "laravel": "App\\Services\\X402\\Facilitator\\CoinbaseCdpAdapter",
       "status": {
         "code": "todo",
         "test": "todo",
@@ -31946,7 +32188,7 @@
     {
       "id": "table:commitments",
       "source": "db/structure.sql",
-      "laravel": null,
+      "laravel": "App\\Models\\Commitment",
       "status": {
         "code": "done",
         "test": "ported",
@@ -31988,7 +32230,7 @@
     {
       "id": "table:contracts",
       "source": "db/structure.sql",
-      "laravel": null,
+      "laravel": "App\\Models\\Contract",
       "status": {
         "code": "done",
         "test": "ported",
@@ -32226,7 +32468,7 @@
     {
       "id": "table:enriched_events",
       "source": "db/structure.sql",
-      "laravel": null,
+      "laravel": "App\\Models\\Event",
       "status": {
         "code": "done",
         "test": "ported",
@@ -32268,7 +32510,7 @@
     {
       "id": "table:entitlement_entitlements",
       "source": "db/structure.sql",
-      "laravel": null,
+      "laravel": "App\\Models\\Entitlement",
       "status": {
         "code": "done",
         "test": "ported",
@@ -32282,7 +32524,7 @@
     {
       "id": "table:entitlement_features",
       "source": "db/structure.sql",
-      "laravel": null,
+      "laravel": "App\\Models\\Feature",
       "status": {
         "code": "done",
         "test": "ported",
@@ -32296,7 +32538,7 @@
     {
       "id": "table:entitlement_privileges",
       "source": "db/structure.sql",
-      "laravel": null,
+      "laravel": "App\\Models\\Privilege",
       "status": {
         "code": "done",
         "test": "ported",
@@ -32338,7 +32580,7 @@
     {
       "id": "table:events",
       "source": "db/structure.sql",
-      "laravel": null,
+      "laravel": "App\\Models\\Event",
       "status": {
         "code": "done",
         "test": "ported",
@@ -32380,7 +32622,7 @@
     {
       "id": "table:fixed_charge_events",
       "source": "db/structure.sql",
-      "laravel": null,
+      "laravel": "App\\Models\\Event",
       "status": {
         "code": "done",
         "test": "ported",
@@ -32548,7 +32790,7 @@
     {
       "id": "table:integrations",
       "source": "db/structure.sql",
-      "laravel": null,
+      "laravel": "App\\Models\\Integration",
       "status": {
         "code": "done",
         "test": "ported",
@@ -32562,7 +32804,7 @@
     {
       "id": "table:invites",
       "source": "db/structure.sql",
-      "laravel": null,
+      "laravel": "App\\Models\\Invite",
       "status": {
         "code": "done",
         "test": "ported",
@@ -32758,7 +33000,7 @@
     {
       "id": "table:orders",
       "source": "db/structure.sql",
-      "laravel": null,
+      "laravel": "App\\Models\\Order",
       "status": {
         "code": "done",
         "test": "ported",
@@ -32884,7 +33126,7 @@
     {
       "id": "table:payments",
       "source": "db/structure.sql",
-      "laravel": null,
+      "laravel": "App\\Models\\Payment",
       "status": {
         "code": "done",
         "test": "ported",
@@ -33038,7 +33280,7 @@
     {
       "id": "table:products",
       "source": "db/structure.sql",
-      "laravel": null,
+      "laravel": "App\\Models\\Product",
       "status": {
         "code": "done",
         "test": "ported",
@@ -33052,7 +33294,7 @@
     {
       "id": "table:quantified_events",
       "source": "db/structure.sql",
-      "laravel": null,
+      "laravel": "App\\Models\\Event",
       "status": {
         "code": "done",
         "test": "ported",
@@ -33094,7 +33336,7 @@
     {
       "id": "table:quotes",
       "source": "db/structure.sql",
-      "laravel": null,
+      "laravel": "App\\Models\\Quote",
       "status": {
         "code": "done",
         "test": "ported",
@@ -33220,7 +33462,7 @@
     {
       "id": "table:refunds",
       "source": "db/structure.sql",
-      "laravel": null,
+      "laravel": "App\\Models\\Refund",
       "status": {
         "code": "done",
         "test": "ported",
@@ -33346,7 +33588,7 @@
     {
       "id": "table:template_public_enriched_events",
       "source": "db/structure.sql",
-      "laravel": null,
+      "laravel": "App\\Models\\Event",
       "status": {
         "code": "done",
         "test": "ported",
@@ -33556,7 +33798,7 @@
     {
       "id": "table:wallets",
       "source": "db/structure.sql",
-      "laravel": null,
+      "laravel": "App\\Models\\Wallet",
       "status": {
         "code": "done",
         "test": "ported",

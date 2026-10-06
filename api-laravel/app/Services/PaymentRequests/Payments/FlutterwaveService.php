@@ -127,7 +127,6 @@ class FlutterwaveService extends BaseService
             'amount_currency' => mb_strtoupper((string) $payable->amount_currency),
             'provider_payment_id' => $flutterwavePayment->id,
         ]);
-        $payment->save();
 
         return $payment;
     }

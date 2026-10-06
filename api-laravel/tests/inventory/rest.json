@@ -1,7 +1,7 @@
 {
     "generator": "gen_routes_from_source",
     "source": "config/routes.rb + config/routes/{shared_api,plan_nested_api}.rb (STATIC parse — not authoritative)",
-    "row_count": 625,
+    "row_count": 627,
     "provisional": true,
     "warning": "PROVISIONAL INVENTORY: rows were parsed statically from routes.rb, which the coverage plan explicitly forbids trusting. Every row is marked provisional:true. Replace this artifact by running gen_routes.rb inside Rails (see scripts/inventory/README.md) before gating any milestone on rest rows.",
     "rows": [
@@ -1077,6 +1077,15 @@
             "source": "config/routes.rb (static parse — provisional)"
         },
         {
+            "id": "rest:GET:/api/v1/customers/:external_id/attributed_usage",
+            "verb": "GET",
+            "path": "/api/v1/customers/:external_id/attributed_usage",
+            "handler": "api/v1/customers/attributed_usage#show",
+            "on": "member",
+            "provisional": true,
+            "source": "config/routes.rb (static parse — provisional)"
+        },
+        {
             "id": "rest:GET:/api/v1/customers/:external_id/credit_notes",
             "verb": "GET",
             "path": "/api/v1/customers/:external_id/credit_notes",
@@ -2117,6 +2126,15 @@
             "path": "/api/v2/customers/:external_id/applied_coupons",
             "handler": "api/v1/customers/applied_coupons#index",
             "on": "collection",
+            "provisional": true,
+            "source": "config/routes.rb (static parse — provisional)"
+        },
+        {
+            "id": "rest:GET:/api/v2/customers/:external_id/attributed_usage",
+            "verb": "GET",
+            "path": "/api/v2/customers/:external_id/attributed_usage",
+            "handler": "api/v1/customers/attributed_usage#show",
+            "on": "member",
             "provisional": true,
             "source": "config/routes.rb (static parse — provisional)"
         },

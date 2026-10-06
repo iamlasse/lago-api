@@ -8,10 +8,11 @@ use LogicException;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\Customer;
-use App\Services\BaseService;
+use App\Services\BaseResult;
 use App\Models\PaymentRequest;
 use App\Services\PaymentProviders\FindService;
 use App\Services\PaymentRequests\UpdateService;
+use App\Services\BaseService as RootBaseService;
 use App\Services\Invoices\UpdateService as InvoiceUpdateService;
 
 /**
@@ -28,7 +29,7 @@ use App\Services\Invoices\UpdateService as InvoiceUpdateService;
  *  - `reset_customer_dunning_campaign_status` (TODO(port) — dunning
  *    campaigns reset leg) and SegmentTrack/mailer legs are deferred.
  */
-abstract class BaseService extends BaseService
+abstract class BaseService extends RootBaseService
 {
     public function execute(): BaseResult
     {
@@ -111,7 +112,7 @@ abstract class BaseService extends BaseService
      * payable_payment_status the normalized one, and the payment request +
      * applied invoices follow.
      *
-     * @param  \App\Services\BaseResult  $result  shaped (payment, payable)
+     * @param  BaseResult  $result  shaped (payment, payable)
      */
     protected static function updatePaymentAndPayable(BaseResult $result, Payment $payment, string $status): BaseResult
     {

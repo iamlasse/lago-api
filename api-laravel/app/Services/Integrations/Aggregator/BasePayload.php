@@ -52,10 +52,14 @@ abstract class BasePayload
         return null;
     }
 
-    /** Rails: `billable_metric_item` — lookup_mapping("BillableMetric", …). */
+    /**
+     * Rails: `billable_metric_item` — lookup_mapping("BillableMetric",
+     * fee.billable_metric.id) — Rails resolves the metric through the fee's
+     * charge (fees carries no billable_metric_id column).
+     */
     protected function billable_metric_item(Fee $fee): ?object
     {
-        return $this->lookup_mapping('BillableMetric', $fee->billable_metric_id);
+        return $this->lookup_mapping('BillableMetric', $fee->charge?->billable_metric_id);
     }
 
     /** Rails: `add_on_item`. */
