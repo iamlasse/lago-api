@@ -11,19 +11,19 @@ per the ledger rules (`code=done` requires `test ∈ {ported, written}`).
 | Metric | Count |
 | --- | --- |
 | Ledger rows (Rails surface under coverage) | 2625 |
-| Done | 866 |
+| Done | 1050 |
 | In progress | 5 |
-| Todo | 1753 |
-| Contract goldens replaying green (`contract=pass`) | 333 |
-| Tests ported from Rails specs | 635 |
-| Tests written first (no Rails spec to port) | 231 |
+| Todo | 1569 |
+| Contract goldens replaying green (`contract=pass`) | 517 |
+| Tests ported from Rails specs | 751 |
+| Tests written first (no Rails spec to port) | 299 |
 
 ## Progress by kind
 
 | Kind | Rows | Done | In progress | Contract pass |
 | --- | --- | --- | --- | --- |
 | `rest` (provisional inventory) | 625 | 281 | 0 | 156 |
-| `gql` | 387 | 129 | 0 | 125 |
+| `gql` | 387 | 313 | 0 | 309 |
 | `svc` | 1044 | 257 | 5 | 44 |
 | `ser` | 154 | 31 | 0 | 2 |
 | `job` | 269 | 22 | 0 | 6 |
@@ -88,9 +88,9 @@ services/jobs/serializers by their first namespace segment).
 | Domain | Open rows |
 | --- | --- |
 | `rest` | 344 |
-| `gql` | 258 |
 | `Integrations` | 125 |
 | `PaymentProviders` | 77 |
+| `gql` | 74 |
 | `Invoices` | 71 |
 | `V1` | 69 |
 | `Webhooks` | 68 |

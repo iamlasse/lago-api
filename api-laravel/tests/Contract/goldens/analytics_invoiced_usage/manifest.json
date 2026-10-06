@@ -1,0 +1,50 @@
+{
+  "captured_at": "2025-06-12T12:00:00Z",
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/v1/analytics/invoiced_usage",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000b5"
+      },
+      "body": null,
+      "required_headers": {}
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/analytics/invoiced_usage",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000b5"
+      },
+      "body": null,
+      "required_headers": {}
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/analytics/invoiced_usage?currency=EUR",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000b5"
+      },
+      "body": null,
+      "required_headers": {}
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/analytics/invoiced_usage?months=24",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000b5"
+      },
+      "body": null,
+      "required_headers": {}
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/analytics/invoiced_usage?months=3",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000b5"
+      },
+      "body": null,
+      "required_headers": {}
+    }
+  ]
+}

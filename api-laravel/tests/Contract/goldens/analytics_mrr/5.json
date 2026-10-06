@@ -1,0 +1,19 @@
+{
+  "mrrs": [
+    {
+      "month": "2026-08-01T00:00:00.000+00:00",
+      "amount_cents": null,
+      "currency": null
+    },
+    {
+      "month": "2026-09-01T00:00:00.000+00:00",
+      "amount_cents": null,
+      "currency": null
+    },
+    {
+      "month": "2026-10-01T00:00:00.000+00:00",
+      "amount_cents": null,
+      "currency": null
+    }
+  ]
+}

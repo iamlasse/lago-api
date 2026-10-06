@@ -141,7 +141,10 @@ jobs:
       - name: Load the frozen schema (in-pipeline migration)
         run: php artisan migrate --force
       - name: Run the Pest suite
-        run: vendor/bin/pest --compact
+        # The compiled lighthouse schema cache (~172k lines) pushes the full
+        # suite past PHP's 512M default — pin 4G so the runner doesn't OOM
+        # mid-suite (first seen on the GraphQL wave integration).
+        run: php -d memory_limit=4G vendor/bin/pest --compact
       - name: Verify the frozen schema (catalog diff vs psql-loaded reference)
         working-directory: .
         # Inline psql equivalent of scripts/verify-frozen-schema.sh, which

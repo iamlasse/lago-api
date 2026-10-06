@@ -5,11 +5,11 @@ declare(strict_types=1);
 require_once __DIR__.'/GraphQLHelpers.php';
 require_once __DIR__.'/AuthPlumbingTest.php';
 
-use App\Models\Organization;
 use App\Models\Product;
-use App\Models\ProductCategory;
-use App\Models\ProductFilter;
 use Illuminate\Support\Str;
+use App\Models\Organization;
+use App\Models\ProductFilter;
+use App\Models\ProductCategory;
 
 /**
  * Ports of Rails' spec/graphql/mutations/products/*_spec.rb,
@@ -136,7 +136,7 @@ GQL;
 it('creates, fetches, updates and destroys a product', function (): void {
     [$organization, $user] = gqlCatalogSetup();
 
-    $metric = \App\Models\BillableMetric::factory()->create([
+    $metric = App\Models\BillableMetric::factory()->create([
         'organization_id' => $organization->id,
     ]);
 
@@ -268,11 +268,11 @@ it('creates, fetches, updates and destroys a product filter', function (): void 
         'code' => 'filterable',
     ]);
 
-    $metric = \App\Models\BillableMetric::factory()->create([
+    $metric = App\Models\BillableMetric::factory()->create([
         'organization_id' => $organization->id,
     ]);
 
-    $metricFilter = \App\Models\BillableMetricFilter::factory()->create([
+    $metricFilter = App\Models\BillableMetricFilter::factory()->create([
         'organization_id' => $organization->id,
         'billable_metric_id' => $metric->id,
         'key' => 'region',

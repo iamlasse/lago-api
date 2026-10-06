@@ -412,19 +412,19 @@ it('cancels an incomplete subscription with a manual cancellation reason', funct
     // A real incomplete subscription is a payment-gated one: it carries a
     // pending activation rule and an open gating invoice — both are needed
     // for the cancellation to run (Rails: ActivationRules::CancelService).
-    \App\Models\Subscription\ActivationRule\Payment::factory()->create([
+    Subscription\ActivationRule\Payment::factory()->create([
         'organization_id' => $organization->id,
         'subscription_id' => $incomplete->id,
         'status' => 'pending',
     ]);
 
-    $invoice = \App\Models\Invoice::factory()->create([
+    $invoice = App\Models\Invoice::factory()->create([
         'organization_id' => $organization->id,
         'customer_id' => $incomplete->customer_id,
-        'invoice_type' => \App\Enums\InvoiceType::Subscription,
-        'status' => \App\Enums\InvoiceStatus::Open,
+        'invoice_type' => App\Enums\InvoiceType::Subscription,
+        'status' => App\Enums\InvoiceStatus::Open,
     ]);
-    \App\Models\InvoiceSubscription::factory()->create([
+    App\Models\InvoiceSubscription::factory()->create([
         'invoice_id' => $invoice->id,
         'subscription_id' => $incomplete->id,
     ]);

@@ -5,10 +5,10 @@ declare(strict_types=1);
 require_once __DIR__.'/GraphQLHelpers.php';
 require_once __DIR__.'/AuthPlumbingTest.php';
 
-use App\Models\BillingEntity;
-use App\Models\DunningCampaign;
 use App\Models\Tax;
 use Illuminate\Support\Str;
+use App\Models\BillingEntity;
+use App\Models\DunningCampaign;
 
 /**
  * Ports of Rails' spec/graphql/mutations/taxes/*_spec.rb,

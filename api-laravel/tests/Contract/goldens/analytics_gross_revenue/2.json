@@ -1,0 +1,25 @@
+{
+  "gross_revenues": [
+    {
+      "month": "2025-06-01T00:00:00.000Z",
+      "amount_cents": 13000,
+      "currency": "EUR",
+      "invoices_count": 2,
+      "billing_entity_id": "b1d6336e-cd4a-4deb-bbbd-dee7a2167ac8"
+    },
+    {
+      "month": "2025-06-01T00:00:00.000Z",
+      "amount_cents": 8000,
+      "currency": "EUR",
+      "invoices_count": 1,
+      "billing_entity_id": "e0a864cd-95b8-4ea3-a8a5-1db939c4d208"
+    },
+    {
+      "month": "2025-07-01T00:00:00.000Z",
+      "amount_cents": 8500,
+      "currency": "EUR",
+      "invoices_count": 1,
+      "billing_entity_id": "b1d6336e-cd4a-4deb-bbbd-dee7a2167ac8"
+    }
+  ]
+}

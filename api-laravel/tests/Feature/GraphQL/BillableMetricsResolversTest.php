@@ -5,8 +5,8 @@ declare(strict_types=1);
 require_once __DIR__.'/GraphQLHelpers.php';
 require_once __DIR__.'/AuthPlumbingTest.php';
 
-use App\Models\BillableMetric;
 use Illuminate\Support\Str;
+use App\Models\BillableMetric;
 
 /**
  * Ports of Rails' spec/graphql/mutations/billable_metrics/{update,destroy}_spec.rb

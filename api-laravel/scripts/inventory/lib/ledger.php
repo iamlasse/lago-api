@@ -122,9 +122,28 @@ if (! function_exists('inv_ledger_laravel_target')) {
             str_starts_with($id, 'ser:') => inv_ledger_serializer_target((string) $inventoryRow['name']),
             str_starts_with($id, 'job:') => 'App\\Jobs\\'.str_replace('::', '\\', (string) $inventoryRow['name']),
             str_starts_with($id, 'rest:') => inv_ledger_rest_controller((string) ($inventoryRow['handler'] ?? '')),
-            str_starts_with($id, 'gql:') => 'App\\GraphQL\\'.ucfirst((string) $inventoryRow['kind']).'\\'.ucfirst((string) $inventoryRow['name']),
+            // GraphQL resolver namespaces are plural (Queries/, Mutations/,
+            // Subscriptions/) per the plan's app/ layout — not the Rails
+            // singular (query/, mutation/).
+            str_starts_with($id, 'gql:') => 'App\\GraphQL\\'.inv_ledger_graphql_namespace((string) $inventoryRow['kind']).'\\'.ucfirst((string) $inventoryRow['name']),
             str_starts_with($id, 'table:') => inv_ledger_model_guess((string) $inventoryRow['name'], $appClasses),
             default => null,
+        };
+    }
+}
+
+if (! function_exists('inv_ledger_graphql_namespace')) {
+    /**
+     * Maps a GraphQL inventory kind to the Laravel resolver namespace segment
+     * (plural, matching app/GraphQL/{Queries,Mutations,Subscriptions}).
+     */
+    function inv_ledger_graphql_namespace(string $kind): string
+    {
+        return match (mb_strtolower($kind)) {
+            'query' => 'Queries',
+            'mutation' => 'Mutations',
+            'subscription' => 'Subscriptions',
+            default => ucfirst($kind),
         };
     }
 }

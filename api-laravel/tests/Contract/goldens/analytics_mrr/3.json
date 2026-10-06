@@ -1,0 +1,64 @@
+{
+  "mrrs": [
+    {
+      "month": "2025-06-01T00:00:00.000+00:00",
+      "amount_cents": 5337,
+      "currency": "EUR"
+    },
+    {
+      "month": "2025-07-01T00:00:00.000+00:00",
+      "amount_cents": 14907,
+      "currency": "EUR"
+    },
+    {
+      "month": "2025-08-01T00:00:00.000+00:00",
+      "amount_cents": 14907,
+      "currency": "EUR"
+    },
+    {
+      "month": "2025-09-01T00:00:00.000+00:00",
+      "amount_cents": 14907,
+      "currency": "EUR"
+    },
+    {
+      "month": "2025-10-01T00:00:00.000+00:00",
+      "amount_cents": 10007,
+      "currency": "EUR"
+    },
+    {
+      "month": "2025-11-01T00:00:00.000+00:00",
+      "amount_cents": 10007,
+      "currency": "EUR"
+    },
+    {
+      "month": "2025-12-01T00:00:00.000+00:00",
+      "amount_cents": 10007,
+      "currency": "EUR"
+    },
+    {
+      "month": "2026-01-01T00:00:00.000+00:00",
+      "amount_cents": 10007,
+      "currency": "EUR"
+    },
+    {
+      "month": "2026-02-01T00:00:00.000+00:00",
+      "amount_cents": 10007,
+      "currency": "EUR"
+    },
+    {
+      "month": "2026-03-01T00:00:00.000+00:00",
+      "amount_cents": 10007,
+      "currency": "EUR"
+    },
+    {
+      "month": "2026-04-01T00:00:00.000+00:00",
+      "amount_cents": 10007,
+      "currency": "EUR"
+    },
+    {
+      "month": "2026-05-01T00:00:00.000+00:00",
+      "amount_cents": 14585,
+      "currency": "EUR"
+    }
+  ]
+}

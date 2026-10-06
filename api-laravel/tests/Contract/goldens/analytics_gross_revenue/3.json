@@ -1,0 +1,11 @@
+{
+  "gross_revenues": [
+    {
+      "month": "2025-06-01T00:00:00.000Z",
+      "amount_cents": 2000,
+      "currency": "USD",
+      "invoices_count": 1,
+      "billing_entity_id": "b1d6336e-cd4a-4deb-bbbd-dee7a2167ac8"
+    }
+  ]
+}

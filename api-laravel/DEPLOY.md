@@ -146,6 +146,13 @@ test db `lago_test_ci`) + the frozen-schema catalog diff (psql inline
 equivalent of `scripts/verify-frozen-schema.sh`) → inventory coverage check
 (report-only until the ledger closes).
 
+Memory note: the full Pest suite needs a raised PHP `memory_limit` — the
+compiled lighthouse schema cache (`bootstrap/cache/lighthouse-schema.php`,
+~172k lines) pushes peak usage past PHP's 512M default and fatals mid-suite
+with "Allowed memory size exhausted". The workflow pins it via
+`php -d memory_limit=4G vendor/bin/pest --compact`; run the suite locally the
+same way (homebrew PHP defaults to 512M).
+
 ## Known gaps / deviations
 
 - **`route:cache` fails — duplicate auto-generated route names** (found by

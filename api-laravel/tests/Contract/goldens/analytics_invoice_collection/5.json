@@ -1,0 +1,25 @@
+{
+  "invoice_collections": [
+    {
+      "month": "2026-08-01T00:00:00.000Z",
+      "payment_status": null,
+      "invoices_count": 0,
+      "amount_cents": 0,
+      "currency": null
+    },
+    {
+      "month": "2026-09-01T00:00:00.000Z",
+      "payment_status": null,
+      "invoices_count": 0,
+      "amount_cents": 0,
+      "currency": null
+    },
+    {
+      "month": "2026-10-01T00:00:00.000Z",
+      "payment_status": null,
+      "invoices_count": 0,
+      "amount_cents": 0,
+      "currency": null
+    }
+  ]
+}

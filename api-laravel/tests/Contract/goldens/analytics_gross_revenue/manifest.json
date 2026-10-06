@@ -1,0 +1,68 @@
+{
+  "captured_at": "2025-06-12T12:00:00Z",
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/v1/analytics/gross_revenue",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000b1"
+      },
+      "body": null,
+      "required_headers": {}
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/analytics/gross_revenue?currency=eur",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000b1"
+      },
+      "body": null,
+      "required_headers": {}
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/analytics/gross_revenue?currency=USD",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000b1"
+      },
+      "body": null,
+      "required_headers": {}
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/analytics/gross_revenue?external_customer_id=grossrev-cust-1",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000b1"
+      },
+      "body": null,
+      "required_headers": {}
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/analytics/gross_revenue?billing_entity_code=capture-be",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000b1"
+      },
+      "body": null,
+      "required_headers": {}
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/analytics/gross_revenue?months=3",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000b1"
+      },
+      "body": null,
+      "required_headers": {}
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/analytics/gross_revenue?months=24",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000b1"
+      },
+      "body": null,
+      "required_headers": {}
+    }
+  ]
+}

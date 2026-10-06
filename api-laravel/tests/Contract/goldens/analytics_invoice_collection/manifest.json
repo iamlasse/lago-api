@@ -1,0 +1,59 @@
+{
+  "captured_at": "2025-06-12T12:00:00Z",
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/v1/analytics/invoice_collection",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000b3"
+      },
+      "body": null,
+      "required_headers": {}
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/analytics/invoice_collection",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000b3"
+      },
+      "body": null,
+      "required_headers": {}
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/analytics/invoice_collection?currency=EUR",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000b3"
+      },
+      "body": null,
+      "required_headers": {}
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/analytics/invoice_collection?external_customer_id=col-cust-1",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000b3"
+      },
+      "body": null,
+      "required_headers": {}
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/analytics/invoice_collection?months=3",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000b3"
+      },
+      "body": null,
+      "required_headers": {}
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/analytics/invoice_collection?months=24",
+      "headers": {
+        "Authorization": "Bearer 1a4a0d6e-0000-4000-8000-0000000000b3"
+      },
+      "body": null,
+      "required_headers": {}
+    }
+  ]
+}

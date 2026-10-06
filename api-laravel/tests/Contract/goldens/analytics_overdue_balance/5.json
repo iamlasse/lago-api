@@ -1,0 +1,32 @@
+{
+  "overdue_balances": [
+    {
+      "month": "2025-06-01T00:00:00.000Z",
+      "amount_cents": 7500,
+      "currency": "EUR",
+      "lago_invoice_ids": [
+        "1a4a0d6e-0000-4000-8000-000000000111"
+      ],
+      "billing_entity_id": "b8f297c0-c4c1-4132-b1e4-91250a45f3ca"
+    },
+    {
+      "month": "2025-06-01T00:00:00.000Z",
+      "amount_cents": 8000,
+      "currency": "USD",
+      "lago_invoice_ids": [
+        "1a4a0d6e-0000-4000-8000-000000000112"
+      ],
+      "billing_entity_id": "b8f297c0-c4c1-4132-b1e4-91250a45f3ca"
+    },
+    {
+      "month": "2025-07-01T00:00:00.000Z",
+      "amount_cents": 7500,
+      "currency": "EUR",
+      "lago_invoice_ids": [
+        "1a4a0d6e-0000-4000-8000-000000000113",
+        "1a4a0d6e-0000-4000-8000-000000000114"
+      ],
+      "billing_entity_id": "b8f297c0-c4c1-4132-b1e4-91250a45f3ca"
+    }
+  ]
+}

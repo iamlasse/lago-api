@@ -5,10 +5,9 @@ declare(strict_types=1);
 require_once __DIR__.'/GraphQLHelpers.php';
 require_once __DIR__.'/AuthPlumbingTest.php';
 
-use App\Models\Organization;
+use Illuminate\Support\Facades\Queue;
 use App\Models\Integrations\XeroIntegration;
 use App\Models\Integrations\NetsuiteIntegration;
-use Illuminate\Support\Facades\Queue;
 
 /**
  * Ports of Rails' spec/graphql/mutations/integrations/{xero,netsuite}/ —

@@ -107,6 +107,11 @@ PAO_DISABLE=1 DB_DATABASE=lago_laravel_golden ./vendor/bin/pest tests/Contract
 | `webhook_endpoints_crud` | 9 | green | event_types `["*"]`→null normalization, scalar must_be_array, minted-id tokens |
 | `metrics_extras` | 8 | green | evaluate_expression F-notation strings + error envelopes, PATCH vs PUT filters batch |
 | `invoice_actions` | 14 | green | findings 26-28 CLOSED (Float#to_d / BigDecimal division / sequenced numbering) |
+| `analytics_gross_revenue` | 7 | pending | ungated; instant charges, credit-note refunds, BE/currency/customer filters |
+| `analytics_overdue_balance` | 5 | pending | ungated; paid/offset subtraction, `lago_invoice_ids` flatten |
+| `analytics_invoice_collection` | 6 | pending | premium pair (403 + flip); EVERY-month series incl. null months |
+| `analytics_mrr` | 5 | pending | premium pair (403 + flip); monthly + yearly-advance spread, null months |
+| `analytics_invoiced_usage` | 5 | pending | premium pair (403 + flip); per-metric fees, coupon subtraction |
 
 The five per-charge-model scenarios (`invoice_graduated`, `invoice_package`,
 `invoice_percentage`, `invoice_volume`, `invoice_graduated_percentage`) share
@@ -344,6 +349,81 @@ match exactly — exp matches because both sides mint under the frozen clock.
   (invoice_actions #2/#3), `WEBHOOK_ENDPOINT_ONE_ID` (#4/#5) and
   `WEBHOOK_ENDPOINT_TWO_ID` (#8) — the replay tests substitute the ids their
   own requests minted (same mechanics as wallets_lifecycle).
+
+### Gotchas from the analytics capture wave (gross_revenue / mrr / invoiced_usage / invoice_collection / overdue_balance)
+
+Capture with a DEDICATED scratch DB per scenario (the shared
+`lago_rails_golden` belongs to other lanes):
+
+```bash
+SCRATCH_DB=lago_golden_analytics_gross_revenue \
+  scripts/contract/capture.sh analytics_gross_revenue
+```
+
+- **The analytics clock is the DATABASE clock, not `travel_to`.** All five
+  raw-SQL models use `CURRENT_DATE` / `now()` inside Postgres: the
+  generate_series upper bound (`am.month <= DATE_TRUNC('month',
+  CURRENT_DATE)`) and every `months=` filter are relative to the CAPTURE
+  MONTH, while the seeded data months are fixed (2025-06 / 2025-07). The
+  `months=3` goldens are EMPTY by design (the 2025 data falls outside a
+  3-month window from any 2026 clock) — that emptiness IS the captured
+  contract. `months=24` keeps the 2025 data in window until ~Nov 2028.
+  If capture and replay happen in different months, the empty-month tail of
+  mrr / invoice_collection shifts by that many rows — re-capture rather
+  than normalize.
+- **Premium pair, per endpoint**: mrr / invoiced_usage / invoice_collection
+  are gated in their SERVICES (`Analytics::*sService` → `forbidden_failure!`
+  → 403 `feature_unavailable`, the OSS envelope). Each scenario captures
+  request #1 UNGATED (it flips `License.instance_variable_set(:@premium,
+  false)` first) and then flips `@premium = true` for requests #2+ —
+  identical to the Rails suite's own `:premium` specs. The replay must
+  mirror the flip BETWEEN manifest requests #1 and #2
+  (`config(['lago.license' => ...])` mid-test); `ContractCase` has no
+  per-request flip hook yet, so the replay test needs one
+  (a `beforeRequest`-style override, same shape as `substituteRequestValues`).
+  gross_revenue / overdue_balance have NO gate (captured with no flip).
+- **`month` serialization differs BY ENDPOINT.** gross_revenue /
+  overdue_balance / invoiced_usage render
+  `"2025-06-01T00:00:00.000Z"`; mrr renders the same generate-series value
+  as `"2025-06-01T00:00:00.000+00:00"`. Whatever the Postgres→Ruby type
+  path difference is, the goldens are truth — the replay must reproduce the
+  per-endpoint format, not normalize `.000Z` and `.000+00:00` together.
+- **Empty-month handling splits 2/3.** mrr and invoice_collection return a
+  row for EVERY month from the org's creation month through the current
+  DB-clock month — null `amount_cents`/`currency` (mrr) or null
+  `payment_status` with `invoices_count: 0, amount_cents: 0`
+  (invoice_collection) for months without data. gross_revenue,
+  overdue_balance and invoiced_usage carry `IS NOT NULL` filters and return
+  ONLY months with data. The all-months series is ~17 rows at capture time
+  and grows with the clock (see the first bullet).
+- **No minted ids anywhere.** The analytics scenarios seed invoices, fees,
+  credit notes and subscriptions DIRECTLY via factories (no in-process
+  billing, no subscription-create requests) — every id echoed by the five
+  endpoints (`lago_invoice_ids` in overdue_balance, `billing_entity_id` in
+  gross_revenue/overdue_balance) is a seeded id frozen in `fixture.sql` and
+  compares strictly on replay. All manifest requests are plain GETs with no
+  path ids — the simplest replay shape in the harness so far.
+- **Random-but-frozen ids in echoed fields**: the org factory's default
+  billing entity (and the subscription/plan scaffolding) get auto-generated
+  UUIDs — those are captured in the fixture, so replay sees the same bytes.
+  Only the seeded SECOND billing entity has a deterministic, filterable
+  `code` (`capture-be`).
+- **mrr's fractional spread truncates per month**: the yearly-advance fee
+  spreads `amount/billed_months` (a Postgres numeric) over 12 months and
+  the serializer `&.to_i`s each — the spread does NOT sum back to the
+  120000 fee, and the first month carries the proration factor
+  (days-to-month-end / days-in-month). Do not "fix" the arithmetic on
+  replay; match the goldens.
+- **Response envelope**: `CollectionSerializer` with
+  `collection_name: controller_name` → top-level keys `gross_revenues`,
+  `mrrs`, `invoiced_usages`, `invoice_collections`, `overdue_balances`; no
+  `meta`/pagination on any of the five. The api-permissions resource is
+  `analytic` (covered by the api_key factory's default permissions).
+- **invoiced_usage groups by fee.created_at**, NOT invoice issuing_date —
+  the seeded fee `created_at` values (2025-06/07) are what place the rows,
+  and the per-metric coupon subtraction
+  (`amount_cents - precise_coupons_amount_cents`) is exercised with a
+  500c coupon on one fee.
 
 ## Current findings (Laravel deviations, intentionally not fixed)
 

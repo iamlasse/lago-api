@@ -1,0 +1,25 @@
+{
+  "invoice_collections": [
+    {
+      "month": "2025-06-01T00:00:00.000Z",
+      "payment_status": "pending",
+      "invoices_count": 1,
+      "amount_cents": 4000,
+      "currency": "EUR"
+    },
+    {
+      "month": "2025-06-01T00:00:00.000Z",
+      "payment_status": "succeeded",
+      "invoices_count": 1,
+      "amount_cents": 6000,
+      "currency": "EUR"
+    },
+    {
+      "month": "2025-07-01T00:00:00.000Z",
+      "payment_status": "failed",
+      "invoices_count": 1,
+      "amount_cents": 2500,
+      "currency": "EUR"
+    }
+  ]
+}

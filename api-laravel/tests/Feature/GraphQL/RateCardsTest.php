@@ -5,13 +5,13 @@ declare(strict_types=1);
 require_once __DIR__.'/GraphQLHelpers.php';
 require_once __DIR__.'/AuthPlumbingTest.php';
 
-use App\Models\Organization;
 use App\Models\Product;
 use App\Models\RateCard;
-use App\Models\RateCardRate;
 use App\Models\CatalogPlan;
-use App\Models\PlanRateCard;
 use Illuminate\Support\Str;
+use App\Models\Organization;
+use App\Models\PlanRateCard;
+use App\Models\RateCardRate;
 
 /**
  * Ports of Rails' spec/graphql/mutations/rate_cards/*_spec.rb,
