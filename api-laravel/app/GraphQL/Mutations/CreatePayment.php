@@ -32,6 +32,12 @@ class CreatePayment
 
         $input = Args::snakeKeys(Args::input($args));
 
+        // The BigInt scalar parses to a numeric string; the service
+        // validates a positive integer (Rails receives an Integer).
+        if (isset($input['amount_cents']) && is_numeric($input['amount_cents'])) {
+            $input['amount_cents'] = (int) $input['amount_cents'];
+        }
+
         $result = ManualCreateService::call(organization: $organization, params: $input);
 
         if ($result->failure()) {

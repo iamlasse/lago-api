@@ -360,6 +360,7 @@ it('destroys the connection and its payment methods, clearing the customer point
         'is_default' => true,
     ]);
     $method = PaymentMethod::factory()->forProviderCustomer($connection)->forCustomer($customer)->create();
+    config(['lighthouse.debug' => 3]);
 
     $response = gqlPost(
         DESTROY_PROVIDER_CUSTOMER_MUTATION,
