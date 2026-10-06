@@ -16,10 +16,10 @@ use App\Services\Integrations\Aggregator\BasePayload as AggregatorBasePayload;
  * (…/aggregator/invoices/payloads/base_payload.rb) — the shared ACCREC
  * invoice shape plus the item-code mapping layer.
  *
- * TODO(port): the IntegrationMappings / IntegrationCollectionMappings
- * lookups (see the aggregator BasePayload) — every lookup resolves to nil,
- * so the item() dispatch raises the "invalid_mapping" failure exactly like
- * Rails without mappings configured.
+ * The item dispatch resolves through the IntegrationMappings /
+ * IntegrationCollectionMappings rows (see the aggregator BasePayload); a
+ * fee whose mapping is missing raises the "invalid_mapping" failure exactly
+ * like Rails without mappings configured.
  */
 abstract class BasePayload extends AggregatorBasePayload
 {

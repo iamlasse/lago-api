@@ -174,6 +174,32 @@ abstract class ContractCase extends BaseTestCase
     }
 
     /**
+     * Per-request ENVIRONMENT hook — the CONFIG counterpart of
+     * substituteRequestValues (which handles VALUES): returns
+     * `config(key => value)` overrides applied around exactly ONE replayed
+     * request and restored to their pre-request values after it.
+     *
+     * Rails scenarios occasionally flip mid-manifest state a config key
+     * models — the analytics captures flip the License singleton BETWEEN
+     * request #1 and #2 (`License.instance_variable_set(:@premium, ...)`,
+     * the Rails suite's own :premium-spec mechanism): request #1 captures
+     * the OSS 403 feature_unavailable envelope, requests #2+ run premium.
+     * The replay expresses such a recorded flip statelessly — "request N
+     * runs under these overrides" — instead of mutating test state before
+     * a loop that the harness owns (runScenario), and the restore keeps a
+     * flip from leaking into side-assertions or later requests.
+     *
+     * Scenarios override as needed; empty by default.
+     *
+     * @param  int  $oneBasedIndex  1-based manifest request number
+     * @return array<string, mixed> config keys => values for this request
+     */
+    protected function requestEnvironment(int $oneBasedIndex): array
+    {
+        return [];
+    }
+
+    /**
      * Replays every request in the manifest, asserting each against its
      * numbered golden. All mismatches are collected so one run reports the
      * full contract diff instead of stopping at the first failing request.
@@ -198,7 +224,20 @@ abstract class ContractCase extends BaseTestCase
             // which is exactly what the older scenarios recorded.
             $this->freezeRequestInstant($request['at'] ?? null, $baseAt);
 
+            // Per-request environment flips (the CONFIG counterpart of the
+            // per-request VALUE substitution above) — see requestEnvironment.
+            $previous = [];
+
+            foreach ($this->requestEnvironment($index + 1) as $key => $value) {
+                $previous[$key] = config($key);
+                config([$key => $value]);
+            }
+
             $response = $responses[$index + 1] = $this->replay($request);
+
+            foreach ($previous as $key => $value) {
+                config([$key => $value]);
+            }
 
             try {
                 $this->assertMatchesGolden($response, $index + 1, $ledgerRowIds[$index + 1] ?? null);

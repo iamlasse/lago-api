@@ -98,6 +98,22 @@ class Normalizer
     public const URL_FIELDS = ['web_url'];
 
     /**
+     * JSON keys whose datetime values compare BYTE-STRICT: the
+     * per-endpoint serialization format is itself the contract. The
+     * analytics `month` renders "...Z" on gross_revenue /
+     * overdue_balance / invoiced_usage / invoice_collection but
+     * "...+00:00" on mrr — Rails' Postgres type path differs per
+     * endpoint (mrr's generate-series upper bound is
+     * `date_trunc('month', now())` → timestamptz; the other four bound
+     * with CURRENT_DATE → timestamp without time zone, and the two
+     * types serialize differently through ActiveRecord). The ISO8601
+     * slack above must NOT smooth that over: a port emitting the wrong
+     * per-endpoint format is a diff. See scripts/contract/README.md,
+     * "Gotchas from the analytics capture wave".
+     */
+    public const STRICT_DATETIME_FIELDS = ['month'];
+
+    /**
      * Canonicalizes an ISO8601 datetime string, or returns null when the
      * value is not one.
      */
@@ -230,7 +246,7 @@ class Normalizer
             return $normalized;
         }
 
-        if (is_string($value) && $key !== null) {
+        if (is_string($value) && $key !== null && ! in_array(mb_strtolower($key), self::STRICT_DATETIME_FIELDS, true)) {
             $datetime = self::canonicalDatetime($value);
 
             if ($datetime !== null) {

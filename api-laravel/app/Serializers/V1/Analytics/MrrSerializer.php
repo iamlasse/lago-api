@@ -14,7 +14,7 @@ class MrrSerializer extends BaseSerializer
     public function serialize(): array
     {
         return [
-            'month' => $this->serializeMonth($this->row['month'] ?? null),
+            'month' => $this->serializeMonthWithOffset($this->row['month'] ?? null),
             'amount_cents' => $this->intOrNull($this->row['amount_cents'] ?? null),
             'currency' => $this->row['currency'] ?? null,
         ];

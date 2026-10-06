@@ -228,12 +228,16 @@ final class Netsuite extends BasePayload
     }
 
     /**
-     * Rails: `netsuite_currency_for` — the currencies collection mapping
-     * (TODO(port): the collection-mappings slice, always nil here).
+     * Rails: `netsuite_currency_for` — the currencies collection mapping.
      */
     private function netsuite_currency_for(string $currency): mixed
     {
-        return null;
+        $mapping = \App\Models\IntegrationCollectionMappings\NetsuiteCollectionMapping::query()
+            ->where('integration_id', $this->integration_customer->integration_id)
+            ->where('mapping_type', \App\Models\IntegrationCollectionMappings\BaseCollectionMapping::mappingTypes()['currencies'])
+            ->first();
+
+        return $mapping?->currencies[$currency] ?? null;
     }
 
     /**

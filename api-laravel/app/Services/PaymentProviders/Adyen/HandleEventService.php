@@ -22,8 +22,8 @@ use App\Services\PaymentProviderCustomers\AdyenService as AdyenCustomerService;
  *  - CANCELLATION moves the payment back to "Cancelled" (originalReference
  *    points at the cancelled payment; pspReference is the cancel
  *    modification's own id);
- *  - REFUND / REFUND_FAILED are TODO(port) (CreditNotes::Refunds::AdyenService
- *    — the credit-note refunds milestone);
+ *  - REFUND / REFUND_FAILED move the credit note refund status
+ *    (CreditNotes::Refunds::AdyenService#update_status);
  *  - CHARGEBACK dispatches the dispute-lost flow;
  *  - ignored event codes return silently, unknown ones service-fail.
  *
@@ -159,19 +159,36 @@ class HandleEventService extends BaseService
         return $result;
     }
 
-    /** Rails: the REFUND / REFUND_FAILED arms. */
+    /** Rails: the REFUND arm — CreditNotes::Refunds::AdyenService.update_status. */
     private function handleRefund(array $event): BaseResult
     {
-        // TODO(port): CreditNotes::Refunds::AdyenService -> update_status
-        // (credit-note refunds milestone).
-        return static::makeResult();
+        $result = static::makeResult();
+
+        $status = (($event['success'] ?? null) === 'true') ? 'succeeded' : 'failed';
+
+        \App\Services\CreditNotes\Refunds\AdyenService::updateStatus(
+            providerRefundId: (string) ($event['pspReference'] ?? ''),
+            status: $status,
+        )->raiseIfError();
+
+        return $result;
     }
 
+    /** Rails: the REFUND_FAILED arm. */
     private function handleRefundFailed(array $event): BaseResult
     {
-        // TODO(port): CreditNotes::Refunds::AdyenService -> update_status
-        // (credit-note refunds milestone).
-        return static::makeResult();
+        $result = static::makeResult();
+
+        if (($event['success'] ?? null) !== 'true') {
+            return $result;
+        }
+
+        \App\Services\CreditNotes\Refunds\AdyenService::updateStatus(
+            providerRefundId: (string) ($event['pspReference'] ?? ''),
+            status: 'failed',
+        )->raiseIfError();
+
+        return $result;
     }
 
     /** Rails: the CHARGEBACK arm. */

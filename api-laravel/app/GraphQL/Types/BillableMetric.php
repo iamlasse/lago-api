@@ -36,4 +36,22 @@ class BillableMetric
     {
         return $root->getRawOriginal('rounding_function');
     }
+
+    /**
+     * Rails: object.integration_mappings (optionally narrowed by
+     * integration_id) — the billable metric's mappings over the frozen
+     * integration_mappings table.
+     */
+    public function integrationMappings(BillableMetricModel $root, array $args = []): ?array
+    {
+        $query = \App\Models\IntegrationMappings\BaseMapping::query()
+            ->where('mappable_type', 'BillableMetric')
+            ->where('mappable_id', $root->id);
+
+        if (($args['integrationId'] ?? null) !== null) {
+            $query->where('integration_id', $args['integrationId']);
+        }
+
+        return $query->get()->all();
+    }
 }

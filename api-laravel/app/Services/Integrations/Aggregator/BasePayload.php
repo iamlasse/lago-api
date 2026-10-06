@@ -10,13 +10,11 @@ use App\Models\Integration;
 /**
  * Port of Rails' Integrations::Aggregator::BasePayload
  * (app/services/integrations/aggregator/base_payload.rb) — the item-code
- * mapping layer of the provider payloads.
- *
- * TODO(port): the IntegrationMappings::BaseMapping /
- * IntegrationCollectionMappings::BaseCollectionMapping models and their
- * CRUD are a separate slice — every lookup therefore resolves to nil here,
- * which is exactly what Rails produces for an integration with no mappings
- * configured (item_code is optional on both providers' payloads).
+ * mapping layer of the provider payloads, backed by the
+ * IntegrationMappings / IntegrationCollectionMappings rows (a missing
+ * mapping resolves to nil, exactly like Rails for an integration with no
+ * mappings configured — item_code is optional on both providers'
+ * payloads).
  */
 abstract class BasePayload
 {
@@ -133,23 +131,81 @@ abstract class BasePayload
         return (string) (round((float) $amountCents) / \App\Support\Currency::subunitToUnit((string) $currency));
     }
 
-    // -- Mapping lookups (TODO(port) — the mappings slice) --------------------
+    // -- Mapping lookups (the IntegrationMappings / IntegrationCollectionMappings
+    //    slice) -----------------------------------------------------------------
 
-    /** @return array<int, object>|null */
-    protected function lookup_collection_mapping(string $mappingType, bool $with_fallback_item = true): ?object
-    {
-        return null;
-    }
-
-    /** @return array<int, object>|null */
-    protected function lookup_mapping(string $mappableType, string|int|null $mappableId): ?object
-    {
-        return null;
-    }
-
+    /**
+     * Rails: `fallback_item(scope)` — the :fallback_item collection mapping,
+     * for the billing entity when there is one, else the org-level one.
+     */
     protected function fallback_item(string $scope): ?object
     {
-        return null;
+        $fallbackItems = \App\Models\IntegrationCollectionMappings\BaseCollectionMapping::query()
+            ->where('integration_id', $this->integration->id)
+            ->where('mapping_type', \App\Models\IntegrationCollectionMappings\BaseCollectionMapping::mappingTypes()['fallback_item'])
+            ->get();
+
+        if ($scope === 'billing_entity' && $this->billingEntity !== null) {
+            return $fallbackItems
+                ->first(fn ($mapping) => $mapping->billing_entity_id === $this->billingEntity->id);
+        }
+
+        return $fallbackItems->first(fn ($mapping) => $mapping->billing_entity_id === null);
+    }
+
+    /**
+     * Rails: `lookup_collection_mapping(mapping_type, with_fallback_item:)` —
+     * the billing-entity mapping wins, then (with_fallback_item) the billing
+     * entity's fallback item, then the org-level mapping, then the org-level
+     * fallback item.
+     */
+    protected function lookup_collection_mapping(string $mappingType, bool $with_fallback_item = true): ?object
+    {
+        $matchingMappings = \App\Models\IntegrationCollectionMappings\BaseCollectionMapping::query()
+            ->where('integration_id', $this->integration->id)
+            ->where('mapping_type', \App\Models\IntegrationCollectionMappings\BaseCollectionMapping::mappingTypes()[$mappingType] ?? -1)
+            ->get();
+
+        $billingEntityMapping = $matchingMappings
+            ->first(fn ($mapping) => $mapping->billing_entity_id === ($this->billingEntity?->id ?? null));
+        $organizationMapping = $matchingMappings
+            ->first(fn ($mapping) => $mapping->billing_entity_id === null);
+
+        if ($with_fallback_item) {
+            return $billingEntityMapping
+                ?? $this->fallback_item('billing_entity')
+                ?? $organizationMapping
+                ?? $this->fallback_item('organization');
+        }
+
+        return $billingEntityMapping ?? $organizationMapping;
+    }
+
+    /**
+     * Rails: `lookup_mapping(mappable_type, mappable_id)` — the add-on /
+     * billable metric mapping with the same precedence chain.
+     */
+    protected function lookup_mapping(string $mappableType, string|int|null $mappableId): ?object
+    {
+        if ($mappableId === null) {
+            return null;
+        }
+
+        $matchingMappings = \App\Models\IntegrationMappings\BaseMapping::query()
+            ->where('integration_id', $this->integration->id)
+            ->where('mappable_type', $mappableType)
+            ->where('mappable_id', $mappableId)
+            ->get();
+
+        $billingEntityMapping = $matchingMappings
+            ->first(fn ($mapping) => $mapping->billing_entity_id === ($this->billingEntity?->id ?? null));
+        $organizationMapping = $matchingMappings
+            ->first(fn ($mapping) => $mapping->billing_entity_id === null);
+
+        return $billingEntityMapping
+            ?? $this->fallback_item('billing_entity')
+            ?? $organizationMapping
+            ?? $this->fallback_item('organization');
     }
 
     protected function formatted_date(?string $date): ?string

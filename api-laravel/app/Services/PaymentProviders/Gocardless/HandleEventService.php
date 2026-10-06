@@ -110,8 +110,11 @@ class HandleEventService extends BaseService
 
             case 'refunds':
                 if (in_array($action, self::REFUND_ACTIONS, true)) {
-                    // TODO(port): CreditNotes::Refunds::GocardlessService
-                    // -> update_status (credit-note refunds milestone).
+                    \App\Services\CreditNotes\Refunds\GocardlessService::updateStatus(
+                        providerRefundId: (string) ($event['links']['refund'] ?? ''),
+                        status: $action,
+                        metadata: $event['metadata'] ?? [],
+                    )->raiseIfError();
                 }
 
                 return $result;

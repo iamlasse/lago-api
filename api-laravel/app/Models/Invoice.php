@@ -620,6 +620,55 @@ class Invoice extends BaseModel
         return max($refundableCents, 0);
     }
 
+    /**
+     * Rails: `has_many :payments, as: :payable` — polymorphic payments on
+     * the invoice itself (a payment request settlement attaches to the
+     * request, not here).
+     */
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class, 'payable_id')
+            ->where('payable_type', 'Invoice');
+    }
+
+    /**
+     * Rails: `has_many :payment_requests, through: :invoices_payment_requests`.
+     */
+    public function paymentRequests(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            PaymentRequest::class,
+            'invoices_payment_requests',
+            'invoice_id',
+            'payment_request_id',
+        );
+    }
+
+    /**
+     * Port of `refundable_payment` — an invoice settled through a payment
+     * request has its payment attached to the request, not to the invoice:
+     * the invoice's own succeeded payments (latest first) win, else the
+     * succeeded payment of a succeeded payment request covering it.
+     */
+    public function refundablePayment(): ?Payment
+    {
+        $payment = $this->payments()
+            ->where('payable_payment_status', 'succeeded')
+            ->orderByDesc('created_at')
+            ->first();
+
+        if ($payment !== null) {
+            return $payment;
+        }
+
+        return Payment::query()
+            ->where('payable_type', 'PaymentRequest')
+            ->where('payable_payment_status', 'succeeded')
+            ->whereIn('payable_id', $this->paymentRequests()->where('payment_status', 1)->select('id'))
+            ->orderByDesc('created_at')
+            ->first();
+    }
+
     // -- Rails before_save hooks ----------------------------------------------
 
     protected static function booted(): void

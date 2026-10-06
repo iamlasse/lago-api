@@ -251,6 +251,44 @@ class NormalizerTest extends TestCase
     }
 
     /**
+     * The analytics `month` format is per-endpoint CONTRACT (see
+     * Normalizer::STRICT_DATETIME_FIELDS): gross_revenue /
+     * overdue_balance / invoiced_usage / invoice_collection render
+     * "...Z", mrr renders "...+00:00" — so the ISO8601 Z-vs-offset slack
+     * must not apply under that key.
+     */
+    public function test_analytics_month_compares_strictly_despite_the_iso8601_slack(): void
+    {
+        // Same instant, wrong per-endpoint format: a diff, not a match.
+        $diffs = Normalizer::compareJson(
+            '{"mrrs":[{"month":"2025-06-01T00:00:00.000+00:00","amount_cents":5337,"currency":"EUR"}]}',
+            '{"mrrs":[{"month":"2025-06-01T00:00:00.000Z","amount_cents":5337,"currency":"EUR"}]}'
+        );
+
+        $this->assertCount(1, $diffs);
+        $this->assertSame('$.mrrs[0].month', $diffs[0]['path']);
+
+        // Identical formats still match, on every endpoint shape.
+        $this->assertSame([], Normalizer::compareJson(
+            '{"gross_revenues":[{"month":"2025-06-01T00:00:00.000Z"}]}',
+            '{"gross_revenues":[{"month":"2025-06-01T00:00:00.000Z"}]}'
+        ));
+
+        $this->assertSame([], Normalizer::compareJson(
+            '{"mrrs":[{"month":"2025-06-01T00:00:00.000+00:00"}]}',
+            '{"mrrs":[{"month":"2025-06-01T00:00:00.000+00:00"}]}'
+        ));
+
+        // A genuinely different month is a diff on the instant, as before.
+        $diffs = Normalizer::compareJson(
+            '{"invoice_collections":[{"month":"2025-06-01T00:00:00.000Z"}]}',
+            '{"invoice_collections":[{"month":"2025-07-01T00:00:00.000Z"}]}'
+        );
+
+        $this->assertCount(1, $diffs);
+    }
+
+    /**
      * lago_coupon_id references a coupon minted by an earlier captured
      * request (applied_coupons responses), so each runtime echoes its own
      * fresh id — compared as "a UUID", same rule as lago_id. Everything

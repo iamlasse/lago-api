@@ -107,11 +107,11 @@ PAO_DISABLE=1 DB_DATABASE=lago_laravel_golden ./vendor/bin/pest tests/Contract
 | `webhook_endpoints_crud` | 9 | green | event_types `["*"]`→null normalization, scalar must_be_array, minted-id tokens |
 | `metrics_extras` | 8 | green | evaluate_expression F-notation strings + error envelopes, PATCH vs PUT filters batch |
 | `invoice_actions` | 14 | green | findings 26-28 CLOSED (Float#to_d / BigDecimal division / sequenced numbering) |
-| `analytics_gross_revenue` | 7 | pending | ungated; instant charges, credit-note refunds, BE/currency/customer filters |
-| `analytics_overdue_balance` | 5 | pending | ungated; paid/offset subtraction, `lago_invoice_ids` flatten |
-| `analytics_invoice_collection` | 6 | pending | premium pair (403 + flip); EVERY-month series incl. null months |
-| `analytics_mrr` | 5 | pending | premium pair (403 + flip); monthly + yearly-advance spread, null months |
-| `analytics_invoiced_usage` | 5 | pending | premium pair (403 + flip); per-metric fees, coupon subtraction |
+| `analytics_gross_revenue` | 7 | green | ungated; instant charges, credit-note refunds, BE/currency/customer filters |
+| `analytics_overdue_balance` | 5 | green | ungated; paid/offset subtraction, `lago_invoice_ids` flatten |
+| `analytics_invoice_collection` | 6 | green | premium pair (403 + flip); EVERY-month series incl. null months |
+| `analytics_mrr` | 5 | green | premium pair (403 + flip); monthly + yearly-advance spread, null months |
+| `analytics_invoiced_usage` | 5 | green | premium pair (403 + flip); per-metric fees, coupon subtraction |
 
 The five per-charge-model scenarios (`invoice_graduated`, `invoice_package`,
 `invoice_percentage`, `invoice_volume`, `invoice_graduated_percentage`) share
@@ -376,18 +376,24 @@ SCRATCH_DB=lago_golden_analytics_gross_revenue \
   → 403 `feature_unavailable`, the OSS envelope). Each scenario captures
   request #1 UNGATED (it flips `License.instance_variable_set(:@premium,
   false)` first) and then flips `@premium = true` for requests #2+ —
-  identical to the Rails suite's own `:premium` specs. The replay must
-  mirror the flip BETWEEN manifest requests #1 and #2
-  (`config(['lago.license' => ...])` mid-test); `ContractCase` has no
-  per-request flip hook yet, so the replay test needs one
-  (a `beforeRequest`-style override, same shape as `substituteRequestValues`).
+  identical to the Rails suite's own `:premium` specs. The replay mirrors
+  the flip through `ContractCase::requestEnvironment(int $oneBasedIndex)` —
+  the per-request CONFIG hook (`config(['lago.license' => ...])` returned
+  for exactly the requests that ran under it, restored afterwards), the
+  counterpart of the per-request VALUE hook `substituteRequestValues`.
   gross_revenue / overdue_balance have NO gate (captured with no flip).
 - **`month` serialization differs BY ENDPOINT.** gross_revenue /
-  overdue_balance / invoiced_usage render
+  overdue_balance / invoiced_usage / invoice_collection render
   `"2025-06-01T00:00:00.000Z"`; mrr renders the same generate-series value
-  as `"2025-06-01T00:00:00.000+00:00"`. Whatever the Postgres→Ruby type
-  path difference is, the goldens are truth — the replay must reproduce the
-  per-endpoint format, not normalize `.000Z` and `.000+00:00` together.
+  as `"2025-06-01T00:00:00.000+00:00"`. The Postgres type path explains it:
+  mrr's generate-series upper bound is `date_trunc('month', now())`
+  (timestamptz) while the other four bound with CURRENT_DATE (timestamp
+  WITHOUT time zone), and ActiveRecord serializes the two types
+  differently. The goldens are truth — `MrrSerializer` pins the offset
+  format (`serializeMonthWithOffset`; PDO hands the port an
+  indistinguishable string), and the Normalizer compares `month`
+  BYTE-STRICT (`STRICT_DATETIME_FIELDS`) so the ISO8601 Z-vs-offset slack
+  cannot smooth a wrong per-endpoint format over.
 - **Empty-month handling splits 2/3.** mrr and invoice_collection return a
   row for EVERY month from the org's creation month through the current
   DB-clock month — null `amount_cents`/`currency` (mrr) or null

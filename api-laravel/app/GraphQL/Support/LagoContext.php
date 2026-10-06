@@ -24,6 +24,8 @@ final class LagoContext
 
     public const CURRENT_MEMBERSHIP = 'lago.current_membership';
 
+    public const CURRENT_CUSTOMER_PORTAL_USER = 'lago.current_customer_portal_user';
+
     public const LOGIN_METHOD = 'lago.login_method';
 
     public const PERMISSIONS = 'lago.permissions';
@@ -35,10 +37,12 @@ final class LagoContext
         ?object $currentMembership,
         ?string $loginMethod,
         ?array $permissions,
+        ?object $customerPortalUser = null,
     ): void {
         $request->attributes->set(self::CURRENT_USER, $currentUser);
         $request->attributes->set(self::CURRENT_ORGANIZATION, $currentOrganization);
         $request->attributes->set(self::CURRENT_MEMBERSHIP, $currentMembership);
+        $request->attributes->set(self::CURRENT_CUSTOMER_PORTAL_USER, $customerPortalUser);
         $request->attributes->set(self::LOGIN_METHOD, $loginMethod);
         $request->attributes->set(self::PERMISSIONS, $permissions);
     }
@@ -56,6 +60,12 @@ final class LagoContext
     public static function currentMembership(GraphQLContext $context): ?object
     {
         return self::attribute($context, self::CURRENT_MEMBERSHIP);
+    }
+
+    /** Rails: `context[:customer_portal_user]` — the token-authenticated Customer. */
+    public static function customerPortalUser(GraphQLContext $context): ?object
+    {
+        return self::attribute($context, self::CURRENT_CUSTOMER_PORTAL_USER);
     }
 
     public static function loginMethod(GraphQLContext $context): ?string

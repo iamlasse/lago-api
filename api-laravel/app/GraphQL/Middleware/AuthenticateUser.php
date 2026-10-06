@@ -7,10 +7,12 @@ namespace App\GraphQL\Middleware;
 use Closure;
 use Throwable;
 use App\Models\User;
+use App\Models\Customer;
 use Illuminate\Http\Request;
 use App\Enums\MembershipStatus;
 use App\Support\CurrentContext;
 use App\Support\Utils\AuthToken;
+use App\Support\Utils\PortalToken;
 use Firebase\JWT\ExpiredException;
 use Symfony\Component\HttpFoundation\Response;
 use App\GraphQL\Support\LagoContext as LagoContextStore;
@@ -23,6 +25,10 @@ use App\GraphQL\Support\LagoContext as LagoContextStore;
  * - resolve `Authorization: Bearer <jwt>` → current_user (users lookup by sub)
  * - `x-lago-organization` header → current_organization via the user's active
  *   memberships
+ * - `customer-portal-token` header → customer_portal_user (the
+ *   CustomerPortalUser controller concern: verify the signed portal token and
+ *   look the customer up by the recovered id; an invalid or expired signature
+ *   answers nil, never an error)
  * - sliding renewal: when the token expires in less than 1 hour, respond with a
  *   fresh token in the `x-lago-token` header
  * - expired token → `{data: {}, errors: [{message, extensions: {status,
@@ -92,7 +98,23 @@ class AuthenticateUser
         // roles slice; memberships without ported roles resolve no permissions.
         $permissions = $currentMembership !== null ? [] : null;
 
-        LagoContextStore::set($request, $currentUser, $currentOrganization, $currentMembership, $loginMethod, $permissions);
+        // Rails: CustomerPortalUser#customer_portal_user — verify the
+        // `customer-portal-token` header and look the customer up by the
+        // recovered id; an invalid signature (or unknown id) answers nil.
+        $portalUserId = PortalToken::verify($request->headers->get('customer-portal-token'));
+        $customerPortalUser = $portalUserId !== null
+            ? Customer::query()->find($portalUserId)
+            : null;
+
+        LagoContextStore::set(
+            $request,
+            $currentUser,
+            $currentOrganization,
+            $currentMembership,
+            $loginMethod,
+            $permissions,
+            $customerPortalUser,
+        );
 
         $renewedToken = null;
         if (

@@ -206,6 +206,15 @@ class CreditNote extends BaseModel
         return (int) $this->refund_amount_cents > 0;
     }
 
+    /**
+     * Rails: `succeeded?` — the refund_status enum's value predicate
+     * (the refund leg settled on the provider).
+     */
+    public function refundSucceeded(): bool
+    {
+        return $this->refundStatusEnum() === CreditNoteRefundStatus::Succeeded;
+    }
+
     public function hasOffset(): bool
     {
         return (int) $this->offset_amount_cents > 0;

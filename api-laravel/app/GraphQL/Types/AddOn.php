@@ -29,11 +29,20 @@ class AddOn
     }
 
     /**
-     * Rails: object.integration_mappings — the integration mappings are a
-     * later milestone (stubs, see FULL_SCHEMA_NOTES.md).
+     * Rails: object.integration_mappings (optionally narrowed by
+     * integration_id) — the add-on's mappings over the frozen
+     * integration_mappings table.
      */
-    public function integrationMappings(AddOnModel $root): ?array
+    public function integrationMappings(AddOnModel $root, array $args = []): ?array
     {
-        return null;
+        $query = \App\Models\IntegrationMappings\BaseMapping::query()
+            ->where('mappable_type', 'AddOn')
+            ->where('mappable_id', $root->id);
+
+        if (($args['integrationId'] ?? null) !== null) {
+            $query->where('integration_id', $args['integrationId']);
+        }
+
+        return $query->get()->all();
     }
 }

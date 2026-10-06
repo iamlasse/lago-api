@@ -51,6 +51,26 @@ abstract class BaseSerializer
         return \Carbon\CarbonImmutable::parse((string) $month, 'UTC')->utc()->format('Y-m-d\TH:i:s.v\Z');
     }
 
+    /**
+     * The mrr variant: Rails renders THE SAME wall-clock month as
+     * "2025-04-01T00:00:00.000+00:00" there. The Postgres type path differs
+     * per endpoint — mrr's generate-series upper bound is
+     * `date_trunc('month', now())` (timestamptz) while the other four
+     * analytics models bound with CURRENT_DATE (timestamp without time
+     * zone) — and ActiveRecord serializes the two types differently
+     * (offset form vs Z form). PDO hands the port an undistinguishable
+     * "YYYY-MM-DD HH:MM:SS" string, so the per-endpoint format is pinned at
+     * the serializer. Goldens are truth; do not "normalize" the two.
+     */
+    protected function serializeMonthWithOffset(mixed $month): ?string
+    {
+        if ($month === null) {
+            return null;
+        }
+
+        return \Carbon\CarbonImmutable::parse((string) $month, 'UTC')->utc()->format('Y-m-d\TH:i:s.vP');
+    }
+
     /** Rails: `model[...]&.to_i`. */
     protected function intOrNull(mixed $value): ?int
     {
