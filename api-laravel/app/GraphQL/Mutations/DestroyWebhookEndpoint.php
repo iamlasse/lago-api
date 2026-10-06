@@ -34,7 +34,7 @@ class DestroyWebhookEndpoint
             ->where('id', $input['id'] ?? null)
             ->first();
 
-        $result = DestroyService::call(webhook_endpoint: $endpoint);
+        $result = DestroyService::call(webhookEndpoint: $endpoint);
 
         if ($result->failure()) {
             throw Errors::resultError($result->getError());

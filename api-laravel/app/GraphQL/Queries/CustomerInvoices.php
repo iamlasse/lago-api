@@ -30,7 +30,7 @@ class CustomerInvoices
 
         $organization = LagoContext::currentOrganization($context);
 
-        if ($organization->customers()->whereKey($args['customer_id'] ?? null)->doesntExist()) {
+        if ($organization->customers()->whereKey($args['customerId'] ?? null)->doesntExist()) {
             throw Errors::notFoundError('customer');
         }
 

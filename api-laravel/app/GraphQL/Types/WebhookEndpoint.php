@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\GraphQL\Types;
 
-use App\Enums\WebhookEndpointSignatureAlgo;
 use App\Models\WebhookEndpoint as WebhookEndpointModel;
 
 /**
@@ -13,11 +12,9 @@ use App\Models\WebhookEndpoint as WebhookEndpointModel;
  */
 class WebhookEndpoint
 {
-    /** Rails: the signature_algo enum name — the column stores the integer position. */
+    /** Rails: the signature_algo enum name (the model resolves the stored position). */
     public function signatureAlgo(WebhookEndpointModel $root): ?string
     {
-        $algo = $root->signatureAlgoValue();
-
-        return $algo === null ? null : WebhookEndpointSignatureAlgo::options()[$algo] ?? null;
+        return $root->signatureAlgoValue();
     }
 }

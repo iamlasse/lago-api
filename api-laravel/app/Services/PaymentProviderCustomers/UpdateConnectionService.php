@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Services\PaymentProviderCustomers;
 
+use Throwable;
+use LogicException;
 use App\Services\BaseResult;
 use App\Services\BaseService;
-use App\Models\PaymentProviderCustomer;
 use Illuminate\Support\Facades\DB;
+use App\Models\PaymentProviderCustomer;
 
 /**
  * Port of Rails' PaymentProviderCustomers::UpdateConnectionService
@@ -54,7 +56,7 @@ class UpdateConnectionService extends BaseService
                 && $this->params['provider_customer_id'] !== '') {
                 $this->syncProviderCustomer();
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             // Rails: rescue BaseService::FailedResult -> e.result.
             if ($e instanceof \App\Services\Failures\FailedResult) {
                 return $result->failWithError($e);
@@ -87,7 +89,7 @@ class UpdateConnectionService extends BaseService
         };
 
         if ($serviceClass === null) {
-            throw new \LogicException("Payment provider customer type '{$this->paymentProviderCustomer->type}' is not supported yet");
+            throw new LogicException("Payment provider customer type '{$this->paymentProviderCustomer->type}' is not supported yet");
         }
 
         $serviceClass::call(

@@ -43,7 +43,14 @@ class UpdateRole
             params: [
                 'name' => $input['name'] ?? null,
                 'description' => $input['description'] ?? null,
-                'permissions' => $input['permissions'] ?? null,
+                // Rails: the PermissionEnum deserializes "analytics_view"
+                // into its value "analytics:view" before the service sees it.
+                'permissions' => isset($input['permissions'])
+                    ? array_map(
+                        fn (string $permission): string => str_replace('_', ':', $permission),
+                        (array) $input['permissions'],
+                    )
+                    : null,
             ],
         );
 

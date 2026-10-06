@@ -5,14 +5,13 @@ declare(strict_types=1);
 require_once __DIR__.'/GraphQLHelpers.php';
 require_once __DIR__.'/AuthPlumbingTest.php';
 
-use App\Models\CatalogPlan;
+use App\Models\Product;
 use App\Models\Contract;
 use App\Models\Customer;
-use App\Models\Organization;
-use App\Models\Product;
-use App\Models\PlanRateCard;
 use App\Models\RateCard;
+use App\Models\CatalogPlan;
 use Illuminate\Support\Str;
+use App\Models\Organization;
 
 /**
  * Ports of Rails' spec/graphql/mutations/contracts/*_spec.rb,

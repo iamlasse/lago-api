@@ -18,6 +18,17 @@ use App\Jobs\IntegrationCustomers\UpdateJob;
  */
 class UpdateConnectionService extends BaseService
 {
+
+    /** Rails: Integrations::BaseIntegration PROVIDER_TYPES — integration STI type to provider key. */
+    private const INTEGRATION_PROVIDER_KEYS = [
+        Integration::ANROK_TYPE => 'anrok',
+        Integration::AVALARA_TYPE => 'avalara',
+        Integration::HUBSPOT_TYPE => 'hubspot',
+        Integration::SALESFORCE_TYPE => 'salesforce',
+        Integration::NETSUITE_TYPE => 'netsuite',
+        Integration::XERO_TYPE => 'xero',
+    ];
+
     public const NON_SYNCING_TYPES = [
         IntegrationCustomer::ANROK_TYPE,
         IntegrationCustomer::SALESFORCE_TYPE,

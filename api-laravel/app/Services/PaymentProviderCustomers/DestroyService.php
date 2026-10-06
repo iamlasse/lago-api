@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Services\PaymentProviderCustomers;
 
 use App\Services\BaseResult;
-use App\Services\BaseService;
 use App\Models\PaymentMethod;
+use App\Services\BaseService;
+use Illuminate\Support\Facades\DB;
 use App\Models\PaymentProviderCustomer;
 use App\Services\PaymentMethods\DestroyService as DestroyPaymentMethodService;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Port of Rails' PaymentProviderCustomers::DestroyService

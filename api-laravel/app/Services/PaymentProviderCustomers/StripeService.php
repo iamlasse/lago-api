@@ -49,6 +49,39 @@ class StripeService extends BaseService
         };
     }
 
+    /**
+     * Rails: `payment_provider(customer)` (Customers::PaymentProviderFinder)
+     * — resolves the org's provider for the customer's payment_provider slug;
+     * a missing provider resolves to nil.
+     */
+    public function paymentProvider(Customer $customer): ?\App\Models\PaymentProvider
+    {
+        if ($customer->payment_provider === null) {
+            return null;
+        }
+
+        $findResult = FindService::call(
+            organizationId: $customer->organization_id,
+            code: $customer->payment_provider_code,
+            paymentProviderType: $customer->payment_provider,
+        );
+
+        // Rails: return nil when the error code is payment_provider_not_found.
+        $error = $findResult->getError();
+
+        if ($error instanceof \App\Services\Failures\ServiceFailure && $error->code === 'payment_provider_not_found') {
+            return null;
+        }
+
+        try {
+            $findResult->raiseIfError();
+        } catch (Throwable) {
+            return null;
+        }
+
+        return $findResult->payment_provider;
+    }
+
     /** Rails: #generate_checkout_url — the Stripe Checkout setup session. */
     private function generateCheckoutUrl(): BaseResult
     {
@@ -108,39 +141,6 @@ class StripeService extends BaseService
         // webhook only fires from the background flow.
 
         return $result;
-    }
-
-    /**
-     * Rails: `payment_provider(customer)` (Customers::PaymentProviderFinder)
-     * — resolves the org's provider for the customer's payment_provider slug;
-     * a missing provider resolves to nil.
-     */
-    public function paymentProvider(Customer $customer): ?\App\Models\PaymentProvider
-    {
-        if ($customer->payment_provider === null) {
-            return null;
-        }
-
-        $findResult = FindService::call(
-            organizationId: $customer->organization_id,
-            code: $customer->payment_provider_code,
-            paymentProviderType: $customer->payment_provider,
-        );
-
-        // Rails: return nil when the error code is payment_provider_not_found.
-        $error = $findResult->getError();
-
-        if ($error instanceof \App\Services\Failures\ServiceFailure && $error->code === 'payment_provider_not_found') {
-            return null;
-        }
-
-        try {
-            $findResult->raiseIfError();
-        } catch (Throwable) {
-            return null;
-        }
-
-        return $findResult->payment_provider;
     }
 
     /** Rails: #create — POST /v1/customers for a connection without an id. */

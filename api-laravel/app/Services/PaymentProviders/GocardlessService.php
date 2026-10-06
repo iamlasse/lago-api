@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\PaymentProviders;
 
-use App\Models\PaymentProvider;
 use Illuminate\Support\Str;
+use App\Models\PaymentProvider;
 
 use function array_key_exists;
 

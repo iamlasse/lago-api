@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\GraphQL\Support;
 
+use App\GraphQL\Execution\Errors;
 use App\Models\Organization;
 use App\Models\BillingEntity;
 use App\GraphQL\Exceptions\ExecutionError;

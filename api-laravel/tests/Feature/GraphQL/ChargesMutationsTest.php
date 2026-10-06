@@ -5,13 +5,11 @@ declare(strict_types=1);
 require_once __DIR__.'/GraphQLHelpers.php';
 require_once __DIR__.'/AuthPlumbingTest.php';
 
-use App\Models\BillableMetric;
-use App\Models\BillableMetricFilter;
-use App\Models\Charge;
-use App\Models\ChargeFilter;
-use App\Models\FixedCharge;
 use App\Models\Plan;
 use Illuminate\Support\Str;
+use App\Models\ChargeFilter;
+use App\Models\BillableMetric;
+use App\Models\BillableMetricFilter;
 
 /**
  * Ports of Rails' spec/graphql/mutations/charges/*_spec.rb,
@@ -95,7 +93,7 @@ function gqlStandardChargeInput(string $planId, string $metricId): array
     return [
         'planId' => $planId,
         'billableMetricId' => $metricId,
-        'code' => $code,
+        'code' => 'standard_charge',
         'chargeModel' => 'standard',
         'invoiceable' => true,
         'properties' => ['amount' => '10'],
@@ -113,12 +111,13 @@ it('creates, updates and destroys a charge', function (): void {
     expect($id)->not->toBeNull();
 
     // An unknown plan id answers the not_found error envelope.
-    gqlPost(CREATE_CHARGE_MUTATION, ['input' => gqlStandardChargeInput(Str::uuid(), $metric->id)], gqlAuthHeaders($user, $organization->id))
+    gqlPost(CREATE_CHARGE_MUTATION, ['input' => gqlStandardChargeInput((string) Str::uuid(), $metric->id)], gqlAuthHeaders($user, $organization->id))
         ->assertOk()
         ->assertJsonPath('errors.0.extensions.code', 'not_found');
 
     expect(gqlPost(UPDATE_CHARGE_MUTATION, ['input' => [
         'id' => $id,
+        'chargeModel' => 'standard',
         'invoiceDisplayName' => 'Displayed charge',
     ]], gqlAuthHeaders($user, $organization->id))->assertOk()->json('data.updateCharge.invoiceDisplayName'))
         ->toBe('Displayed charge');
@@ -181,7 +180,8 @@ it('creates, updates and destroys a fixed charge', function (): void {
 
     $id = gqlPost(CREATE_FIXED_CHARGE_MUTATION, ['input' => [
         'planId' => $plan->id,
-        'addOnId' => \App\Models\AddOn::factory()->create(['organization_id' => $organization->id])->id,
+        'code' => 'setup_fee',
+        'addOnId' => App\Models\AddOn::factory()->create(['organization_id' => $organization->id])->id,
         'chargeModel' => 'standard',
         'units' => '10',
         'properties' => ['amount' => '100'],
@@ -191,6 +191,7 @@ it('creates, updates and destroys a fixed charge', function (): void {
 
     expect(gqlPost(UPDATE_FIXED_CHARGE_MUTATION, ['input' => [
         'id' => $id,
+        'chargeModel' => 'standard',
         'invoiceDisplayName' => 'Setup fee',
         'units' => '20',
     ]], gqlAuthHeaders($user, $organization->id))->assertOk()->json('data.updateFixedCharge.invoiceDisplayName'))

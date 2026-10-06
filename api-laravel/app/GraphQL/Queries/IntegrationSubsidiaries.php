@@ -21,7 +21,7 @@ use App\Services\Integrations\Aggregator\SubsidiariesService;
  */
 class IntegrationSubsidiaries
 {
-    public function __invoke(mixed $root, array $args, GraphQLContext $context): array
+    public function __invoke(mixed $root, array $args, GraphQLContext $context): object
     {
         AuthenticableApiUser::authorize($context);
         RequiredOrganization::authorize($context);
@@ -42,6 +42,18 @@ class IntegrationSubsidiaries
             throw Errors::resultError($result->getError());
         }
 
-        return $result->subsidiaries;
+        // Rails returns the raw Array to graphql-pagination's collection_type.
+        $subsidiaries = $result->subsidiaries;
+        $count = is_countable($subsidiaries) ? count($subsidiaries) : 0;
+
+        return (object) [
+            'collection' => $subsidiaries,
+            'metadata' => (object) [
+                'currentPage' => 1,
+                'limitValue' => $count,
+                'totalPages' => 1,
+                'totalCount' => $count,
+            ],
+        ];
     }
 }

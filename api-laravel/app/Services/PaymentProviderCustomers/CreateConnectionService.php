@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Services\PaymentProviderCustomers;
 
+use LogicException;
 use App\Models\Customer;
 use App\Services\BaseResult;
 use App\Services\BaseService;
+use Illuminate\Support\Facades\DB;
 use App\Models\PaymentProviderCustomer;
 use App\Services\PaymentProviders\FindService;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Port of Rails' PaymentProviderCustomers::CreateConnectionService
@@ -121,7 +122,7 @@ class CreateConnectionService extends BaseService
         };
 
         if ($serviceClass === null) {
-            throw new \LogicException("Payment provider '{$this->params['payment_provider']}' is not supported yet");
+            throw new LogicException("Payment provider '{$this->params['payment_provider']}' is not supported yet");
         }
 
         return $serviceClass::call(

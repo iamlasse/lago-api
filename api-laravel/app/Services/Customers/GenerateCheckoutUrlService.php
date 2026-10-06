@@ -72,7 +72,6 @@ class GenerateCheckoutUrlService extends BaseService
                 'PaymentProviderCustomers::MoneyhashCustomer',
             ])
             ->get()
-            ->first(fn (\App\Models\PaymentProviderCustomer $row): bool
-                => Factory::providerSlug($row) === $customer->payment_provider);
+            ->first(fn (\App\Models\PaymentProviderCustomer $row): bool => Factory::providerSlug($row) === $customer->payment_provider);
     }
 }

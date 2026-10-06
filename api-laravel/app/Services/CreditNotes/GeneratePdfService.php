@@ -10,8 +10,8 @@ use App\Services\BaseResult;
 use App\Services\BaseService;
 use App\Support\PdfGenerator;
 use App\Support\ActiveStorage;
-use App\Support\Documents\CreditNotePdf;
 use Illuminate\Support\Facades\App;
+use App\Support\Documents\CreditNotePdf;
 
 /**
  * Port of Rails' CreditNotes::GeneratePdfService

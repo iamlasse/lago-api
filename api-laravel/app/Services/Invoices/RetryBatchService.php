@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Services\Invoices;
 
 use App\Models\Invoice;
-use App\Jobs\Invoices\RetryAllJob;
+use App\Enums\InvoiceStatus;
 use App\Services\BaseResult;
 use App\Services\BaseService;
-use App\Enums\InvoiceStatus;
+use App\Jobs\Invoices\RetryAllJob;
 
 /**
  * Port of Rails' Invoices::RetryBatchService
@@ -68,7 +68,7 @@ class RetryBatchService extends BaseService
     }
 
     /** Rails: `invoices` — the organization's FAILED invoices. */
-    private function failedInvoices(): \Illuminate\Database\Eloquent\Builder
+    private function failedInvoices(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->organization->invoices()->where('status', InvoiceStatus::Failed->value);
     }

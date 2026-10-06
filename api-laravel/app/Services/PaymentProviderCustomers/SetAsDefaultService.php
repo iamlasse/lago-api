@@ -6,8 +6,8 @@ namespace App\Services\PaymentProviderCustomers;
 
 use App\Services\BaseResult;
 use App\Services\BaseService;
-use App\Models\PaymentProviderCustomer;
 use Illuminate\Support\Facades\DB;
+use App\Models\PaymentProviderCustomer;
 
 /**
  * Port of Rails' PaymentProviderCustomers::SetAsDefaultService

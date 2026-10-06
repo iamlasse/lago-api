@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace App\Services\Invoices;
 
 use App\Models\Invoice;
-use App\Jobs\Invoices\FinalizeAllJob;
+use App\Enums\InvoiceStatus;
 use App\Services\BaseResult;
 use App\Services\BaseService;
-use App\Enums\InvoiceStatus;
-use Illuminate\Support\Collection;
+use App\Jobs\Invoices\FinalizeAllJob;
 
 /**
  * Port of Rails' Invoices::FinalizeBatchService
@@ -70,9 +69,8 @@ class FinalizeBatchService extends BaseService
     }
 
     /** Rails: `invoices` — the organization's DRAFT invoices. */
-    private function draftInvoices(): \Illuminate\Database\Eloquent\Builder
+    private function draftInvoices(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        /** @phpstan-ignore-next-line */
         return $this->organization->invoices()->where('status', InvoiceStatus::Draft->value);
     }
 }

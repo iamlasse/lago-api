@@ -44,6 +44,8 @@ class RetryAllInvoices
                 'limitValue' => max(1, $count),
                 'totalPages' => 1,
                 'totalCount' => $count,
+                'totalCountCapped' => false,
+                'hasNextPage' => false,
             ],
         );
     }

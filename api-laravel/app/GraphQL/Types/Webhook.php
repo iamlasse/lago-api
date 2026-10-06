@@ -16,9 +16,15 @@ class Webhook
     /** Rails: the status enum name — the column stores the integer position. */
     public function status(WebhookModel $root): ?string
     {
-        $raw = $root->statusValue();
+        // The current attribute (a retry flips the in-memory row to
+        // pending; the raw original would still carry the old value).
+        $raw = $root->status;
 
-        return $raw === null ? null : WebhookStatus::options()[$raw] ?? null;
+        if ($raw instanceof WebhookStatus) {
+            $raw = $raw->value;
+        }
+
+        return $raw === null ? null : WebhookStatus::options()[(int) $raw] ?? null;
     }
 
     /** Rails: object.payload&.to_json. */

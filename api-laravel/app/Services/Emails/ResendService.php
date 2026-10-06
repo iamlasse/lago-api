@@ -10,9 +10,9 @@ use App\Models\CreditNote;
 use App\Services\BaseResult;
 use App\Services\BaseService;
 use App\Models\PaymentReceipt;
-use App\Mail\PaymentReceiptCreatedMail;
 use App\Mail\InvoiceCreatedMail;
 use App\Mail\CreditNoteCreatedMail;
+use App\Mail\PaymentReceiptCreatedMail;
 use App\Services\Validators\EmailSanitizer;
 
 /**
@@ -96,7 +96,9 @@ class ResendService extends BaseService
         // guards (no billing entity email / recipients / the zero-amount
         // invoice rule) answer no delivery instead of a failure.
         if ($mailable->shouldSend()) {
-            $mailable->send();
+            // Rails: deliver_later — the port sends inline through the
+            // recipients, like the invoice NotifyJob.
+            \Illuminate\Support\Facades\Mail::to($mailable->recipients())->send($mailable);
         }
 
         return $result;

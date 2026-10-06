@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\GraphQL\Types;
 
-use App\Models\PaymentProviderCustomer as PaymentProviderCustomerModel;
-use App\Services\PaymentProviderCustomers\Factory;
 use App\GraphQL\Support\Page;
 use App\Queries\PaymentMethodsQuery;
+use App\Services\PaymentProviderCustomers\Factory;
+use App\Models\PaymentProviderCustomer as PaymentProviderCustomerModel;
 
 /**
  * Field resolvers for the frozen SDL's `ProviderCustomer` type (port of

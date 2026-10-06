@@ -7,9 +7,9 @@ namespace App\Support\Documents;
 use App\Models\Invoice;
 use App\Models\Customer;
 use App\Support\Currency;
+use App\Models\CreditNote;
 use Carbon\CarbonInterface;
 use App\Models\BillingEntity;
-use App\Models\CreditNote;
 use Illuminate\Support\Facades\App;
 
 /**

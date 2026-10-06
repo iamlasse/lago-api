@@ -21,6 +21,17 @@ use App\Models\IntegrationCustomer;
  */
 class CreateConnectionService extends BaseService
 {
+
+    /** Rails: Integrations::BaseIntegration PROVIDER_TYPES — integration STI type to provider key. */
+    private const INTEGRATION_PROVIDER_KEYS = [
+        Integration::ANROK_TYPE => 'anrok',
+        Integration::AVALARA_TYPE => 'avalara',
+        Integration::HUBSPOT_TYPE => 'hubspot',
+        Integration::SALESFORCE_TYPE => 'salesforce',
+        Integration::NETSUITE_TYPE => 'netsuite',
+        Integration::XERO_TYPE => 'xero',
+    ];
+
     public function __construct(
         public readonly ?Customer $customer,
         /** @var array<string, mixed> */
@@ -32,6 +43,10 @@ class CreateConnectionService extends BaseService
     public function execute(): BaseResult
     {
         $result = static::makeResult('integration_customer');
+
+        // Locals for the transaction closure (promoted properties are not
+        // in the method scope).
+        $customer = $this->customer;
 
         if ($this->customer === null) {
             return $result->notFoundFailure('customer');
@@ -109,7 +124,7 @@ class CreateConnectionService extends BaseService
     /** Rails: integration.provider_key — the STI type's provider short key. */
     private function providerKey(Integration $integration): ?string
     {
-        return array_flip(IntegrationCustomer::PROVIDER_TYPES)[$integration->type] ?? null;
+        return self::INTEGRATION_PROVIDER_KEYS[$integration->type] ?? null;
     }
 
     /** Rails: BaseCustomer.customer_type(integration_type) — nil when unknown. */

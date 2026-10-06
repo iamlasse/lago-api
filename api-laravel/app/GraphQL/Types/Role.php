@@ -47,7 +47,7 @@ class Role
 
         return Membership::query()
             ->where('memberships.status', 0)
-            
+
             ->when($organization !== null, fn ($query) => $query->where('memberships.organization_id', $organization->id))
             ->whereIn('memberships.id', MembershipRole::query()
                 ->whereNull('membership_roles.deleted_at')

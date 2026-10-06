@@ -8,7 +8,7 @@ use App\GraphQL\Execution\Errors;
 use App\GraphQL\Support\LagoContext;
 use App\GraphQL\Guards\AuthenticableApiUser;
 use App\GraphQL\Guards\RequiredOrganization;
-use App\Models\Integration as IntegrationModel;
+use App\Models\Integration as IntegrationRecord;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
 /**
@@ -20,12 +20,12 @@ use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
  */
 class Integration
 {
-    public function __invoke(mixed $root, array $args, GraphQLContext $context): self
+    public function __invoke(mixed $root, array $args, GraphQLContext $context): IntegrationRecord
     {
         AuthenticableApiUser::authorize($context);
         RequiredOrganization::authorize($context);
 
-        $integration = IntegrationModel::query()
+        $integration = IntegrationRecord::query()
             ->where('organization_id', LagoContext::currentOrganization($context)->id)
             ->find($args['id'] ?? null);
 

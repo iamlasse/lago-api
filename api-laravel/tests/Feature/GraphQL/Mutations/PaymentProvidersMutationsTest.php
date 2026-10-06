@@ -82,7 +82,7 @@ it('adds the stripe payment provider and provisions the webhook', function (): v
 
     expect(PaymentProvider::query()->where('organization_id', $organization->id)->count())->toBe(1);
 
-    Queue::assertPushed(\App\Jobs\PaymentProviders\StripeRegisterWebhookJob::class);
+    Queue::assertPushed(App\Jobs\PaymentProviders\StripeRegisterWebhookJob::class);
 })->group('ledger:gql:mutation:addStripePaymentProvider');
 
 it('answers the secret_key value_is_mandatory validation on a new stripe provider', function (): void {
@@ -122,7 +122,7 @@ it('updates the stripe payment provider without overwriting the secret key', fun
         ->and($payload['supports3ds'])->toBeFalse()
         ->and($provider->refresh()->secretKey())->toBe($secretBefore);
 
-    Queue::assertNotPushed(\App\Jobs\PaymentProviders\StripeRegisterWebhookJob::class);
+    Queue::assertNotPushed(App\Jobs\PaymentProviders\StripeRegisterWebhookJob::class);
 })->group('ledger:gql:mutation:updateStripePaymentProvider');
 
 const ADD_ADYEN_MUTATION = <<<'GQL'
@@ -208,7 +208,7 @@ it('propagates a code change to the provider customers', function (): void {
         'payment_provider' => 'adyen',
         'payment_provider_code' => 'adyen-main',
     ]);
-    $connection = \App\Models\PaymentProviderCustomer::factory()->forCustomer($customer)->create([
+    $connection = App\Models\PaymentProviderCustomer::factory()->forCustomer($customer)->create([
         'type' => 'PaymentProviderCustomers::AdyenCustomer',
         'payment_provider_id' => $provider->id,
         'code' => 'adyen-main',

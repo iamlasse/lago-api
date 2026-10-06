@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services\PaymentProviders;
 
-use App\Models\PaymentProvider;
+use Throwable;
 use App\Services\BaseResult;
+use App\Models\PaymentProvider;
 use Illuminate\Support\Facades\Http;
 
 use function array_key_exists;
@@ -19,15 +20,8 @@ use function array_key_exists;
  */
 class MoneyhashService extends AbstractProviderService
 {
-    protected function slug(): string
-    {
-        return 'moneyhash';
-    }
-
-    protected function providerAttribute(): string
-    {
-        return 'moneyhash_provider';
-    }
+    /** @var string|null the formatted moneyhash_error message, when the fetch failed. */
+    private ?string $signatureKeyFailure = null;
 
     public function execute(): BaseResult
     {
@@ -46,8 +40,15 @@ class MoneyhashService extends AbstractProviderService
         return $result;
     }
 
-    /** @var string|null the formatted moneyhash_error message, when the fetch failed. */
-    private ?string $signatureKeyFailure = null;
+    protected function slug(): string
+    {
+        return 'moneyhash';
+    }
+
+    protected function providerAttribute(): string
+    {
+        return 'moneyhash_provider';
+    }
 
     /**
      * @param  array<string, mixed>  $args
@@ -103,7 +104,7 @@ class MoneyhashService extends AbstractProviderService
             }
 
             return $response->json('data.webhook_signature_secret');
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->signatureKeyFailure = $e->getMessage();
 
             return null;

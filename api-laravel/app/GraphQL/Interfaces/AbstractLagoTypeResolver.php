@@ -30,6 +30,6 @@ abstract class AbstractLagoTypeResolver
     /** Looks the concrete object type up in the schema by its SDL name. */
     protected function type(string $name): Type
     {
-        return \GraphQL::type($name);
+        return app(\Nuwave\Lighthouse\Schema\TypeRegistry::class)->get($name);
     }
 }

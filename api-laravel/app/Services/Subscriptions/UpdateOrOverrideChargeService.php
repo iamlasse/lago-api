@@ -33,9 +33,6 @@ class UpdateOrOverrideChargeService extends BaseService
         private readonly array $params,
     ) {
         parent::__construct();
-
-        $this->subscription = $subscription;
-        $this->charge = $charge;
     }
 
     public function execute(): BaseResult

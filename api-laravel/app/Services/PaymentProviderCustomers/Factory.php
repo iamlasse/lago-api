@@ -6,12 +6,6 @@ namespace App\Services\PaymentProviderCustomers;
 
 use LogicException;
 use App\Models\PaymentProviderCustomer;
-use App\Services\PaymentProviderCustomers\AdyenService;
-use App\Services\PaymentProviderCustomers\CashfreeService;
-use App\Services\PaymentProviderCustomers\FlutterwaveService;
-use App\Services\PaymentProviderCustomers\GocardlessService;
-use App\Services\PaymentProviderCustomers\MoneyhashService;
-use App\Services\PaymentProviderCustomers\StripeService;
 
 /**
  * Port of Rails' PaymentProviderCustomers::Factory
@@ -52,7 +46,7 @@ class Factory
             return null;
         }
 
-        $slug = match ($type) {
+        return match ($type) {
             'PaymentProviderCustomers::StripeCustomer' => 'stripe',
             'PaymentProviderCustomers::GocardlessCustomer' => 'gocardless',
             'PaymentProviderCustomers::CashfreeCustomer' => 'cashfree',
@@ -61,7 +55,5 @@ class Factory
             'PaymentProviderCustomers::MoneyhashCustomer' => 'moneyhash',
             default => null,
         };
-
-        return $slug;
     }
 }

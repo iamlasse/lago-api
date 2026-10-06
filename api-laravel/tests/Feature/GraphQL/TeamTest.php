@@ -480,7 +480,7 @@ it('creates a custom role behind the premium custom_roles flag', function (): vo
     GQL, ['input' => ['code' => 'x', 'name' => 'X', 'permissions' => ['analytics_view']]],
         gqlAuthHeaders($plainUser, $plainOrganization->id));
 
-    expect($response->json('errors.0.extensions.code'))->toBe('forbidden');
+    expect($response->json('errors.0.extensions.code'))->toBe('premium_integration_missing');
 })->group('ledger:gql:mutation:createRole');
 
 it('updates a custom role and refuses the predefined ones', function (): void {

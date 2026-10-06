@@ -9,9 +9,8 @@ use App\Models\Payment;
 use App\Models\Customer;
 use App\Models\Organization;
 use App\Models\PaymentMethod;
-use App\Models\PaymentProvider;
 use App\Models\PaymentRequest;
-use App\Models\PaymentProviderCustomer;
+use App\Models\PaymentProvider;
 
 /**
  * Ports of Rails' spec/graphql/resolvers/{payments_resolver,

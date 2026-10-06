@@ -6,12 +6,12 @@ namespace App\Support;
 
 use RuntimeException;
 use App\Models\Invoice;
+use App\Models\CreditNote;
 use App\Models\PaymentReceipt;
 use Illuminate\Support\Facades\Http;
 use App\Support\Documents\InvoicePdf;
-use App\Support\Documents\PaymentReceiptPdf;
 use App\Support\Documents\CreditNotePdf;
-use App\Models\CreditNote;
+use App\Support\Documents\PaymentReceiptPdf;
 
 /**
  * Port of Rails' Utils::PdfGenerator

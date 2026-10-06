@@ -65,10 +65,12 @@ class WebhooksQuery extends BaseService
     {
         $statuses = $this->filters['statuses'] ?? null;
         if ($statuses !== null && $statuses !== []) {
-            $webhooks->whereIn('status', array_map(
-                fn ($status): int => $status instanceof WebhookStatus ? $status->value : (int) $status,
+            $webhooks->whereIn('status', array_filter(array_map(
+                fn ($status): ?int => $status instanceof WebhookStatus
+                    ? $status->value
+                    : WebhookStatus::fromOption($status),
                 (array) $statuses,
-            ));
+            )));
         }
 
         $eventTypes = $this->filters['event_types'] ?? null;

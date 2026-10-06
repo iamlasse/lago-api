@@ -41,9 +41,6 @@ abstract class AbstractProviderService extends BaseService
     /** Rails: the provider-specific attribute assignment block. */
     abstract protected function applyAttributes(PaymentProvider $provider, array $args): void;
 
-    /** Rails: the post-save tail (webhook jobs, customer propagation). */
-    protected function afterSave(PaymentProvider $provider, array $args, bool $isNew, bool $codeChanged): void {}
-
     /** Port of `PaymentProviders::<Slug>Service#create_or_update`, via `#call`. */
     public function execute(): BaseResult
     {
@@ -97,6 +94,9 @@ abstract class AbstractProviderService extends BaseService
             return $result->singleValidationFailure('value_already_exist', 'code');
         }
     }
+
+    /** Rails: the post-save tail (webhook jobs, customer propagation). */
+    protected function afterSave(PaymentProvider $provider, array $args, bool $isNew, bool $codeChanged): void {}
 
     /**
      * Rails: PaymentProviders::BaseService#payment_provider_code_changed? —

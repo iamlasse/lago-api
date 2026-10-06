@@ -85,7 +85,7 @@ class UpdateService extends \App\Services\BaseService
 
         return $secret !== null
             && $secret !== ''
-            && preg_match('/\A•{8}…/', (string) $secret) !== 1;
+            && preg_match('/\A•{8}…/u', (string) $secret) !== 1;
     }
 
     /**

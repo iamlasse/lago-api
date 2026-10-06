@@ -36,7 +36,8 @@ class DownloadCreditNote
         // Rails: current_organization.credit_notes.not_deleted.find_by(id:).
         $creditNote = CreditNote::query()
             ->where('organization_id', $organization->id)
-            ->whereNull('deleted_at')
+            // Rails: credit_notes.not_deleted — the status-column flag.
+            ->where('status', '!=', \App\Enums\CreditNoteStatus::Deleted->value)
             ->find($input['id'] ?? null);
 
         $result = GeneratePdfService::call(creditNote: $creditNote);
