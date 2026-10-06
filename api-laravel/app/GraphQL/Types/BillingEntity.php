@@ -19,6 +19,22 @@ class BillingEntity
         return TimezoneWire::toWire($root->timezone);
     }
 
+    /**
+     * Rails: `field :email_settings, [Types::BillingEntities::EmailSettingsEnum]`
+     * — the column stores the notification names in their dot form
+     * ("invoice.finalized"); the frozen SDL's enum values are the underscore
+     * form ("invoice_finalized") since GraphQL enum names cannot carry dots.
+     *
+     * @return list<string>
+     */
+    public function emailSettings(\App\Models\BillingEntity $root): array
+    {
+        return array_values(array_map(
+            static fn (string $setting): string => str_replace('.', '_', $setting),
+            (array) ($root->email_settings ?? []),
+        ));
+    }
+
     /** Rails: Types::BillingEntities::Object#applied_dunning_campaign — the relation. */
     public function appliedDunningCampaign(\App\Models\BillingEntity $root): ?\App\Models\DunningCampaign
     {

@@ -46,6 +46,18 @@ class PaymentMethodsQuery extends BaseService
             });
         }
 
+        // Rails: with_payment_provider_customer — the connection's own methods.
+        $paymentProviderCustomerId = $this->filters['payment_provider_customer_id'] ?? null;
+
+        if (is_string($paymentProviderCustomerId) && $paymentProviderCustomerId !== '') {
+            $methods->where('payment_methods.payment_provider_customer_id', $paymentProviderCustomerId);
+        }
+
+        // Rails: `with_deleted` keeps the soft-deleted methods in scope.
+        if ($this->filters['with_deleted'] ?? false) {
+            $methods->withTrashed();
+        }
+
         $result->payment_methods = $this->paginate(
             $methods->latest('payment_methods.created_at')->orderBy('payment_methods.id'),
         );

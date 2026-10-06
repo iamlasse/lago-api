@@ -30,6 +30,8 @@ class StripeService extends BaseService
 
     public const UPDATE = 'update';
 
+    public const GENERATE_CHECKOUT_URL = 'generate_checkout_url';
+
     public function __construct(
         private readonly string $action,
         private readonly \App\Models\PaymentProviderCustomer $providerCustomer,
@@ -42,8 +44,70 @@ class StripeService extends BaseService
         return match ($this->action) {
             self::CREATE => $this->create(),
             self::UPDATE => $this->update(),
+            self::GENERATE_CHECKOUT_URL => $this->generateCheckoutUrl(),
             default => static::makeResult(),
         };
+    }
+
+    /** Rails: #generate_checkout_url — the Stripe Checkout setup session. */
+    private function generateCheckoutUrl(): BaseResult
+    {
+        $result = static::makeResult('checkout_url');
+        $providerCustomer = $this->providerCustomer;
+        $customer = $providerCustomer->customer;
+
+        // NOTE: Customer is nil when deleted.
+        if ($customer === null) {
+            return $result;
+        }
+
+        $provider = $this->paymentProvider($customer);
+
+        // Rails: a provider without webhook endpoints answers a bare success
+        // (the URL would never be announced).
+        if ($provider !== null
+            && $customer->organization?->webhookEndpoints()->count() === 0) {
+            return $result;
+        }
+
+        if ($providerCustomer->providerPaymentMethodsRequireSetup() === false) {
+            return $result->singleValidationFailure(
+                'no_payment_methods_to_setup_available',
+                field: 'provider_payment_methods',
+            );
+        }
+
+        $client = new Client((string) $provider->secretKey());
+
+        $params = [
+            'success_url' => ($provider->successRedirectUrl() ?: \App\Models\PaymentProvider::STRIPE_SUCCESS_REDIRECT_URL),
+            'mode' => 'setup',
+            'payment_method_types' => $providerCustomer->providerPaymentMethodsWithSetup(),
+            'customer' => $providerCustomer->provider_customer_id,
+        ];
+
+        if ($provider->requireTermsOfServiceConsent()) {
+            $params['consent_collection'] = ['terms_of_service' => 'required'];
+        }
+
+        try {
+            $session = $client->call('post', '/v1/checkout/sessions', $params);
+        } catch (StripeError $e) {
+            $this->deliverErrorWebhook($customer, $e);
+
+            if ($e instanceof \App\Services\PaymentProviders\Stripe\AuthenticationError) {
+                return $result->unauthorizedFailure('Stripe authentication failed. '.$e->getMessage());
+            }
+
+            return $result->thirdPartyFailure('Stripe', (string) $e->code(), $e->getMessage());
+        }
+
+        $result->checkout_url = $session['url'] ?? null;
+
+        // NOTE: the mutation path passes send_webhook: false in Rails; the
+        // webhook only fires from the background flow.
+
+        return $result;
     }
 
     /**

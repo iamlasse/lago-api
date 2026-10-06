@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+  "brain": {
+    "type": "stdout",
+	  "command": "php",
+	  "args": ["artisan", "mcp:start", "brain"]
+  },
+   "boost": {
+    "type": "stdout",
+	  "command": "php",
+	  "args": ["artisan", "boost:mcp"]
+  }
+  }
+}

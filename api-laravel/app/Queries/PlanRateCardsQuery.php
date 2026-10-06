@@ -4,27 +4,31 @@ declare(strict_types=1);
 
 namespace App\Queries;
 
-use App\Models\Organization;
 use App\Models\PlanRateCard;
 use App\Services\BaseResult;
 use App\Services\BaseService;
+use App\Queries\Concerns\RateCardListFiltering;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 /**
  * Port of Rails' PlanRateCardsQuery (app/queries/plan_rate_cards_query.rb).
  *
- * TODO(port): the RateCardListFiltering / RateCardCategoryOrdering concerns
- * (product/filter/category list filters and the product_category ordering)
- * — not reachable from the REST controller, which passes plan_code only.
+ * The REST controller passes plan_code only; the GraphQL `planAppliedRateCards`
+ * resolver additionally passes plan_id, the shared catalog list filters, the
+ * search term and the product_category ordering.
  */
 class PlanRateCardsQuery extends BaseService
 {
+    use RateCardListFiltering;
+
     private const DEFAULT_PER_PAGE = 100;
 
     public function __construct(
         private readonly Organization $organization,
+        private readonly ?string $searchTerm = null,
         private readonly array $pagination = ['page' => null, 'limit' => null],
         private readonly array $filters = [],
+        private readonly ?string $order = null,
     ) {
         parent::__construct();
     }
@@ -40,13 +44,32 @@ class PlanRateCardsQuery extends BaseService
 
         if (($this->filters['plan_code'] ?? null) !== null) {
             $planRateCards->join('catalog_plans', 'catalog_plans.id', '=', 'plan_rate_cards.catalog_plan_id')
-                ->where('catalog_plans.code', $this->filters['plan_code']);
+                ->where('catalog_plans.code', $this->filters['plan_code'])
+                ->select('plan_rate_cards.*');
         }
 
-        // Rails: paginate + apply_consistent_ordering.
-        $result->plan_rate_cards = $this->paginate(
-            $planRateCards->orderByDesc('plan_rate_cards.created_at')->orderBy('plan_rate_cards.id'),
-        );
+        // Rails: with_plan.
+        if (($this->filters['plan_id'] ?? null) !== null) {
+            $planRateCards->where('plan_rate_cards.catalog_plan_id', $this->filters['plan_id']);
+        }
+
+        // Rails: apply_rate_card_filters(phase_parent: :plan_rate_card_id).
+        $planRateCards = $this->applyRateCardFilters($planRateCards, 'plan_rate_card_id');
+
+        // Rails: order :product_category (the resolvers' default) groups the
+        // cards the way the catalog groups them on screen, then by id.
+        if ($this->order === 'product_category') {
+            $planRateCards = $this->orderByProductCategory($planRateCards);
+
+            $result->plan_rate_cards = $this->paginate(
+                $planRateCards->orderBy('plan_rate_cards.id'),
+            );
+        } else {
+            // Rails: paginate + apply_consistent_ordering.
+            $result->plan_rate_cards = $this->paginate(
+                $planRateCards->orderByDesc('plan_rate_cards.created_at')->orderBy('plan_rate_cards.id'),
+            );
+        }
 
         return $result;
     }

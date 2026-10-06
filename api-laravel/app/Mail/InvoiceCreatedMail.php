@@ -23,7 +23,13 @@ use Illuminate\Mail\Mailables\Envelope;
  */
 class InvoiceCreatedMail extends Mailable
 {
-    public function __construct(public readonly Invoice $invoice) {}
+    public function __construct(
+        public readonly Invoice $invoice,
+        public readonly bool $resend = false,
+        public readonly ?array $recipientTo = null,
+        public readonly ?array $recipientCc = null,
+        public readonly ?array $recipientBcc = null,
+    ) {}
 
     /** Rails: @pdfs_enabled (ApplicationMailer#set_shared_variables). */
     public static function pdfsEnabled(): bool
@@ -34,6 +40,10 @@ class InvoiceCreatedMail extends Mailable
     /** Rails: recipients = params[:to].presence || [@customer.email]. */
     public function recipients(): array
     {
+        if ($this->recipientTo !== null && $this->recipientTo !== []) {
+            return array_values($this->recipientTo);
+        }
+
         return array_values(array_filter([(string) $this->invoice->customer?->email]));
     }
 
@@ -81,6 +91,14 @@ class InvoiceCreatedMail extends Mailable
 
         if (($billingEntity?->email ?? '') !== '') {
             $envelope->replyTo($billingEntity->email, $billingEntity->name);
+        }
+
+        if ($this->recipientCc !== null && $this->recipientCc !== []) {
+            $envelope->cc($this->recipientCc);
+        }
+
+        if ($this->recipientBcc !== null && $this->recipientBcc !== []) {
+            $envelope->bcc($this->recipientBcc);
         }
 
         return $envelope;

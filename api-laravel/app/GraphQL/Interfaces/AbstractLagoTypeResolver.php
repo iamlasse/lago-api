@@ -26,4 +26,10 @@ abstract class AbstractLagoTypeResolver
             code: 'not_implemented',
         );
     }
+
+    /** Looks the concrete object type up in the schema by its SDL name. */
+    protected function type(string $name): Type
+    {
+        return \GraphQL::type($name);
+    }
 }

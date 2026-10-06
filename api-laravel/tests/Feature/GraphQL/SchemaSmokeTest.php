@@ -91,9 +91,11 @@ it('resolves not-yet-implemented root fields to null (stub semantics)', function
 });
 
 it('surfaces the null violation for non-nullable unimplemented root fields', function (): void {
-    // overdueBalances: OverdueBalanceCollection! — unimplemented, non-null →
-    // the standard GraphQL null violation until its resolver lands.
-    $response = gqlPost('query { overdueBalances { collection { __typename } } }');
+    // supersetDashboards: [SupersetDashboard!]! — unimplemented (the Superset
+    // slice is backlog), non-null → the standard GraphQL null violation
+    // until its resolver lands. (overdueBalances now resolves — it landed
+    // with the analytics slice.)
+    $response = gqlPost('query { supersetDashboards { __typename } }');
 
     $response->assertOk();
 

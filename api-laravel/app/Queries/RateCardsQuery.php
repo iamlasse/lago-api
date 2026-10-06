@@ -51,6 +51,31 @@ class RateCardsQuery extends BaseService
             $rateCards->whereIn('rate_cards.product_filter_id', $this->filters['product_filter_ids']);
         }
 
+        // Rails: with_product_category — a card reaches a product_category
+        // through its product, so scope the cards to the matching products
+        // (shared Product.in_categories rule; "no category" is selectable).
+        if (($this->filters['product_category_ids'] ?? null) !== null
+            || ($this->filters['without_product_category'] ?? false)) {
+            $rateCards->where('rate_cards.product_id', function ($query): void {
+                $categoryIds = $this->filters['product_category_ids'] ?? [];
+                $includeUncategorized = (bool) ($this->filters['without_product_category'] ?? false);
+
+                $query->select('id')
+                    ->from('products')
+                    ->where('products.organization_id', $this->organization->id)
+                    ->where(function ($q) use ($categoryIds, $includeUncategorized): void {
+                        if ($categoryIds !== [] && $includeUncategorized) {
+                            $q->whereIn('products.product_category_id', $categoryIds)
+                                ->orWhereNull('products.product_category_id');
+                        } elseif ($includeUncategorized) {
+                            $q->whereNull('products.product_category_id');
+                        } else {
+                            $q->whereIn('products.product_category_id', $categoryIds);
+                        }
+                    });
+            });
+        }
+
         // Rails: with_code — an exact match.
         if (($this->filters['code'] ?? null) !== null) {
             $rateCards->where('rate_cards.code', $this->filters['code']);

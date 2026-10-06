@@ -48,6 +48,26 @@ class ProductFiltersQuery extends BaseService
             $productFilters->where('product_filters.product_id', $this->filters['product_id']);
         }
 
+        // Rails: with_product_category — the product_category dimension is a
+        // multi-select: chosen product_categories OR "no product_category".
+        // A filter's product_category is its parent product's.
+        $categoryIds = $this->filters['product_category_ids'] ?? null;
+        $withoutCategory = $this->filters['without_product_category'] ?? null;
+        if (($categoryIds !== null && $categoryIds !== []) || $withoutCategory) {
+            $productFilters->join('products', 'products.id', '=', 'product_filters.product_id');
+
+            if ($categoryIds !== null && $categoryIds !== [] && $withoutCategory) {
+                $productFilters->where(function ($query) use ($categoryIds): void {
+                    $query->whereIn('products.product_category_id', $categoryIds)
+                        ->orWhereNull('products.product_category_id');
+                });
+            } elseif ($withoutCategory) {
+                $productFilters->whereNull('products.product_category_id');
+            } else {
+                $productFilters->whereIn('products.product_category_id', $categoryIds);
+            }
+        }
+
         // Rails: paginate + apply_consistent_ordering.
         $result->product_filters = $this->paginate(
             $productFilters->orderByDesc('product_filters.created_at')->orderBy('product_filters.id'),

@@ -39,6 +39,15 @@ class ProductsQuery extends BaseService
             ->where('products.organization_id', $this->organization->id)
             ->with(['productCategory', 'billableMetric']);
 
+        // Rails: ransack m: "or", name_cont/code_cont.
+        if (($term = (string) $this->searchTerm) !== '') {
+            $escaped = str_replace(['\\', '%', '_'], ['\\\\', '\%', '\_'], $term);
+            $products->where(function ($query) use ($escaped): void {
+                $query->where('products.name', 'ILIKE', '%'.$escaped.'%')
+                    ->orWhere('products.code', 'ILIKE', '%'.$escaped.'%');
+            });
+        }
+
         if (($this->filters['product_category_ids'] ?? null) !== null
             || ($this->filters['without_product_category'] ?? false)) {
             // Rails: Product.in_categories — "no category" is a selectable value.

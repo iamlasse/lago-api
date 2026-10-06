@@ -5,31 +5,28 @@ declare(strict_types=1);
 namespace App\Services\Emails;
 
 use LogicException;
+use App\Models\Invoice;
+use App\Models\CreditNote;
 use App\Services\BaseResult;
 use App\Services\BaseService;
 use App\Models\PaymentReceipt;
 use App\Mail\PaymentReceiptCreatedMail;
+use App\Mail\InvoiceCreatedMail;
+use App\Mail\CreditNoteCreatedMail;
 use App\Services\Validators\EmailSanitizer;
 
 /**
  * Port of Rails' Emails::ResendService (app/services/emails/resend_service.rb)
  * — the POST /resend_email endpoints (Rails: `*`/resend_email).
  *
- * Scope of this slice: PaymentReceipt (the only resend target whose mailer
- * is ported). The Rails Invoice / CreditNote branches run through the SAME
- * precondition chain here (found → finalized → premium → validation
- * errors); only the send step is receipt-only.
- *
  * Rails order: resource present, valid_status? (a PaymentReceipt is always
  * "finalized"), premium license, free-form validation errors (billing entity
- * email configured, sender configured, at least one valid recipient). Then
- * the mailer is built with the to/cc/bcc overrides and delivered.
+ * email configured, sender configured, at least one valid recipient, the
+ * zero-amount-invoice rule). Then the mailer is built with the to/cc/bcc
+ * overrides and delivered.
  *
- * TODO(port): the Invoice / CreditNote mailer branches (InvoiceMailer /
- * CreditNoteMailer with their ensure-PDF preconditions and the
- * zero-amount-invoice rule) once those resenders are ported. Rails delivers
- * through deliver_later (SendEmailJob); the port sends inline, like the
- * invoice NotifyJob.
+ * Rails delivers through deliver_later (SendEmailJob); the port sends
+ * inline, like the invoice NotifyJob.
  */
 class ResendService extends BaseService
 {
@@ -70,25 +67,34 @@ class ResendService extends BaseService
             return $result->validationFailure($validationErrors);
         }
 
-        // TODO(port): the Invoice / CreditNote mailer branches
-        // (InvoiceMailer / CreditNoteMailer with their ensure-PDF
-        // preconditions and the zero-amount-invoice rule) — premium-gated,
-        // so the OSS license never reaches this branch for them.
-        if (! $this->resource instanceof PaymentReceipt) {
-            throw new LogicException('Invoice/CreditNote resend mailers are not ported — they live with the mailer slice.');
-        }
+        $mailable = match (true) {
+            $this->resource instanceof Invoice => new InvoiceCreatedMail(
+                $this->resource,
+                resend: true,
+                recipientTo: $this->recipientsTo(),
+                recipientCc: $this->recipientsCc(),
+                recipientBcc: $this->recipientsBcc(),
+            ),
+            $this->resource instanceof CreditNote => new CreditNoteCreatedMail(
+                $this->resource,
+                resend: true,
+                recipientTo: $this->recipientsTo(),
+                recipientCc: $this->recipientsCc(),
+                recipientBcc: $this->recipientsBcc(),
+            ),
+            $this->resource instanceof PaymentReceipt => new PaymentReceiptCreatedMail(
+                $this->resource,
+                resend: true,
+                recipientTo: $this->recipientsTo(),
+                recipientCc: $this->recipientsCc(),
+                recipientBcc: $this->recipientsBcc(),
+            ),
+            default => throw new LogicException('Unhandled resend resource '.get_class($this->resource)),
+        };
 
-        $mailable = new PaymentReceiptCreatedMail(
-            $this->resource,
-            resend: true,
-            recipientTo: $this->recipientsTo(),
-            recipientCc: $this->recipientsCc(),
-            recipientBcc: $this->recipientsBcc(),
-        );
-
-        // Rails: PaymentReceiptMailer.with(...).created.deliver_later — the
-        // mailer's own guards (no billing entity email / recipients) answer
-        // no delivery instead of a failure.
+        // Rails: *Mailer.with(...).created.deliver_later — the mailer's own
+        // guards (no billing entity email / recipients / the zero-amount
+        // invoice rule) answer no delivery instead of a failure.
         if ($mailable->shouldSend()) {
             $mailable->send();
         }
@@ -109,6 +115,29 @@ class ResendService extends BaseService
         return (bool) $this->resource?->isFinalized();
     }
 
+    /**
+     * Rails: `billing_entity` — the credit note reads its invoice's billing
+     * entity; invoices and receipts their own.
+     */
+    private function billingEntity(): ?object
+    {
+        if ($this->resource instanceof CreditNote) {
+            return $this->resource->invoice?->billingEntity;
+        }
+
+        return $this->resource->billingEntity;
+    }
+
+    /** Rails: `customer` — a receipt reads it off the payment's payable. */
+    private function customer(): ?object
+    {
+        if ($this->resource instanceof PaymentReceipt) {
+            return $this->resource->payment?->payable?->customer;
+        }
+
+        return $this->resource->customer;
+    }
+
     /** @return list<string> */
     private function recipientsTo(): array
     {
@@ -116,7 +145,7 @@ class ResendService extends BaseService
             return array_values($this->to);
         }
 
-        return array_values(array_filter([(string) ($this->resource->customer()?->email ?? '')]));
+        return array_values(array_filter([(string) ($this->customer()?->email ?? '')]));
     }
 
     /** @return list<string> */
@@ -136,7 +165,7 @@ class ResendService extends BaseService
     {
         $errors = [];
 
-        $billingEntity = $this->resource->billingEntity;
+        $billingEntity = $this->billingEntity();
 
         if ($billingEntity === null || ($billingEntity->email ?? '') === '') {
             $errors['billing_entity'] = ['must have email configured'];
@@ -144,6 +173,12 @@ class ResendService extends BaseService
 
         if (($billingEntity?->fromEmailAddress() ?? '') === '') {
             $errors['from'] = ['must have a sender email address configured'];
+        }
+
+        // Zero-amount invoices are intentionally never emailed (#1559) — an
+        // invoice can carry fees that sum to zero.
+        if ($this->resource instanceof Invoice && (int) $this->resource->fees_amount_cents === 0) {
+            $errors['invoice'] = ['must have a non-zero fees amount'];
         }
 
         if ($this->recipientsTo() === []) {

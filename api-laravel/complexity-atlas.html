@@ -1,0 +1,234 @@
+<title>Port Complexity Atlas</title>
+<style>
+  /* Design plan — engineering survey of a billing API port.
+     Layout: header banner, risk table (churn×complexity), method hotspots,
+     systemic patterns, remediation order. Palette: graphite paper, blueprint
+     ink, heat-orange reserved for risk. Type: IBM Plex Sans + Plex Mono. */
+  :root {
+    --bg: #f4f5f2;
+    --surface: #fdfdfc;
+    --ink: #1c2430;
+    --muted: #5d6a78;
+    --line: #d7dbd4;
+    --accent: #2456a6;
+    --heat: #c4501e;
+    --heat-soft: #f3dcd0;
+    --ok: #2e6e46;
+    --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+    --sans: "IBM Plex Sans", system-ui, sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14181e;
+      --surface: #1b212a;
+      --ink: #e2e7ec;
+      --muted: #8d9aa8;
+      --line: #2b333e;
+      --accent: #7ba7e8;
+      --heat: #e8814a;
+      --heat-soft: #3a2a20;
+      --ok: #6fbf8e;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14181e;
+    --surface: #1b212a;
+    --ink: #e2e7ec;
+    --muted: #8d9aa8;
+    --line: #2b333e;
+    --accent: #7ba7e8;
+    --heat: #e8814a;
+    --heat-soft: #3a2a20;
+    --ok: #6fbf8e;
+    color-scheme: dark;
+  }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 14.5px;
+    line-height: 1.55;
+    padding: 40px 20px 64px;
+    max-width: 880px;
+    margin: 0 auto;
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  h1 {
+    font-size: clamp(26px, 5vw, 34px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    margin: 6px 0 10px;
+    text-wrap: balance;
+  }
+  .lede { color: var(--muted); max-width: 62ch; margin: 0 0 20px; }
+  .scanline {
+    display: flex; flex-wrap: wrap; gap: 8px 22px;
+    font-family: var(--mono); font-size: 12px; color: var(--muted);
+    border-block: 1px solid var(--line); padding-block: 10px; margin-bottom: 30px;
+  }
+  h2 {
+    font-size: 13px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--accent); margin: 38px 0 4px;
+  }
+  h2 + p.sub { color: var(--muted); margin: 0 0 14px; font-size: 13.5px; }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .scroll { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  th {
+    text-align: left; font-family: var(--mono); font-size: 10.5px;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
+    padding: 9px 12px; border-bottom: 1px solid var(--line); white-space: nowrap;
+  }
+  td { padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  td.num, th.num { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  td.file { font-family: var(--mono); font-size: 12px; word-break: break-all; }
+  .riskbar { position: relative; height: 6px; width: 72px; background: var(--heat-soft); border-radius: 3px; overflow: hidden; }
+  .riskbar i { position: absolute; inset: 0; background: var(--heat); border-radius: 3px; }
+  td.risk { white-space: nowrap; }
+  td.risk b { font-family: var(--mono); font-weight: 600; margin-right: 8px; }
+  tr.hot td.file { color: var(--heat); }
+  .stamp {
+    display: inline-block; font-family: var(--mono); font-size: 10.5px;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    border: 1px solid var(--line); border-radius: 4px; padding: 2px 8px; color: var(--muted);
+    margin-left: 8px; vertical-align: 2px;
+  }
+  .patterns { display: grid; gap: 12px; margin-top: 14px; }
+  .pattern {
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: 8px; padding: 14px 16px;
+  }
+  .pattern h3 { margin: 0 0 6px; font-size: 14.5px; font-weight: 600; }
+  .pattern p { margin: 0; color: var(--muted); font-size: 13.5px; }
+  .pattern .tag {
+    font-family: var(--mono); font-size: 11px; color: var(--heat);
+    display: block; margin-bottom: 4px; letter-spacing: 0.06em;
+  }
+  .verdict {
+    border-left: 3px solid var(--accent);
+    padding: 10px 16px; margin-top: 14px;
+    color: var(--ink); background: var(--surface); border-radius: 0 8px 8px 0;
+    font-size: 13.5px;
+  }
+  .verdict strong { color: var(--accent); }
+  ol.plan { margin: 14px 0 0; padding: 0 0 0 20px; }
+  ol.plan li { margin-bottom: 10px; }
+  ol.plan b { font-weight: 600; }
+  ol.plan .when { font-family: var(--mono); font-size: 11px; color: var(--muted); display: block; }
+  footer { margin-top: 44px; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  a { color: var(--accent); }
+</style>
+
+<header>
+  <div class="eyebrow">Lago → Laravel port · static survey</div>
+  <h1>Port Complexity Atlas</h1>
+  <p class="lede">Where the port concentrates risk: churn weighted by cyclomatic complexity, the methods that carry it, and the three copy-paste shapes underneath. Brain scan 2026-10-06, cross-checked with a per-method token scan.</p>
+  <div class="scanline">
+    <span>1,390 graph nodes</span>
+    <span>4,233 edges</span>
+    <span>252 routes</span>
+    <span>1,524 PHP files in app/</span>
+  </div>
+</header>
+
+<h2>Risk — churn × complexity</h2>
+<p class="sub">Risk = commit count × max method complexity. Everything at the ceiling shares one root cause (pattern A below).</p>
+<div class="card"><div class="scroll">
+<table>
+  <thead><tr><th>File</th><th class="num">Risk</th><th class="num">Max&nbsp;CC</th><th class="num">Commits</th><th>Last&nbsp;changed</th><th></th></tr></thead>
+  <tbody>
+    <tr class="hot"><td class="file">app/Http/Controllers/Api/ApiController.php</td><td class="risk"><b>75</b><span class="riskbar"><i style="width:100%"></i></span></td><td class="num">15</td><td class="num">5</td><td>10-02</td></tr>
+    <tr class="hot"><td class="file">app/Http/Controllers/Api/V1/SubscriptionsController.php</td><td class="risk"><b>75</b><span class="riskbar"><i style="width:100%"></i></span></td><td class="num">15</td><td class="num">5</td><td>10-03</td></tr>
+    <tr class="hot"><td class="file">app/Http/Controllers/Api/V1/InvoicesController.php</td><td class="risk"><b>75</b><span class="riskbar"><i style="width:100%"></i></span></td><td class="num">15</td><td class="num">5</td><td>10-05</td></tr>
+    <tr><td class="file">app/Http/Controllers/Api/V1/OrganizationsController.php</td><td class="risk"><b>45</b><span class="riskbar"><i style="width:60%"></i></span></td><td class="num">15</td><td class="num">3</td><td>10-03</td></tr>
+    <tr><td class="file">app/Http/Controllers/Api/V1/BillableMetricsController.php</td><td class="risk"><b>45</b><span class="riskbar"><i style="width:60%"></i></span></td><td class="num">15</td><td class="num">3</td><td>10-05</td></tr>
+    <tr><td class="file">app/Services/Invoices/UpdateService.php</td><td class="risk"><b>36</b><span class="riskbar"><i style="width:48%"></i></span></td><td class="num">9</td><td class="num">4</td><td>10-05</td></tr>
+    <tr><td class="file">app/Http/Controllers/Api/V1/CustomersController.php</td><td class="risk"><b>30</b><span class="riskbar"><i style="width:40%"></i></span></td><td class="num">15</td><td class="num">2</td><td>10-02</td></tr>
+    <tr><td class="file">app/Http/Controllers/Api/V1/PlansController.php</td><td class="risk"><b>30</b><span class="riskbar"><i style="width:40%"></i></span></td><td class="num">15</td><td class="num">2</td><td>10-02</td></tr>
+    <tr><td class="file">app/Http/Controllers/Api/V1/EventsController.php</td><td class="risk"><b>30</b><span class="riskbar"><i style="width:40%"></i></span></td><td class="num">15</td><td class="num">2</td><td>10-05</td></tr>
+    <tr><td class="file">app/Console/Commands/InventoryCheck.php</td><td class="risk"><b>20</b><span class="riskbar"><i style="width:27%"></i></span></td><td class="num">10</td><td class="num">2</td><td>10-02</td></tr>
+    <tr><td class="file">13 more V1 controllers at CC&nbsp;15, risk&nbsp;15</td><td class="risk"><b>15</b><span class="riskbar"><i style="width:20%"></i></span></td><td class="num">15</td><td class="num">1</td><td>—</td></tr>
+  </tbody>
+</table>
+</div></div>
+
+<h2>Method hotspots</h2>
+<p class="sub">Highest cyclomatic complexity per method (token-level scan). The update-ladder services cluster at CC&nbsp;20–28.</p>
+<div class="card"><div class="scroll">
+<table>
+  <thead><tr><th>Method</th><th class="num">CC</th><th class="num">Lines</th><th>Shape</th></tr></thead>
+  <tbody>
+    <tr><td class="file">Organizations\UpdateService::execute</td><td class="num">28</td><td class="num">144</td><td>B</td></tr>
+    <tr><td class="file">Subscriptions\UpdateService::execute</td><td class="num">28</td><td class="num">187</td><td>B</td></tr>
+    <tr><td class="file">Customers\UpdateService::execute</td><td class="num">27</td><td class="num">195</td><td>B</td></tr>
+    <tr><td class="file">Customers\UpsertFromApiService::assignParams</td><td class="num">27</td><td class="num">85</td><td>C</td></tr>
+    <tr><td class="file">Customers\UpdateService::assignParams</td><td class="num">26</td><td class="num">80</td><td>C</td></tr>
+    <tr><td class="file">Coupons\UpdateService::execute</td><td class="num">26</td><td class="num">122</td><td>B</td></tr>
+    <tr><td class="file">Models\Charge::validateAttributes</td><td class="num">25</td><td class="num">115</td><td>D</td></tr>
+    <tr><td class="file">BillingEntities\UpdateService::execute</td><td class="num">25</td><td class="num">117</td><td>B</td></tr>
+    <tr><td class="file">UsageMonitoring\CreateAlertService::execute</td><td class="num">24</td><td class="num">145</td><td>B</td></tr>
+    <tr><td class="file">Plans\UpdateService::execute</td><td class="num">23</td><td class="num">126</td><td>B</td></tr>
+    <tr><td class="file">Contracts\UpdateService::execute</td><td class="num">23</td><td class="num">119</td><td>B</td></tr>
+    <tr><td class="file">Wallets\UpdateService::execute</td><td class="num">23</td><td class="num">131</td><td>B</td></tr>
+    <tr><td class="file">Charges\UpdateService::execute</td><td class="num">22</td><td class="num">127</td><td>B</td></tr>
+    <tr><td class="file">QuoteVersions\Validators\StructuralValidator::validateNode</td><td class="num">21</td><td class="num">97</td><td>D</td></tr>
+    <tr><td class="file">Customers\UpsertFromApiService::execute</td><td class="num">21</td><td class="num">195</td><td>B</td></tr>
+  </tbody>
+</table>
+</div></div>
+<p style="font-family:var(--mono); font-size:11px; color:var(--muted); margin-top:6px">Shapes — B: update-param ladder · C: duplicated param mapper · D: validation matrix (faithful to Rails, leave as-is)</p>
+
+<h2>Systemic patterns</h2>
+<div class="patterns">
+  <div class="pattern">
+    <span class="tag">A · ~30 controllers</span>
+    <h3>The permitParams clone</h3>
+    <p>A 48-line, CC-15 parameter-permission method duplicated across every V1 controller — it is the entire ceiling on the risk table. One shared trait or base-method driven by a per-controller field map collapses ~450 complexity points into one tested implementation.</p>
+  </div>
+  <div class="pattern">
+    <span class="tag">B · ~10 services</span>
+    <h3>The UpdateService::execute ladder</h3>
+    <p>Each ported update service is one 120–190-line method of <code style="font-family:var(--mono); font-size:12px">if (array_key_exists(...))</code> branches over optional params, porting Rails' <code style="font-family:var(--mono); font-size:12px">params.each</code> blocks. Mechanically compressible to field→assigner maps, but each branch encodes exact Rails update semantics — do not touch while contract waves are landing.</p>
+  </div>
+  <div class="pattern">
+    <span class="tag">C · 2 files</span>
+    <h3>assignParams twins</h3>
+    <p><code style="font-family:var(--mono); font-size:12px">Customers\UpsertFromApiService</code> and <code style="font-family:var(--mono); font-size:12px">Customers\UpdateService</code> carry near-identical 80-line param mappers (CC 27/26). Unify behind one mapper after the Customers wave stabilises.</p>
+  </div>
+  <div class="pattern">
+    <span class="tag">D · leave alone</span>
+    <h3>Faithful validation matrices</h3>
+    <p><code style="font-family:var(--mono); font-size:12px">SubscriptionCreationValidator</code> (1,233 lines, total CC 181) and <code style="font-family:var(--mono); font-size:12px">Charge::validateAttributes</code> mirror Rails validation rules one-to-one. The complexity is the contract; refactoring these hides diffs against the Rails source.</p>
+  </div>
+</div>
+
+<div class="verdict">
+  <strong>Read:</strong> the risk table is one bug wearing twenty hats. Fix pattern A once, in its own commit, after the current contract wave lands — the risk ceiling drops from 15 to single digits everywhere at once. Pattern B is real but encodes golden-tested semantics; schedule it, don't hero it. Pattern D is the port doing its job.
+</div>
+
+<h2>Remediation order</h2>
+<div class="card" style="padding: 4px 0">
+<ol class="plan">
+  <li><b>Extract the shared permitParams trait.</b><span class="when">after the current contract wave · one commit · golden tests are the safety net</span></li>
+  <li><b>De-duplicate the Customers assignParams twins.</b><span class="when">after the Customers contract scenario passes · mechanical</span></li>
+  <li><b>Ladder-to-map conversion for update services</b>, one service per commit, starting with the least-churned (Contracts, Wallets) and ending with Subscriptions and Customers.</li>
+  <li><b>Leave D untouched.</b><span class="when">complexity here is the port's fidelity guarantee</span></li>
+</ol>
+</div>
+
+<footer>Sources: brain rescan 2026-10-06 (nodes/edges/routes) · per-method cyclomatic scan over app/ (branch + loop tokens per method body) · Rails reference: /lago/api</footer>

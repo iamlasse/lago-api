@@ -10,6 +10,8 @@ use App\Models\PaymentReceipt;
 use Illuminate\Support\Facades\Http;
 use App\Support\Documents\InvoicePdf;
 use App\Support\Documents\PaymentReceiptPdf;
+use App\Support\Documents\CreditNotePdf;
+use App\Models\CreditNote;
 
 /**
  * Port of Rails' Utils::PdfGenerator
@@ -19,9 +21,9 @@ use App\Support\Documents\PaymentReceiptPdf;
  * document, the Lago PDF logo and the page footer as multipart files with
  * the same scale/margins.
  *
- * The document context is the invoice — or, since the payment-receipts
- * slice, a PaymentReceipt (Rails passes any context:
- * `Utils::PdfGenerator.new(template:, context:)`).
+ * The document context is the invoice — or, since the payment-receipts and
+ * credit-notes slices, a PaymentReceipt or a CreditNote (Rails passes any
+ * context: `Utils::PdfGenerator.new(template:, context:)`).
  */
 final class PdfGenerator
 {
@@ -30,24 +32,27 @@ final class PdfGenerator
 
     public function __construct(
         private readonly string $template,
-        private readonly Invoice|PaymentReceipt $invoice,
+        private readonly Invoice|PaymentReceipt|CreditNote $invoice,
     ) {}
 
     /** Rails: `render_html` — the template rendered for the document context. */
     public function renderHtml(): string
     {
-        return $this->invoice instanceof Invoice
-            ? InvoicePdf::render($this->template, $this->invoice)
-            : PaymentReceiptPdf::render($this->template, $this->invoice);
+        return match (true) {
+            $this->invoice instanceof Invoice => InvoicePdf::render($this->template, $this->invoice),
+            $this->invoice instanceof CreditNote => CreditNotePdf::render($this->template, $this->invoice),
+            default => PaymentReceiptPdf::render($this->template, $this->invoice),
+        };
     }
 
     /** Rails: footer partial (templates/documents/footer). */
     public function renderFooter(): string
     {
-        return view('documents.footer', $this->invoice instanceof Invoice
-            ? InvoicePdf::sharedViewData($this->invoice)
-            : PaymentReceiptPdf::sharedViewData($this->invoice)
-        )->render();
+        return view('documents.footer', match (true) {
+            $this->invoice instanceof Invoice => InvoicePdf::sharedViewData($this->invoice),
+            $this->invoice instanceof CreditNote => CreditNotePdf::sharedViewData($this->invoice),
+            default => PaymentReceiptPdf::sharedViewData($this->invoice),
+        })->render();
     }
 
     /**

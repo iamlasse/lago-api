@@ -4,28 +4,32 @@ declare(strict_types=1);
 
 namespace App\Queries;
 
-use App\Models\Organization;
 use App\Services\BaseResult;
 use App\Services\BaseService;
 use App\Models\ContractRateCard;
+use App\Queries\Concerns\RateCardListFiltering;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 /**
  * Port of Rails' ContractRateCardsQuery
  * (app/queries/contract_rate_cards_query.rb).
  *
- * TODO(port): the RateCardListFiltering / RateCardCategoryOrdering concerns
- * (shared list filters and product_category ordering) — not reachable from
- * the REST controller.
+ * The REST controller passes contract_id / external_id only; the GraphQL
+ * `contractAppliedRateCards` resolver additionally passes the shared catalog
+ * list filters, the search term and the product_category ordering.
  */
 class ContractRateCardsQuery extends BaseService
 {
+    use RateCardListFiltering;
+
     private const DEFAULT_PER_PAGE = 100;
 
     public function __construct(
         private readonly Organization $organization,
+        private readonly ?string $searchTerm = null,
         private readonly array $pagination = ['page' => null, 'limit' => null],
         private readonly array $filters = [],
+        private readonly ?string $order = null,
     ) {
         parent::__construct();
     }
@@ -51,14 +55,28 @@ class ContractRateCardsQuery extends BaseService
                 ->select('contract_rate_cards.*');
         }
 
-        // Rails: same order as a contract's appliedRateCards —
-        // apply_consistent_ordering with default effective_date asc.
-        $result->contract_rate_cards = $this->paginate(
-            $contractRateCards
-                ->orderBy('contract_rate_cards.effective_date')
-                ->orderByDesc('contract_rate_cards.created_at')
-                ->orderBy('contract_rate_cards.id'),
-        );
+        // Rails: apply_rate_card_filters(phase_parent: :contract_rate_card_id).
+        $contractRateCards = $this->applyRateCardFilters($contractRateCards, 'contract_rate_card_id');
+
+        if ($this->order === 'product_category') {
+            $contractRateCards = $this->orderByProductCategory($contractRateCards);
+
+            // Rails: order_by_product_category(...).order(:effective_date, :id).
+            $result->contract_rate_cards = $this->paginate(
+                $contractRateCards
+                    ->orderBy('contract_rate_cards.effective_date')
+                    ->orderBy('contract_rate_cards.id'),
+            );
+        } else {
+            // Rails: same order as a contract's appliedRateCards —
+            // apply_consistent_ordering with default effective_date asc.
+            $result->contract_rate_cards = $this->paginate(
+                $contractRateCards
+                    ->orderBy('contract_rate_cards.effective_date')
+                    ->orderByDesc('contract_rate_cards.created_at')
+                    ->orderBy('contract_rate_cards.id'),
+            );
+        }
 
         return $result;
     }

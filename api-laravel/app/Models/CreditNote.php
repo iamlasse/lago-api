@@ -174,16 +174,20 @@ class CreditNote extends BaseModel
         return $this->invoice?->purchase_order_number;
     }
 
-    /** Port of `file_url` — ActiveStorage is not ported (TODO(port)). */
+    /** Port of `file_url` — nil while no PDF is attached. */
     public function fileUrl(): ?string
     {
-        return null;
+        return \App\Support\ActiveStorage::url(
+            \App\Support\ActiveStorage::blob($this, \App\Support\ActiveStorage::FILE),
+        );
     }
 
-    /** Port of `xml_url` — ActiveStorage is not ported (TODO(port)). */
+    /** Port of `xml_url` — nil while no XML is attached. */
     public function xmlUrl(): ?string
     {
-        return null;
+        return \App\Support\ActiveStorage::url(
+            \App\Support\ActiveStorage::blob($this, \App\Support\ActiveStorage::XML_FILE),
+        );
     }
 
     /** Port of `currency` — total_amount_currency. */

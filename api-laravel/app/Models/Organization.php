@@ -307,6 +307,18 @@ class Organization extends BaseModel
         return $this->hasMany(Order::class);
     }
 
+    /** Rails: `has_many :payment_providers, class_name: "PaymentProviders::BaseProvider"`. */
+    public function paymentProviders(): HasMany
+    {
+        return $this->hasMany(PaymentProvider::class);
+    }
+
+    /** Rails: `has_many :payment_methods`. */
+    public function paymentMethods(): HasMany
+    {
+        return $this->hasMany(PaymentMethod::class);
+    }
+
     /** Rails: `has_one :default_billing_entity, -> { active.order(created_at: :asc) }`. */
     public function defaultBillingEntity(): HasOne
     {
