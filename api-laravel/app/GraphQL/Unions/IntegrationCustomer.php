@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\GraphQL\Unions;
 
-use App\GraphQL\Interfaces\AbstractLagoTypeResolver;
 use GraphQL\Type\Definition\Type;
+use App\GraphQL\Interfaces\AbstractLagoTypeResolver;
 use App\Models\IntegrationCustomer as IntegrationCustomerModel;
 
 /**

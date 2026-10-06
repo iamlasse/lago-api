@@ -28,14 +28,10 @@ class CreateService extends BaseService
     ) {
         parent::__construct($integration);
     }
+
     public function actionPath(): string
     {
         return "v1/{$this->provider()}/contacts";
-    }
-
-    protected function customer(): ?Customer
-    {
-        return $this->customer;
     }
 
     public function execute(): BaseResult
@@ -77,6 +73,11 @@ class CreateService extends BaseService
 
             return $this->result();
         }
+    }
+
+    protected function customer(): ?Customer
+    {
+        return $this->customer;
     }
 
     /**

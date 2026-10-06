@@ -69,7 +69,7 @@ class RevokeService extends BaseService
             ->join('roles', 'roles.id', '=', 'membership_roles.role_id')
             ->where('memberships.organization_id', $this->membership->organization_id)
             ->where('memberships.status', 0)
-            
+
             ->where('roles.admin', true)
             ->whereNull('roles.deleted_at')
             ->count();

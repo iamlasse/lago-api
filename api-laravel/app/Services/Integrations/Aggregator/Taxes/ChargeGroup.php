@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Services\Integrations\Aggregator\Taxes;
 
 use App\Models\Fee;
-use App\Services\Integrations\Aggregator\Taxes\Invoices\ChargeFeeGroup;
 use SplObjectStorage;
+use App\Services\Integrations\Aggregator\Taxes\Invoices\ChargeFeeGroup;
 
 /**
  * Port of Rails' Integrations::Aggregator::Taxes::ChargeGroup — the grouping

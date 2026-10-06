@@ -21,7 +21,6 @@ use App\Models\IntegrationCustomer;
  */
 class CreateConnectionService extends BaseService
 {
-
     /** Rails: Integrations::BaseIntegration PROVIDER_TYPES — integration STI type to provider key. */
     private const INTEGRATION_PROVIDER_KEYS = [
         Integration::ANROK_TYPE => 'anrok',

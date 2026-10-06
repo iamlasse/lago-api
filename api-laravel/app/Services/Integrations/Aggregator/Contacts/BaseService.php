@@ -17,12 +17,12 @@ abstract class BaseService extends AggregatorBaseService
     /** The per-service result the processing writes into (set by the subclass). */
     protected \App\Services\BaseResult $result;
 
+    abstract protected function customer(): ?Customer;
+
     protected function result(): \App\Services\BaseResult
     {
         return $this->result;
     }
-
-    abstract protected function customer(): ?Customer;
 
     protected function headers(): array
     {

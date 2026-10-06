@@ -5,11 +5,10 @@ declare(strict_types=1);
 require_once __DIR__.'/GraphQLHelpers.php';
 require_once __DIR__.'/AuthPlumbingTest.php';
 
-use App\Models\Organization;
-use App\Models\UsageMonitoring\Alert;
 use App\Models\Wallet;
 use App\Models\WalletTransaction;
 use Illuminate\Support\Facades\Http;
+use App\Models\UsageMonitoring\Alert;
 
 /**
  * Ports of the Rails analytics/data-api/usage/events resolvers' specs
@@ -109,14 +108,8 @@ it('proxies the data api queries', function (): void {
 
     Http::fake([
         // Full wire payloads: the DataApi* object types carry non-null fields.
-        'data.lago.test/mrrs/*' => Http::response([array_merge($month, [
-            'starting_mrr' => '900',
-            'ending_mrr' => '1000',
-            'mrr_new' => '100',
-            'mrr_expansion' => '0',
-            'mrr_contraction' => '0',
-            'mrr_churn' => '0',
-        ])], 200),
+        // Laravel matches the FIRST registered pattern, so the sub-path fakes
+        // come before their path-prefix prefixes.
         'data.lago.test/mrrs/*/plans*' => Http::response(['mrrs_plans' => [array_merge($month, [
             'plan_id' => 'plan-1',
             'plan_code' => 'pro',
@@ -137,6 +130,14 @@ it('proxies the data api queries', function (): void {
         'data.lago.test/usages/*/aggregated_amounts*' => Http::response([], 200),
         'data.lago.test/revenue_streams/*/customers*' => Http::response(['revenue_streams_customers' => [], 'meta' => null], 200),
         'data.lago.test/revenue_streams/*/plans*' => Http::response(['revenue_streams_plans' => [], 'meta' => null], 200),
+        'data.lago.test/mrrs/*' => Http::response([array_merge($month, [
+            'starting_mrr' => '900',
+            'ending_mrr' => '1000',
+            'mrr_new' => '100',
+            'mrr_expansion' => '0',
+            'mrr_contraction' => '0',
+            'mrr_churn' => '0',
+        ])], 200),
         'data.lago.test/prepaid_credits/*' => Http::response([], 200),
         'data.lago.test/revenue_streams/*' => Http::response([], 200),
         'data.lago.test/usages/*' => Http::response([array_merge($month, [

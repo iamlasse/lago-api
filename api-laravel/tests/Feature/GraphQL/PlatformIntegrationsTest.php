@@ -5,18 +5,17 @@ declare(strict_types=1);
 require_once __DIR__.'/GraphQLHelpers.php';
 require_once __DIR__.'/AuthPlumbingTest.php';
 
-use App\Models\CreditNote;
-use App\Models\Customer;
-use App\Models\IntegrationCustomer;
-use App\Models\Integrations\EntraIdIntegration;
-use App\Models\Integrations\NetsuiteIntegration;
-use App\Models\Integrations\OktaIntegration;
-use App\Models\Integration;
-use App\Models\IntegrationItem;
 use App\Models\Invoice;
+use App\Models\Customer;
+use App\Models\CreditNote;
+use App\Models\Integration;
 use App\Models\Organization;
+use App\Models\IntegrationCustomer;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
+use App\Models\Integrations\OktaIntegration;
+use App\Models\Integrations\EntraIdIntegration;
+use App\Models\Integrations\NetsuiteIntegration;
 
 /**
  * Ports of Rails' spec/graphql/mutations/integrations/{okta,entra_id}/, the
@@ -412,8 +411,8 @@ it('syncs invoices and credit notes to the integrations', function (): void {
 
     expect($response->json('data.syncIntegrationCreditNote.creditNoteId'))->toBe($creditNote->id);
 
-    Queue::assertPushed(\App\Jobs\Integrations\Aggregator\Invoices\CreateJob::class);
-    Queue::assertPushed(\App\Jobs\Integrations\Aggregator\CreditNotes\CreateJob::class);
+    Queue::assertPushed(App\Jobs\Integrations\Aggregator\Invoices\CreateJob::class);
+    Queue::assertPushed(App\Jobs\Integrations\Aggregator\CreditNotes\CreateJob::class);
 
     // Unknown invoices answer the not_found envelope.
     $response = gqlPost(<<<'GQL'
@@ -445,7 +444,7 @@ it('syncs invoices through the hubspot and salesforce mutations', function (): v
 
     expect($response->json('data.syncHubspotIntegrationInvoice.invoiceId'))->toBe($invoice->id);
 
-    Queue::assertPushed(\App\Jobs\Integrations\Aggregator\Invoices\CreateJob::class);
+    Queue::assertPushed(App\Jobs\Integrations\Aggregator\Invoices\CreateJob::class);
 
     // The salesforce variant enqueues the invoice.resynced webhook instead
     // (the webhook emission needs an endpoint on the organization).
@@ -459,5 +458,5 @@ it('syncs invoices through the hubspot and salesforce mutations', function (): v
 
     expect($response->json('data.syncSalesforceInvoice.invoiceId'))->toBe($invoice->id);
 
-    Queue::assertPushed(\App\Jobs\SendWebhookJob::class);
+    Queue::assertPushed(App\Jobs\SendWebhookJob::class);
 })->group('ledger:gql:mutation:syncHubspotIntegrationInvoice', 'ledger:gql:mutation:syncSalesforceInvoice');

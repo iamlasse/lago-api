@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\GraphQL\Unions;
 
+use GraphQL\Type\Definition\Type;
 use App\Models\Integration as IntegrationModel;
 use App\GraphQL\Interfaces\AbstractLagoTypeResolver;
-use GraphQL\Type\Definition\Type;
 
 /**
  * Type resolver for the frozen SDL's `union Integration` — dispatches on

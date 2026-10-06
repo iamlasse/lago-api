@@ -5,13 +5,13 @@ declare(strict_types=1);
 require_once __DIR__.'/GraphQLHelpers.php';
 require_once __DIR__.'/AuthPlumbingTest.php';
 
-use App\Models\Invite;
-use App\Models\Organization;
-use App\Models\Membership;
-use App\Models\MembershipRole;
-use App\Models\PasswordReset;
 use App\Models\Role;
 use App\Models\User;
+use App\Models\Invite;
+use App\Models\Membership;
+use App\Models\Organization;
+use App\Models\PasswordReset;
+use App\Models\MembershipRole;
 use Illuminate\Support\Facades\Queue;
 
 /**

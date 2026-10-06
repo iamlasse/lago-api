@@ -5,8 +5,8 @@ declare(strict_types=1);
 require_once __DIR__.'/GraphQLHelpers.php';
 require_once __DIR__.'/AuthPlumbingTest.php';
 
-use App\Enums\WebhookStatus;
 use App\Models\Webhook;
+use App\Enums\WebhookStatus;
 use App\Models\WebhookEndpoint;
 
 /**
@@ -205,5 +205,5 @@ it('retries a webhook', function (): void {
 
     // The service enqueues the HTTP job — the status flip happens when the
     // job runs (Rails: SendHttpJob.perform_later).
-    Queue::assertPushed(\App\Jobs\SendHttpWebhookJob::class);
+    Queue::assertPushed(App\Jobs\SendHttpWebhookJob::class);
 })->group('ledger:gql:mutation:retryWebhook');
