@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Jobs\Clock;
 
-use App\Models\Subscription;
 use App\Models\Webhook;
+use App\Jobs\SendWebhookJob;
+use App\Models\Subscription;
 use Illuminate\Bus\Queueable;
 use App\Jobs\Middleware\UniqueJob;
-use App\Jobs\SendWebhookJob;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -49,7 +49,7 @@ class SubscriptionsToBeTerminatedJob implements ShouldQueue
 
         Subscription::query()
             ->active()
-            ->whereRaw('DATE(ending_at::timestamptz) IN ('.implode(', ', array_fill(0, count($sentAtDates)), '?').')', $sentAtDates)
+            ->whereRaw('DATE(ending_at::timestamptz) IN ('.implode(', ', array_fill(0, count($sentAtDates), '?')).')', $sentAtDates)
             ->chunkById(1000, function ($subscriptions) use ($today): void {
                 $subscriptionIdsAlreadyAlerted = Webhook::query()
                     ->where('webhook_type', 'subscription.termination_alert')

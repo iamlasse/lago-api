@@ -4,19 +4,18 @@ declare(strict_types=1);
 
 namespace App\Services\AdjustedFees;
 
-use App\Enums\FeePaymentStatus;
-use App\Enums\FeeType;
-use App\Models\AdjustedFee;
-use App\Models\Charge;
-use App\Models\ChargeFilter;
 use App\Models\Fee;
+use App\Enums\FeeType;
+use App\Models\Charge;
 use App\Models\Invoice;
+use App\Support\License;
+use App\Models\AdjustedFee;
 use App\Models\Subscription;
 use App\Services\BaseResult;
 use App\Services\BaseService;
+use App\Enums\FeePaymentStatus;
 use App\Services\Failures\FailedResult;
 use App\Services\Invoices\RefreshDraftService;
-use App\Support\License;
 
 /**
  * Port of Rails' AdjustedFees::CreateService

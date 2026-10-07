@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Fees;
 
+use Throwable;
 use App\Models\Fee;
 use App\Enums\FeeType;
 use App\Models\Invoice;
@@ -11,13 +12,13 @@ use App\Support\MoneyMath;
 use App\Models\AdjustedFee;
 use App\Models\Subscription;
 use App\Services\BaseResult;
-use NotImplementedException;
 use App\Enums\FeePaymentStatus;
 use App\Models\CachedAggregation;
 use Illuminate\Support\Facades\DB;
 use App\Services\Fees\ChargeService\Options;
 use App\Services\Fees\ChargeService\Aggregator;
 use App\Services\ChargeModels\AggregationResult;
+use App\Services\ChargeModels\ChargeModelResult;
 use App\Services\Fees\ChargeService\MeteredItem;
 use App\Services\ChargeModels\Factory as ChargeModelFactory;
 
@@ -93,9 +94,18 @@ class ChargeService extends \App\Services\BaseService
 
                 $fee->save();
 
-                // TODO(port): AdjustedFee update! branch for draft invoices —
-                // requires the full adjusted-fee matching (charge filter +
-                // grouped_by keys) ported with the filters pipeline (M2).
+                // Rails: next unless invoice&.draft? &&
+                //   fee.true_up_parent_fee.nil? && adjusted_fee(...) —
+                //   then adjusted_fee.update!(fee:) — the adjusted-fee
+                //   matching is WIRED (adjusted-fees slice); the deeper
+                //   fee-building override (fees built FROM the adjusted fee
+                //   inside fees_from_charge_model_result) stays TODO(port)
+                //   with the filters pipeline (M2).
+                if ($this->invoice?->isDraft()
+                    && $fee->true_up_parent_fee_id === null
+                    && ($adjustedFee = $this->adjustedFeeFor($fee)) !== null) {
+                    $adjustedFee->update(['fee_id' => $fee->id]);
+                }
             }
 
             $result->fees = $kept;
@@ -184,7 +194,7 @@ class ChargeService extends \App\Services\BaseService
 
     /** @return list<Fee> */
     private function feesFromChargeModelResult(
-        \App\Services\ChargeModels\ChargeModelResult $chargeModelResult,
+        ChargeModelResult $chargeModelResult,
         MeteredItem $meteredItem,
         BaseResult $result,
     ): array {
@@ -210,7 +220,7 @@ class ChargeService extends \App\Services\BaseService
     }
 
     private function initFee(
-        \App\Services\ChargeModels\ChargeModelResult $amountResult,
+        ChargeModelResult $amountResult,
         MeteredItem $meteredItem,
         BaseResult $result,
     ): ?Fee {
@@ -301,7 +311,7 @@ class ChargeService extends \App\Services\BaseService
         return $details;
     }
 
-    private function feeUnits(\App\Services\ChargeModels\ChargeModelResult $amountResult,
+    private function feeUnits(ChargeModelResult $amountResult,
         MeteredItem $meteredItem,
     ): string {
         if ($this->options()->currentUsage() && ($meteredItem->payInAdvance() || $meteredItem->prorated())) {
@@ -326,6 +336,10 @@ class ChargeService extends \App\Services\BaseService
         }
 
         if ((int) $fee->amount_cents !== 0 || (int) $fee->events_count !== 0) {
+            return true;
+        }
+
+        if ($this->adjustedFeeFor($fee) !== null) {
             return true;
         }
 
@@ -361,7 +375,7 @@ class ChargeService extends \App\Services\BaseService
         AggregationResult $aggregationResult,
         MeteredItem $meteredItem,
         BaseResult $result,
-    ): ?\App\Services\ChargeModels\ChargeModelResult {
+    ): ?ChargeModelResult {
         try {
             return ChargeModelFactory::newInstance(
                 pricingStructure: $meteredItem->pricingStructure(),
@@ -369,7 +383,7 @@ class ChargeService extends \App\Services\BaseService
                 periodRatio: $meteredItem->periodRatio(),
                 calculateProjectedUsage: $this->options()->calculateProjectedUsage,
             )->apply();
-        } catch (NotImplementedException $e) {
+        } catch (Throwable $e) {
             $result->serviceFailure('charge_model_not_implemented', $e->getMessage(), $e);
 
             return null;
@@ -451,6 +465,47 @@ class ChargeService extends \App\Services\BaseService
         $aggregation->save();
 
         $result->cached_aggregations[] = $aggregation;
+    }
+
+    /**
+     * Port of ChargeService#adjusted_fee (charge branch) — the AdjustedFee
+     * matching this fee (charge filter + grouped_by keys + stored boundaries).
+     * Rails memoizes per (charge_filter, grouped_by) key; the local pipeline
+     * builds a single ungrouped fee per service call, so the memo would never
+     * hit twice and is omitted.
+     *
+     * TODO(port): the fee-building override (applicable_adjusted_fee →
+     * InitFromAdjustedChargeFeeService inside fees_from_charge_model_result,
+     * incl. display-name-only adjustments) needs the filters pipeline (M2).
+     */
+    private function adjustedFeeFor(Fee $fee): ?AdjustedFee
+    {
+        // Rails: `return if metered_item.billing_segment` (products unported).
+        if ($this->invoice === null || $this->options()->skipAdjustedFees) {
+            return null;
+        }
+
+        $chargeFilterId = $fee->charge_filter_id;
+        $groupedBy = $fee->grouped_by ?: [];
+
+        return AdjustedFee::query()
+            ->where('invoice_id', $this->invoice->id)
+            ->where('subscription_id', $this->subscription->id)
+            ->where('charge_id', $this->meteredItem->chargeId())
+            ->where('fee_type', FeeType::Charge->value)
+            ->where(function ($query) use ($chargeFilterId): void {
+                $chargeFilterId === null
+                    ? $query->whereNull('charge_filter_id')
+                    : $query->where('charge_filter_id', $chargeFilterId);
+            })
+            ->whereRaw("properties->>'charges_from_datetime' = ?", [
+                $this->isoMillis($this->meteredItem->boundaries->chargesFromDatetime),
+            ])
+            ->whereRaw("properties->>'charges_to_datetime' = ?", [
+                $this->isoMillis($this->meteredItem->boundaries->chargesToDatetime),
+            ])
+            ->where('grouped_by', $groupedBy)
+            ->first();
     }
 
     /** Rails `iso8601(3)` — millisecond precision, UTC. */

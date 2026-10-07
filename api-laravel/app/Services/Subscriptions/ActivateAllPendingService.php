@@ -36,6 +36,7 @@ class ActivateAllPendingService extends BaseService
         // Rails: Subscription.joins(customer: :billing_entity).pending
         //   .where(previous_subscription: nil).where("DATE(...) <= DATE(?)", ...).
         $subscriptions = Subscription::query()
+            ->select('subscriptions.*')
             ->join('customers', 'subscriptions.customer_id', '=', 'customers.id')
             ->join('billing_entities', 'customers.billing_entity_id', '=', 'billing_entities.id')
             ->pending()

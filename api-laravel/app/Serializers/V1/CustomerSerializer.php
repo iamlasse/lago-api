@@ -79,11 +79,11 @@ class CustomerSerializer extends ModelSerializer
         }
 
         if ($this->include('applicable_invoice_custom_sections')) {
-            $payload['applicable_invoice_custom_sections'] = (new \App\Serializers\Base\CollectionSerializer(
+            $payload = [...$payload, ...(new CollectionSerializer(
                 $this->model->applicableInvoiceCustomSections()->get(),
                 InvoiceCustomSectionSerializer::class,
                 ['collection_name' => 'applicable_invoice_custom_sections'],
-            ))->serialize();
+            ))->serialize()];
         }
 
         if ($this->include('error_details')) {

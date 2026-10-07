@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Serializers\V1;
 
 use App\Enums\InvoiceType;
+use Carbon\CarbonImmutable;
 use App\Serializers\Base\ModelSerializer;
 use App\Serializers\Base\CollectionSerializer;
 use App\Serializers\V1\Concerns\FormatsDatetime;
@@ -106,11 +107,11 @@ class InvoiceSerializer extends ModelSerializer
         }
 
         if ($this->include('applied_invoice_custom_sections')) {
-            $payload['applied_invoice_custom_sections'] = (new \App\Serializers\Base\CollectionSerializer(
+            $payload = [...$payload, ...(new CollectionSerializer(
                 $this->model->appliedInvoiceCustomSections()->get(),
                 Invoices\AppliedInvoiceCustomSectionSerializer::class,
                 ['collection_name' => 'applied_invoice_custom_sections'],
-            ))->serialize();
+            ))->serialize()];
         }
 
         return $payload;
@@ -203,9 +204,9 @@ class InvoiceSerializer extends ModelSerializer
         }
 
         if (is_string($date)) {
-            $date = \Carbon\CarbonImmutable::parse($date, 'UTC');
+            $date = CarbonImmutable::parse($date, 'UTC');
         }
 
-        return \Carbon\CarbonImmutable::instance($date)->format('Y-m-d');
+        return CarbonImmutable::instance($date)->format('Y-m-d');
     }
 }

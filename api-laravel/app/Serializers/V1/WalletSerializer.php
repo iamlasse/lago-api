@@ -7,6 +7,7 @@ namespace App\Serializers\V1;
 use App\Models\Wallet;
 use App\Support\MoneyMath;
 use App\Serializers\Base\ModelSerializer;
+use App\Serializers\Base\CollectionSerializer;
 use App\Serializers\V1\Concerns\FormatsDatetime;
 
 /**
@@ -75,11 +76,11 @@ class WalletSerializer extends ModelSerializer
         }
 
         if ($this->include('applied_invoice_custom_sections')) {
-            $payload['applied_invoice_custom_sections'] = (new \App\Serializers\Base\CollectionSerializer(
+            $payload = [...$payload, ...(new CollectionSerializer(
                 $this->model->appliedInvoiceCustomSections()->get(),
-                \App\Serializers\V1\AppliedInvoiceCustomSectionSerializer::class,
+                AppliedInvoiceCustomSectionSerializer::class,
                 ['collection_name' => 'applied_invoice_custom_sections'],
-            ))->serialize();
+            ))->serialize()];
         }
 
         $payload = [...$payload, ...$this->paymentMethod($wallet)];

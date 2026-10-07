@@ -8,9 +8,9 @@ use App\Models\Subscription;
 use Illuminate\Bus\Queueable;
 use App\Jobs\Middleware\UniqueJob;
 use Illuminate\Queue\InteractsWithQueue;
-use App\Jobs\Subscriptions\TerminateEndedSubscriptionJob;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use App\Jobs\Subscriptions\TerminateEndedSubscriptionJob;
 
 /**
  * Port of Rails' Clock::TerminateEndedSubscriptionsJob
@@ -52,6 +52,7 @@ class TerminateEndedSubscriptionsJob implements ShouldQueue
         // DATE comparison matches fits in it, with room to spare for any
         // timezone.
         $subscriptions = Subscription::query()
+            ->select('subscriptions.*')
             ->join('customers', 'subscriptions.customer_id', '=', 'customers.id')
             ->join('billing_entities', 'customers.billing_entity_id', '=', 'billing_entities.id')
             ->active()

@@ -7,7 +7,9 @@ namespace App\Serializers\V1;
 use LogicException;
 use App\Serializers\Base\ModelSerializer;
 use App\Services\Subscriptions\DatesService;
+use App\Serializers\Base\CollectionSerializer;
 use App\Serializers\V1\Concerns\FormatsDatetime;
+use App\Models\Entitlement\SubscriptionEntitlement;
 
 /**
  * Port of Rails' V1::SubscriptionSerializer
@@ -95,15 +97,15 @@ class SubscriptionSerializer extends ModelSerializer
         }
 
         if ($this->include('applied_invoice_custom_sections')) {
-            $payload['applied_invoice_custom_sections'] = (new \App\Serializers\Base\CollectionSerializer(
+            $payload = [...$payload, ...(new CollectionSerializer(
                 $this->model->appliedInvoiceCustomSections()->get(),
-                \App\Serializers\V1\AppliedInvoiceCustomSectionSerializer::class,
+                AppliedInvoiceCustomSectionSerializer::class,
                 ['collection_name' => 'applied_invoice_custom_sections'],
-            ))->serialize();
+            ))->serialize()];
         }
 
         // Rails: activation_rules — CollectionSerializer over the rules.
-        $payload['activation_rules'] = (new \App\Serializers\Base\CollectionSerializer(
+        $payload['activation_rules'] = (new CollectionSerializer(
             $this->model->activationRules()->get(),
             Subscriptions\ActivationRuleSerializer::class,
             ['collection_name' => 'activation_rules'],
@@ -195,9 +197,9 @@ class SubscriptionSerializer extends ModelSerializer
      */
     protected function entitlements(): array
     {
-        $entitlements = \App\Models\Entitlement\SubscriptionEntitlement::forSubscription($this->model);
+        $entitlements = SubscriptionEntitlement::forSubscription($this->model);
 
-        return (new \App\Serializers\Base\CollectionSerializer(
+        return (new CollectionSerializer(
             $entitlements,
             Entitlement\SubscriptionEntitlementSerializer::class,
             ['collection_name' => 'entitlements'],

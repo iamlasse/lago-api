@@ -32,8 +32,12 @@ class BillingPeriodBoundaries
     /** Rails: `BillingPeriodBoundaries.from_fee(fee)` — reads fee.properties. */
     public static function fromFee(?Fee $fee): self
     {
-        $props = $fee->properties ?? [];
+        return self::fromProperties($fee->properties ?? []);
+    }
 
+    /** The properties-array entry point behind from_fee. */
+    public static function fromProperties(array $props): self
+    {
         return new self(
             fromDatetime: $props['from_datetime'] ?? null,
             toDatetime: $props['to_datetime'] ?? null,

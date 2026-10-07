@@ -10,7 +10,6 @@ use App\Jobs\Middleware\UniqueJob;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Database\Eloquent\Builder;
 
 /**
  * Port of Rails' Clock::WebhooksCleanupJob
@@ -57,11 +56,12 @@ class WebhooksCleanupJob implements ShouldQueue
     {
         do {
             $deleted = Webhook::query()
-                ->whereIn('id', fn (Builder $query) => $query
-                    ->select('id')
-                    ->from((new Webhook)->getTable())
-                    ->where('updated_at', '<', now()->subDays(self::$retentionDays))
-                    ->limit(self::$batchSize))
+                ->whereIn('id', function ($query): void {
+                    $query->select('id')
+                        ->from((new Webhook)->getTable())
+                        ->where('updated_at', '<', now()->subDays(self::$retentionDays))
+                        ->limit(self::$batchSize);
+                })
                 ->delete();
         } while ($deleted >= self::$batchSize);
     }

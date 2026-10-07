@@ -5,14 +5,17 @@ declare(strict_types=1);
 namespace App\Services\Invoices;
 
 use App\Models\Invoice;
+use App\Models\AdjustedFee;
 use Carbon\CarbonImmutable;
 use App\Services\BaseResult;
 use App\Support\Utils\Datetime;
 use Illuminate\Support\Facades\DB;
+use App\Enums\InvoicePaymentStatus;
 use App\Models\InvoiceSubscription;
 use App\Services\Fees\ChargeService;
 use App\Models\BillingPeriodBoundaries;
 use App\Services\Fees\SubscriptionService;
+use App\Services\Failures\UnknownTaxFailure;
 use App\Services\Fees\ChargeService\Options;
 use App\Services\Subscriptions\DatesService;
 use App\Services\Credits\AppliedCouponsService;
@@ -102,7 +105,7 @@ class CalculateFeesService extends \App\Services\BaseService
             );
 
             if (! $totalsResult->success()
-                && $totalsResult->getError() instanceof \App\Services\Failures\UnknownTaxFailure) {
+                && $totalsResult->getError() instanceof UnknownTaxFailure) {
                 return;
             }
 
@@ -112,8 +115,8 @@ class CalculateFeesService extends \App\Services\BaseService
             // (Credits::CreditNoteService / AppliedPrepaidCreditsService).
 
             $this->invoice->payment_status = (int) $this->invoice->total_amount_cents > 0
-                ? \App\Enums\InvoicePaymentStatus::Pending
-                : \App\Enums\InvoicePaymentStatus::Succeeded;
+                ? InvoicePaymentStatus::Pending
+                : InvoicePaymentStatus::Succeeded;
 
             $this->invoice->save();
 
@@ -125,7 +128,7 @@ class CalculateFeesService extends \App\Services\BaseService
     }
 
     // TODO(integration): verify signature against ported DatesService
-    private function dateService($subscription, ?InvoiceSubscription $invoiceSubscription = null): DatesService
+    private function dateService(mixed $subscription, ?InvoiceSubscription $invoiceSubscription = null): DatesService
     {
         $timestamp = $invoiceSubscription?->timestamp ?? $this->invoice->invoiceSubscriptions->first()?->timestamp;
 
@@ -143,7 +146,7 @@ class CalculateFeesService extends \App\Services\BaseService
             ->startOfDay();
     }
 
-    private function createChargesFees($subscription, BillingPeriodBoundaries $boundaries, BaseResult $result): void
+    private function createChargesFees(mixed $subscription, BillingPeriodBoundaries $boundaries, BaseResult $result): void
     {
         if (! $this->chargeBoundariesValid($boundaries)) {
             return;
@@ -152,6 +155,12 @@ class CalculateFeesService extends \App\Services\BaseService
         // NOTE: only invoiceable, non-pay-in-advance (unless the metric is
         // recurring) charges are billed here. Charge filters (per-filter fees
         // + filtered aggregations) arrive with the M2 event store.
+        $adjustedFeeExists = AdjustedFee::query()
+            ->where('invoice_id', $this->invoice->id)
+            ->where('subscription_id', $subscription->id)
+            ->matchingChargeBoundaries($boundaries)
+            ->exists();
+
         $charges = $subscription->plan->charges()
             ->join('billable_metrics', 'billable_metrics.id', '=', 'charges.billable_metric_id')
             ->where('charges.invoiceable', true)
@@ -173,7 +182,7 @@ class CalculateFeesService extends \App\Services\BaseService
                 subscription: $subscription,
                 options: new Options(
                     context: $this->context,
-                    skipAdjustedFees: true, // TODO(port): AdjustedFee existence check.
+                    skipAdjustedFees: ! $adjustedFeeExists, // AdjustedFee existence check — WIRED.
                 ),
             );
 
@@ -197,7 +206,7 @@ class CalculateFeesService extends \App\Services\BaseService
         return $boundaries->chargesFromDatetime->lt($boundaries->chargesToDatetime);
     }
 
-    private function shouldNotCreateChargeFee($charge, $subscription): bool
+    private function shouldNotCreateChargeFee(mixed $charge, mixed $subscription): bool
     {
         if ($charge->payInAdvance()) {
             return $charge->billableMetric->recurring
@@ -215,7 +224,7 @@ class CalculateFeesService extends \App\Services\BaseService
         // TODO(port): charge.included_in_next_subscription?(subscription)
     }
 
-    private function shouldCreateSubscriptionFee($subscription, BillingPeriodBoundaries $boundaries): bool
+    private function shouldCreateSubscriptionFee(mixed $subscription, BillingPeriodBoundaries $boundaries): bool
     {
         // NOTE: When plan is pay in advance we generate an invoice upon
         // subscription creation; prevent a subscription fee if the
@@ -261,7 +270,7 @@ class CalculateFeesService extends \App\Services\BaseService
             || ($subscription->terminated() && ($subscription->terminated_at?->gt($this->invoice->created_at) ?? false));
     }
 
-    private function shouldCreateSemiannualSubscriptionFee($subscription): bool
+    private function shouldCreateSemiannualSubscriptionFee(mixed $subscription): bool
     {
         $plan = $subscription->plan;
 
@@ -287,7 +296,7 @@ class CalculateFeesService extends \App\Services\BaseService
         return false;
     }
 
-    private function shouldCreateYearlySubscriptionFee($subscription): bool
+    private function shouldCreateYearlySubscriptionFee(mixed $subscription): bool
     {
         $plan = $subscription->plan;
 
@@ -313,7 +322,7 @@ class CalculateFeesService extends \App\Services\BaseService
         return false;
     }
 
-    private function shouldCreateChargeFees($subscription): bool
+    private function shouldCreateChargeFees(mixed $subscription): bool
     {
         if ($this->invoice->skip_charges) {
             return false;
@@ -330,7 +339,7 @@ class CalculateFeesService extends \App\Services\BaseService
         return true;
     }
 
-    private function inTrialPeriodNotEndingToday($subscription, mixed $timestamp): bool
+    private function inTrialPeriodNotEndingToday(mixed $subscription, mixed $timestamp): bool
     {
         if (! $subscription->inTrialPeriod()) {
             return false;
@@ -343,7 +352,7 @@ class CalculateFeesService extends \App\Services\BaseService
             ->ne(Datetime::parseIso8601($subscription->trialEndDatetime())->setTimezone($tz)->startOfDay());
     }
 
-    private function billingAdvanceFixedChargesOnFirstInvoice($subscription): bool
+    private function billingAdvanceFixedChargesOnFirstInvoice(mixed $subscription): bool
     {
         $invoiceSubscriptionsCount = $subscription->invoiceSubscriptions()->count();
 
