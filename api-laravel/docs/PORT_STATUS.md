@@ -11,11 +11,11 @@ per the ledger rules (`code=done` requires `test ∈ {ported, written}`).
 | Metric | Count |
 | --- | --- |
 | Ledger rows (Rails surface under coverage) | 2636 |
-| Done | 1101 |
+| Done | 1113 |
 | In progress | 11 |
-| Todo | 1523 |
-| Contract goldens replaying green (`contract=pass`) | 537 |
-| Tests ported from Rails specs | 797 |
+| Todo | 1511 |
+| Contract goldens replaying green (`contract=pass`) | 549 |
+| Tests ported from Rails specs | 809 |
 | Tests written first (no Rails spec to port) | 304 |
 
 ## Progress by kind
@@ -24,9 +24,9 @@ per the ledger rules (`code=done` requires `test ∈ {ported, written}`).
 | --- | --- | --- | --- | --- |
 | `rest` (provisional inventory) | 627 | 281 | 0 | 161 |
 | `gql` | 387 | 335 | 5 | 324 |
-| `svc` | 1052 | 284 | 6 | 44 |
+| `svc` | 1052 | 294 | 6 | 54 |
 | `ser` | 155 | 32 | 0 | 2 |
-| `job` | 269 | 23 | 0 | 6 |
+| `job` | 269 | 25 | 0 | 8 |
 | `table` | 146 | 146 | 0 | 0 |
 
 `table` rows are the frozen schema itself (all done by construction — the
@@ -63,7 +63,7 @@ have no Laravel counterpart and are deliberately left `todo`:
 - `svc:Events.Stores.Utils.ClickhouseConnection` (todo)
 - `svc:Events.Stores.Utils.ClickhouseSqlHelpers` (todo)
 
-### Done without a contract scenario (414 rows)
+### Done without a contract scenario (419 rows)
 
 Rows whose code and tests are in, but whose behavior no captured golden
 scenario covers yet (`contract=untested`). The contract harness
@@ -76,7 +76,7 @@ diff, not by contract goldens.
 | --- | --- |
 | `rest` | 121 |
 | `gql` | 11 |
-| `svc` | 235 |
+| `svc` | 240 |
 | `ser` | 30 |
 | `job` | 17 |
 
@@ -88,7 +88,7 @@ services/jobs/serializers by their first namespace segment).
 | Domain | Open rows |
 | --- | --- |
 | `rest` | 346 |
-| `Integrations` | 125 |
+| `Integrations` | 113 |
 | `PaymentProviders` | 77 |
 | `Invoices` | 71 |
 | `V1` | 69 |

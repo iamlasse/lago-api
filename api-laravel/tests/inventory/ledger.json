@@ -21348,7 +21348,7 @@
       "status": {
         "code": "done",
         "test": "written",
-        "contract": "[2026-10-07 wave integration: flipped — services exercised through the ported portal GraphQL specs (CustomerPortalTest)]"
+        "contract": "untested"
       },
       "tests": [
         "tests/Feature/GraphQL/CustomerPortalTest.php"
@@ -21362,7 +21362,7 @@
       "status": {
         "code": "done",
         "test": "written",
-        "contract": "[2026-10-07 wave integration: flipped — services exercised through the ported portal GraphQL specs (CustomerPortalTest)]"
+        "contract": "untested"
       },
       "tests": [
         "tests/Feature/GraphQL/CustomerPortalTest.php"
@@ -29694,12 +29694,12 @@
       "status": {
         "code": "done",
         "test": "written",
-        "contract": "[2026-10-07 wave integration: flipped — services exercised through the ported usage-attribution GraphQL specs (UsageAttributionTypesTest)]"
+        "contract": "untested"
       },
       "tests": [
         "tests/Feature/GraphQL/UsageAttributionTypesTest.php"
       ],
-      "notes": "Laravel class exists (M0 skeleton) — needs its tests before code:done. [2026-10-07 wave integration: flipped from landed code + tests]"
+      "notes": "[2026-10-07 wave integration: flipped from landed code + tests]"
     },
     {
       "id": "svc:UsageAttributionTypes.DestroyService",
@@ -29708,12 +29708,12 @@
       "status": {
         "code": "done",
         "test": "written",
-        "contract": "[2026-10-07 wave integration: flipped — services exercised through the ported usage-attribution GraphQL specs (UsageAttributionTypesTest)]"
+        "contract": "untested"
       },
       "tests": [
         "tests/Feature/GraphQL/UsageAttributionTypesTest.php"
       ],
-      "notes": "Laravel class exists (M0 skeleton) — needs its tests before code:done. [2026-10-07 wave integration: flipped from landed code + tests]"
+      "notes": "[2026-10-07 wave integration: flipped from landed code + tests]"
     },
     {
       "id": "svc:UsageAttributionTypes.UpdateService",
@@ -29722,12 +29722,12 @@
       "status": {
         "code": "done",
         "test": "written",
-        "contract": "[2026-10-07 wave integration: flipped — services exercised through the ported usage-attribution GraphQL specs (UsageAttributionTypesTest)]"
+        "contract": "untested"
       },
       "tests": [
         "tests/Feature/GraphQL/UsageAttributionTypesTest.php"
       ],
-      "notes": "Laravel class exists (M0 skeleton) — needs its tests before code:done. [2026-10-07 wave integration: flipped from landed code + tests]"
+      "notes": "[2026-10-07 wave integration: flipped from landed code + tests]"
     },
     {
       "id": "svc:UsageAttributions.ChargePriceLookupService",

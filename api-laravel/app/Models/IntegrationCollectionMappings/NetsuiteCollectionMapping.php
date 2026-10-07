@@ -20,42 +20,51 @@ use Database\Factories\NetsuiteCollectionMappingFactory;
 class NetsuiteCollectionMapping extends BaseCollectionMapping
 {
     use HasFactory;
-    protected function taxNexus(): \Illuminate\Database\Eloquent\Casts\Attribute
+    // Settings-backed accessors stay classic get/set mutators: an
+    // Attribute::make(set:) closure that only mutates $this->attributes as a
+    // side effect gets clobbered — Eloquent snapshots the attributes before
+    // invoking the setter and overwrites them with array_merge(snapshot,
+    // return), so returning [] discards the pushToSettings write.
+
+    public function getTaxNexusAttribute(): mixed
     {
-        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
-            return $this->getFromSettings('tax_nexus');
-        }, set: function (mixed $value) {
-            $this->pushToSettings('tax_nexus', $value);
-            return [];
-        });
+        return $this->getFromSettings('tax_nexus');
     }
-    protected function taxType(): \Illuminate\Database\Eloquent\Casts\Attribute
+
+    public function setTaxNexusAttribute(mixed $value): void
     {
-        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
-            return $this->getFromSettings('tax_type');
-        }, set: function (mixed $value) {
-            $this->pushToSettings('tax_type', $value);
-            return [];
-        });
+        $this->pushToSettings('tax_nexus', $value);
     }
-    protected function taxCode(): \Illuminate\Database\Eloquent\Casts\Attribute
+
+    public function getTaxTypeAttribute(): mixed
     {
-        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
-            return $this->getFromSettings('tax_code');
-        }, set: function (mixed $value) {
-            $this->pushToSettings('tax_code', $value);
-            return [];
-        });
+        return $this->getFromSettings('tax_type');
     }
+
+    public function setTaxTypeAttribute(mixed $value): void
+    {
+        $this->pushToSettings('tax_type', $value);
+    }
+
+    public function getTaxCodeAttribute(): mixed
+    {
+        return $this->getFromSettings('tax_code');
+    }
+
+    public function setTaxCodeAttribute(mixed $value): void
+    {
+        $this->pushToSettings('tax_code', $value);
+    }
+
     /** @return array<string, string>|null */
-    protected function currencies(): \Illuminate\Database\Eloquent\Casts\Attribute
+    public function getCurrenciesAttribute(): ?array
     {
-        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
-            return $this->getFromSettings('currencies');
-        }, set: function (?array $value) {
-            $this->pushToSettings('currencies', $value);
-            return [];
-        });
+        return $this->getFromSettings('currencies');
+    }
+
+    public function setCurrenciesAttribute(?array $value): void
+    {
+        $this->pushToSettings('currencies', $value);
     }
 
     // -- Validations ----------------------------------------------------------

@@ -12,7 +12,6 @@ use App\Models\Customer;
 use App\Enums\InvoiceStatus;
 use App\Models\Subscription;
 use App\Models\BillingEntity;
-use Illuminate\Support\Carbon;
 use App\Support\Utils\PortalToken;
 use App\GraphQL\Guards\CustomerPortalUser as PortalGuard;
 
@@ -109,7 +108,7 @@ it('answers unauthorized on portal fields with an expired portal token', functio
     // Rails: expires_in: 12.hours — mint a token, then move past the expiry.
     $expired = PortalToken::generate($customer->id);
 
-    test()->travelTo(\Illuminate\Support\Facades\Date::now()->addHours(PortalToken::EXPIRES_IN_HOURS + 1));
+    test()->travelTo(Illuminate\Support\Facades\Date::now()->addHours(PortalToken::EXPIRES_IN_HOURS + 1));
 
     try {
         expect(PortalToken::verify($expired))->toBeNull();
@@ -187,7 +186,7 @@ it('generates the customer portal url from the admin api', function (): void {
     $message = explode('/customer-portal/', $url)[1];
 
     expect(PortalToken::verify($message))->toBe($customer->id);
-})->group('ledger:gql:mutation:generateCustomerPortalUrl');
+})->group('ledger:gql:mutation:generateCustomerPortalUrl', 'ledger:svc:CustomerPortal.GenerateUrlService');
 
 it('answers not_found on generateCustomerPortalUrl for an unknown customer', function (): void {
     [$organization, $user] = gqlPortalSetup();
@@ -204,7 +203,7 @@ it('answers not_found on generateCustomerPortalUrl for an unknown customer', fun
 
     expect($error['message'])->toBe('Resource not found')
         ->and($error['extensions']['code'])->toBe('not_found');
-})->group('ledger:gql:mutation:generateCustomerPortalUrl');
+})->group('ledger:gql:mutation:generateCustomerPortalUrl', 'ledger:svc:CustomerPortal.GenerateUrlService');
 
 it('requires the current user on generateCustomerPortalUrl', function (): void {
     [$organization] = gqlPortalSetup();
@@ -219,7 +218,7 @@ it('requires the current user on generateCustomerPortalUrl', function (): void {
     $response->assertOk();
 
     expect($response->json('errors.0.extensions.code'))->toBe('unauthorized');
-})->group('ledger:gql:mutation:generateCustomerPortalUrl');
+})->group('ledger:gql:mutation:generateCustomerPortalUrl', 'ledger:svc:CustomerPortal.GenerateUrlService');
 
 it('requires the organization header on generateCustomerPortalUrl', function (): void {
     [$organization, $user] = gqlPortalSetup();
@@ -234,7 +233,7 @@ it('requires the organization header on generateCustomerPortalUrl', function ():
     $response->assertOk();
 
     expect($response->json('errors.0.message'))->toBe('Missing organization id');
-})->group('ledger:gql:mutation:generateCustomerPortalUrl');
+})->group('ledger:gql:mutation:generateCustomerPortalUrl', 'ledger:svc:CustomerPortal.GenerateUrlService');
 
 // -- query { customerPortalUser } --------------------------------------------------
 
@@ -713,7 +712,7 @@ it('updates the portal customer', function (): void {
         ->and($payload['shippingAddress']['zipcode'])->toBe('Updated customer shipping zipcode')
         ->and($payload['shippingAddress']['city'])->toBe('Updated customer shipping city')
         ->and($payload['shippingAddress']['country'])->toBe('ES');
-})->group('ledger:gql:mutation:updateCustomerPortalCustomer');
+})->group('ledger:gql:mutation:updateCustomerPortalCustomer', 'ledger:svc:CustomerPortal.CustomerUpdateService');
 
 it('keeps the fields that were not sent on updateCustomerPortalCustomer', function (): void {
     [$organization] = gqlPortalSetup();
@@ -732,7 +731,7 @@ it('keeps the fields that were not sent on updateCustomerPortalCustomer', functi
     expect($payload['name'])->toBe('Updated customer name')
         ->and($payload['firstname'])->toBe('Old firstname')
         ->and($customer->refresh()->currency)->toBe($customer->currency);
-})->group('ledger:gql:mutation:updateCustomerPortalCustomer');
+})->group('ledger:gql:mutation:updateCustomerPortalCustomer', 'ledger:svc:CustomerPortal.CustomerUpdateService');
 
 // -- mutation { downloadCustomerPortalInvoice } ------------------------------------
 

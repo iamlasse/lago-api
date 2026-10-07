@@ -91,11 +91,11 @@ it('resolves not-yet-implemented root fields to null (stub semantics)', function
 });
 
 it('surfaces the null violation for non-nullable unimplemented root fields', function (): void {
-    // supersetDashboards: [SupersetDashboard!]! — unimplemented (the Superset
-    // slice is backlog), non-null → the standard GraphQL null violation
-    // until its resolver lands. (overdueBalances now resolves — it landed
-    // with the analytics slice.)
-    $response = gqlPost('query { supersetDashboards { __typename } }');
+    // adminCsAdmins: [User!]! — unimplemented, non-null → the standard
+    // GraphQL null violation until its resolver lands. (supersetDashboards
+    // now resolves — it landed with the invoice-misc slice, so it answers
+    // unauthorized without headers instead of surfacing the violation.)
+    $response = gqlPost('query { adminCsAdmins { __typename } }');
 
     $response->assertOk();
 

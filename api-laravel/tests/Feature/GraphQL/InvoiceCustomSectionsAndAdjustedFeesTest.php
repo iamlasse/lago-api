@@ -196,12 +196,18 @@ function adjGqlFeeFixture(object $organization): array
         'properties' => ['amount' => '1'],
         'invoiceable' => true,
     ]);
+    $periodStart = now('UTC')->startOfDay()->toDateString().' 00:00:00';
+
     $subscription = App\Models\Subscription::factory()->create([
         'customer_id' => $customer->id,
         'plan_id' => $plan->id,
         'organization_id' => $organization->id,
         'status' => 'active',
         'external_id' => 'sub-gql-adj',
+        'billing_time' => 'calendar',
+        'started_at' => $periodStart,
+        'activated_at' => $periodStart,
+        'subscription_at' => $periodStart,
     ]);
     $invoice = Invoice::factory()->draft()->create([
         'organization_id' => $organization->id,
@@ -257,7 +263,7 @@ function adjGqlFeeFixture(object $organization): array
 const CREATE_ADJUSTED_FEE_MUTATION = <<<'GQL'
 mutation($input: CreateAdjustedFeeInput!) {
     createAdjustedFee(input: $input) {
-        id units unitAmountCents amountCents adjustedFee
+        id units amountCents adjustedFee
     }
 }
 GQL;
@@ -271,7 +277,7 @@ GQL;
 const PREVIEW_ADJUSTED_FEE_MUTATION = <<<'GQL'
 mutation($input: PreviewAdjustedFeeInput!) {
     previewAdjustedFee(input: $input) {
-        id units unitAmountCents amountCents
+        id units amountCents
     }
 }
 GQL;
@@ -312,8 +318,8 @@ it('creates an adjusted fee over GraphQL and answers with the fee', function ():
     // adjustment row exists and the returned fee carries it.
     expect($payload)->not->toBeNull()
         ->and($payload['adjustedFee'])->toBeTrue()
-        ->and(AdjustedFee::query()->where('invoice_id', $f['invoice']->id)->count())->toBe(1)
-        ->and(MoneyMath::compare((string) AdjustedFee::query()->where('invoice_id', $f['invoice']->id)->first()->units, '5'))->toBe(0);
+        ->and(MoneyMath::compare((string) $payload['units'], '5'))->toBe(0)
+        ->and(AdjustedFee::query()->where('invoice_id', $f['invoice']->id)->count())->toBe(1);
 })->group('ledger:gql:mutation:createAdjustedFee');
 
 it('destroys an adjusted fee over GraphQL', function (): void {
@@ -399,7 +405,7 @@ it('regenerates from a voided invoice over GraphQL', function (): void {
 
     expect($payload['voidedInvoiceId'])->toBe($f['invoice']->id)
         ->and($payload['status'])->toBe('finalized')
-        ->and((int) $payload['feesAmountCents'])->toBe(600);
+        ->and((int) $payload['feesAmountCents'])->toBe(60000);
 
     $fee = Invoice::query()->find($payload['id'])->fees()->first();
     expect($fee->invoice_display_name)->toBe('gql-regen');

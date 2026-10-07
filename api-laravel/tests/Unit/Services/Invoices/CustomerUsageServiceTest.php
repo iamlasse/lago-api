@@ -10,7 +10,6 @@ uses()->group(
     'ledger:ser:V1.Customers.ProjectedUsageSerializer',
 );
 
-use Carbon\Carbon;
 use App\Models\Event;
 use App\Models\Charge;
 use App\Models\Customer;
@@ -100,7 +99,13 @@ it('computes the current usage of the subscription period from the events', func
         ->and($usage->currency)->toBe('EUR')
         ->and($usage->taxesAmountCents)->toBe(0)
         ->and($usage->totalAmountCents)->toBe(3000)
-        ->and($usage->fromDatetime)->toStartWith(now()->utc()->startOfMonth()->toIso8601String());
+        // Rails: the period start clamps to started_at when the subscription
+        // began inside the current billing period — the fixtures are
+        // now-relative, so subDays(5) crosses the month boundary on days 1-5
+        // only. Expected: the later of month start and the fixture's start.
+        ->and($usage->fromDatetime)->toStartWith(
+            usagePeriodStart()->max(now()->utc()->startOfMonth())->toIso8601String()
+        );
 
     expect(count($usage->fees))->toBe(1);
     expect((int) $usage->fees[0]->amount_cents)->toBe(3000);
@@ -211,7 +216,7 @@ it('projects the end-of-period usage when requested', function (): void {
     $eventAt = $periodStart->addDays(3)->addHours(6);
     $midPeriod = $periodStart->addDays(3)->addHours(12);
 
-    \Illuminate\Support\Facades\Date::setTestNow($midPeriod);
+    Illuminate\Support\Facades\Date::setTestNow($midPeriod);
 
     try {
         $metric = usageMetric();
@@ -245,6 +250,6 @@ it('projects the end-of-period usage when requested', function (): void {
         expect($payload['projected_amount_cents'])->toBeGreaterThan(1500)
             ->and($payload['charges_usage']['charges_usage'][0]['projected_units'])->toBeGreaterThan('15');
     } finally {
-        \Illuminate\Support\Facades\Date::setTestNow();
+        Illuminate\Support\Facades\Date::setTestNow();
     }
 });

@@ -220,7 +220,7 @@ it('creates a usage attribution type with a parent', function (): void {
         ->and($payload['attributionKeys'])->toBe(['team', 'member'])
         ->and($payload['role'])->toBe('hierarchical')
         ->and($payload['parent']['id'])->toBe($parent->id);
-});
+})->group('ledger:svc:UsageAttributionTypes.CreateService');
 
 it('fails to create a usage attribution type with a taken code', function (): void {
     [$organization, $user] = usageAttributionGqlOrganization();
@@ -235,7 +235,7 @@ it('fails to create a usage attribution type with a taken code', function (): vo
 
     expect($error['status'])->toBe(422)
         ->and($response->json('errors.0.extensions.details.code'))->toBe(['has already been taken']);
-});
+})->group('ledger:svc:UsageAttributionTypes.CreateService');
 
 it('updates a usage attribution type', function (): void {
     [$organization, $user] = usageAttributionGqlOrganization();
@@ -255,7 +255,7 @@ it('updates a usage attribution type', function (): void {
     expect($payload['id'])->toBe($type->id)
         ->and($payload['name'])->toBe('Renamed')
         ->and($payload['role'])->toBe('flat');
-});
+})->group('ledger:svc:UsageAttributionTypes.UpdateService');
 
 it('refuses to flatten a type with children', function (): void {
     [$organization, $user] = usageAttributionGqlOrganization();
@@ -273,7 +273,7 @@ it('refuses to flatten a type with children', function (): void {
 
     expect($response->json('errors.0.extensions.status'))->toBe(422)
         ->and($response->json('errors.0.extensions.details.role'))->toBe(['cannot_be_flat_with_children']);
-});
+})->group('ledger:svc:UsageAttributionTypes.UpdateService');
 
 it('freezes code and parent once values are attributed', function (): void {
     [$organization, $user] = usageAttributionGqlOrganization();
@@ -299,7 +299,7 @@ it('freezes code and parent once values are attributed', function (): void {
     ]], gqlAuthHeaders($user, $organization->id));
 
     expect($response->json('data.updateUsageAttributionType.name'))->toBe('Still editable');
-});
+})->group('ledger:svc:UsageAttributionTypes.UpdateService');
 
 it('destroys a usage attribution type and its attributed values', function (): void {
     [$organization, $user] = usageAttributionGqlOrganization();
@@ -320,4 +320,4 @@ it('destroys a usage attribution type and its attributed values', function (): v
     expect($response->json('data.destroyUsageAttributionType.id'))->toBe($type->id)
         ->and($type->refresh()->trashed())->toBeTrue()
         ->and($value->refresh()->trashed())->toBeTrue();
-});
+})->group('ledger:svc:UsageAttributionTypes.DestroyService');

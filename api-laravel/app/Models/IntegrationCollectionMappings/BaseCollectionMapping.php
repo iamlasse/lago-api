@@ -139,32 +139,40 @@ class BaseCollectionMapping extends BaseModel
         $settings[$key] = $value;
         $this->settings = $settings;
     }
-    protected function externalId(): \Illuminate\Database\Eloquent\Casts\Attribute
+    // Settings-backed accessors stay classic get/set mutators: an
+    // Attribute::make(set:) closure that only mutates $this->attributes as a
+    // side effect gets clobbered — Eloquent snapshots the attributes before
+    // invoking the setter and overwrites them with array_merge(snapshot,
+    // return), so returning [] discards the pushToSettings write.
+
+    public function getExternalIdAttribute(): mixed
     {
-        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
-            return $this->getFromSettings('external_id');
-        }, set: function (mixed $value) {
-            $this->pushToSettings('external_id', $value);
-            return [];
-        });
+        return $this->getFromSettings('external_id');
     }
-    protected function externalAccountCode(): \Illuminate\Database\Eloquent\Casts\Attribute
+
+    public function setExternalIdAttribute(mixed $value): void
     {
-        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
-            return $this->getFromSettings('external_account_code');
-        }, set: function (mixed $value) {
-            $this->pushToSettings('external_account_code', $value);
-            return [];
-        });
+        $this->pushToSettings('external_id', $value);
     }
-    protected function externalName(): \Illuminate\Database\Eloquent\Casts\Attribute
+
+    public function getExternalAccountCodeAttribute(): mixed
     {
-        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
-            return $this->getFromSettings('external_name');
-        }, set: function (mixed $value) {
-            $this->pushToSettings('external_name', $value);
-            return [];
-        });
+        return $this->getFromSettings('external_account_code');
+    }
+
+    public function setExternalAccountCodeAttribute(mixed $value): void
+    {
+        $this->pushToSettings('external_account_code', $value);
+    }
+
+    public function getExternalNameAttribute(): mixed
+    {
+        return $this->getFromSettings('external_name');
+    }
+
+    public function setExternalNameAttribute(mixed $value): void
+    {
+        $this->pushToSettings('external_name', $value);
     }
 
     // -- Validations (Rails: validates / validate blocks) --------------------
