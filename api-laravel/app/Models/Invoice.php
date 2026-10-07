@@ -204,6 +204,12 @@ class Invoice extends BaseModel
         return $this->hasMany(InvoiceAppliedTax::class);
     }
 
+    /** Port of `has_many :applied_invoice_custom_sections` — the per-invoice section snapshots. */
+    public function appliedInvoiceCustomSections(): HasMany
+    {
+        return $this->hasMany(AppliedInvoiceCustomSection::class);
+    }
+
     /** Rails: has_many :integration_resources, as: :syncable. */
     public function integrationResources(): HasMany
     {

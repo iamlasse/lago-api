@@ -11,6 +11,7 @@ use Illuminate\Support\Str;
 use App\Models\WalletTarget;
 use App\Services\BaseResult;
 use App\Services\BaseService;
+use App\Services\InvoiceCustomSections\AttachToResourceService;
 use App\Support\WalletCredit;
 use Illuminate\Support\Facades\DB;
 use App\Services\Validators\DecimalAmount;
@@ -153,7 +154,8 @@ class CreateService extends BaseService
 
                 // TODO(port): recurring_transaction_rules creation
                 // (RecurringTransactionRules::CreateService).
-                // TODO(port): InvoiceCustomSections::AttachToResourceService.
+                AttachToResourceService::call(resource: $wallet, params: $this->params);
+
                 // TODO(port): BillingObjectConnections::AttachToResourceService
                 // (connections_requested?).
 

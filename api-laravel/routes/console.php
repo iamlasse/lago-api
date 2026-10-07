@@ -57,3 +57,46 @@ Schedule::job(new App\Jobs\Clock\ExpireIncompleteSubscriptionsJob)->hourlyAt(20)
 
 // every(1.hour, "schedule:bill_ended_trial_subscriptions", at: "*:35") — "35 */1 * * *"
 Schedule::job(new App\Jobs\Clock\FreeTrialSubscriptionsBillerJob)->hourlyAt(35);
+
+// ---------------------------------------------------------------------------
+// Remaining clock.rb sweep (misc slice)
+// ---------------------------------------------------------------------------
+
+// every(5.minutes, "schedule:activate_subscriptions") — "*/5 * * * *"
+Schedule::job(new App\Jobs\Clock\ActivateSubscriptionsJob)->everyFiveMinutes();
+
+// Rails gates the wallet refresh on LAGO_MEMCACHE_SERVERS/LAGO_REDIS_CACHE_URL
+// being present and LAGO_DISABLE_WALLET_REFRESH != "true"; the interval is
+// LAGO_WALLET_ONGOING_BALANCE_REFRESH_INTERVAL_SECONDS (default 5.minutes).
+if (filled(env('LAGO_REDIS_CACHE_URL')) && env('LAGO_DISABLE_WALLET_REFRESH') !== 'true') {
+    $walletRefreshInterval = (int) env('LAGO_WALLET_ONGOING_BALANCE_REFRESH_INTERVAL_SECONDS', 300);
+
+    Schedule::job(new App\Jobs\Clock\RefreshWalletsOngoingBalanceJob)
+        ->cron('*/'.max(1, $walletRefreshInterval / 60).' * * * *');
+}
+
+// every(1.hour, "schedule:terminate_ended_subscriptions", at: "*:05") — "5 */1 * * *"
+Schedule::job(new App\Jobs\Clock\TerminateEndedSubscriptionsJob)->hourlyAt(5);
+
+// every(1.hour, "schedule:api_keys_track_usage", at: "*:15") — "15 */1 * * *"
+Schedule::job(new App\Jobs\Clock\ApiKeys\TrackUsageJob)->hourlyAt(15);
+
+// every(1.hour, "schedule:terminate_coupons", at: "*:30") — "30 */1 * * *"
+Schedule::job(new App\Jobs\Clock\TerminateCouponsJob)->hourlyAt(30);
+
+// every(1.hour, "schedule:terminate_wallets", at: "*:45") — "45 */1 * * *"
+Schedule::job(new App\Jobs\Clock\TerminateWalletsJob)->hourlyAt(45);
+
+// every(1.hour, "schedule:termination_alert", at: "*:50") — "50 */1 * * *"
+Schedule::job(new App\Jobs\Clock\SubscriptionsToBeTerminatedJob)->hourlyAt(50);
+
+// every(1.hour, "schedule:execute_scheduled_orders", at: "*:45") — "45 */1 * * *"
+Schedule::job(new App\Jobs\Clock\ExecuteScheduledOrdersJob)->hourlyAt(45);
+
+// every(1.day, "schedule:clean_webhooks", at: "01:00") — "0 1 * * *"
+Schedule::job(new App\Jobs\Clock\WebhooksCleanupJob)->dailyAt('01:00');
+
+// every(1.day, "schedule:clean_inbound_webhooks", at: "01:10") — cron "5 1 * * *"
+// (Rails' clock.rb declares at: "01:10" but ships the "5 1 * * *" cron; the
+// cron wins, exactly like Rails.)
+Schedule::job(new App\Jobs\Clock\InboundWebhooksCleanupJob)->cron('5 1 * * *');

@@ -33,7 +33,9 @@ final class Netsuite extends BasePayload
             'lines' => [
                 [
                     'sublistId' => 'item',
-                    'lineItems' => $this->fee_items() + $this->discounts(),
+                    // Rails: fees + discounts — Ruby concatenates, PHP's `+`
+                    // would union-drop the discounts, hence array_merge.
+                    'lineItems' => array_merge($this->fee_items(), $this->discounts()),
                 ],
             ],
             'options' => [
@@ -46,7 +48,7 @@ final class Netsuite extends BasePayload
             $result['taxdetails'] = [
                 [
                     'sublistId' => 'taxdetails',
-                    'lineItems' => $this->tax_line_items() + $this->discount_taxes(),
+                    'lineItems' => array_merge($this->tax_line_items(), $this->discount_taxes()),
                 ],
             ];
         }

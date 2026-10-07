@@ -110,6 +110,15 @@ return [
     // Lago::RedisConfigBuilder cache connection
     'redis_cache_url' => env('LAGO_REDIS_CACHE_URL'),
 
+    // Auth::Superset::Client (app/services/auth/superset/client.rb) — the
+    // premium analytics Superset instance the dashboards query and the guest
+    // token mutation talk to. Rails reads ENV["SUPERSET_*"] directly.
+    'superset' => [
+        'url' => env('SUPERSET_URL'),
+        'username' => env('SUPERSET_USERNAME'),
+        'password' => env('SUPERSET_PASSWORD'),
+    ],
+
     'version' => $lagoVersion,
 
     'github_url' => $lagoGithubUrl,

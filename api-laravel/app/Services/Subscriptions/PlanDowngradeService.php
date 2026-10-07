@@ -9,6 +9,7 @@ use App\Models\Customer;
 use App\Models\Subscription;
 use App\Services\BaseResult;
 use App\Services\BaseService;
+use App\Services\InvoiceCustomSections\AttachToResourceService;
 use App\Enums\SubscriptionStatus;
 use Illuminate\Support\Facades\DB;
 use App\Services\BillingEntities\ResolveService;
@@ -133,7 +134,8 @@ class PlanDowngradeService extends BaseService
                 $newSubscription->save();
             }
 
-            // TODO(port): InvoiceCustomSections::AttachToResourceService.
+            AttachToResourceService::call(resource: $newSubscription, params: $this->params);
+
             // TODO(port): BillingObjectConnections::AttachToResourceService.
             // TODO(port): SendWebhookJob "subscription.updated" on the current
             // subscription + ActivityLog + Hubspot.

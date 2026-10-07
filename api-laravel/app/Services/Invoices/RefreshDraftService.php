@@ -12,6 +12,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use App\Enums\SubscriptionInvoicingReason;
+use App\Services\Invoices\ApplyInvoiceCustomSectionsService;
 use App\Services\Failures\UnknownTaxFailure;
 use App\Services\LifetimeUsages\FlagRefreshFromInvoiceService;
 
@@ -20,11 +21,11 @@ use App\Services\LifetimeUsages\FlagRefreshFromInvoiceService;
  * (app/services/invoices/refresh_draft_service.rb) — regenerates a
  * subscription draft invoice's fees, invoice_subscriptions and totals.
  *
- * TODO(port) emission points left at their exact Rails positions:
- * Invoices::ApplyInvoiceCustomSectionsService, the credit-note refresh
- * (CreditNotes::RefreshDraftService — credit notes are unported), the
- * lifetime-usage / wallet refresh flags, Hubspot update and
- * error_details.discard_all.
+ * TODO(port) emission points left at their exact Rails positions: the
+ * credit-note refresh (CreditNotes::RefreshDraftService — credit notes are
+ * unported), the lifetime-usage / wallet refresh flags, Hubspot update and
+ * error_details.discard_all. The applied custom sections are WIRED
+ * (invoice-custom-sections slice).
  */
 class RefreshDraftService extends BaseService
 {
@@ -106,7 +107,8 @@ class RefreshDraftService extends BaseService
                     context: $this->context,
                 );
 
-                // TODO(port): Invoices::ApplyInvoiceCustomSectionsService.
+                ApplyInvoiceCustomSectionsService::call(invoice: $this->invoice);
+
                 // TODO(port): refresh each credit note
                 // (CreditNotes::RefreshDraftService).
 
@@ -184,7 +186,7 @@ class RefreshDraftService extends BaseService
 
         // TODO(port): invoice.error_details.discard_all (error details
         // unported).
-        // TODO(port): invoice.applied_invoice_custom_sections.destroy_all.
+        $this->invoice->appliedInvoiceCustomSections()->delete();
         // TODO(port): invoice.credits.progressive_billing_invoice_kind
         // .destroy_all (progressive billing credits unported).
 

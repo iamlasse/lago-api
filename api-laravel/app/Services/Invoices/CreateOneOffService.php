@@ -31,6 +31,9 @@ class CreateOneOffService extends \App\Services\BaseService
 {
     private ?string $currency = null;
 
+    /** @var list<string>|null */
+    private ?array $memoInvoiceCustomSectionIds = null;
+
     private Invoice $invoice;
 
     private ?object $billingEntity = null;
@@ -113,8 +116,13 @@ class CreateOneOffService extends \App\Services\BaseService
 
                 // NOTE: Custom sections are applied before computing taxes so
                 // they are persisted even when tax computation is deferred to a
-                // tax provider. TODO(port): Invoices::ApplyInvoiceCustomSectionsService
-                // (invoice custom sections are a later milestone).
+                // tax provider.
+                if (! $this->skipCustomSections()) {
+                    ApplyInvoiceCustomSectionsService::call(
+                        invoice: $this->invoice,
+                        customSectionIds: $this->invoiceCustomSectionIds(),
+                    );
+                }
 
                 $totalsResult = ComputeTaxesAndTotalsService::call(invoice: $this->invoice);
 
@@ -331,5 +339,73 @@ class CreateOneOffService extends \App\Services\BaseService
                 (array) ($this->billingEntity?->email_settings ?? []),
                 true,
             );
+    }
+
+    /**
+     * Rails: invoice_custom_section_ids — the explicit section selection from
+     * the `invoice_custom_section` param block, resolved against the
+     * organization (codes in API context, ids in GraphQL context).
+     *
+     * @return list<string>
+     */
+    private function invoiceCustomSectionIds(): array
+    {
+        if (isset($this->memoInvoiceCustomSectionIds)) {
+            return $this->memoInvoiceCustomSectionIds;
+        }
+
+        $identifiers = $this->sectionIdentifiers();
+
+        if ($identifiers === null || $identifiers === []) {
+            return $this->memoInvoiceCustomSectionIds = [];
+        }
+
+        $identifier = $this->apiContext() ? 'code' : 'id';
+
+        return $this->memoInvoiceCustomSectionIds = $this->customer->organization
+            ->invoiceCustomSections()
+            ->whereIn($identifier, $identifiers)
+            ->pluck('id')
+            ->all();
+    }
+
+    /**
+     * Rails: section_identifiers.
+     *
+     * @return list<string>|null
+     */
+    private function sectionIdentifiers(): ?array
+    {
+        if ($this->invoiceCustomSection === []) {
+            return null;
+        }
+
+        $key = $this->apiContext()
+            ? 'invoice_custom_section_codes'
+            : 'invoice_custom_section_ids';
+
+        $value = $this->invoiceCustomSection[$key] ?? null;
+
+        if ($value === null) {
+            return null;
+        }
+
+        return array_values(array_unique(array_map(strval(...), array_filter((array) $value))));
+    }
+
+    /**
+     * Rails: skip_custom_sections?.
+     */
+    private function skipCustomSections(): bool
+    {
+        if ($this->invoiceCustomSection === []) {
+            return false;
+        }
+
+        if (! array_key_exists('skip_invoice_custom_sections', $this->invoiceCustomSection)) {
+            return false;
+        }
+
+        return (bool) $this->invoiceCustomSection['skip_invoice_custom_sections'];
     }
 }

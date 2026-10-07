@@ -12,6 +12,7 @@ use App\Services\BaseService;
 use Illuminate\Support\Facades\DB;
 use App\Enums\FinalizeZeroAmountInvoice;
 use App\Services\IntegrationCustomers\CreateOrUpdateBatchService;
+use App\Services\Customers\ManageInvoiceCustomSectionsService;
 
 use function is_array;
 use function array_key_exists;
@@ -23,7 +24,6 @@ use function array_key_exists;
  * Not ported (dependencies do not exist yet):
  * - TODO(port): payment provider customers (discard + recreate flows).
  * - TODO(port): dunning campaign assignment (auto_dunning premium).
- * - TODO(port): ManageInvoiceCustomSectionsService.
  * - TODO(port): RefreshInvoicesSearchTermsJob + error_details tax cleanup.
  */
 class UpdateService extends BaseService
@@ -147,7 +147,15 @@ class UpdateService extends BaseService
                 // TODO(port): payment provider removal (discard provider
                 // customer + payment methods).
 
-                // TODO(port): ManageInvoiceCustomSectionsService.
+                ManageInvoiceCustomSectionsService::call(
+                    customer: $customer,
+                    skipInvoiceCustomSections: isset($args['skip_invoice_custom_sections'])
+                        ? (bool) $args['skip_invoice_custom_sections']
+                        : null,
+                    sectionIds: isset($args['configurable_invoice_custom_section_ids'])
+                        ? array_map(strval(...), (array) $args['configurable_invoice_custom_section_ids'])
+                        : null,
+                )->raiseIfError();
 
                 $errors = $customer->validateAttributes();
 

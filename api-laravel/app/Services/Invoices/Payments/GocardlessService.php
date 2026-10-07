@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Invoices\Payments;
 
 use Throwable;
+use LogicException;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Jobs\SendWebhookJob;
@@ -27,20 +28,6 @@ use App\Services\Invoices\UpdateService;
  */
 class GocardlessService extends BaseService
 {
-    /**
-     * Rails: `update_payment_status` (no organization scoping — the lookup
-     * is by provider_payment_id only).
-     */
-    /**
-     * The Rails services dispatch actions by name (call!(:update_payment_status, ...));
-     * the port exposes them as static entrypoints instead — this instance body is
-     * never invoked.
-     */
-    public function execute(): BaseResult
-    {
-        throw new \LogicException(static::class." is dispatched through its static action entrypoints");
-    }
-
     public static function updatePaymentStatus(string $providerPaymentId, string $status): BaseResult
     {
         $result = static::makeResult('payment', 'invoice');
@@ -69,8 +56,11 @@ class GocardlessService extends BaseService
                 SendWebhookJob::performLater('payment.succeeded', $payment);
             }
 
-            // TODO(port): Integrations::Aggregator::Payments::CreateJob when
-            // payment.should_sync_payment? (accounting integrations milestone).
+            // Rails: Integrations::Aggregator::Payments::CreateJob
+            // .perform_later(payment:) if payment.should_sync_payment?.
+            if ($payment->shouldSyncPayment()) {
+                \App\Jobs\Integrations\Aggregator\Payments\CreateJob::dispatch($payment);
+            }
 
             self::updateInvoicePaymentStatus($invoice, (string) $payablePaymentStatus);
 
@@ -80,6 +70,20 @@ class GocardlessService extends BaseService
         } catch (Throwable $e) {
             throw $e;
         }
+    }
+
+    /**
+     * Rails: `update_payment_status` (no organization scoping — the lookup
+     * is by provider_payment_id only).
+     */
+    /**
+     * The Rails services dispatch actions by name (call!(:update_payment_status, ...));
+     * the port exposes them as static entrypoints instead — this instance body is
+     * never invoked.
+     */
+    public function execute(): BaseResult
+    {
+        throw new LogicException(static::class.' is dispatched through its static action entrypoints');
     }
 
     /** Rails: update_invoice_payment_status. */

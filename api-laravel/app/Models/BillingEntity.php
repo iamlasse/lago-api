@@ -20,6 +20,7 @@ use App\Enums\SubscriptionInvoiceIssuingDateAnchor;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Enums\SubscriptionInvoiceIssuingDateAdjustment;
 
@@ -154,6 +155,41 @@ class BillingEntity extends BaseModel
     public function customers(): HasMany
     {
         return $this->hasMany(Customer::class);
+    }
+
+    /**
+     * Rails: `has_many :applied_invoice_custom_sections,
+     * class_name: "BillingEntity::AppliedInvoiceCustomSection"`
+     * (the `billing_entities_invoice_custom_sections` table).
+     */
+    public function appliedInvoiceCustomSections(): HasMany
+    {
+        return $this->hasMany(BillingEntityAppliedInvoiceCustomSection::class, 'billing_entity_id');
+    }
+
+    /** Rails: `has_many :selected_invoice_custom_sections, through: :applied_invoice_custom_sections, source: :invoice_custom_section`. */
+    public function selectedInvoiceCustomSections(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            InvoiceCustomSection::class,
+            'billing_entities_invoice_custom_sections',
+            'billing_entity_id',
+            'invoice_custom_section_id',
+        )->whereNull('invoice_custom_sections.deleted_at');
+    }
+
+    /** Rails: `has_many :manual_selected_invoice_custom_sections, -> { where(section_type: :manual) }, through: ...`. */
+    public function manualSelectedInvoiceCustomSections(): BelongsToMany
+    {
+        return $this->selectedInvoiceCustomSections()
+            ->where('invoice_custom_sections.section_type', 'manual');
+    }
+
+    /** Rails: `has_many :system_generated_selected_invoice_custom_sections, -> { where(section_type: :system_generated) }, through: ...`. */
+    public function systemGeneratedSelectedInvoiceCustomSections(): BelongsToMany
+    {
+        return $this->selectedInvoiceCustomSections()
+            ->where('invoice_custom_sections.section_type', 'system_generated');
     }
 
     /**

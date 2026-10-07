@@ -1,0 +1,49 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Models;
+
+use App\Models\Concerns\BelongsToOrganization;
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+/**
+ * Frozen-schema model for `subscriptions_invoice_custom_sections` — Rails'
+ * Subscription::AppliedInvoiceCustomSection
+ * (app/models/subscription/applied_invoice_custom_section.rb):
+ * a custom section selected for one subscription.
+ */
+#[Fillable([
+    'organization_id',
+    'subscription_id',
+    'invoice_custom_section_id',
+])]
+#[Table(name: 'subscriptions_invoice_custom_sections')]
+class SubscriptionAppliedInvoiceCustomSection extends BaseModel
+{
+    use BelongsToOrganization;
+
+    protected function casts(): array
+    {
+        return [
+
+        ];
+    }
+
+    // -- Relationships --------------------------------------------------------
+
+    /** Rails: `belongs_to :subscription`. */
+    public function subscription(): BelongsTo
+    {
+        return $this->belongsTo(Subscription::class);
+    }
+
+    /** Rails: `belongs_to :invoice_custom_section`. */
+    public function invoiceCustomSection(): BelongsTo
+    {
+        return $this->belongsTo(InvoiceCustomSection::class);
+    }
+}
+

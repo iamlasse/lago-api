@@ -106,8 +106,11 @@ class InvoiceSerializer extends ModelSerializer
         }
 
         if ($this->include('applied_invoice_custom_sections')) {
-            // TODO(port): InvoiceCustomSection models — empty collection.
-            $payload['applied_invoice_custom_sections'] = [];
+            $payload['applied_invoice_custom_sections'] = (new \App\Serializers\Base\CollectionSerializer(
+                $this->model->appliedInvoiceCustomSections()->get(),
+                Invoices\AppliedInvoiceCustomSectionSerializer::class,
+                ['collection_name' => 'applied_invoice_custom_sections'],
+            ))->serialize();
         }
 
         return $payload;

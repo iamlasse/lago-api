@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Models\Organization;
 use Illuminate\Support\Facades\Http;
 use App\Models\Integrations\XeroIntegration;
 use App\Models\Integrations\NetsuiteIntegration;

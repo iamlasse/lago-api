@@ -149,8 +149,11 @@ class CreateService extends BaseService
         $paymentStatus = $paymentResult->payment->payablePaymentStatus();
         $this->updateInvoicePaymentStatus($invoice, $paymentStatus);
 
-        // TODO(port): Integrations::Aggregator::Payments::CreateJob when
-        // result.payment.should_sync_payment?.
+        // Rails: Integrations::Aggregator::Payments::CreateJob
+        // .perform_later(payment:) if result.payment.should_sync_payment?.
+        if ($payment->shouldSyncPayment()) {
+            \App\Jobs\Integrations\Aggregator\Payments\CreateJob::dispatch($payment);
+        }
 
         return $result;
     }

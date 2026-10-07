@@ -63,6 +63,7 @@ class SendWebhookJob implements ShouldQueue
         'subscription.updated' => SubscriptionUpdatedService::class,
         'subscription.terminated' => SubscriptionTerminatedService::class,
         'subscription.canceled' => SubscriptionCanceledService::class,
+        'subscription.termination_alert' => \App\Services\Webhooks\Subscriptions\TerminationAlertService::class,
         // "subscription.incomplete", "subscription.trial_ended", ... — later slices.
         'wallet.created' => WalletCreatedService::class,
         'wallet.updated' => WalletUpdatedService::class,

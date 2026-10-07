@@ -75,7 +75,7 @@ class ProgressiveBillingService extends \App\Services\BaseService
 
                 AppliedCouponsService::call(invoice: $invoice);
 
-                // TODO(port): Invoices::ApplyInvoiceCustomSectionsService.
+                ApplyInvoiceCustomSectionsService::call(invoice: $invoice);
 
                 $totalsResult = ComputeTaxesAndTotalsService::call(invoice: $invoice);
 

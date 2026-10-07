@@ -75,9 +75,11 @@ class WalletSerializer extends ModelSerializer
         }
 
         if ($this->include('applied_invoice_custom_sections')) {
-            // TODO(port): Wallet::AppliedInvoiceCustomSection — empty
-            // collection.
-            $payload['applied_invoice_custom_sections'] = [];
+            $payload['applied_invoice_custom_sections'] = (new \App\Serializers\Base\CollectionSerializer(
+                $this->model->appliedInvoiceCustomSections()->get(),
+                \App\Serializers\V1\AppliedInvoiceCustomSectionSerializer::class,
+                ['collection_name' => 'applied_invoice_custom_sections'],
+            ))->serialize();
         }
 
         $payload = [...$payload, ...$this->paymentMethod($wallet)];

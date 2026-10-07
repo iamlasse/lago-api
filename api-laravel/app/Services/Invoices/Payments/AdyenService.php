@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Invoices\Payments;
 
 use Throwable;
+use LogicException;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\Customer;
@@ -39,21 +40,6 @@ use App\Services\PaymentProviders\Adyen\AdyenError;
 class AdyenService extends BaseService
 {
     public const PROVIDER_NAME = 'Adyen';
-
-    /**
-     * Rails: `update_payment_status`.
-     *
-     * @param  array<string, mixed>  $metadata
-     */
-    /**
-     * The Rails services dispatch actions by name (call!(:update_payment_status, ...));
-     * the port exposes them as static entrypoints instead — this instance body is
-     * never invoked.
-     */
-    public function execute(): BaseResult
-    {
-        throw new \LogicException(static::class." is dispatched through its static action entrypoints");
-    }
 
     public static function updatePaymentStatus(
         string $organizationId,
@@ -96,8 +82,11 @@ class AdyenService extends BaseService
                 SendWebhookJob::performLater('payment.succeeded', $payment);
             }
 
-            // TODO(port): Integrations::Aggregator::Payments::CreateJob when
-            // payment.should_sync_payment? (accounting integrations milestone).
+            // Rails: Integrations::Aggregator::Payments::CreateJob
+            // .perform_later(payment:) if payment.should_sync_payment?.
+            if ($payment->shouldSyncPayment()) {
+                \App\Jobs\Integrations\Aggregator\Payments\CreateJob::dispatch($payment);
+            }
 
             self::updateInvoicePaymentStatus($invoice, (string) $payablePaymentStatus);
 
@@ -151,6 +140,21 @@ class AdyenService extends BaseService
         $result->payment_url = $response['url'] ?? null;
 
         return $result;
+    }
+
+    /**
+     * Rails: `update_payment_status`.
+     *
+     * @param  array<string, mixed>  $metadata
+     */
+    /**
+     * The Rails services dispatch actions by name (call!(:update_payment_status, ...));
+     * the port exposes them as static entrypoints instead — this instance body is
+     * never invoked.
+     */
+    public function execute(): BaseResult
+    {
+        throw new LogicException(static::class.' is dispatched through its static action entrypoints');
     }
 
     /**

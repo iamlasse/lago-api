@@ -91,10 +91,29 @@ class Payment extends BaseModel
                 : (string) $this->payable_payment_status);
     }
 
-    /** Rails: Payment#should_sync_payment? (integrations milestone — false). */
+    /**
+     * Rails: Payment#should_sync_payment? — the emission guard of the
+     * payment services that enqueue the accounting integrations collector:
+     * `payable.is_a?(Invoice) && payable.finalized? && succeeded? &&
+     * customer.integration_customers.accounting_kind.any? { _1.integration.sync_payments }`.
+     */
     public function shouldSyncPayment(): bool
     {
-        return false;
+        $invoice = $this->payable;
+
+        if (! $invoice instanceof Invoice || ! $invoice->isFinalized()) {
+            return false;
+        }
+
+        if ($this->payablePaymentStatus() !== 'succeeded') {
+            return false;
+        }
+
+        return $invoice->customer
+            ->integrationCustomers()
+            ->accountingKind()
+            ->get()
+            ->contains(fn ($integrationCustomer) => (bool) $integrationCustomer->integration?->getFromSettings('sync_payments'));
     }
 
     /**

@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
@@ -374,6 +375,27 @@ class Subscription extends BaseModel
         return $this;
     }
 
+
+    /**
+     * Rails: `has_many :applied_invoice_custom_sections,
+     * class_name: "Subscription::AppliedInvoiceCustomSection", dependent: :destroy`
+     * (the `subscriptions_invoice_custom_sections` table).
+     */
+    public function appliedInvoiceCustomSections(): HasMany
+    {
+        return $this->hasMany(SubscriptionAppliedInvoiceCustomSection::class, 'subscription_id');
+    }
+
+    /** Rails: `has_many :selected_invoice_custom_sections, through: :applied_invoice_custom_sections, source: :invoice_custom_section`. */
+    public function selectedInvoiceCustomSections(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            InvoiceCustomSection::class,
+            'subscriptions_invoice_custom_sections',
+            'subscription_id',
+            'invoice_custom_section_id',
+        )->whereNull('invoice_custom_sections.deleted_at');
+    }
     // -- Domain methods (ports of the Rails instance methods) ---------------------
 
     /** Rails: `pending_rules?` — any activation rule still pending. */

@@ -8,6 +8,7 @@ use App\Models\Wallet;
 use App\Support\MoneyMath;
 use App\Services\BaseResult;
 use App\Services\BaseService;
+use App\Services\InvoiceCustomSections\AttachToResourceService;
 use App\Support\WalletCredit;
 use App\Models\WalletTransaction;
 use App\Enums\WalletTransactionSource;
@@ -156,9 +157,13 @@ class CreateFromParamsService extends BaseService
                     $walletTransactions[] = $transaction;
                 }
             }
-        });
 
-        // TODO(port): InvoiceCustomSections::AttachToResourceService.
+            if (array_key_exists('invoice_custom_section', $params)) {
+                foreach ($walletTransactions as $transaction) {
+                    AttachToResourceService::call(resource: $transaction, params: $params);
+                }
+            }
+        });
 
         $transactions = [];
 

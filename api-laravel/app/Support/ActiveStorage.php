@@ -73,6 +73,10 @@ final class ActiveStorage
      * the payload to the configured disk and inserts the blob + attachment
      * rows. Returns the blob row (stdClass) for url()/download() callers.
      *
+     * `$key` overrides the generated storage key (Rails' `attach(key:)`
+     * form — CombinePartsService stores data exports under
+     * `data_exports/<id>-<hex5>.<format>`).
+     *
      * @param  array{name?: string}|null  $metadata
      */
     public static function attach(
@@ -82,12 +86,13 @@ final class ActiveStorage
         string $filename,
         string $contentType,
         ?array $metadata = null,
+        ?string $key = null,
     ): object {
         // Rails' attach replaces an existing attachment for the same
         // record/name (ActiveStorage::Attachment#purge then re-attach).
         self::purge($record, $name);
 
-        $key = self::generateKey();
+        $key ??= self::generateKey();
         $disk = self::diskName();
 
         Storage::disk($disk)->put($key, $content);

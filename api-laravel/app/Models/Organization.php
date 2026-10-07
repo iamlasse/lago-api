@@ -408,6 +408,24 @@ class Organization extends BaseModel
         return $this->hasMany(Invoice::class);
     }
 
+    /** Rails: `has_many :invoice_custom_sections`. */
+    public function invoiceCustomSections(): HasMany
+    {
+        return $this->hasMany(InvoiceCustomSection::class);
+    }
+
+    /** Rails: `has_many :manual_invoice_custom_sections, -> { where(section_type: "manual") }`. */
+    public function manualInvoiceCustomSections(): HasMany
+    {
+        return $this->invoiceCustomSections()->where('section_type', 'manual');
+    }
+
+    /** Rails: `has_many :system_generated_invoice_custom_sections, -> { where(section_type: "system_generated") }`. */
+    public function systemGeneratedInvoiceCustomSections(): HasMany
+    {
+        return $this->invoiceCustomSections()->where('section_type', 'system_generated');
+    }
+
     public function taxes(): HasMany
     {
         return $this->hasMany(Tax::class);

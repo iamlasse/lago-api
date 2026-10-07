@@ -8,6 +8,7 @@ use App\Models\Wallet;
 use App\Models\WalletTarget;
 use App\Services\BaseResult;
 use App\Services\BaseService;
+use App\Services\InvoiceCustomSections\AttachToResourceService;
 use Illuminate\Support\Facades\DB;
 use App\Services\Metadata\UpdateItemService;
 
@@ -156,7 +157,8 @@ class UpdateService extends BaseService
                     // flag above schedules the recalculation.
                 }
 
-                // TODO(port): InvoiceCustomSections::AttachToResourceService.
+                AttachToResourceService::call(resource: $wallet, params: $this->params);
+
                 // TODO(port): BillingObjectConnections::AttachToResourceService.
 
                 // Rails: SendWebhookJob.perform_after_commit("wallet.updated", wallet)

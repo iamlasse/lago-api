@@ -10,6 +10,7 @@ use Carbon\CarbonInterface;
 use App\Models\Subscription;
 use App\Services\BaseResult;
 use App\Services\BaseService;
+use App\Services\InvoiceCustomSections\AttachToResourceService;
 use App\Support\Utils\Datetime;
 use App\Enums\SubscriptionStatus;
 use Illuminate\Support\Facades\DB;
@@ -224,7 +225,8 @@ class UpdateService extends BaseService
                 // TODO(port): SendWebhookJob "subscription.updated" + Hubspot sync.
             }
 
-            // TODO(port): InvoiceCustomSections::AttachToResourceService.
+            AttachToResourceService::call(resource: $subscription, params: $this->params);
+
             // TODO(port): BillingObjectConnections::AttachToResourceService.
         });
 

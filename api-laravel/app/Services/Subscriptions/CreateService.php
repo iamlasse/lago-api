@@ -12,6 +12,7 @@ use App\Models\Organization;
 use App\Models\Subscription;
 use App\Services\BaseResult;
 use App\Services\BaseService;
+use App\Services\InvoiceCustomSections\AttachToResourceService;
 use App\Support\Utils\Datetime;
 use App\Enums\SubscriptionStatus;
 use Illuminate\Support\Facades\DB;
@@ -217,9 +218,11 @@ class CreateService extends BaseService
                         partial: false,
                     );
                 }
-                // TODO(port): InvoiceCustomSections::AttachToResourceService
-                // and BillingObjectConnections::AttachToResourceService unless
-                // downgrade — not ported yet.
+                if (! $this->downgrade()) {
+                    AttachToResourceService::call(resource: $subscription, params: $this->params);
+                }
+                // TODO(port): BillingObjectConnections::AttachToResourceService
+                // unless downgrade — not ported yet.
 
                 $result->subscription = $subscription;
             });

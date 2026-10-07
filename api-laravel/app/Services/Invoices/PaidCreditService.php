@@ -9,6 +9,7 @@ use App\Models\Customer;
 use App\Enums\InvoiceType;
 use App\Services\BaseResult;
 use App\Services\BaseService;
+use App\Services\Invoices\ApplyInvoiceCustomSectionsService;
 use App\Models\WalletTransaction;
 use Illuminate\Support\Facades\DB;
 use App\Services\Fees\PaidCreditService as PaidCreditFeeService;
@@ -56,7 +57,10 @@ class PaidCreditService extends BaseService
 
             $this->computeAmounts($invoice);
 
-            // TODO(port): Invoices::ApplyInvoiceCustomSectionsService.
+            ApplyInvoiceCustomSectionsService::call(
+                invoice: $invoice,
+                resources: [$this->walletTransaction->invoiceCustomSectionResource()],
+            );
 
             if ($this->premium() && (bool) $this->walletTransaction->invoice_requires_successful_payment) {
                 // Rails: invoice.open!

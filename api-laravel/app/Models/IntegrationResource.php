@@ -31,6 +31,14 @@ class IntegrationResource extends BaseModel
     /** Rails: resource_type enum (:invoice default 0). */
     public const int RESOURCE_TYPE_INVOICE = 0;
 
+    public const int RESOURCE_TYPE_SALES_ORDER_DEPRECATED = 1;
+
+    public const int RESOURCE_TYPE_PAYMENT = 2;
+
+    public const int RESOURCE_TYPE_CREDIT_NOTE = 3;
+
+    public const int RESOURCE_TYPE_SUBSCRIPTION = 4;
+
     public function integration(): BelongsTo
     {
         return $this->belongsTo(Integration::class);

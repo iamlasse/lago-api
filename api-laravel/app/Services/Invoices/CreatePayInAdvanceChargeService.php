@@ -10,6 +10,7 @@ use App\Models\Invoice;
 use App\Enums\InvoiceType;
 use App\Services\BaseResult;
 use App\Services\BaseService;
+use App\Services\Invoices\ApplyInvoiceCustomSectionsService;
 use App\Enums\InvoicePaymentStatus;
 use App\Enums\SubscriptionInvoicingReason;
 use App\Services\Credits\AppliedCouponsService;
@@ -76,7 +77,10 @@ class CreatePayInAdvanceChargeService extends BaseService
             AppliedCouponsService::call(invoice: $invoice)->raiseIfError();
         }
 
-        // TODO(port): Invoices::ApplyInvoiceCustomSectionsService.
+        ApplyInvoiceCustomSectionsService::call(
+            invoice: $invoice,
+            resources: [$this->billingContext->subscription()],
+        );
 
         ComputeTaxesAndTotalsService::call(invoice: $invoice)->raiseIfError();
 

@@ -91,7 +91,7 @@ class SubscriptionService extends \App\Services\BaseService
                 context: $context,
             );
 
-            // TODO(port): Invoices::ApplyInvoiceCustomSectionsService.
+            ApplyInvoiceCustomSectionsService::call(invoice: $invoice, resources: $this->subscriptions);
 
             $this->setInvoiceGeneratedStatus($invoice, $feeResult);
 

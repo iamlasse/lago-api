@@ -112,8 +112,11 @@ class StripeService extends BaseService
             SendWebhookJob::performLater('payment.succeeded', $payment);
         }
 
-        // TODO(port): Integrations::Aggregator::Payments::CreateJob when
-        // payment.should_sync_payment? (accounting integrations milestone).
+        // Rails: Integrations::Aggregator::Payments::CreateJob
+        // .perform_later(payment:) if payment.should_sync_payment?.
+        if ($payment->shouldSyncPayment()) {
+            \App\Jobs\Integrations\Aggregator\Payments\CreateJob::dispatch($payment);
+        }
 
         if (! $this->authenticationRetryPending($payment, $this->status)) {
             $this->updateInvoicePaymentStatus($payable, $payablePaymentStatus, processing: $this->status === 'processing');

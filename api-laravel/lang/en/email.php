@@ -28,6 +28,18 @@ return [
         ],
     ],
 
+    'data_export' => [
+        'completed' => [
+            'fallback_text' => 'If the link has expired, please generate a new one from your Dashboard.',
+            'greetings' => 'Hello',
+            'intro' => 'Your :resource_type export is ready! You can download it using the link below, which will be available for 7 days.',
+            'lago_team' => 'The Lago Team',
+            'main_cta_label' => 'Download export',
+            'subject' => 'Your Lago :resource_type export is ready!',
+            'thanks' => 'Thanks,',
+        ],
+    ],
+
     'questions' => 'Questions? Contact us at',
     'powered_by' => 'Powered by',
 ];

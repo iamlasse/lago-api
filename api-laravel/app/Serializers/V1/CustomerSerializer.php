@@ -17,7 +17,7 @@ use App\Serializers\V1\Customers\MetadataSerializer;
  * - TODO(port): payment-provider billing configuration extras
  *   (provider_customer_id / provider_payment_methods / settings) once the
  *   PaymentProviderCustomers models exist.
- * - TODO(port): integration_customers, applicable_invoice_custom_sections
+ * - TODO(port): integration_customers (applicable_invoice_custom_sections is WIRED).
  *   and error_details includes are emitted as empty collections.
  */
 class CustomerSerializer extends ModelSerializer
@@ -79,8 +79,11 @@ class CustomerSerializer extends ModelSerializer
         }
 
         if ($this->include('applicable_invoice_custom_sections')) {
-            // TODO(port): InvoiceCustomSection models — empty collection.
-            $payload['applicable_invoice_custom_sections'] = [];
+            $payload['applicable_invoice_custom_sections'] = (new \App\Serializers\Base\CollectionSerializer(
+                $this->model->applicableInvoiceCustomSections()->get(),
+                InvoiceCustomSectionSerializer::class,
+                ['collection_name' => 'applicable_invoice_custom_sections'],
+            ))->serialize();
         }
 
         if ($this->include('error_details')) {

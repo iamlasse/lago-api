@@ -15,6 +15,8 @@ use App\Enums\WalletTransactionCreditStatus;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
@@ -253,6 +255,26 @@ class WalletTransaction extends BaseModel
             : $this->wallet->purchase_order_number;
     }
 
+    /**
+     * Rails: `invoice_custom_section_resource` — the resource that should
+     * drive invoice custom sections for this transaction. Priority chain:
+     * transaction first, then wallet.
+     */
+    public function invoiceCustomSectionResource(): self|Wallet
+    {
+        if (! $this->skip_invoice_custom_sections && $this->selectedInvoiceCustomSections()->exists()) {
+            return $this;
+        }
+
+        $wallet = $this->wallet;
+
+        if (! $wallet->skip_invoice_custom_sections && $wallet->selectedInvoiceCustomSections()->exists()) {
+            return $wallet;
+        }
+
+        return $this;
+    }
+
     /** Rails: `def mark_as_failed!(timestamp = Time.zone.now)`. */
     public function markAsFailed(mixed $timestamp = null): void
     {
@@ -369,4 +391,25 @@ class WalletTransaction extends BaseModel
             'remaining_amount_cents' => 'integer',
         ];
     }
+    /**
+     * Rails: `has_many :applied_invoice_custom_sections,
+     * class_name: "WalletTransaction::AppliedInvoiceCustomSection", dependent: :destroy`
+     * (the `wallet_transactions_invoice_custom_sections` table).
+     */
+    public function appliedInvoiceCustomSections(): HasMany
+    {
+        return $this->hasMany(WalletTransactionAppliedInvoiceCustomSection::class, 'wallet_transaction_id');
+    }
+
+    /** Rails: `has_many :selected_invoice_custom_sections, through: :applied_invoice_custom_sections, source: :invoice_custom_section`. */
+    public function selectedInvoiceCustomSections(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            InvoiceCustomSection::class,
+            'wallet_transactions_invoice_custom_sections',
+            'wallet_transaction_id',
+            'invoice_custom_section_id',
+        )->whereNull('invoice_custom_sections.deleted_at');
+    }
+
 }

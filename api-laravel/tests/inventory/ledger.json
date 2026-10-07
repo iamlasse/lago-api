@@ -7257,11 +7257,13 @@
       "source": "app/jobs/integrations/aggregator/credit_notes/create_job.rb",
       "laravel": "App\\Jobs\\Integrations\\Aggregator\\CreditNotes\\CreateJob",
       "status": {
-        "code": "todo",
-        "test": "todo",
-        "contract": "untested"
+        "code": "done",
+        "test": "ported",
+        "contract": "pass"
       },
-      "tests": [],
+      "tests": [
+        "tests/Unit/Services/Integrations/Aggregator/CreditNotes/CreateServiceTest.php"
+      ],
       "notes": ""
     },
     {
@@ -7329,11 +7331,13 @@
       "source": "app/jobs/integrations/aggregator/payments/create_job.rb",
       "laravel": "App\\Jobs\\Integrations\\Aggregator\\Payments\\CreateJob",
       "status": {
-        "code": "todo",
-        "test": "todo",
-        "contract": "untested"
+        "code": "done",
+        "test": "ported",
+        "contract": "pass"
       },
-      "tests": [],
+      "tests": [
+        "tests/Unit/Services/Integrations/Aggregator/Payments/CreateServiceTest.php"
+      ],
       "notes": ""
     },
     {
@@ -24068,11 +24072,13 @@
       "source": "app/services/integrations/aggregator/credit_notes/create_service.rb",
       "laravel": "App\\Services\\Integrations\\Aggregator\\CreditNotes\\CreateService",
       "status": {
-        "code": "todo",
-        "test": "todo",
-        "contract": "untested"
+        "code": "done",
+        "test": "ported",
+        "contract": "pass"
       },
-      "tests": [],
+      "tests": [
+        "tests/Unit/Services/Integrations/Aggregator/CreditNotes/CreateServiceTest.php"
+      ],
       "notes": ""
     },
     {
@@ -24092,11 +24098,13 @@
       "source": "app/services/integrations/aggregator/credit_notes/payloads/base_payload.rb",
       "laravel": "App\\Services\\Integrations\\Aggregator\\CreditNotes\\Payloads\\BasePayload",
       "status": {
-        "code": "todo",
-        "test": "todo",
-        "contract": "untested"
+        "code": "done",
+        "test": "ported",
+        "contract": "pass"
       },
-      "tests": [],
+      "tests": [
+        "tests/Unit/Services/Integrations/Aggregator/CreditNotes/Payloads/XeroTest.php"
+      ],
       "notes": ""
     },
     {
@@ -24104,11 +24112,13 @@
       "source": "app/services/integrations/aggregator/credit_notes/payloads/factory.rb",
       "laravel": "App\\Services\\Integrations\\Aggregator\\CreditNotes\\Payloads\\Factory",
       "status": {
-        "code": "todo",
-        "test": "todo",
-        "contract": "untested"
+        "code": "done",
+        "test": "ported",
+        "contract": "pass"
       },
-      "tests": [],
+      "tests": [
+        "tests/Unit/Services/Integrations/Aggregator/CreditNotes/Payloads/XeroTest.php"
+      ],
       "notes": ""
     },
     {
@@ -24116,11 +24126,13 @@
       "source": "app/services/integrations/aggregator/credit_notes/payloads/netsuite.rb",
       "laravel": "App\\Services\\Integrations\\Aggregator\\CreditNotes\\Payloads\\Netsuite",
       "status": {
-        "code": "todo",
-        "test": "todo",
-        "contract": "untested"
+        "code": "done",
+        "test": "ported",
+        "contract": "pass"
       },
-      "tests": [],
+      "tests": [
+        "tests/Unit/Services/Integrations/Aggregator/CreditNotes/Payloads/NetsuiteTest.php"
+      ],
       "notes": ""
     },
     {
@@ -24128,11 +24140,13 @@
       "source": "app/services/integrations/aggregator/credit_notes/payloads/xero.rb",
       "laravel": "App\\Services\\Integrations\\Aggregator\\CreditNotes\\Payloads\\Xero",
       "status": {
-        "code": "todo",
-        "test": "todo",
-        "contract": "untested"
+        "code": "done",
+        "test": "ported",
+        "contract": "pass"
       },
-      "tests": [],
+      "tests": [
+        "tests/Unit/Services/Integrations/Aggregator/CreditNotes/Payloads/XeroTest.php"
+      ],
       "notes": ""
     },
     {
@@ -24344,11 +24358,13 @@
       "source": "app/services/integrations/aggregator/payments/create_service.rb",
       "laravel": "App\\Services\\Integrations\\Aggregator\\Payments\\CreateService",
       "status": {
-        "code": "todo",
-        "test": "todo",
-        "contract": "untested"
+        "code": "done",
+        "test": "ported",
+        "contract": "pass"
       },
-      "tests": [],
+      "tests": [
+        "tests/Unit/Services/Integrations/Aggregator/Payments/CreateServiceTest.php"
+      ],
       "notes": ""
     },
     {
@@ -24356,11 +24372,13 @@
       "source": "app/services/integrations/aggregator/payments/payloads/base_payload.rb",
       "laravel": "App\\Services\\Integrations\\Aggregator\\Payments\\Payloads\\BasePayload",
       "status": {
-        "code": "todo",
-        "test": "todo",
-        "contract": "untested"
+        "code": "done",
+        "test": "ported",
+        "contract": "pass"
       },
-      "tests": [],
+      "tests": [
+        "tests/Unit/Services/Integrations/Aggregator/Payments/Payloads/XeroTest.php"
+      ],
       "notes": ""
     },
     {
@@ -24368,11 +24386,13 @@
       "source": "app/services/integrations/aggregator/payments/payloads/factory.rb",
       "laravel": "App\\Services\\Integrations\\Aggregator\\Payments\\Payloads\\Factory",
       "status": {
-        "code": "todo",
-        "test": "todo",
-        "contract": "untested"
+        "code": "done",
+        "test": "ported",
+        "contract": "pass"
       },
-      "tests": [],
+      "tests": [
+        "tests/Unit/Services/Integrations/Aggregator/Payments/Payloads/XeroTest.php"
+      ],
       "notes": ""
     },
     {
@@ -24380,11 +24400,13 @@
       "source": "app/services/integrations/aggregator/payments/payloads/netsuite.rb",
       "laravel": "App\\Services\\Integrations\\Aggregator\\Payments\\Payloads\\Netsuite",
       "status": {
-        "code": "todo",
-        "test": "todo",
-        "contract": "untested"
+        "code": "done",
+        "test": "ported",
+        "contract": "pass"
       },
-      "tests": [],
+      "tests": [
+        "tests/Unit/Services/Integrations/Aggregator/Payments/Payloads/NetsuiteTest.php"
+      ],
       "notes": ""
     },
     {
@@ -24392,11 +24414,13 @@
       "source": "app/services/integrations/aggregator/payments/payloads/xero.rb",
       "laravel": "App\\Services\\Integrations\\Aggregator\\Payments\\Payloads\\Xero",
       "status": {
-        "code": "todo",
-        "test": "todo",
-        "contract": "untested"
+        "code": "done",
+        "test": "ported",
+        "contract": "pass"
       },
-      "tests": [],
+      "tests": [
+        "tests/Unit/Services/Integrations/Aggregator/Payments/Payloads/XeroTest.php"
+      ],
       "notes": ""
     },
     {

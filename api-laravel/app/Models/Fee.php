@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -81,6 +82,18 @@ class Fee extends BaseModel
     public function invoice(): BelongsTo
     {
         return $this->belongsTo(Invoice::class);
+    }
+
+    /** Rails: `has_one :adjusted_fee, dependent: :nullify`. */
+    public function adjustedFee(): HasOne
+    {
+        return $this->hasOne(AdjustedFee::class);
+    }
+
+    /** Rails: `belongs_to :original_fee, class_name: "Fee", optional: true` — the root fee in a void/regenerate chain. */
+    public function originalFee(): BelongsTo
+    {
+        return $this->belongsTo(Fee::class, 'original_fee_id');
     }
 
     public function subscription(): BelongsTo

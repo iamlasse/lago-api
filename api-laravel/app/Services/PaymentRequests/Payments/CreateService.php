@@ -31,10 +31,12 @@ use App\Services\PaymentProviders\CreatePaymentFactory;
  *
  * Error handling mirrors Rails: AlreadyPaidError drops the unused pending
  * payment; a provider ServiceFailure delivers the
- * payment_request.payment_failure webhook and fails the payment request.
+ * payment_request.payment_failure webhook and fails the payment request,
+ * then re-raises when the provider result carries reraise
+ * (`raise if e.result.reraise`).
  *
- * TODO(port): PaymentRequestMailer.requested (mailer slice), the dunning
- * campaign reset, and the provider create legs other than Stripe (the
+ * TODO(port): PaymentRequestMailer.requested (mailer slice) and the dunning
+ * campaign reset. The provider create legs other than Stripe (the
  * factory currently covers Stripe; the Adyen / GoCardless / Cashfree /
  * Moneyhash arms exist for invoice payables and are wired through the same
  * factory).
@@ -169,8 +171,12 @@ class CreateService extends BaseService
                 $result->payment->payablePaymentStatus(),
             );
 
-            // TODO(port): `raise if e.result.reraise` — RetriableError
-            // propagation for the job-level retries.
+            // Some errors should be investigated and need to be raised
+            // (Rails: `raise if e.result.reraise`) — the job-level retries
+            // surface them instead of swallowing the ServiceFailure.
+            if ($paymentResult->reraise) {
+                throw $e;
+            }
         }
 
         $paymentStatus = $paymentResult->payment->payablePaymentStatus();

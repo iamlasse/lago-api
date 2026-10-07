@@ -14,6 +14,7 @@ use App\Models\CustomerMetadata;
 use Illuminate\Support\Facades\DB;
 use App\Enums\FinalizeZeroAmountInvoice;
 use App\Services\BillingEntities\ResolveService;
+use App\Services\Customers\ManageInvoiceCustomSectionsService;
 use App\Services\IntegrationCustomers\CreateOrUpdateBatchService;
 
 use function is_array;
@@ -34,7 +35,6 @@ use function array_key_exists;
  *   ported (PaymentBillingConfigurationService); PaymentProviderCustomers::UpdateService
  *   and the non-stripe provider legs remain TODO(port) inside it.
  * - TODO(port): RefreshInvoicesSearchTermsJob + error_details tax cleanup.
- * - TODO(port): ManageInvoiceCustomSectionsService.
  */
 class UpsertFromApiService extends BaseService
 {
@@ -178,7 +178,15 @@ class UpsertFromApiService extends BaseService
                     ApplyTaxesService::call(customer: $customer, taxCodes: $taxCodes)->raiseIfError();
                 }
 
-                // TODO(port): ManageInvoiceCustomSectionsService.
+                ManageInvoiceCustomSectionsService::call(
+                    customer: $customer,
+                    skipInvoiceCustomSections: isset($params['skip_invoice_custom_sections'])
+                        ? (bool) $params['skip_invoice_custom_sections']
+                        : null,
+                    sectionCodes: isset($params['invoice_custom_section_codes'])
+                        ? array_map(strval(...), (array) $params['invoice_custom_section_codes'])
+                        : null,
+                )->raiseIfError();
 
                 if (array_key_exists('metadata', $params) && is_array($params['metadata'])) {
                     if ($newCustomer) {
