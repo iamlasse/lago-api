@@ -19,14 +19,11 @@ final class RequiredOrganization
     /** @throws ExecutionError */
     public static function authorize(GraphQLContext $context): void
     {
-        if (LagoContext::currentOrganization($context) === null) {
-            throw self::organizationError('Missing organization id');
-        }
+        throw_unless(LagoContext::currentOrganization($context), self::organizationError('Missing organization id'));
 
         $currentMembership = LagoContext::currentMembership($context);
-        if ($currentMembership === null) {
-            throw self::organizationError('Missing membership');
-        }
+
+        throw_unless($currentMembership, throw self::organizationError('Missing membership'));
 
         $currentUser = LagoContext::currentUser($context);
         if (

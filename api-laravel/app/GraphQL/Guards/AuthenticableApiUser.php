@@ -18,9 +18,7 @@ final class AuthenticableApiUser
     /** @throws ExecutionError */
     public static function authorize(GraphQLContext $context): void
     {
-        if (LagoContext::currentUser($context) === null) {
-            throw self::unauthorizedError();
-        }
+        throw_unless(LagoContext::currentUser($context), self::unauthorizedError());
     }
 
     /** Rails: GraphQL::ExecutionError.new("unauthorized", extensions: {status: :unauthorized, code: "unauthorized"}) */
