@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use App\Models\BillingEntity;
 use App\Models\Customer;
-use App\Models\InvoiceCustomSection;
 use App\Models\Organization;
+use App\Models\BillingEntity;
+use App\Models\InvoiceCustomSection;
 use App\Services\Customers\ManageInvoiceCustomSectionsService;
 
 /**
@@ -36,7 +36,7 @@ function micsFixture(): array
 it('sets skip flag and clears all selections', function (): void {
     $f = micsFixture();
 
-    \App\Models\CustomerAppliedInvoiceCustomSection::factory()->create([
+    App\Models\CustomerAppliedInvoiceCustomSection::factory()->create([
         'organization_id' => $f['organization']->id,
         'billing_entity_id' => $f['billingEntity']->id,
         'customer_id' => $f['customer']->id,
@@ -65,7 +65,7 @@ it('selects sections by ids and sets skip to false', function (): void {
     expect($result->success())->toBeTrue()
         ->and($f['customer']->skip_invoice_custom_sections)->toBeFalse()
         ->and($f['customer']->selectedInvoiceCustomSections()->pluck('invoice_custom_sections.code')->all())
-            ->toBe([$f['sections'][2]->code]);
+        ->toBe([$f['sections'][2]->code]);
 })->group('ledger:svc:Customers.ManageInvoiceCustomSectionsService');
 
 it('selects sections by codes', function (): void {
@@ -79,7 +79,7 @@ it('selects sections by codes', function (): void {
 
     expect($result->success())->toBeTrue()
         ->and($f['customer']->selectedInvoiceCustomSections()->pluck('code')->all())
-            ->toBe([$f['sections'][1]->code]);
+        ->toBe([$f['sections'][1]->code]);
 })->group('ledger:svc:Customers.ManageInvoiceCustomSectionsService');
 
 it('rejects section ids and codes sent together', function (): void {
@@ -120,7 +120,7 @@ it('replaces existing manual selection but keeps system-generated rows', functio
         ->systemGenerated()
         ->create(['organization_id' => $f['organization']->id]);
 
-    \App\Models\CustomerAppliedInvoiceCustomSection::factory()->create([
+    App\Models\CustomerAppliedInvoiceCustomSection::factory()->create([
         'organization_id' => $f['organization']->id,
         'billing_entity_id' => $f['billingEntity']->id,
         'customer_id' => $f['customer']->id,

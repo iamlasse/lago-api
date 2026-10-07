@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Services\InvoiceCustomSections;
 
-use App\Models\InvoiceCustomSection;
 use App\Services\BaseResult;
 use App\Services\BaseService;
-use App\Services\Failures\FailedResult;
 use Illuminate\Support\Facades\DB;
+use App\Models\InvoiceCustomSection;
+use App\Services\Failures\FailedResult;
 
 /**
  * Port of Rails' InvoiceCustomSections::DestroyService

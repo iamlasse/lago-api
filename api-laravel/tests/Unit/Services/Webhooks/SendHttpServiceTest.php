@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\Webhook;
+use Illuminate\Support\Env;
 use App\Models\Organization;
 use App\Models\WebhookEndpoint;
 use App\Jobs\SendHttpWebhookJob;
@@ -23,7 +24,9 @@ beforeEach(function (): void {
 });
 
 afterEach(function (): void {
-    unset(\Illuminate\Support\Env::get('LAGO_WEBHOOK_ALLOW_PRIVATE_URLS'), $_SERVER['LAGO_WEBHOOK_ALLOW_PRIVATE_URLS']);
+    Env::getRepository()->clear('LAGO_WEBHOOK_ALLOW_PRIVATE_URLS');
+
+    unset($_ENV['LAGO_WEBHOOK_ALLOW_PRIVATE_URLS'], $_SERVER['LAGO_WEBHOOK_ALLOW_PRIVATE_URLS']);
 });
 
 beforeEach(function (): void {
@@ -52,7 +55,7 @@ it('marks the webhook as succeeded', function (): void {
 
     $webhook = $this->webhook->fresh();
 
-    Http::assertSent(fn($request) => $request->url() === 'https://wh.test.com'
+    Http::assertSent(fn ($request) => $request->url() === 'https://wh.test.com'
         && $request->method() === 'POST'
         && $request->body() === json_encode($this->webhook->payload, JSON_UNESCAPED_SLASHES));
 
@@ -77,7 +80,7 @@ it('sends the signature headers', function (): void {
         true,
     ));
 
-    Http::assertSent(fn($request) => $request->hasHeader('X-Lago-Signature', $expectedSignature)
+    Http::assertSent(fn ($request) => $request->hasHeader('X-Lago-Signature', $expectedSignature)
         && $request->hasHeader('X-Lago-Signature-Algorithm', 'hmac')
         && $request->hasHeader('X-Lago-Unique-Key', $this->webhook->id)
         && $request->hasHeader('Content-Type', 'application/json'));
@@ -171,7 +174,9 @@ it('stores a generic message when the connection fails', function (): void {
 })->group('ledger:svc:Webhooks.SendHttpService');
 
 it('does not send the webhook when the endpoint resolves to a private address', function (): void {
-    unset(\Illuminate\Support\Env::get('LAGO_WEBHOOK_ALLOW_PRIVATE_URLS'), $_SERVER['LAGO_WEBHOOK_ALLOW_PRIVATE_URLS']);
+    Env::getRepository()->clear('LAGO_WEBHOOK_ALLOW_PRIVATE_URLS');
+
+    unset($_ENV['LAGO_WEBHOOK_ALLOW_PRIVATE_URLS'], $_SERVER['LAGO_WEBHOOK_ALLOW_PRIVATE_URLS']);
     $this->endpoint->update(['webhook_url' => 'http://127.0.0.1:9381/hook']);
     $this->webhook->update(['endpoint' => 'http://127.0.0.1:9381/hook']);
     Http::fake();
@@ -253,7 +258,7 @@ it('enqueues the retry with a delay', function (): void {
 
     SendHttpService::call(webhook: $this->webhook);
 
-    Queue::assertPushed(SendHttpWebhookJob::class, fn($job) => $job->delay instanceof DateTimeInterface);
+    Queue::assertPushed(SendHttpWebhookJob::class, fn ($job) => $job->delay instanceof DateTimeInterface);
 })->group('ledger:svc:Webhooks.SendHttpService');
 
 // -- Client construction -----------------------------------------------------------

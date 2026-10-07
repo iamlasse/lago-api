@@ -3,12 +3,13 @@
 declare(strict_types=1);
 
 use App\Models\Customer;
+use Illuminate\Support\Env;
 use App\Models\Organization;
-use Illuminate\Support\Facades\Http;
 use App\Models\IntegrationCustomer;
+use Illuminate\Support\Facades\Http;
 use App\Models\IntegrationCustomers\XeroCustomer;
-use App\Models\IntegrationCustomers\NetsuiteCustomer;
 use App\Services\IntegrationCustomers\XeroService;
+use App\Models\IntegrationCustomers\NetsuiteCustomer;
 use App\Services\IntegrationCustomers\NetsuiteService;
 use App\Services\Integrations\Aggregator\Contacts\Payloads\Netsuite as NetsuitePayload;
 
@@ -19,8 +20,8 @@ use App\Services\Integrations\Aggregator\Contacts\Payloads\Netsuite as NetsuiteP
  */
 function accountingCustomerFixture(Organization $organization): array
 {
-    $xeroIntegration = \App\Models\Integrations\XeroIntegration::factory()->forOrganization($organization)->create();
-    $netsuiteIntegration = \App\Models\Integrations\NetsuiteIntegration::factory()->forOrganization($organization)->create();
+    $xeroIntegration = App\Models\Integrations\XeroIntegration::factory()->forOrganization($organization)->create();
+    $netsuiteIntegration = App\Models\Integrations\NetsuiteIntegration::factory()->forOrganization($organization)->create();
     $customer = Customer::factory()->create([
         'organization_id' => $organization->id,
         'external_id' => 'cus_lago_1',
@@ -47,7 +48,9 @@ beforeEach(function (): void {
 
 afterEach(function (): void {
     putenv('NANGO_SECRET_KEY');
-    unset(\Illuminate\Support\Env::get('NANGO_SECRET_KEY'));
+    Env::getRepository()->clear('NANGO_SECRET_KEY');
+
+    unset($_ENV['NANGO_SECRET_KEY']);
 });
 
 it('creates a xero integration customer from the nango contact', function (): void {
@@ -167,7 +170,7 @@ it('builds the netsuite individual customer columns with address lines', functio
     [$customer] = accountingCustomerFixture($organization);
 
     $customer->update([
-        'customer_type' => \App\Enums\CustomerType::Individual,
+        'customer_type' => App\Enums\CustomerType::Individual,
         'firstname' => 'Jane',
         'lastname' => str_repeat('D', 60),
         'name' => 'Jane Doe Corp',
@@ -181,7 +184,7 @@ it('builds the netsuite individual customer columns with address lines', functio
     $customer->refresh();
 
     $payload = new NetsuitePayload(
-        integration: \App\Models\Integrations\NetsuiteIntegration::factory()->forOrganization($organization)->create(['code' => 'netsuite2']),
+        integration: App\Models\Integrations\NetsuiteIntegration::factory()->forOrganization($organization)->create(['code' => 'netsuite2']),
         customer: $customer,
         integration_customer: null,
         subsidiary_id: 'sub-9',

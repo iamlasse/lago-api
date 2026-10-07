@@ -7,6 +7,7 @@ uses()->group('ledger:svc:Auth.EntraId.AcceptInviteService',
 
 use App\Models\Role;
 use App\Models\Invite;
+use Illuminate\Support\Env;
 use App\Support\CurrentContext;
 use App\Support\Utils\AuthToken;
 use App\Models\Integrations\EntraIdIntegration;
@@ -32,7 +33,9 @@ beforeEach(function (): void {
 });
 
 afterEach(function (): void {
-    unset(\Illuminate\Support\Env::get('LAGO_WEBHOOK_ALLOW_PRIVATE_URLS'), $_SERVER['LAGO_WEBHOOK_ALLOW_PRIVATE_URLS']);
+    Env::getRepository()->clear('LAGO_WEBHOOK_ALLOW_PRIVATE_URLS');
+
+    unset($_ENV['LAGO_WEBHOOK_ALLOW_PRIVATE_URLS'], $_SERVER['LAGO_WEBHOOK_ALLOW_PRIVATE_URLS']);
 });
 
 function entraInviteFixtures(string $userinfoEmail = 'foo@bar.com'): array

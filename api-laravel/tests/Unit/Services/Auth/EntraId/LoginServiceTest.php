@@ -6,6 +6,7 @@ uses()->group('ledger:svc:Auth.EntraId.LoginService');
 
 use App\Models\User;
 use App\Models\Membership;
+use Illuminate\Support\Env;
 use App\Support\CurrentContext;
 use App\Support\Utils\AuthToken;
 use App\Services\Auth\EntraId\LoginService;
@@ -25,7 +26,9 @@ beforeEach(function (): void {
 });
 
 afterEach(function (): void {
-    unset(\Illuminate\Support\Env::get('LAGO_WEBHOOK_ALLOW_PRIVATE_URLS'), $_SERVER['LAGO_WEBHOOK_ALLOW_PRIVATE_URLS']);
+    Env::getRepository()->clear('LAGO_WEBHOOK_ALLOW_PRIVATE_URLS');
+
+    unset($_ENV['LAGO_WEBHOOK_ALLOW_PRIVATE_URLS'], $_SERVER['LAGO_WEBHOOK_ALLOW_PRIVATE_URLS']);
 });
 
 function entraFakeHttp(array $tokenResponse = ['access_token' => 'access_token'], array $userinfoResponse = ['email' => 'foo@bar.com']): void

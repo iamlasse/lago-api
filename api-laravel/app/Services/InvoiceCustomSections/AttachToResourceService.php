@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Services\InvoiceCustomSections;
 
-use App\Models\InvoiceCustomSection;
 use App\Services\BaseResult;
-use Illuminate\Support\Collection;
 use App\Services\BaseService;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use App\Models\InvoiceCustomSection;
 use App\Services\Failures\FailedResult;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Port of Rails' InvoiceCustomSections::AttachToResourceService
@@ -22,6 +22,11 @@ use Illuminate\Support\Facades\DB;
  */
 class AttachToResourceService extends BaseService
 {
+    private ?Collection $memoInvoiceCustomSections = null;
+
+    /** @var list<string>|null */
+    private ?array $memoSectionIdentifiers = null;
+
     /**
      * @param  array<string, mixed>  $params
      */
@@ -31,11 +36,6 @@ class AttachToResourceService extends BaseService
     ) {
         parent::__construct();
     }
-
-    private ?Collection $memoInvoiceCustomSections = null;
-
-    /** @var list<string>|null */
-    private ?array $memoSectionIdentifiers = null;
 
     public function execute(): BaseResult
     {

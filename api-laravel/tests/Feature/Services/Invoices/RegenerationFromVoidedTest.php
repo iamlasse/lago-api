@@ -3,13 +3,13 @@
 declare(strict_types=1);
 
 use App\Enums\FeeType;
-use App\Enums\InvoicePaymentStatus;
-use App\Enums\InvoiceStatus;
-use App\Enums\InvoiceType;
 use App\Models\Invoice;
+use App\Enums\InvoiceType;
+use App\Enums\InvoiceStatus;
+use App\Enums\InvoicePaymentStatus;
 use App\Models\InvoiceSubscription;
-use App\Services\Invoices\BuildRegenerationPreviewService;
 use App\Services\Invoices\RegenerateFromVoidedService;
+use App\Services\Invoices\BuildRegenerationPreviewService;
 
 /**
  * Ports of Rails' spec/services/invoices/regenerate_from_voided_service_spec.rb
@@ -147,7 +147,7 @@ it('regenerates a voided invoice with adjusted display name, units and unit amou
 
     expect($regeneratedFee)->not->toBeNull()
         ->and($regeneratedFee->invoice_display_name)->toBe('new-dis-name')
-        ->and(\App\Support\MoneyMath::compare((string) $regeneratedFee->units, '10'))->toBe(0)
+        ->and(App\Support\MoneyMath::compare((string) $regeneratedFee->units, '10'))->toBe(0)
         ->and((int) $regeneratedFee->unit_amount_cents)->toBe(5050)
         ->and((int) $regeneratedFee->amount_cents)->toBe(10 * 5050);
 
@@ -179,7 +179,7 @@ it('duplicates the voided invoice subscriptions onto the regenerated invoice', f
         ->and($subs[0]->subscription_id)->toBe($f['subscription']->id)
         // The voided invoice's subscription now points at the regenerated one.
         ->and($f['invoice']->invoiceSubscriptions()->first()->refresh()->regenerated_invoice_id)
-            ->toBe($invoice->id);
+        ->toBe($invoice->id);
 })->group('ledger:svc:Invoices.RegenerateFromVoidedService');
 
 it('inherits the voided invoice purchase order number and writes it to search terms', function (): void {

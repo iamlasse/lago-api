@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Models\Webhook;
 use App\Models\Customer;
+use Illuminate\Support\Env;
 use App\Jobs\SendWebhookJob;
 use App\Models\Organization;
 use App\Models\WebhookEndpoint;
@@ -33,7 +34,7 @@ it('does not enqueue when the organization has no webhook endpoints', function (
 it('enqueues when the organization has webhook endpoints', function (): void {
     SendWebhookJob::performLater('customer.created', $this->customer, ['key' => 'value']);
 
-    Queue::assertPushed(SendWebhookJob::class, fn(SendWebhookJob $job) => $job->webhookType === 'customer.created'
+    Queue::assertPushed(SendWebhookJob::class, fn (SendWebhookJob $job) => $job->webhookType === 'customer.created'
         && $job->object->is($this->customer)
         && $job->options === ['key' => 'value']
         && $job->webhookId === null);
@@ -63,7 +64,9 @@ it('uses the dedicated worker queues when SIDEKIQ_WEBHOOK is true', function ():
         expect(SendWebhookJob::queueFor('alert.triggered'))->toBe('webhook_worker_high_priority')
             ->and(SendWebhookJob::queueFor('invoice.created'))->toBe('webhook_worker');
     } finally {
-        unset(\Illuminate\Support\Env::get('SIDEKIQ_WEBHOOK'), $_SERVER['SIDEKIQ_WEBHOOK']);
+        Env::getRepository()->clear('SIDEKIQ_WEBHOOK');
+
+        unset($_ENV['SIDEKIQ_WEBHOOK'], $_SERVER['SIDEKIQ_WEBHOOK']);
     }
 })->group('ledger:job:SendWebhookJob');
 
@@ -115,6 +118,7 @@ it('registers the M1 webhook types', function (): void {
         'subscription.updated',
         'subscription.terminated',
         'subscription.canceled',
+        'subscription.termination_alert',
         'wallet.created',
         'wallet.updated',
         'wallet.terminated',
@@ -147,7 +151,9 @@ it('routes the http job to the dedicated worker queues when SIDEKIQ_WEBHOOK is t
         expect(SendHttpWebhookJob::queueFor('alert.triggered'))->toBe('webhook_worker_high_priority')
             ->and(SendHttpWebhookJob::queueFor('invoice.created'))->toBe('webhook_worker');
     } finally {
-        unset(\Illuminate\Support\Env::get('SIDEKIQ_WEBHOOK'), $_SERVER['SIDEKIQ_WEBHOOK']);
+        Env::getRepository()->clear('SIDEKIQ_WEBHOOK');
+
+        unset($_ENV['SIDEKIQ_WEBHOOK'], $_SERVER['SIDEKIQ_WEBHOOK']);
     }
 })->group('ledger:job:SendHttpWebhookJob');
 
@@ -187,5 +193,7 @@ it('performs the http delivery for its webhook', function (): void {
     // A successful attempt does not re-enqueue the retry job.
     Queue::assertNothingPushed();
 
-    unset(\Illuminate\Support\Env::get('LAGO_WEBHOOK_ALLOW_PRIVATE_URLS'), $_SERVER['LAGO_WEBHOOK_ALLOW_PRIVATE_URLS']);
+    Env::getRepository()->clear('LAGO_WEBHOOK_ALLOW_PRIVATE_URLS');
+
+    unset($_ENV['LAGO_WEBHOOK_ALLOW_PRIVATE_URLS'], $_SERVER['LAGO_WEBHOOK_ALLOW_PRIVATE_URLS']);
 })->group('ledger:job:SendHttpWebhookJob');

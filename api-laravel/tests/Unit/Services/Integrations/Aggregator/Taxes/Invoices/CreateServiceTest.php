@@ -6,6 +6,7 @@ use App\Models\Fee;
 use App\Models\AddOn;
 use App\Models\Invoice;
 use App\Models\Customer;
+use Illuminate\Support\Env;
 use App\Models\Organization;
 use App\Models\WebhookEndpoint;
 use Illuminate\Support\Facades\Http;
@@ -76,7 +77,9 @@ beforeEach(function (): void {
 
 afterEach(function (): void {
     putenv('NANGO_SECRET_KEY');
-    unset(\Illuminate\Support\Env::get('NANGO_SECRET_KEY'));
+    Env::getRepository()->clear('NANGO_SECRET_KEY');
+
+    unset($_ENV['NANGO_SECRET_KEY']);
 });
 
 it('returns the provider fees for an anrok invoice', function (): void {
@@ -264,7 +267,7 @@ it('fails with the provider validation code and delivers the tax error webhook',
     // The external customer id was not stamped on failure.
     expect($customer->taxCustomer()->refresh()->external_customer_id)->toBeNull();
 
-    Queue::assertPushed(App\Jobs\SendWebhookJob::class, fn($job): bool => $job->webhookType === 'customer.tax_provider_error'
+    Queue::assertPushed(App\Jobs\SendWebhookJob::class, fn ($job): bool => $job->webhookType === 'customer.tax_provider_error'
         && $job->options['provider'] === 'anrok'
         && $job->options['provider_code'] === $integration->code
         && $job->options['provider_error']['error_code'] === 'taxDateTooFarInFuture');

@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Models\Fee;
 use App\Models\Invoice;
 use App\Models\Customer;
+use Illuminate\Support\Env;
 use App\Enums\InvoiceStatus;
 use App\Models\Organization;
 use App\Models\FeeAppliedTax;
@@ -99,7 +100,9 @@ beforeEach(function (): void {
 
 afterEach(function (): void {
     putenv('NANGO_SECRET_KEY');
-    unset(\Illuminate\Support\Env::get('NANGO_SECRET_KEY'));
+    Env::getRepository()->clear('NANGO_SECRET_KEY');
+
+    unset($_ENV['NANGO_SECRET_KEY']);
 });
 
 it('returns not found without an invoice', function (): void {

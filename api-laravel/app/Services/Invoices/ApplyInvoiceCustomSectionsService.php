@@ -7,10 +7,10 @@ namespace App\Services\Invoices;
 use App\Models\Invoice;
 use App\Services\BaseResult;
 use App\Services\BaseService;
-use App\Models\AppliedInvoiceCustomSection;
+use Illuminate\Support\Collection;
 use App\Services\Failures\FailedResult;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
+use App\Models\AppliedInvoiceCustomSection;
 
 /**
  * Port of Rails' Invoices::ApplyInvoiceCustomSectionsService

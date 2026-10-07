@@ -6,6 +6,7 @@ require_once __DIR__.'/../AccountingCollectorsFixture.php';
 
 use App\Models\Invoice;
 use App\Models\Customer;
+use Illuminate\Support\Env;
 use App\Models\Organization;
 use App\Models\IntegrationResource;
 use Illuminate\Http\Client\Request;
@@ -47,7 +48,9 @@ beforeEach(function (): void {
 
 afterEach(function (): void {
     putenv('NANGO_SECRET_KEY');
-    unset(\Illuminate\Support\Env::get('NANGO_SECRET_KEY'));
+    Env::getRepository()->clear('NANGO_SECRET_KEY');
+
+    unset($_ENV['NANGO_SECRET_KEY']);
 });
 
 it('returns without an accounting integration customer', function (): void {
@@ -265,7 +268,7 @@ it('delivers the invalid_mapping webhook when the fee has no mapping', function 
     expect($result->success())->toBeTrue()
         ->and($result->external_id)->toBeNull();
 
-    Queue::assertPushed(App\Jobs\SendWebhookJob::class, fn($job): bool => $job->object?->id === $customer->id
+    Queue::assertPushed(App\Jobs\SendWebhookJob::class, fn ($job): bool => $job->object?->id === $customer->id
         && $job->webhookType === 'customer.accounting_provider_error'
         && $job->options['provider_error']['error_code'] === 'invalid_mapping');
 });

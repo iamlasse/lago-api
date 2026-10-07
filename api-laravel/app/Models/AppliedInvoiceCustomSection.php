@@ -31,18 +31,18 @@ class AppliedInvoiceCustomSection extends BaseModel
     use BelongsToOrganization;
     use HasFactory;
 
-    protected function casts(): array
-    {
-        return [
-
-        ];
-    }
-
     // -- Relationships --------------------------------------------------------
 
     /** Rails: `belongs_to :invoice`. */
     public function invoice(): BelongsTo
     {
         return $this->belongsTo(Invoice::class);
+    }
+
+    protected function casts(): array
+    {
+        return [
+
+        ];
     }
 }

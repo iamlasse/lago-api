@@ -12,7 +12,6 @@ use App\Services\BaseService;
 use Illuminate\Support\Facades\DB;
 use App\Enums\FinalizeZeroAmountInvoice;
 use App\Services\IntegrationCustomers\CreateOrUpdateBatchService;
-use App\Services\Customers\ManageInvoiceCustomSectionsService;
 
 use function is_array;
 use function array_key_exists;

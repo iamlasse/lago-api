@@ -18,8 +18,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 /**
@@ -183,43 +183,6 @@ class Subscription extends BaseModel
         )->whereNull('fixed_charges.deleted_at');
     }
 
-    // -- Scopes ------------------------------------------------------------------
-    // Legacy scopeXyz() form: #[Scope] pending()/active()/terminated()/
-    // canceled()/incomplete()/startingInTheFuture() would collide with the
-    // same-named boolean status helpers below.
-
-    /** Rails: `scope :starting_in_the_future, -> { pending.where(previous_subscription: nil) }`. */
-    protected function scopeStartingInTheFuture(Builder $query): Builder
-    {
-        return $query->where('status', SubscriptionStatus::Pending->value)
-            ->whereNull('previous_subscription_id');
-    }
-
-    protected function scopePending(Builder $query): Builder
-    {
-        return $query->where('status', SubscriptionStatus::Pending->value);
-    }
-
-    protected function scopeActive(Builder $query): Builder
-    {
-        return $query->where('status', SubscriptionStatus::Active->value);
-    }
-
-    protected function scopeTerminated(Builder $query): Builder
-    {
-        return $query->where('status', SubscriptionStatus::Terminated->value);
-    }
-
-    protected function scopeCanceled(Builder $query): Builder
-    {
-        return $query->where('status', SubscriptionStatus::Canceled->value);
-    }
-
-    protected function scopeIncomplete(Builder $query): Builder
-    {
-        return $query->where('status', SubscriptionStatus::Incomplete->value);
-    }
-
     // -- Rails enum suffix helpers ------------------------------------------------
 
     public function pending(): bool
@@ -374,7 +337,6 @@ class Subscription extends BaseModel
 
         return $this;
     }
-
 
     /**
      * Rails: `has_many :applied_invoice_custom_sections,
@@ -751,6 +713,43 @@ class Subscription extends BaseModel
         }
 
         return $errors;
+    }
+
+    // -- Scopes ------------------------------------------------------------------
+    // Legacy scopeXyz() form: #[Scope] pending()/active()/terminated()/
+    // canceled()/incomplete()/startingInTheFuture() would collide with the
+    // same-named boolean status helpers below.
+
+    /** Rails: `scope :starting_in_the_future, -> { pending.where(previous_subscription: nil) }`. */
+    protected function scopeStartingInTheFuture(Builder $query): Builder
+    {
+        return $query->where('status', SubscriptionStatus::Pending->value)
+            ->whereNull('previous_subscription_id');
+    }
+
+    protected function scopePending(Builder $query): Builder
+    {
+        return $query->where('status', SubscriptionStatus::Pending->value);
+    }
+
+    protected function scopeActive(Builder $query): Builder
+    {
+        return $query->where('status', SubscriptionStatus::Active->value);
+    }
+
+    protected function scopeTerminated(Builder $query): Builder
+    {
+        return $query->where('status', SubscriptionStatus::Terminated->value);
+    }
+
+    protected function scopeCanceled(Builder $query): Builder
+    {
+        return $query->where('status', SubscriptionStatus::Canceled->value);
+    }
+
+    protected function scopeIncomplete(Builder $query): Builder
+    {
+        return $query->where('status', SubscriptionStatus::Incomplete->value);
     }
 
     /** Accepts Carbon instances, unix timestamps and datetime strings. */

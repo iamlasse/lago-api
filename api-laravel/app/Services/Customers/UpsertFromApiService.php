@@ -14,7 +14,6 @@ use App\Models\CustomerMetadata;
 use Illuminate\Support\Facades\DB;
 use App\Enums\FinalizeZeroAmountInvoice;
 use App\Services\BillingEntities\ResolveService;
-use App\Services\Customers\ManageInvoiceCustomSectionsService;
 use App\Services\IntegrationCustomers\CreateOrUpdateBatchService;
 
 use function is_array;

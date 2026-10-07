@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace App\Services\Fees;
 
-use App\Enums\FeeType;
-use App\Enums\FeePaymentStatus;
-use App\Models\AdjustedFee;
-use App\Models\BillingPeriodBoundaries;
 use App\Models\Fee;
-use App\Models\FixedCharge;
+use App\Enums\FeeType;
 use App\Support\Currency;
 use App\Support\MoneyMath;
+use App\Models\AdjustedFee;
+use App\Models\FixedCharge;
 use App\Services\BaseResult;
 use App\Services\BaseService;
+use App\Enums\FeePaymentStatus;
+use App\Models\BillingPeriodBoundaries;
+use App\Services\ChargeModels\PricingStructure;
 use App\Services\ChargeModels\AggregationResult;
 use App\Services\ChargeModels\ChargeModelResult;
 use App\Services\ChargeModels\Factory as ChargeModelFactory;
-use App\Services\ChargeModels\PricingStructure;
 
 /**
  * Port of Rails' Fees::InitFromAdjustedFixedChargeFeeService

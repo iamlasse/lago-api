@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Illuminate\Support\Collection;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Enums\InvoiceCustomSectionType;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Concerns\BelongsToOrganization;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -52,12 +52,21 @@ class InvoiceCustomSection extends BaseModel
         'section_type' => 'manual',
     ];
 
-    protected function casts(): array
+    // -- Scopes ---------------------------------------------------------------
+
+    /**
+     * Rails: `Organization#manual_invoice_custom_sections`
+     * (`has_many :invoice_custom_sections, -> { where(section_type: "manual") }`) —
+     * the only sections the admin UI lists / creates.
+     *
+     * @return Collection<int, self>
+     */
+    public static function manualFor(Organization $organization): Collection
     {
-        return [
-            'section_type' => InvoiceCustomSectionType::class,
-            'deleted_at' => 'datetime',
-        ];
+        return $organization->invoiceCustomSections()
+            ->where('section_type', 'manual')
+            ->orderBy('name')
+            ->get();
     }
 
     // -- Relationships --------------------------------------------------------
@@ -119,20 +128,11 @@ class InvoiceCustomSection extends BaseModel
         return $errors;
     }
 
-    // -- Scopes ---------------------------------------------------------------
-
-    /**
-     * Rails: `Organization#manual_invoice_custom_sections`
-     * (`has_many :invoice_custom_sections, -> { where(section_type: "manual") }`) —
-     * the only sections the admin UI lists / creates.
-     *
-     * @return Collection<int, self>
-     */
-    public static function manualFor(Organization $organization): Collection
+    protected function casts(): array
     {
-        return $organization->invoiceCustomSections()
-            ->where('section_type', 'manual')
-            ->orderBy('name')
-            ->get();
+        return [
+            'section_type' => InvoiceCustomSectionType::class,
+            'deleted_at' => 'datetime',
+        ];
     }
 }

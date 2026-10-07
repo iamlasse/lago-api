@@ -7,6 +7,7 @@ require_once __DIR__.'/../AccountingCollectorsFixture.php';
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\Customer;
+use Illuminate\Support\Env;
 use App\Enums\InvoiceStatus;
 use App\Models\Organization;
 use App\Models\IntegrationResource;
@@ -66,7 +67,9 @@ beforeEach(function (): void {
 
 afterEach(function (): void {
     putenv('NANGO_SECRET_KEY');
-    unset(\Illuminate\Support\Env::get('NANGO_SECRET_KEY'));
+    Env::getRepository()->clear('NANGO_SECRET_KEY');
+
+    unset($_ENV['NANGO_SECRET_KEY']);
 });
 
 it('returns without an accounting integration customer', function (): void {
@@ -227,7 +230,7 @@ it('fails with invoice_missing when the invoice never synced', function (): void
     expect($result->success())->toBeTrue()
         ->and($result->external_id)->toBeNull();
 
-    Queue::assertPushed(App\Jobs\SendWebhookJob::class, fn($job): bool => $job->object?->id === $customer->id
+    Queue::assertPushed(App\Jobs\SendWebhookJob::class, fn ($job): bool => $job->object?->id === $customer->id
         && $job->webhookType === 'customer.accounting_provider_error'
         && $job->options['provider_error']['error_code'] === 'invoice_missing');
 });

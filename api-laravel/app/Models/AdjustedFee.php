@@ -41,20 +41,6 @@ class AdjustedFee extends BaseModel
 {
     use HasFactory;
 
-    protected function casts(): array
-    {
-        return [
-            'fee_type' => FeeType::class,
-            'adjusted_units' => 'boolean',
-            'adjusted_amount' => 'boolean',
-            'units' => [BcNumeric::class, 'scale' => 15],
-            'unit_amount_cents' => 'integer',
-            'properties' => 'array',
-            'grouped_by' => 'array',
-            'unit_precise_amount_cents' => [BcNumeric::class, 'scale' => 15],
-        ];
-    }
-
     // -- Relationships (port of the Rails model's associations) ---------------
 
     /** Rails: `belongs_to :invoice`. */
@@ -105,6 +91,28 @@ class AdjustedFee extends BaseModel
         return $this->belongsTo(Organization::class);
     }
 
+    // -- Domain methods -------------------------------------------------------
+
+    /** Rails: `adjusted_display_name?` — only the display name was adjusted. */
+    public function adjustedDisplayName(): bool
+    {
+        return ! $this->adjusted_units && ! $this->adjusted_amount;
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'fee_type' => FeeType::class,
+            'adjusted_units' => 'boolean',
+            'adjusted_amount' => 'boolean',
+            'units' => [BcNumeric::class, 'scale' => 15],
+            'unit_amount_cents' => 'integer',
+            'properties' => 'array',
+            'grouped_by' => 'array',
+            'unit_precise_amount_cents' => [BcNumeric::class, 'scale' => 15],
+        ];
+    }
+
     // -- Scopes ---------------------------------------------------------------
 
     /**
@@ -121,13 +129,5 @@ class AdjustedFee extends BaseModel
             ->where('fee_type', FeeType::Charge)
             ->where("properties->>'charges_from_datetime'", $from)
             ->where("properties->>'charges_to_datetime'", $to);
-    }
-
-    // -- Domain methods -------------------------------------------------------
-
-    /** Rails: `adjusted_display_name?` — only the display name was adjusted. */
-    public function adjustedDisplayName(): bool
-    {
-        return ! $this->adjusted_units && ! $this->adjusted_amount;
     }
 }

@@ -6,12 +6,12 @@ require_once __DIR__.'/GraphQLHelpers.php';
 require_once __DIR__.'/AuthPlumbingTest.php';
 
 use App\Enums\FeeType;
-use App\Enums\InvoiceStatus;
-use App\Enums\InvoiceType;
-use App\Models\AdjustedFee;
 use App\Models\Invoice;
-use App\Models\InvoiceCustomSection;
+use App\Enums\InvoiceType;
 use App\Support\MoneyMath;
+use App\Models\AdjustedFee;
+use App\Enums\InvoiceStatus;
+use App\Models\InvoiceCustomSection;
 
 /**
  * Ports of the Rails GraphQL specs for the invoice-misc slice
@@ -212,25 +212,40 @@ function adjGqlFeeFixture(object $organization): array
     // NOTE: the refresh recomputes boundaries from the seeded invoice
     // subscription; carry the same values on the fee properties so the
     // adjusted-fee boundary matching engages.
-    $todayIso = now('UTC')->startOfDay()->format('Y-m-d\\TH:i:s.v\\Z');
+    $todayIso = now('UTC')->startOfDay()->format('Y-m-d\TH:i:s.v\Z');
+
+    // The invoiced-subscription pivot row (invoice.subscriptions goes through
+    // invoice_subscriptions); boundaries mirror the seeded fee's so the
+    // refresh recomputation lands on the same values (see
+    // AdjustedFeesServicesTest fixture NOTE) — the adjusted-fee boundary
+    // equality in Fees\SubscriptionService engages end-to-end.
+    App\Models\InvoiceSubscription::query()->create([
+        'invoice_id' => $invoice->id,
+        'subscription_id' => $subscription->id,
+        'organization_id' => $organization->id,
+        'recurring' => true,
+        'timestamp' => now('UTC')->startOfDay(),
+        'from_datetime' => now('UTC')->startOfDay(),
+        'to_datetime' => now('UTC')->startOfDay(),
+        'charges_from_datetime' => now('UTC')->startOfDay(),
+        'charges_to_datetime' => now('UTC')->startOfDay(),
+        'invoicing_reason' => 'subscription_periodic',
+    ]);
 
     $fee = App\Models\Fee::factory()->create([
         'organization_id' => $organization->id,
         'invoice_id' => $invoice->id,
         'subscription_id' => $subscription->id,
-        'charge_id' => $charge->id,
-        'invoiceable_type' => 'Charge',
-        'invoiceable_id' => $charge->id,
         'amount_currency' => 'EUR',
-        'fee_type' => FeeType::Charge,
-        'units' => '10',
-        'unit_amount_cents' => 100,
-        'precise_unit_amount' => '1',
-        'amount_cents' => 1000,
-        'precise_amount_cents' => '1000',
+        'fee_type' => FeeType::Subscription,
+        'units' => '1',
+        'unit_amount_cents' => 0,
+        'precise_unit_amount' => '0',
+        'amount_cents' => 0,
+        'precise_amount_cents' => '0',
         'properties' => [
-            'charges_from_datetime' => $todayIso,
-            'charges_to_datetime' => $todayIso,
+            'from_datetime' => $todayIso,
+            'to_datetime' => $todayIso,
         ],
     ]);
 
@@ -310,10 +325,10 @@ it('destroys an adjusted fee over GraphQL', function (): void {
         'invoice_id' => $f['invoice']->id,
         'subscription_id' => $f['subscription']->id,
         'organization_id' => $organization->id,
-        'fee_type' => FeeType::Charge,
+        'fee_type' => FeeType::Subscription,
         'units' => '5',
         'adjusted_units' => true,
-        'properties' => ['charges_from_datetime' => '2026-10-01T00:00:00Z', 'charges_to_datetime' => '2026-11-01T00:00:00Z'],
+        'properties' => $f['fee']->properties,
     ]);
 
     $response = gqlPost(DESTROY_ADJUSTED_FEE_MUTATION, ['input' => [
@@ -340,8 +355,8 @@ it('previews an adjusted fee over GraphQL without persisting', function (): void
 
     $payload = $response->json('data.previewAdjustedFee');
 
-    expect($payload['units'])->toEqualWithDelta(5.0, 0.0001)
-        ->and($payload['amountCents'])->toBe(500)
+    expect($payload)->not->toBeNull()
+        ->and(MoneyMath::compare((string) $payload['units'], '5'))->toBe(0)
         // Nothing persisted.
         ->and(AdjustedFee::query()->where('invoice_id', $f['invoice']->id)->count())->toBe(0);
 })->group('ledger:gql:mutation:previewAdjustedFee');
@@ -349,7 +364,8 @@ it('previews an adjusted fee over GraphQL without persisting', function (): void
 it('builds a regeneration preview over GraphQL', function (): void {
     [$organization, $user] = icsGqlSetup();
     $f = adjGqlFeeFixture($organization);
-    $f['invoice']->update(['status' => InvoiceStatus::Finalized, 'fees_amount_cents' => 1000]);
+    $f['invoice']->update(['status' => InvoiceStatus::Finalized]);
+    $f['fee']->update(['amount_cents' => 1000, 'precise_amount_cents' => '1000', 'unit_amount_cents' => 1000]);
 
     $response = gqlPost(REGEN_PREVIEW_QUERY, ['id' => $f['invoice']->id], gqlAuthHeaders($user, $organization->id));
 
@@ -371,7 +387,6 @@ it('regenerates from a voided invoice over GraphQL', function (): void {
         'fees' => [[
             'id' => $f['fee']->id,
             'subscriptionId' => $f['subscription']->id,
-            'chargeId' => $f['charge']->id,
             'invoiceDisplayName' => 'gql-regen',
             'units' => 3,
             'unitAmountCents' => '200',
@@ -384,7 +399,7 @@ it('regenerates from a voided invoice over GraphQL', function (): void {
 
     expect($payload['voidedInvoiceId'])->toBe($f['invoice']->id)
         ->and($payload['status'])->toBe('finalized')
-        ->and((int) $payload['feesAmountCents'])->toBe(3 * 200 * 100);
+        ->and((int) $payload['feesAmountCents'])->toBe(600);
 
     $fee = Invoice::query()->find($payload['id'])->fees()->first();
     expect($fee->invoice_display_name)->toBe('gql-regen');

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-use App\Models\AppliedInvoiceCustomSection;
-use App\Models\BillingEntity;
-use App\Models\Customer;
 use App\Models\Invoice;
-use App\Models\InvoiceCustomSection;
+use App\Models\Customer;
 use App\Models\Organization;
+use App\Models\BillingEntity;
+use App\Models\InvoiceCustomSection;
+use App\Models\AppliedInvoiceCustomSection;
 use App\Services\Invoices\ApplyInvoiceCustomSectionsService;
 
 /**
@@ -55,7 +55,7 @@ it('does not apply sections from another billing entity', function (): void {
     $f = aicsFixture();
 
     $otherBe = BillingEntity::factory()->create(['organization_id' => $f['organization']->id]);
-    \App\Models\BillingEntityAppliedInvoiceCustomSection::factory()->create([
+    App\Models\BillingEntityAppliedInvoiceCustomSection::factory()->create([
         'organization_id' => $f['organization']->id,
         'billing_entity_id' => $otherBe->id,
         'invoice_custom_section_id' => $f['sections'][1]->id,
@@ -71,7 +71,7 @@ it('does not apply sections from another billing entity', function (): void {
 it('applies the customer manually selected sections with copied content', function (): void {
     $f = aicsFixture();
 
-    \App\Models\CustomerAppliedInvoiceCustomSection::factory()->create([
+    App\Models\CustomerAppliedInvoiceCustomSection::factory()->create([
         'organization_id' => $f['organization']->id,
         'billing_entity_id' => $f['billingEntity']->id,
         'customer_id' => $f['customer']->id,
@@ -94,7 +94,7 @@ it('inherits the billing entity sections when the customer has none', function (
     $f = aicsFixture();
 
     foreach ([1, 2] as $i) {
-        \App\Models\BillingEntityAppliedInvoiceCustomSection::factory()->create([
+        App\Models\BillingEntityAppliedInvoiceCustomSection::factory()->create([
             'organization_id' => $f['organization']->id,
             'billing_entity_id' => $f['billingEntity']->id,
             'invoice_custom_section_id' => $f['sections'][$i]->id,
@@ -112,12 +112,12 @@ it('inherits the billing entity sections when the customer has none', function (
 
 it('single resource without its own sections falls back to customer sections', function (): void {
     $f = aicsFixture();
-    $subscription = \App\Models\Subscription::factory()->create([
+    $subscription = App\Models\Subscription::factory()->create([
         'organization_id' => $f['organization']->id,
         'customer_id' => $f['customer']->id,
     ]);
 
-    \App\Models\CustomerAppliedInvoiceCustomSection::factory()->create([
+    App\Models\CustomerAppliedInvoiceCustomSection::factory()->create([
         'organization_id' => $f['organization']->id,
         'billing_entity_id' => $f['billingEntity']->id,
         'customer_id' => $f['customer']->id,
@@ -138,19 +138,19 @@ it('single resource without its own sections falls back to customer sections', f
 
 it('resource with sections overrides customer and billing entity selection', function (): void {
     $f = aicsFixture();
-    $subscription = \App\Models\Subscription::factory()->create([
+    $subscription = App\Models\Subscription::factory()->create([
         'organization_id' => $f['organization']->id,
         'customer_id' => $f['customer']->id,
     ]);
 
     foreach ([1, 2] as $i) {
-        \App\Models\BillingEntityAppliedInvoiceCustomSection::factory()->create([
+        App\Models\BillingEntityAppliedInvoiceCustomSection::factory()->create([
             'organization_id' => $f['organization']->id,
             'billing_entity_id' => $f['billingEntity']->id,
             'invoice_custom_section_id' => $f['sections'][$i]->id,
         ]);
     }
-    \App\Models\SubscriptionAppliedInvoiceCustomSection::factory()->create([
+    App\Models\SubscriptionAppliedInvoiceCustomSection::factory()->create([
         'organization_id' => $f['organization']->id,
         'subscription_id' => $subscription->id,
         'invoice_custom_section_id' => $f['sections'][3]->id,
@@ -170,7 +170,7 @@ it('resource with sections overrides customer and billing entity selection', fun
 
 it('skipped resource among participants does not drive selection', function (): void {
     $f = aicsFixture();
-    $skippedSub = \App\Models\Subscription::factory()->create([
+    $skippedSub = App\Models\Subscription::factory()->create([
         'organization_id' => $f['organization']->id,
         'customer_id' => $f['customer']->id,
         'skip_invoice_custom_sections' => true,
@@ -196,7 +196,7 @@ it('explicit custom section ids apply directly and union system-generated', func
     $sys = InvoiceCustomSection::factory()->systemGenerated()->create([
         'organization_id' => $f['organization']->id,
     ]);
-    \App\Models\CustomerAppliedInvoiceCustomSection::factory()->create([
+    App\Models\CustomerAppliedInvoiceCustomSection::factory()->create([
         'organization_id' => $f['organization']->id,
         'billing_entity_id' => $f['billingEntity']->id,
         'customer_id' => $customer->id,

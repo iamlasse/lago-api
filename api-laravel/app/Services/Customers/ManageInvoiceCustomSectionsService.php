@@ -7,8 +7,8 @@ namespace App\Services\Customers;
 use App\Models\Customer;
 use App\Services\BaseResult;
 use App\Services\BaseService;
-use App\Services\Failures\FailedResult;
 use Illuminate\Support\Facades\DB;
+use App\Services\Failures\FailedResult;
 
 /**
  * Port of Rails' Customers::ManageInvoiceCustomSectionsService

@@ -322,6 +322,27 @@ class Wallet extends BaseModel
         return $errors;
     }
 
+    /**
+     * Rails: `has_many :applied_invoice_custom_sections,
+     * class_name: "Wallet::AppliedInvoiceCustomSection", dependent: :destroy`
+     * (the `wallets_invoice_custom_sections` table).
+     */
+    public function appliedInvoiceCustomSections(): HasMany
+    {
+        return $this->hasMany(WalletAppliedInvoiceCustomSection::class, 'wallet_id');
+    }
+
+    /** Rails: `has_many :selected_invoice_custom_sections, through: :applied_invoice_custom_sections, source: :invoice_custom_section`. */
+    public function selectedInvoiceCustomSections(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            InvoiceCustomSection::class,
+            'wallets_invoice_custom_sections',
+            'wallet_id',
+            'invoice_custom_section_id',
+        )->whereNull('invoice_custom_sections.deleted_at');
+    }
+
     // -- Currency virtual attribute (Rails: currency= / currency) ---------------
 
     protected function currency(): Attribute
@@ -438,25 +459,4 @@ class Wallet extends BaseModel
             'traceable' => 'boolean',
         ];
     }
-    /**
-     * Rails: `has_many :applied_invoice_custom_sections,
-     * class_name: "Wallet::AppliedInvoiceCustomSection", dependent: :destroy`
-     * (the `wallets_invoice_custom_sections` table).
-     */
-    public function appliedInvoiceCustomSections(): HasMany
-    {
-        return $this->hasMany(WalletAppliedInvoiceCustomSection::class, 'wallet_id');
-    }
-
-    /** Rails: `has_many :selected_invoice_custom_sections, through: :applied_invoice_custom_sections, source: :invoice_custom_section`. */
-    public function selectedInvoiceCustomSections(): BelongsToMany
-    {
-        return $this->belongsToMany(
-            InvoiceCustomSection::class,
-            'wallets_invoice_custom_sections',
-            'wallet_id',
-            'invoice_custom_section_id',
-        )->whereNull('invoice_custom_sections.deleted_at');
-    }
-
 }

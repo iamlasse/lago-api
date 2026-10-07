@@ -383,7 +383,7 @@ class RegenerateFromVoidedService extends BaseService
             ? $this->voidedInvoice->purchase_order_number
             : $this->purchaseOrderNumber;
 
-        $value = trim((string) $value);
+        $value = mb_trim((string) $value);
 
         return $value === '' ? null : $value;
     }
@@ -396,7 +396,7 @@ class RegenerateFromVoidedService extends BaseService
 
         // TODO(port): Utils::SegmentTrack.invoice_created + ActivityLog.
         SendWebhookJob::performLater('invoice.created', $invoice);
-        dispatch(new \App\Jobs\Invoices\GenerateDocumentsJob($invoice, $this->shouldDeliverEmail()));
+        dispatch(new GenerateDocumentsJob($invoice, $this->shouldDeliverEmail()));
         CreateJob::dispatchIfShouldSync($invoice);
         // TODO(port): Invoices::Payments::CreateService.call_async
         // (payments are a later slice).

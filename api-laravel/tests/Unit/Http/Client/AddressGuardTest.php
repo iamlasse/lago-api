@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Illuminate\Support\Env;
 use App\Http\Client\AddressGuard;
 use App\Http\Client\LagoHttpError;
 use App\Http\Client\LagoHttpClient;
@@ -58,7 +59,9 @@ it('is enabled by default and honors the override', function (): void {
     try {
         expect(AddressGuard::enabled())->toBeFalse();
     } finally {
-        unset(\Illuminate\Support\Env::get('LAGO_WEBHOOK_ALLOW_PRIVATE_URLS'), $_SERVER['LAGO_WEBHOOK_ALLOW_PRIVATE_URLS']);
+        Env::getRepository()->clear('LAGO_WEBHOOK_ALLOW_PRIVATE_URLS');
+
+        unset($_ENV['LAGO_WEBHOOK_ALLOW_PRIVATE_URLS'], $_SERVER['LAGO_WEBHOOK_ALLOW_PRIVATE_URLS']);
     }
 });
 
@@ -103,7 +106,7 @@ it('posts the json body with the given headers', function (): void {
     $client = new LagoHttpClient('https://wh.test.com');
     $client->postWithResponse(['a' => 'b'], ['X-Test' => '1']);
 
-    Http::assertSent(fn($request) => $request->method() === 'POST'
+    Http::assertSent(fn ($request) => $request->method() === 'POST'
         && $request->body() === '{"a":"b"}'
         && $request->hasHeader('X-Test', '1')
         && $request->hasHeader('Content-Type', 'application/json'));

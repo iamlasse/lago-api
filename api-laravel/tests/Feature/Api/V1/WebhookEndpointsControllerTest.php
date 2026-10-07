@@ -12,6 +12,7 @@ uses()->group(
     'ledger:rest:DELETE:/api/v1/webhook_endpoints/:id',
 );
 
+use Illuminate\Support\Env;
 use App\Models\Organization;
 use App\Models\WebhookEndpoint;
 use Illuminate\Support\Facades\DB;
@@ -30,7 +31,9 @@ beforeEach(function (): void {
 });
 
 afterEach(function (): void {
-    unset(\Illuminate\Support\Env::get('LAGO_WEBHOOK_ALLOW_PRIVATE_URLS'), $_SERVER['LAGO_WEBHOOK_ALLOW_PRIVATE_URLS']);
+    Env::getRepository()->clear('LAGO_WEBHOOK_ALLOW_PRIVATE_URLS');
+
+    unset($_ENV['LAGO_WEBHOOK_ALLOW_PRIVATE_URLS'], $_SERVER['LAGO_WEBHOOK_ALLOW_PRIVATE_URLS']);
 });
 
 function webhookOrganization(array $attributes = []): array
@@ -152,7 +155,9 @@ it('rejects a webhook endpoint that exceeds the per-organization limit', functio
 it('rejects a private webhook url while the address guard is enabled', function (): void {
     [$organization, $apiKey] = webhookOrganization();
 
-    unset(\Illuminate\Support\Env::get('LAGO_WEBHOOK_ALLOW_PRIVATE_URLS'), $_SERVER['LAGO_WEBHOOK_ALLOW_PRIVATE_URLS']);
+    Env::getRepository()->clear('LAGO_WEBHOOK_ALLOW_PRIVATE_URLS');
+
+    unset($_ENV['LAGO_WEBHOOK_ALLOW_PRIVATE_URLS'], $_SERVER['LAGO_WEBHOOK_ALLOW_PRIVATE_URLS']);
 
     $this->postJson('/api/v1/webhook_endpoints', ['webhook_endpoint' => [
         'webhook_url' => 'http://localhost/hook',

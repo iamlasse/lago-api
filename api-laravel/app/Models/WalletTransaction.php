@@ -14,10 +14,10 @@ use App\Models\Concerns\OptimisticLocking;
 use App\Enums\WalletTransactionCreditStatus;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Attributes\Table;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * Port of Rails' WalletTransaction (app/models/wallet_transaction.rb) — a
@@ -329,6 +329,27 @@ class WalletTransaction extends BaseModel
         return $errors;
     }
 
+    /**
+     * Rails: `has_many :applied_invoice_custom_sections,
+     * class_name: "WalletTransaction::AppliedInvoiceCustomSection", dependent: :destroy`
+     * (the `wallet_transactions_invoice_custom_sections` table).
+     */
+    public function appliedInvoiceCustomSections(): HasMany
+    {
+        return $this->hasMany(WalletTransactionAppliedInvoiceCustomSection::class, 'wallet_transaction_id');
+    }
+
+    /** Rails: `has_many :selected_invoice_custom_sections, through: :applied_invoice_custom_sections, source: :invoice_custom_section`. */
+    public function selectedInvoiceCustomSections(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            InvoiceCustomSection::class,
+            'wallet_transactions_invoice_custom_sections',
+            'wallet_transaction_id',
+            'invoice_custom_section_id',
+        )->whereNull('invoice_custom_sections.deleted_at');
+    }
+
     // -- Rails scopes ---------------------------------------------------------------
 
     /** Rails: `scope :pending`. */
@@ -388,25 +409,4 @@ class WalletTransaction extends BaseModel
             'remaining_amount_cents' => 'integer',
         ];
     }
-    /**
-     * Rails: `has_many :applied_invoice_custom_sections,
-     * class_name: "WalletTransaction::AppliedInvoiceCustomSection", dependent: :destroy`
-     * (the `wallet_transactions_invoice_custom_sections` table).
-     */
-    public function appliedInvoiceCustomSections(): HasMany
-    {
-        return $this->hasMany(WalletTransactionAppliedInvoiceCustomSection::class, 'wallet_transaction_id');
-    }
-
-    /** Rails: `has_many :selected_invoice_custom_sections, through: :applied_invoice_custom_sections, source: :invoice_custom_section`. */
-    public function selectedInvoiceCustomSections(): BelongsToMany
-    {
-        return $this->belongsToMany(
-            InvoiceCustomSection::class,
-            'wallet_transactions_invoice_custom_sections',
-            'wallet_transaction_id',
-            'invoice_custom_section_id',
-        )->whereNull('invoice_custom_sections.deleted_at');
-    }
-
 }

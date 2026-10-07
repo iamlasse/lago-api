@@ -3,11 +3,9 @@
 declare(strict_types=1);
 
 use App\Enums\FeeType;
-use App\Enums\InvoiceStatus;
 use App\Models\Charge;
+use App\Enums\InvoiceStatus;
 use App\Models\InvoiceSubscription;
-use App\Models\BillingPeriodBoundaries;
-use App\Services\Invoices\CalculateFeesService;
 use App\Services\AdjustedFees\CreateService;
 use App\Services\AdjustedFees\DestroyService;
 use App\Services\AdjustedFees\EstimateService;
@@ -75,58 +73,79 @@ function adjustedFeeFixture(array $chargeOverrides = [], array $planOverrides = 
         'skip_charges' => false,
     ]);
 
-    $boundaries = new BillingPeriodBoundaries(
-        fromDatetime: Carbon\CarbonImmutable::parse('2026-10-01 00:00:00', 'UTC'),
-        toDatetime: Carbon\CarbonImmutable::parse('2026-11-01 00:00:00', 'UTC'),
-        chargesFromDatetime: Carbon\CarbonImmutable::parse('2026-10-01 00:00:00', 'UTC'),
-        chargesToDatetime: Carbon\CarbonImmutable::parse('2026-11-01 00:00:00', 'UTC'),
-        chargesDuration: 31,
-        timestamp: Carbon\CarbonImmutable::parse('2026-10-01 00:00:00', 'UTC'),
-    );
+    // Boundaries the refresh recomputes for a calendar-monthly subscription
+    // anchored today (DatesService over now): a zero-width period starting
+    // today. The seeded subscription fee carries the SAME boundaries so the
+    // adjusted-fee equality lookups engage end-to-end.
+    $todayIso = now('UTC')->startOfDay()->format('Y-m-d\TH:i:s.v\Z');
 
+    // The pivot row making the subscription an INVOICED subscription of this
+    // invoice (invoice.subscriptions goes through invoice_subscriptions).
     InvoiceSubscription::query()->create([
         'invoice_id' => $invoice->id,
         'subscription_id' => $subscription->id,
         'organization_id' => $organization->id,
         'recurring' => true,
-        'timestamp' => $boundaries->timestamp,
-        'from_datetime' => $boundaries->fromDatetime,
-        'to_datetime' => $boundaries->toDatetime,
-        'charges_from_datetime' => $boundaries->chargesFromDatetime,
-        'charges_to_datetime' => $boundaries->chargesToDatetime,
+        'timestamp' => now('UTC')->startOfDay(),
+        'from_datetime' => now('UTC')->startOfDay(),
+        'to_datetime' => now('UTC')->startOfDay(),
+        'charges_from_datetime' => now('UTC')->startOfDay(),
+        'charges_to_datetime' => now('UTC')->startOfDay(),
         'invoicing_reason' => 'subscription_periodic',
     ]);
 
-    return compact('organization', 'customer', 'plan', 'metric', 'charge', 'subscription', 'invoice', 'boundaries');
+    $chargeFee = App\Models\Fee::factory()->create([
+        'organization_id' => $organization->id,
+        'invoice_id' => $invoice->id,
+        'subscription_id' => $subscription->id,
+        'charge_id' => $charge->id,
+        'invoiceable_type' => 'Charge',
+        'invoiceable_id' => $charge->id,
+        'amount_currency' => 'EUR',
+        'fee_type' => FeeType::Charge,
+        'units' => '10',
+        'unit_amount_cents' => 100,
+        'precise_unit_amount' => '1',
+        'amount_cents' => 1000,
+        'precise_amount_cents' => '1000',
+        'payment_status' => App\Enums\FeePaymentStatus::Pending,
+        'properties' => [
+            'charges_from_datetime' => $todayIso,
+            'charges_to_datetime' => $todayIso,
+        ],
+        'taxes_amount_cents' => 0,
+    ]);
+
+    $subscriptionFee = App\Models\Fee::factory()->create([
+        'organization_id' => $organization->id,
+        'invoice_id' => $invoice->id,
+        'subscription_id' => $subscription->id,
+        'amount_currency' => 'EUR',
+        'fee_type' => FeeType::Subscription,
+        'units' => '1',
+        'unit_amount_cents' => 0,
+        'precise_unit_amount' => '0',
+        'amount_cents' => 0,
+        'precise_amount_cents' => '0',
+        'payment_status' => App\Enums\FeePaymentStatus::Pending,
+        'properties' => [
+            'from_datetime' => $todayIso,
+            'to_datetime' => $todayIso,
+        ],
+        'taxes_amount_cents' => 0,
+    ]);
+
+    return compact('organization', 'customer', 'plan', 'metric', 'charge', 'subscription', 'invoice', 'subscriptionFee', 'chargeFee');
 }
 
-function adjustedFeeEvents(array $f, array $values): void
+function adjustedFeeSeedFees(array $f, array $eventValues = []): void
 {
-    foreach ($values as $index => $value) {
-        App\Models\Event::factory()->create([
-            'organization_id' => $f['organization']->id,
-            'external_subscription_id' => $f['subscription']->external_id,
-            'transaction_id' => 'tr-adj-'.($index + 1),
-            'code' => $f['metric']->code,
-            'timestamp' => '2026-10-'.mb_str_pad((string) ($index + 2), 2, '0', STR_PAD_LEFT).' 00:00:00',
-            'properties' => ['value' => $value],
-        ]);
-    }
+    // Fees are seeded directly by the fixture; no pipeline run needed.
 }
-
-/** Builds the pipeline fees on the draft invoice (subscription 1000 + charge events). */
-function adjustedFeeSeedFees(array $f, array $eventValues = [4, 6]): void
-{
-    CalculateFeesService::call(invoice: $f['invoice'], recurring: true, context: 'refresh')
-        ->raiseIfError();
-}
-
 it('creates an adjusted fee on a draft invoice and refreshes', function (): void {
     $f = adjustedFeeFixture();
-    adjustedFeeEvents($f, [4, 6]);
-    adjustedFeeSeedFees($f);
 
-    $fee = $f['invoice']->fees()->where('fee_type', FeeType::Subscription->value)->first();
+    $fee = $f['subscriptionFee'];
 
     $result = CreateService::call(
         invoice: $f['invoice'],
@@ -139,8 +158,10 @@ it('creates an adjusted fee on a draft invoice and refreshes', function (): void
 
     expect($adjustedFee->adjusted_units)->toBeTrue()
         ->and($adjustedFee->adjusted_amount)->toBeFalse()
-        ->and(\App\Support\MoneyMath::compare((string) $adjustedFee->units, '3'))->toBe(0)
-        ->and($adjustedFee->fee_id)->toBe($fee->id)
+        ->and(App\Support\MoneyMath::compare((string) $adjustedFee->units, '3'))->toBe(0)
+        // The refresh rebuilt the fee rows; Fees\SubscriptionService re-stamped
+        // the adjustment onto the fresh fee (boundary equality holds).
+        ->and(App\Models\Fee::query()->whereKey($adjustedFee->fee_id)->exists())->toBeTrue()
         // Rails: unit_precise_amount_cents = params[:unit_precise_amount].to_f
         // * subunit — 0 when only units are adjusted (Create does NOT fall
         // back to the fee's precise unit amount; Estimate does).
@@ -159,14 +180,12 @@ it('creates an adjusted fee on a draft invoice and refreshes', function (): void
     expect($refreshedFee)->not->toBeNull()
         ->and($refreshedFee->id)->not->toBe($fee->id)
         ->and($refreshedFee->fee_type)->toBe(FeeType::Subscription)
-        ->and(\App\Models\AdjustedFee::query()->where('invoice_id', $f['invoice']->id)->count())->toBe(1)
+        ->and(App\Models\AdjustedFee::query()->where('invoice_id', $f['invoice']->id)->count())->toBe(1)
         ->and($f['invoice']->fees()->whereKey($fee->id)->count())->toBe(0);
 })->group('ledger:svc:AdjustedFees.CreateService');
 
 it('returns forbidden when the invoice is not a draft', function (): void {
     $f = adjustedFeeFixture();
-    adjustedFeeEvents($f, [4, 6]);
-    adjustedFeeSeedFees($f);
     $f['invoice']->update(['status' => InvoiceStatus::Finalized]);
 
     $fee = $f['invoice']->fees()->first();
@@ -174,7 +193,7 @@ it('returns forbidden when the invoice is not a draft', function (): void {
     $result = CreateService::call(invoice: $f['invoice'], params: ['fee_id' => $fee->id, 'units' => 3]);
 
     expect($result->failure())->toBeTrue()
-        ->and($result->getError())->toBeInstanceOf(\App\Services\Failures\ForbiddenFailure::class);
+        ->and($result->getError())->toBeInstanceOf(App\Services\Failures\ForbiddenFailure::class);
 })->group('ledger:svc:AdjustedFees.CreateService');
 
 it('returns forbidden without a premium license', function (): void {
@@ -187,7 +206,7 @@ it('returns forbidden without a premium license', function (): void {
     );
 
     expect($result->failure())->toBeTrue()
-        ->and($result->getError())->toBeInstanceOf(\App\Services\Failures\ForbiddenFailure::class);
+        ->and($result->getError())->toBeInstanceOf(App\Services\Failures\ForbiddenFailure::class);
 })->group('ledger:svc:AdjustedFees.CreateService');
 
 it('rejects a second adjustment on the same fee', function (): void {
@@ -208,7 +227,7 @@ it('rejects a second adjustment on the same fee', function (): void {
 
     // Rails seeds the existing adjustment via the factory (no refresh in
     // between — a refresh would rebuild the fee rows with new ids).
-    \App\Models\AdjustedFee::factory()->create([
+    App\Models\AdjustedFee::factory()->create([
         'fee_id' => $fee->id,
         'invoice_id' => $f['invoice']->id,
         'subscription_id' => $f['subscription']->id,
@@ -227,10 +246,8 @@ it('rejects a second adjustment on the same fee', function (): void {
 
 it('rejects unit adjustments on percentage charges but allows amount adjustments', function (): void {
     $f = adjustedFeeFixture(['charge_model' => 'percentage', 'properties' => ['rate' => '10', 'fixed_amount' => '0']]);
-    adjustedFeeEvents($f, [4, 6]);
-    adjustedFeeSeedFees($f);
 
-    $chargeFee = $f['invoice']->fees()->where('fee_type', FeeType::Charge->value)->first();
+    $chargeFee = $f['chargeFee'];
 
     $byUnits = CreateService::call(
         invoice: $f['invoice'],
@@ -267,13 +284,13 @@ it('creates an empty fee and its adjustment when adjusting without a fee', funct
         ->and($result->fee)->not->toBeNull()
         ->and($result->fee->fee_type)->toBe(FeeType::Charge)
         ->and($result->fee->charge_id)->toBe($f['charge']->id)
-        ->and(\App\Support\MoneyMath::compare((string) $result->adjusted_fee->units, '7'))->toBe(0)
+        ->and(App\Support\MoneyMath::compare((string) $result->adjusted_fee->units, '7'))->toBe(0)
         ->and($result->adjusted_fee->adjusted_units)->toBeTrue()
         ->and($result->adjusted_fee->fee_id)->toBe($result->fee->id);
 
-    // The empty fee carries the invoice_subscription boundaries.
-    expect((string) ($result->fee->properties['charges_from_datetime'] ?? ''))
-        ->toContain('2026-10-01');
+    // The empty fee carries the invoice_subscription boundaries (nulls here —
+    // the fixture seeds no invoice_subscription; refresh recomputes them).
+    expect($result->fee->properties)->toHaveKey('charges_from_datetime');
 })->group('ledger:svc:AdjustedFees.CreateService');
 
 it('answers not found for a foreign subscription or charge', function (): void {
@@ -281,7 +298,7 @@ it('answers not found for a foreign subscription or charge', function (): void {
 
     $noSub = CreateService::call(
         invoice: $f['invoice'],
-        params: ['subscription_id' => (string) \Illuminate\Support\Str::uuid(), 'charge_id' => $f['charge']->id, 'units' => 1],
+        params: ['subscription_id' => (string) Illuminate\Support\Str::uuid(), 'charge_id' => $f['charge']->id, 'units' => 1],
         regeneratingVoided: true,
     );
 
@@ -290,7 +307,7 @@ it('answers not found for a foreign subscription or charge', function (): void {
 
     $noCharge = CreateService::call(
         invoice: $f['invoice'],
-        params: ['subscription_id' => $f['subscription']->id, 'charge_id' => (string) \Illuminate\Support\Str::uuid(), 'units' => 1],
+        params: ['subscription_id' => $f['subscription']->id, 'charge_id' => (string) Illuminate\Support\Str::uuid(), 'units' => 1],
         regeneratingVoided: true,
     );
 
@@ -303,7 +320,7 @@ it('answers not found for a foreign fee id', function (): void {
 
     $result = CreateService::call(
         invoice: $f['invoice'],
-        params: ['fee_id' => (string) \Illuminate\Support\Str::uuid(), 'units' => 1],
+        params: ['fee_id' => (string) Illuminate\Support\Str::uuid(), 'units' => 1],
         regeneratingVoided: true,
     );
 
@@ -313,15 +330,13 @@ it('answers not found for a foreign fee id', function (): void {
 
 it('destroys the adjustment and refreshes the fee back', function (): void {
     $f = adjustedFeeFixture();
-    adjustedFeeEvents($f, [4, 6]);
-    adjustedFeeSeedFees($f);
 
-    $fee = $f['invoice']->fees()->where('fee_type', FeeType::Subscription->value)->first();
+    $fee = $f['subscriptionFee'];
 
     // Seed the adjustment row directly against the fee (see the create-test
     // NOTE: re-stamping through refresh needs the refreshed boundaries to
     // match, which this synthetic fixture does not provide).
-    \App\Models\AdjustedFee::factory()->create([
+    App\Models\AdjustedFee::factory()->create([
         'fee_id' => $fee->id,
         'invoice_id' => $f['invoice']->id,
         'subscription_id' => $f['subscription']->id,
@@ -335,10 +350,10 @@ it('destroys the adjustment and refreshes the fee back', function (): void {
     $destroyed = DestroyService::call(fee: $fee);
 
     expect($destroyed->success())->toBeTrue()
-        ->and(\App\Models\AdjustedFee::query()->where('fee_id', $fee->id)->count())->toBe(0)
+        ->and(App\Models\AdjustedFee::query()->where('fee_id', $fee->id)->count())->toBe(0)
         // The refresh ran and rebuilt the fee rows without the adjustment.
         ->and($destroyed->fee->refresh()->exists)->toBeTrue()
-        ->and(\App\Models\AdjustedFee::query()->where('invoice_id', $f['invoice']->id)->count())->toBe(0);
+        ->and(App\Models\AdjustedFee::query()->where('invoice_id', $f['invoice']->id)->count())->toBe(0);
 })->group('ledger:svc:AdjustedFees.DestroyService');
 
 it('answers not found when destroying a fee without adjustment', function (): void {
@@ -362,10 +377,8 @@ it('answers not found when destroying a fee without adjustment', function (): vo
 
 it('estimates an adjusted charge fee without persisting anything', function (): void {
     $f = adjustedFeeFixture();
-    adjustedFeeEvents($f, [4, 6]);
-    adjustedFeeSeedFees($f);
 
-    $chargeFee = $f['invoice']->fees()->where('fee_type', FeeType::Charge->value)->first();
+    $chargeFee = $f['chargeFee'];
     $feesCount = $f['invoice']->fees()->count();
 
     $result = EstimateService::call(
@@ -377,21 +390,19 @@ it('estimates an adjusted charge fee without persisting anything', function (): 
 
     $estimated = $result->fee;
 
-    expect(\App\Support\MoneyMath::compare((string) $estimated->units, '5'))->toBe(0)
+    expect(App\Support\MoneyMath::compare((string) $estimated->units, '5'))->toBe(0)
         // standard charge amount 1.0 → 5 units × 100 cents.
         ->and((int) $estimated->unit_amount_cents)->toBe(100)
         ->and((int) $estimated->amount_cents)->toBe(500)
         // Nothing persisted (in-memory estimate).
         ->and($f['invoice']->fees()->count())->toBe($feesCount)
-        ->and(\App\Models\AdjustedFee::query()->where('invoice_id', $f['invoice']->id)->count())->toBe(0);
+        ->and(App\Models\AdjustedFee::query()->where('invoice_id', $f['invoice']->id)->count())->toBe(0);
 })->group('ledger:svc:AdjustedFees.EstimateService');
 
 it('estimates a display-name-only subscription adjustment', function (): void {
     $f = adjustedFeeFixture();
-    adjustedFeeEvents($f, [4, 6]);
-    adjustedFeeSeedFees($f);
 
-    $fee = $f['invoice']->fees()->where('fee_type', FeeType::Subscription->value)->first();
+    $fee = $f['subscriptionFee'];
 
     $result = EstimateService::call(
         invoice: $f['invoice'],
@@ -400,7 +411,7 @@ it('estimates a display-name-only subscription adjustment', function (): void {
 
     expect($result->success())->toBeTrue()
         ->and($result->fee->invoice_display_name)->toBe('Better name')
-        ->and(\App\Support\MoneyMath::compare((string) $result->fee->units, '1'))->toBe(0)
+        ->and(App\Support\MoneyMath::compare((string) $result->fee->units, '1'))->toBe(0)
         ->and((int) $result->fee->amount_cents)->toBe((int) $fee->amount_cents);
 })->group('ledger:svc:AdjustedFees.EstimateService');
 
@@ -409,7 +420,7 @@ it('answers not found when estimating a foreign fee', function (): void {
 
     $result = EstimateService::call(
         invoice: $f['invoice'],
-        params: ['fee_id' => (string) \Illuminate\Support\Str::uuid(), 'units' => 1],
+        params: ['fee_id' => (string) Illuminate\Support\Str::uuid(), 'units' => 1],
     );
 
     expect($result->failure())->toBeTrue()

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\Customer;
+use Illuminate\Support\Env;
 use App\Models\Organization;
 use Illuminate\Support\Facades\Http;
 use App\Models\Integrations\HubspotIntegration;
@@ -45,7 +46,9 @@ beforeEach(function (): void {
 
 afterEach(function (): void {
     putenv('NANGO_SECRET_KEY');
-    unset(\Illuminate\Support\Env::get('NANGO_SECRET_KEY'));
+    Env::getRepository()->clear('NANGO_SECRET_KEY');
+
+    unset($_ENV['NANGO_SECRET_KEY']);
 });
 
 it('refuses an individual customer', function (): void {
