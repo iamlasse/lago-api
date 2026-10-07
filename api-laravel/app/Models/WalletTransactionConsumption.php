@@ -14,16 +14,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * outbound (voided / consumed) movement to the inbound grants it drew from.
  */
 #[Table(name: 'wallet_transaction_consumptions')]
+#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+    'organization_id',
+    'inbound_wallet_transaction_id',
+    'outbound_wallet_transaction_id',
+    'consumed_amount_cents',
+])]
 class WalletTransactionConsumption extends BaseModel
 {
     use HasFactory;
-
-    protected $fillable = [
-        'organization_id',
-        'inbound_wallet_transaction_id',
-        'outbound_wallet_transaction_id',
-        'consumed_amount_cents',
-    ];
 
     public function inboundWalletTransaction(): BelongsTo
     {

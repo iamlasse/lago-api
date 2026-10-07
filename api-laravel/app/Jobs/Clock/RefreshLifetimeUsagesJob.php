@@ -56,7 +56,7 @@ class RefreshLifetimeUsagesJob implements ShouldQueue
             })
             ->chunkById(500, function ($lifetimeUsages): void {
                 foreach ($lifetimeUsages as $lifetimeUsage) {
-                    RecalculateAndCheckJob::dispatch($lifetimeUsage);
+                    dispatch(new RecalculateAndCheckJob($lifetimeUsage));
                 }
             });
     }

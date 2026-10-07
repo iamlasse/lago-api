@@ -63,7 +63,7 @@ class PrivilegesController extends ApiController
                 fn ($query) => $query->where('status', $status),
             )
             ->orderByRaw('terminated_at DESC NULLS FIRST')
-            ->orderByDesc('started_at')
+            ->latest('started_at')
             ->first();
 
         if ($subscription === null) {

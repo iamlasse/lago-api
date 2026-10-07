@@ -17,7 +17,7 @@ final class Countries
     /**
      * @var list<string>
      */
-    public const CODES = [
+    public const array CODES = [
         'AD',
         'AE',
         'AF',

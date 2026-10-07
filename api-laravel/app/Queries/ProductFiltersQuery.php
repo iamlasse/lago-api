@@ -70,7 +70,7 @@ class ProductFiltersQuery extends BaseService
 
         // Rails: paginate + apply_consistent_ordering.
         $result->product_filters = $this->paginate(
-            $productFilters->orderByDesc('product_filters.created_at')->orderBy('product_filters.id'),
+            $productFilters->latest('product_filters.created_at')->orderBy('product_filters.id'),
         );
 
         return $result;

@@ -90,7 +90,7 @@ it('creates a payment request over overdue invoices', function (): void {
         'email' => 'billing@example.com',
     ]], ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($customer) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($customer): void {
             $json->where('payment_request.amount_cents', 1000)
                 ->where('payment_request.amount_currency', 'EUR')
                 ->where('payment_request.email', 'billing@example.com')
@@ -112,7 +112,7 @@ it('lists the organization payment requests', function (): void {
 
     $this->getJson('/api/v1/payment_requests', ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json): void {
             $json->count('payment_requests', 1)
                 ->where('meta.total_count', 1)
                 ->etc();
@@ -127,7 +127,7 @@ it('filters payment requests by payment_status', function (): void {
 
     $this->getJson('/api/v1/payment_requests?payment_status=succeeded', ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json): void {
             $json->count('payment_requests', 1)
                 ->where('payment_requests.0.payment_status', 'succeeded')
                 ->etc();
@@ -164,7 +164,7 @@ it('lists the payment requests of a customer', function (): void {
 
     $this->getJson('/api/v1/customers/'.$customer->external_id.'/payment_requests', ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json): void {
             $json->count('payment_requests', 1)
                 ->etc();
         });

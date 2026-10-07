@@ -64,7 +64,7 @@ abstract class BaseService extends RootBaseService
 
             try {
                 $webhook = $this->createWebhook($webhookEndpoint, $payload);
-                SendHttpWebhookJob::dispatch($webhook)
+                dispatch(new \App\Jobs\SendHttpWebhookJob($webhook))
                     ->onQueue(SendHttpWebhookJob::queueFor($this->webhookType()));
             } catch (QueryException $e) {
                 // Rails rescues ActiveRecord::InvalidForeignKey — the webhook

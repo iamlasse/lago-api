@@ -47,7 +47,7 @@ class UpdateUsageThresholdsService extends \App\Services\BaseService
         $thresholdCount = $plan->usageThresholds()->count();
 
         if ($thresholdCount > 0) {
-            FlagRefreshFromPlanUpdateJob::dispatch((string) $plan->id);
+            dispatch(new \App\Jobs\LifetimeUsages\FlagRefreshFromPlanUpdateJob((string) $plan->id));
         }
 
         $result->plan = $plan->refresh();

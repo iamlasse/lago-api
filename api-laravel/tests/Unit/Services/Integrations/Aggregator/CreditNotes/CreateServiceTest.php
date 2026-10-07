@@ -47,7 +47,7 @@ beforeEach(function (): void {
 
 afterEach(function (): void {
     putenv('NANGO_SECRET_KEY');
-    unset($_ENV['NANGO_SECRET_KEY']);
+    unset(\Illuminate\Support\Env::get('NANGO_SECRET_KEY'));
 });
 
 it('returns without an accounting integration customer', function (): void {
@@ -265,11 +265,9 @@ it('delivers the invalid_mapping webhook when the fee has no mapping', function 
     expect($result->success())->toBeTrue()
         ->and($result->external_id)->toBeNull();
 
-    Queue::assertPushed(App\Jobs\SendWebhookJob::class, function ($job) use ($customer): bool {
-        return $job->object?->id === $customer->id
-            && $job->webhookType === 'customer.accounting_provider_error'
-            && $job->options['provider_error']['error_code'] === 'invalid_mapping';
-    });
+    Queue::assertPushed(App\Jobs\SendWebhookJob::class, fn($job): bool => $job->object?->id === $customer->id
+        && $job->webhookType === 'customer.accounting_provider_error'
+        && $job->options['provider_error']['error_code'] === 'invalid_mapping');
 });
 
 it('enqueues the create job through call_async', function (): void {

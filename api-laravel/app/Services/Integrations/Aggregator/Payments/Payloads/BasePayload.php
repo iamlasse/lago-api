@@ -33,7 +33,7 @@ abstract class BasePayload extends AggregatorBasePayload
             [
                 'invoice_id' => $this->integration_invoice()->external_id,
                 'account_code' => $this->account_item()?->external_account_code,
-                'date' => \Illuminate\Support\Carbon::parse($this->payment->created_at)->toAtomString(),
+                'date' => \Illuminate\Support\Facades\Date::parse($this->payment->created_at)->toAtomString(),
                 'amount_cents' => $this->payment->amount_cents,
             ],
         ];

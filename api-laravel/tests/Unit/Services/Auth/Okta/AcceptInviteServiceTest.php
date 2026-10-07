@@ -33,7 +33,7 @@ beforeEach(function (): void {
 });
 
 afterEach(function (): void {
-    unset($_ENV['LAGO_WEBHOOK_ALLOW_PRIVATE_URLS'], $_SERVER['LAGO_WEBHOOK_ALLOW_PRIVATE_URLS']);
+    unset(\Illuminate\Support\Env::get('LAGO_WEBHOOK_ALLOW_PRIVATE_URLS'), $_SERVER['LAGO_WEBHOOK_ALLOW_PRIVATE_URLS']);
 });
 
 function oktaInviteFixtures(string $userinfoEmail = 'foo@bar.com'): array

@@ -159,7 +159,7 @@ it('truncates a long adyen reference keeping the tail', function (): void {
 
     Http::assertSent(function ($request) use ($longReference): bool {
         if (str_contains($request->url(), '/payments') && ! str_contains($request->url(), 'paymentMethods')) {
-            return $request['reference'] === substr($longReference, -80);
+            return \Illuminate\Support\Str::endsWith($longReference, $request['reference']);
         }
 
         return true;
@@ -261,12 +261,10 @@ it('creates the moneyhash payment intent through the intent API', function (): v
         ->and($payment->status)->toBe('PROCESSED')
         ->and($payment->payablePaymentStatus())->toBe('succeeded');
 
-    Http::assertSent(function ($request): bool {
-        return $request['merchant_initiated'] === true
-            && $request['payment_type'] === 'UNSCHEDULED'
-            && $request['custom_fields']['lago_mit'] === true
-            && $request->header('x-Api-Key')[0] === 'mh_key';
-    });
+    Http::assertSent(fn($request): bool => $request['merchant_initiated'] === true
+        && $request['payment_type'] === 'UNSCHEDULED'
+        && $request['custom_fields']['lago_mit'] === true
+        && $request->header('x-Api-Key')[0] === 'mh_key');
 });
 
 // -- Customers legs -------------------------------------------------------------

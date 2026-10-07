@@ -163,7 +163,8 @@ class Feature extends BaseModel
     // -- Scopes ------------------------------------------------------------------
 
     /** Rails: `Entitlement::Feature.where(organization:)` + ransack OR search. */
-    public function scopeOfOrganization(Builder $query, Organization $organization): Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function ofOrganization(Builder $query, Organization $organization): Builder
     {
         return $query->where('organization_id', $organization->id);
     }

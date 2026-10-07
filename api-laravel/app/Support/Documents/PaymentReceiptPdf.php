@@ -21,16 +21,16 @@ use Illuminate\Support\Facades\App;
  * section, invoice resume partials, logos, EU tax management) — the ported
  * template answers the headline receipt fields only.
  */
-final class PaymentReceiptPdf
+final readonly class PaymentReceiptPdf
 {
-    private const SYMBOLS = [
+    private const array SYMBOLS = [
         'USD' => '$',
         'EUR' => '€',
         'GBP' => '£',
         'JPY' => '¥',
     ];
 
-    public function __construct(private readonly PaymentReceipt $receipt) {}
+    public function __construct(private PaymentReceipt $receipt) {}
 
     /** Rails: PaymentReceipts::GeneratePdfService#template ("payment_receipts/v1"). */
     public static function templateName(): string
@@ -89,7 +89,7 @@ final class PaymentReceiptPdf
     /** Port of MoneyHelper.format (see InvoicePdf#money). */
     public function money(null|int|float|string $amountCents, ?string $currency = null): string
     {
-        $currency = $currency ?? $this->receipt->payment?->amount_currency;
+        $currency ??= $this->receipt->payment?->amount_currency;
         $amount = (float) ($amountCents ?? 0) / Currency::subunitToUnit($currency);
         $formatted = number_format($amount, Currency::exponent($currency), '.', ',');
 

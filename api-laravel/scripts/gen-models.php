@@ -27,19 +27,17 @@ if (! $targets) {
     exit(1);
 }
 
-$castFor = function (array $col): ?string {
-    return match (true) {
-        $col['data_type'] === 'ARRAY' => "'array'",
-        $col['data_type'] === 'jsonb', $col['data_type'] === 'json' => "'array'",
-        $col['data_type'] === 'boolean' => "'boolean'",
-        in_array($col['data_type'], ['integer', 'smallint', 'bigint'], true) => "'integer'",
-        $col['data_type'] === 'numeric' => sprintf("[BcNumeric::class, 'scale' => %d]", max(0, (int) $col['numeric_scale'])),
-        str_starts_with($col['data_type'], 'timestamp') => "'datetime'",
-        $col['data_type'] === 'date' => "'date:Y-m-d'",
-        $col['data_type'] === 'double precision' => "'float'",
-        default => null,
-    };
-};
+$castFor = (fn(array $col): ?string => match (true) {
+    $col['data_type'] === 'ARRAY' => "'array'",
+    $col['data_type'] === 'jsonb', $col['data_type'] === 'json' => "'array'",
+    $col['data_type'] === 'boolean' => "'boolean'",
+    in_array($col['data_type'], ['integer', 'smallint', 'bigint'], true) => "'integer'",
+    $col['data_type'] === 'numeric' => sprintf("[BcNumeric::class, 'scale' => %d]", max(0, (int) $col['numeric_scale'])),
+    str_starts_with($col['data_type'], 'timestamp') => "'datetime'",
+    $col['data_type'] === 'date' => "'date:Y-m-d'",
+    $col['data_type'] === 'double precision' => "'float'",
+    default => null,
+});
 
 foreach ($targets as $target) {
     [$class, $table] = explode(':', $target, 2);

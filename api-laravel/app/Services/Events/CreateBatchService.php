@@ -223,8 +223,8 @@ class CreateBatchService extends BaseService
                         // NOTE: even though we set id, created_at and updated_at here, the
                         // event is not considered persisted, like Rails' insert_all.
                         $event->id = $attributes->id;
-                        $event->created_at = Carbon::parse($attributes->created_at);
-                        $event->updated_at = Carbon::parse($attributes->updated_at);
+                        $event->created_at = \Illuminate\Support\Facades\Date::parse($attributes->created_at);
+                        $event->updated_at = \Illuminate\Support\Facades\Date::parse($attributes->updated_at);
                     } else {
                         $errors[$index] = ['transaction_id' => ['value_already_exist']];
                     }
@@ -262,7 +262,7 @@ class CreateBatchService extends BaseService
 
         try {
             foreach ($events as $event) {
-                PostProcessJob::dispatch($event);
+                dispatch(new \App\Jobs\Events\PostProcessJob($event));
             }
         } catch (Throwable $exception) {
             // `perform_all_later` is a single bulk push, so one failure strands the
@@ -297,7 +297,7 @@ class CreateBatchService extends BaseService
         [$seconds, $fraction] = array_pad(explode('.', $digits, 2), 2, '0');
 
         $micro = (int) mb_str_pad(mb_substr($fraction, 0, 6), 6, '0');
-        $datetime = Carbon::createFromTimestampUTC((int) $seconds);
+        $datetime = \Illuminate\Support\Facades\Date::createFromTimestampUTC((int) $seconds);
         if ($micro > 0) {
             $datetime->addMicroseconds($negative ? -$micro : $micro);
         }

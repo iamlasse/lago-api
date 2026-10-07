@@ -17,23 +17,22 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * historical (externally reported) usage.
  */
 #[Table(name: 'lifetime_usages')]
+#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+    'organization_id',
+    'subscription_id',
+    'current_usage_amount_cents',
+    'invoiced_usage_amount_cents',
+    'historical_usage_amount_cents',
+    'recalculate_current_usage',
+    'recalculate_invoiced_usage',
+    'current_usage_amount_refreshed_at',
+    'invoiced_usage_amount_refreshed_at',
+])]
 class LifetimeUsage extends BaseModel
 {
     use ConnectionResolvable;
     use HasFactory;
     use SoftDeletes;
-
-    protected $fillable = [
-        'organization_id',
-        'subscription_id',
-        'current_usage_amount_cents',
-        'invoiced_usage_amount_cents',
-        'historical_usage_amount_cents',
-        'recalculate_current_usage',
-        'recalculate_invoiced_usage',
-        'current_usage_amount_refreshed_at',
-        'invoiced_usage_amount_refreshed_at',
-    ];
 
     protected $attributes = [
         'current_usage_amount_cents' => 0,

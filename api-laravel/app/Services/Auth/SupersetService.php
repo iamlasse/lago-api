@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Services\Auth;
 
-use App\Http\Client\LagoHttpError;
+use Throwable;
+use JsonException;
 use App\Models\Organization;
 use App\Services\BaseResult;
 use App\Services\BaseService;
+use App\Http\Client\LagoHttpError;
 use App\Services\Auth\Superset\Client;
 use Illuminate\Http\Client\ConnectionException;
 
@@ -20,6 +22,9 @@ use Illuminate\Http\Client\ConnectionException;
 class SupersetService extends BaseService
 {
     use Client;
+
+    /** The service's result — the trait's failure raisers write to it. */
+    protected BaseResult $result;
 
     public function __construct(
         protected readonly Organization $organization,
@@ -40,15 +45,12 @@ class SupersetService extends BaseService
             return $this->run($this->result);
         } catch (ConnectionException $e) {
             return $this->result->serviceFailure('superset_timeout', 'Superset request timed out: '.$e->getMessage(), $e);
-        } catch (\JsonException $e) {
+        } catch (JsonException $e) {
             return $this->result->serviceFailure('superset_invalid_response', 'Invalid JSON response from Superset: '.$e->getMessage(), $e);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return $this->result->serviceFailure('superset_error', 'Superset operation failed: '.$e->getMessage(), $e);
         }
     }
-
-    /** The service's result — the trait's failure raisers write to it. */
-    protected BaseResult $result;
 
     private function run(BaseResult $result): BaseResult
     {
@@ -138,7 +140,7 @@ class SupersetService extends BaseService
             }
 
             return ['success' => true, 'exists' => false];
-        } catch (LagoHttpError|\JsonException) {
+        } catch (LagoHttpError|JsonException) {
             return ['success' => true, 'exists' => false];
         }
     }
@@ -164,7 +166,7 @@ class SupersetService extends BaseService
             }
 
             return ['success' => true, 'uuid' => $uuid];
-        } catch (LagoHttpError|\JsonException) {
+        } catch (LagoHttpError|JsonException) {
             return ['success' => false];
         }
     }
@@ -211,7 +213,7 @@ class SupersetService extends BaseService
             }
 
             return ['success' => true, 'guest_token' => $guestToken];
-        } catch (LagoHttpError|\JsonException) {
+        } catch (LagoHttpError|JsonException) {
             return ['success' => false];
         }
     }

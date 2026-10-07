@@ -24,17 +24,17 @@ use Illuminate\Support\Facades\App;
  * I18n.l(:default) and the invoice/subscription/fee `invoice_name` model
  * methods the Slim context (the invoice itself) answered.
  */
-final class InvoicePdf
+final readonly class InvoicePdf
 {
     /** Rails MoneyHelper::SYMBOLS_CURRENCIES — currencies shown with a symbol. */
-    private const SYMBOLS = [
+    private const array SYMBOLS = [
         'USD' => '$',
         'EUR' => '€',
         'GBP' => '£',
         'JPY' => '¥',
     ];
 
-    public function __construct(private readonly Invoice $invoice) {}
+    public function __construct(private Invoice $invoice) {}
 
     /** Rails: GeneratePdfService#template. */
     public static function templateName(Invoice $invoice): string
@@ -105,7 +105,7 @@ final class InvoicePdf
      */
     public function money(null|int|float|string $amountCents, ?string $currency = null): string
     {
-        $currency = $currency ?? $this->invoice->currency;
+        $currency ??= $this->invoice->currency;
         $amount = (float) ($amountCents ?? 0) / Currency::subunitToUnit($currency);
         $formatted = number_format($amount, Currency::exponent($currency), '.', ',');
 
@@ -133,7 +133,7 @@ final class InvoicePdf
             return '';
         }
 
-        $date = $value instanceof CarbonInterface ? $value : \Illuminate\Support\Carbon::parse($value);
+        $date = $value instanceof CarbonInterface ? $value : \Illuminate\Support\Facades\Date::parse($value);
 
         return $date->translatedFormat('M d, Y');
     }

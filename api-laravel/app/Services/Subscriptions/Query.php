@@ -40,7 +40,7 @@ use function is_array;
  */
 class Query extends BaseService
 {
-    private const UUID_REGEX = '/\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\z/i';
+    private const string UUID_REGEX = '/\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\z/i';
 
     /**
      * @param  array<string, mixed>  $filters  Rails-shaped (snake_case) filters

@@ -62,11 +62,7 @@ class HandleIncomingWebhookService extends BaseService
         }
 
         foreach ($validation->events as $event) {
-            GocardlessHandleEventJob::dispatch(
-                $paymentProvider->organization,
-                $paymentProvider,
-                json_encode($event, JSON_THROW_ON_ERROR),
-            );
+            dispatch(new \App\Jobs\PaymentProviders\GocardlessHandleEventJob($paymentProvider->organization, $paymentProvider, json_encode($event, JSON_THROW_ON_ERROR)));
         }
 
         $result->events = $validation->events;

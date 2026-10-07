@@ -81,7 +81,7 @@ function gqlSubscriptionCustomer(object $organization, array $attributes = []): 
     ], $attributes));
 }
 
-it('creates a subscription', function () {
+it('creates a subscription', function (): void {
     [$organization, $user] = gqlSubscriptionsSetup();
 
     $customer = gqlSubscriptionCustomer($organization, ['timezone' => null]);
@@ -127,7 +127,7 @@ it('creates a subscription', function () {
         ->and($endingAt->format('Y-m-d'))->toBe(CarbonImmutable::instance($subscription->ending_at)->format('Y-m-d'));
 })->group('ledger:gql:mutation:createSubscription');
 
-it('falls back to a generated external id', function () {
+it('falls back to a generated external id', function (): void {
     [$organization, $user] = gqlSubscriptionsSetup();
 
     $customer = gqlSubscriptionCustomer($organization);
@@ -147,7 +147,7 @@ it('falls back to a generated external id', function () {
         ->toMatch('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/');
 })->group('ledger:gql:mutation:createSubscription');
 
-it('binds the subscription to the requested billing entity', function () {
+it('binds the subscription to the requested billing entity', function (): void {
     [$organization, $user] = gqlSubscriptionsSetup();
 
     $customer = gqlSubscriptionCustomer($organization);
@@ -168,7 +168,7 @@ it('binds the subscription to the requested billing entity', function () {
     expect($response->json('data.createSubscription.billingEntityId'))->toBe($billingEntity->id);
 })->group('ledger:gql:mutation:createSubscription');
 
-it('returns not_found for an unknown customer and plan', function () {
+it('returns not_found for an unknown customer and plan', function (): void {
     [$organization, $user] = gqlSubscriptionsSetup();
 
     $plan = gqlSubscriptionPlan($organization);
@@ -209,7 +209,7 @@ it('returns not_found for an unknown customer and plan', function () {
     ]);
 })->group('ledger:gql:mutation:createSubscription');
 
-it('returns unauthorized on createSubscription without a token', function () {
+it('returns unauthorized on createSubscription without a token', function (): void {
     // GraphQL input validation runs before the resolvers — send a
     // well-formed input so the unauthorized error is the one surfacing.
     $response = gqlPost(CREATE_SUBSCRIPTION_MUTATION, ['input' => [
@@ -221,7 +221,7 @@ it('returns unauthorized on createSubscription without a token', function () {
     expect($response->json('errors.0.message'))->toBe('unauthorized');
 })->group('ledger:gql:mutation:createSubscription');
 
-it('updates a subscription', function () {
+it('updates a subscription', function (): void {
     [$organization, $user] = gqlSubscriptionsSetup();
 
     $subscription = Subscription::factory()->create([
@@ -254,7 +254,7 @@ it('updates a subscription', function () {
         ->and($subscription->fresh()->name)->toBe('New name');
 })->group('ledger:gql:mutation:updateSubscription');
 
-it('moves a pending subscription_at on update', function () {
+it('moves a pending subscription_at on update', function (): void {
     [$organization, $user] = gqlSubscriptionsSetup();
 
     // Rails only processes a subscription_at change on a subscription
@@ -285,7 +285,7 @@ it('moves a pending subscription_at on update', function () {
         ->toBeTrue();
 })->group('ledger:gql:mutation:updateSubscription');
 
-it('returns not_found when updating an unknown subscription', function () {
+it('returns not_found when updating an unknown subscription', function (): void {
     [$organization, $user] = gqlSubscriptionsSetup();
 
     $response = gqlPost(
@@ -305,7 +305,7 @@ it('returns not_found when updating an unknown subscription', function () {
         ]);
 })->group('ledger:gql:mutation:updateSubscription');
 
-it('terminates a subscription of a pay-in-advance plan', function () {
+it('terminates a subscription of a pay-in-advance plan', function (): void {
     [$organization, $user] = gqlSubscriptionsSetup();
 
     $plan = gqlSubscriptionPlan($organization, ['pay_in_advance' => true]);
@@ -335,7 +335,7 @@ it('terminates a subscription of a pay-in-advance plan', function () {
         ->and($payload['onTerminationInvoice'])->toBe('generate');
 })->group('ledger:gql:mutation:terminateSubscription');
 
-it('honors the on termination behaviors on terminate', function () {
+it('honors the on termination behaviors on terminate', function (): void {
     [$organization, $user] = gqlSubscriptionsSetup();
 
     $plan = gqlSubscriptionPlan($organization, ['pay_in_advance' => true]);
@@ -363,7 +363,7 @@ it('honors the on termination behaviors on terminate', function () {
         ->and($subscription->fresh()->on_termination_invoice)->toBe('skip');
 })->group('ledger:gql:mutation:terminateSubscription');
 
-it('cancels a pending subscription on terminate', function () {
+it('cancels a pending subscription on terminate', function (): void {
     [$organization, $user] = gqlSubscriptionsSetup();
 
     $previous = Subscription::factory()->create([
@@ -399,7 +399,7 @@ it('cancels a pending subscription on terminate', function () {
         ->and($pending->fresh()->canceled_at)->not->toBeNull();
 })->group('ledger:gql:mutation:terminateSubscription');
 
-it('cancels an incomplete subscription with a manual cancellation reason', function () {
+it('cancels an incomplete subscription with a manual cancellation reason', function (): void {
     [$organization, $user] = gqlSubscriptionsSetup();
 
     $incomplete = Subscription::factory()->incomplete()->create([
@@ -443,7 +443,7 @@ it('cancels an incomplete subscription with a manual cancellation reason', funct
         ->and($payload['cancellationReason'])->toBe('manual');
 })->group('ledger:gql:mutation:terminateSubscription');
 
-it('returns not_found when terminating an unknown subscription', function () {
+it('returns not_found when terminating an unknown subscription', function (): void {
     [$organization, $user] = gqlSubscriptionsSetup();
 
     $response = gqlPost(

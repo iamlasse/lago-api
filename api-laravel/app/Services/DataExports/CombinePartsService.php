@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Services\DataExports;
 
-use App\Mail\DataExportCompletedMail;
 use App\Models\DataExport;
 use App\Services\BaseResult;
 use App\Services\BaseService;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\DataExportCompletedMail;
 
 /**
  * Port of Rails' DataExports::CombinePartsService

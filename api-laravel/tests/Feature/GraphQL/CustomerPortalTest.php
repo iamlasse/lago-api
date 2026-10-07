@@ -109,7 +109,7 @@ it('answers unauthorized on portal fields with an expired portal token', functio
     // Rails: expires_in: 12.hours — mint a token, then move past the expiry.
     $expired = PortalToken::generate($customer->id);
 
-    test()->travelTo(Carbon::now()->addHours(PortalToken::EXPIRES_IN_HOURS + 1));
+    test()->travelTo(\Illuminate\Support\Facades\Date::now()->addHours(PortalToken::EXPIRES_IN_HOURS + 1));
 
     try {
         expect(PortalToken::verify($expired))->toBeNull();

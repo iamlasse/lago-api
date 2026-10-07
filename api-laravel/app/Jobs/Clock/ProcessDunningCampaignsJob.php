@@ -38,6 +38,6 @@ class ProcessDunningCampaignsJob implements ShouldQueue
 
     public function handle(): void
     {
-        BulkProcessJob::dispatch();
+        dispatch(new BulkProcessJob());
     }
 }

@@ -18,7 +18,7 @@ use App\Models\BillableMetric;
 class ChargeablesValidationService extends \App\Services\BaseService
 {
     /** Rails: BaseQuery::UUID_REGEX — the uuid attribute cast's valid shape. */
-    private const UUID_REGEX = '/\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\z/i';
+    private const string UUID_REGEX = '/\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\z/i';
 
     public function __construct(
         private readonly Organization $organization,

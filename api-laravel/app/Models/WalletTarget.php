@@ -14,15 +14,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * produced by the targeted metrics.
  */
 #[Table(name: 'wallet_targets')]
+#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+    'organization_id',
+    'wallet_id',
+    'billable_metric_id',
+])]
 class WalletTarget extends BaseModel
 {
     use HasFactory;
-
-    protected $fillable = [
-        'organization_id',
-        'wallet_id',
-        'billable_metric_id',
-    ];
 
     public function wallet(): BelongsTo
     {

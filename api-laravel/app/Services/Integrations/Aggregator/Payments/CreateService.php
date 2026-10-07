@@ -133,7 +133,7 @@ class CreateService extends BaseService
             return $result->notFoundFailure('payment');
         }
 
-        CreateJob::dispatch($this->payment);
+        dispatch(new \App\Jobs\Integrations\Aggregator\Payments\CreateJob($this->payment));
 
         $result->payment_id = $this->payment->id;
 

@@ -117,7 +117,7 @@ class CreateService extends BaseService
             return $this->result->notFoundFailure('invoice');
         }
 
-        \App\Jobs\Integrations\Aggregator\Invoices\CreateJob::dispatch($this->invoice);
+        dispatch(new \App\Jobs\Integrations\Aggregator\Invoices\CreateJob($this->invoice));
 
         $this->result()->invoice_id = $this->invoice->id;
 

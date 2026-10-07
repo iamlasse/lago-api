@@ -31,7 +31,7 @@ use App\Services\Failures\LockAcquisitionFailure;
 final class LockService
 {
     /** Rails: BaseLockService::ACQUIRE_LOCK_TIMEOUT = 5.seconds. */
-    public const ACQUIRE_LOCK_TIMEOUT = '5s';
+    public const string ACQUIRE_LOCK_TIMEOUT = '5s';
 
     /**
      * Runs the body while holding the quote lock. Expects to be inside a

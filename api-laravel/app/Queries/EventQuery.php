@@ -54,7 +54,7 @@ class EventQuery extends BaseService
 
         // Rails: with_timestamp is a no-op on the Postgres path (the column
         // holds microseconds a millisecond filter could not address).
-        $result->event = $events->orderByDesc('created_at')->first();
+        $result->event = $events->latest()->first();
 
         return $result;
     }

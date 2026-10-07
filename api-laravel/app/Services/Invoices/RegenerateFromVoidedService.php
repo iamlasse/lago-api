@@ -129,7 +129,7 @@ class RegenerateFromVoidedService extends BaseService
 
     private function issuingDate(): Carbon
     {
-        return Carbon::now($this->voidedInvoice->customer->applicableTimezone())->startOfDay();
+        return \Illuminate\Support\Facades\Date::now($this->voidedInvoice->customer->applicableTimezone())->startOfDay();
     }
 
     private function paymentDueDate(): Carbon
@@ -373,13 +373,19 @@ class RegenerateFromVoidedService extends BaseService
         $this->regeneratedInvoice->refreshSearchTerms();
     }
 
+    /**
+     * Rails: resolved_purchase_order_number + the HasPurchaseOrderNumber
+     * concern's `normalizes :purchase_order_number, with: -> { strip.presence }`.
+     */
     private function resolvedPurchaseOrderNumber(): ?string
     {
-        if ($this->purchaseOrderNumber === self::PURCHASE_ORDER_NUMBER_INHERIT) {
-            return $this->voidedInvoice->purchase_order_number;
-        }
+        $value = $this->purchaseOrderNumber === self::PURCHASE_ORDER_NUMBER_INHERIT
+            ? $this->voidedInvoice->purchase_order_number
+            : $this->purchaseOrderNumber;
 
-        return $this->purchaseOrderNumber;
+        $value = trim((string) $value);
+
+        return $value === '' ? null : $value;
     }
 
     private function callInvoiceFinalizationJobs(Invoice $invoice): void
@@ -390,7 +396,7 @@ class RegenerateFromVoidedService extends BaseService
 
         // TODO(port): Utils::SegmentTrack.invoice_created + ActivityLog.
         SendWebhookJob::performLater('invoice.created', $invoice);
-        GenerateDocumentsJob::dispatch($invoice, $this->shouldDeliverEmail());
+        dispatch(new \App\Jobs\Invoices\GenerateDocumentsJob($invoice, $this->shouldDeliverEmail()));
         CreateJob::dispatchIfShouldSync($invoice);
         // TODO(port): Invoices::Payments::CreateService.call_async
         // (payments are a later slice).

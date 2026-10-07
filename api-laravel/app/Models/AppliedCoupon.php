@@ -249,7 +249,7 @@ class AppliedCoupon extends BaseModel
      *
      * @param  class-string<BackedEnum>  $enumClass
      */
-    private function enumAttribute(string $enumClass, string $field): Attribute
+    protected function enumAttribute(string $enumClass, string $field): Attribute
     {
         return Attribute::set(function (mixed $value) use ($enumClass, $field): ?int {
             if ($value === null) {

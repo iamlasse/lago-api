@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use App\Models\Wallet;
-use App\Jobs\Clock\TerminateWalletsJob;
 use Database\Factories\WalletFactory;
+use App\Jobs\Clock\TerminateWalletsJob;
 
 uses()->group('ledger:job:Clock.TerminateWalletsJob');
 

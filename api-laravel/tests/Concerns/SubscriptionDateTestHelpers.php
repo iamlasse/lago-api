@@ -70,9 +70,7 @@ function datesTerminate(Subscription $subscription, string $terminatedAt): Subsc
 {
     // Rails: mark_as_terminated! does `self.terminated_at ||= timestamp` — a
     // second call changes the status but keeps the first termination time.
-    if ($subscription->terminated_at === null) {
-        $subscription->terminated_at = $terminatedAt;
-    }
+    $subscription->terminated_at ??= $terminatedAt;
 
     $subscription->status = 'terminated';
     $subscription->save();

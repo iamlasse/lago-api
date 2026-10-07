@@ -31,7 +31,7 @@ class GenerateDocumentsJob extends DocumentsJob
         GeneratePdfService::callBang(invoice: $this->invoice);
 
         if ($this->notify) {
-            NotifyJob::dispatch($this->invoice);
+            dispatch(new \App\Jobs\Invoices\NotifyJob($this->invoice));
         }
     }
 }

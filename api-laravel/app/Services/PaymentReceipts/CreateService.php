@@ -109,10 +109,7 @@ class CreateService extends BaseService
 
         // TODO(port): Utils::ActivityLog.produce(receipt, "payment_receipt.created").
 
-        GenerateDocumentsJob::dispatch(
-            paymentReceipt: $receipt,
-            notify: $this->shouldDeliverEmail($billingEntity),
-        );
+        dispatch(new \App\Jobs\PaymentReceipts\GenerateDocumentsJob(paymentReceipt: $receipt, notify: $this->shouldDeliverEmail($billingEntity)));
 
         return $result;
     }

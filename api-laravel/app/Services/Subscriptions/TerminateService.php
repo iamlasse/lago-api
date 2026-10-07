@@ -27,33 +27,23 @@ use Illuminate\Support\Facades\DB;
  */
 class TerminateService extends BaseService
 {
-    protected ?Subscription $subscription;
-
-    protected bool $async;
-
-    protected bool $upgrade;
-
     protected string $onTerminationCreditNote;
 
     protected string $onTerminationInvoice;
 
     public function __construct(
-        ?Subscription $subscription = null,
-        bool $async = true,
-        bool $upgrade = false,
+        protected ?Subscription $subscription = null,
+        protected bool $async = true,
+        protected bool $upgrade = false,
         ?string $onTerminationCreditNote = null,
         ?string $onTerminationInvoice = null,
     ) {
         parent::__construct();
-
-        $this->subscription = $subscription;
-        $this->async = $async;
-        $this->upgrade = $upgrade;
         $this->onTerminationCreditNote = blank($onTerminationCreditNote)
-            ? ($subscription?->on_termination_credit_note ?? 'credit')
+            ? ($this->subscription?->on_termination_credit_note ?? 'credit')
             : $onTerminationCreditNote;
         $this->onTerminationInvoice = blank($onTerminationInvoice)
-            ? ($subscription?->on_termination_invoice ?? 'generate')
+            ? ($this->subscription?->on_termination_invoice ?? 'generate')
             : $onTerminationInvoice;
     }
 

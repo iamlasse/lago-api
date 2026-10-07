@@ -17,11 +17,6 @@ use App\Services\Subscriptions\ActivationRules\Payment\ValidateService as Paymen
  */
 class ValidateService
 {
-    protected BaseResult $result;
-
-    /** @var array<string, mixed> */
-    protected array $args;
-
     /** @var array<string, list<string>> */
     protected array $errors = [];
 
@@ -29,10 +24,8 @@ class ValidateService
      * @param  array<string, mixed>  $args  activation_rules:, payment_method:, subscription:,
      *                                      customer:, subscription_type:
      */
-    public function __construct(BaseResult $result, array $args)
+    public function __construct(protected BaseResult $result, protected array $args)
     {
-        $this->result = $result;
-        $this->args = $args;
     }
 
     public function valid(): bool

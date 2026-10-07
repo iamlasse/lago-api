@@ -33,7 +33,7 @@ use App\Services\PaymentProviders\Gocardless\GoCardlessError;
 class CreateService extends BaseService
 {
     /** Rails: fetch_mandate_from_api status filter. */
-    private const MANDATE_STATUSES = ['pending_customer_approval', 'pending_submission', 'submitted', 'active'];
+    private const array MANDATE_STATUSES = ['pending_customer_approval', 'pending_submission', 'submitted', 'active'];
 
     public function __construct(
         private readonly Payment $payment,

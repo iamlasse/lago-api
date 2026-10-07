@@ -32,17 +32,10 @@ use Illuminate\Support\Facades\DB;
  */
 class UpdateService extends BaseService
 {
-    protected ?Subscription $subscription;
-
-    /** @var array<string, mixed> */
-    protected array $params;
-
-    public function __construct(?Subscription $subscription, array $params)
+    public function __construct(protected ?Subscription $subscription, /** @var array<string, mixed> */
+    protected array $params)
     {
         parent::__construct();
-
-        $this->subscription = $subscription;
-        $this->params = $params;
     }
 
     public function execute(): BaseResult
@@ -91,8 +84,8 @@ class UpdateService extends BaseService
         }
 
         // TODO(port): Remove check we stop supporting `plan_overrides.usage_thresholds`
-        if (! blank($params['usage_thresholds'] ?? null)
-            && ! blank(is_array($params['plan_overrides'] ?? null) ? ($params['plan_overrides']['usage_thresholds'] ?? null) : null)
+        if (filled($params['usage_thresholds'] ?? null)
+            && filled(is_array($params['plan_overrides'] ?? null) ? ($params['plan_overrides']['usage_thresholds'] ?? null) : null)
         ) {
             return $result->validationFailure([
                 'plan_overrides.usage_thresholds' => ['incompatible_params'],
@@ -120,7 +113,7 @@ class UpdateService extends BaseService
             );
         }
 
-        if (! blank($params['connections'] ?? null)
+        if (filled($params['connections'] ?? null)
             && ! $this->organizationFlagEnabled($subscription->organization, 'multi_connection')
         ) {
             return $result->forbiddenFailure();
@@ -362,14 +355,7 @@ class UpdateService extends BaseService
         if (! is_array($fixedCharges) || $fixedCharges === []) {
             return false;
         }
-
-        foreach ($fixedCharges as $entry) {
-            if (! $this->unitsOnlyFixedChargesEntry($entry)) {
-                return false;
-            }
-        }
-
-        return true;
+        return array_all($fixedCharges, fn($entry) => $this->unitsOnlyFixedChargesEntry($entry));
     }
 
     /** Rails: PLAN_OVERRIDES_FIXED_CHARGE_ALLOWED_KEYS. */

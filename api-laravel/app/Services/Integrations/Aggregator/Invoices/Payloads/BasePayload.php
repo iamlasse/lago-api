@@ -45,8 +45,8 @@ abstract class BasePayload extends AggregatorBasePayload
             [
                 'external_contact_id' => $this->integration_customer->external_customer_id,
                 'status' => 'AUTHORISED',
-                'issuing_date' => \Illuminate\Support\Carbon::parse($this->invoice->issuing_date)->toAtomString(),
-                'payment_due_date' => \Illuminate\Support\Carbon::parse($this->invoice->payment_due_date)->toAtomString(),
+                'issuing_date' => \Illuminate\Support\Facades\Date::parse($this->invoice->issuing_date)->toAtomString(),
+                'payment_due_date' => \Illuminate\Support\Facades\Date::parse($this->invoice->payment_due_date)->toAtomString(),
                 'number' => $this->invoice->number,
                 'currency' => $this->invoice->currency,
                 'type' => 'ACCREC',
@@ -74,7 +74,7 @@ abstract class BasePayload extends AggregatorBasePayload
      */
     protected function fees(): \Illuminate\Support\Collection
     {
-        return $this->invoice->fees()->orderBy('created_at')->get()
+        return $this->invoice->fees()->oldest()->get()
             ->when(
                 $this->invoice->fees()->where('amount_cents', '>', 0)->exists(),
                 fn ($all) => $all->filter(fn (Fee $fee) => $fee->amount_cents > 0)->values(),

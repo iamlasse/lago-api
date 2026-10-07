@@ -9,15 +9,15 @@ namespace App\Values;
  * (a Data define) — the normalized Flutterwave transaction the webhook
  * handlers pass into the payment-status update services.
  */
-final class FlutterwavePayment
+final readonly class FlutterwavePayment
 {
     /**
      * @param  array<string, mixed>  $metadata
      */
     public function __construct(
-        public readonly string $id,
-        public readonly string $status,
-        public readonly array $metadata = [],
+        public string $id,
+        public string $status,
+        public array $metadata = [],
     ) {}
 
     public function metadataValue(string $key): mixed

@@ -55,7 +55,7 @@ class RefreshWalletsOngoingBalanceJob implements ShouldQueue
             ->whereHas('wallets', fn ($query) => $query->where('status', \App\Enums\WalletStatus::Active->value))
             ->chunkById(200, function ($customers): void {
                 foreach ($customers as $customer) {
-                    RefreshWalletJob::dispatch($customer);
+                    dispatch(new RefreshWalletJob($customer));
                 }
             });
     }

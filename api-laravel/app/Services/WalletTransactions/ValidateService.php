@@ -23,9 +23,9 @@ use App\Services\Validators\DecimalAmount;
 class ValidateService extends BaseValidator
 {
     /** Rails: MAX_AMOUNT = 10**25 - 1. */
-    private const MAX_AMOUNT = '9999999999999999999999999';
+    private const string MAX_AMOUNT = '9999999999999999999999999';
 
-    private const MAX_METADATA_KEYS = 15;
+    private const int MAX_METADATA_KEYS = 15;
 
     public function __construct(
         BaseResult $result,

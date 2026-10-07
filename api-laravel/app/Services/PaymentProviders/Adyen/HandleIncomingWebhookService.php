@@ -67,10 +67,7 @@ class HandleIncomingWebhookService extends BaseService
             return $result->serviceFailure(code: 'webhook_error', message: 'Invalid signature');
         }
 
-        AdyenHandleEventJob::dispatch(
-            $organization,
-            json_encode($this->body, JSON_THROW_ON_ERROR),
-        );
+        dispatch(new \App\Jobs\PaymentProviders\AdyenHandleEventJob($organization, json_encode($this->body, JSON_THROW_ON_ERROR)));
 
         $result->event = $this->body;
 

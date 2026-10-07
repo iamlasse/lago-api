@@ -139,38 +139,32 @@ class BaseCollectionMapping extends BaseModel
         $settings[$key] = $value;
         $this->settings = $settings;
     }
-
-    // -- settings_accessors :external_id, :external_account_code,
-    //    :external_name (the payloads consume them as plain attributes) -----
-
-    public function getExternalIdAttribute(): mixed
+    protected function externalId(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        return $this->getFromSettings('external_id');
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+            return $this->getFromSettings('external_id');
+        }, set: function (mixed $value) {
+            $this->pushToSettings('external_id', $value);
+            return [];
+        });
     }
-
-    public function setExternalIdAttribute(mixed $value): void
+    protected function externalAccountCode(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        $this->pushToSettings('external_id', $value);
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+            return $this->getFromSettings('external_account_code');
+        }, set: function (mixed $value) {
+            $this->pushToSettings('external_account_code', $value);
+            return [];
+        });
     }
-
-    public function getExternalAccountCodeAttribute(): mixed
+    protected function externalName(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        return $this->getFromSettings('external_account_code');
-    }
-
-    public function setExternalAccountCodeAttribute(mixed $value): void
-    {
-        $this->pushToSettings('external_account_code', $value);
-    }
-
-    public function getExternalNameAttribute(): mixed
-    {
-        return $this->getFromSettings('external_name');
-    }
-
-    public function setExternalNameAttribute(mixed $value): void
-    {
-        $this->pushToSettings('external_name', $value);
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+            return $this->getFromSettings('external_name');
+        }, set: function (mixed $value) {
+            $this->pushToSettings('external_name', $value);
+            return [];
+        });
     }
 
     // -- Validations (Rails: validates / validate blocks) --------------------

@@ -87,13 +87,13 @@ class RetryGeneratingSubscriptionInvoicesJob implements ShouldQueue
             return;
         }
 
-        BillSubscriptionJob::dispatch(
+        dispatch(new BillSubscriptionJob(
             $invoice->subscriptions->all(),
             // Rails: invoice_subscriptions.first.timestamp.to_i
-            (int) \Carbon\Carbon::parse($invoiceSubscriptions->first()->timestamp)->getTimestamp(),
+            (int) \Illuminate\Support\Facades\Date::parse($invoiceSubscriptions->first()->timestamp)->getTimestamp(),
             $invoicingReason,
             $invoice->id,
-            $invoice->skip_charges,
-        );
+            $invoice->skip_charges
+        ));
     }
 }

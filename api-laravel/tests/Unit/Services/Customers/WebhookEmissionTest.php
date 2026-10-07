@@ -25,9 +25,7 @@ it('emits customer.created after creating a customer', function (): void {
 
     expect($result->success())->toBeTrue();
 
-    Queue::assertPushed(SendWebhookJob::class, function (SendWebhookJob $job) use ($result) {
-        return $job->webhookType === 'customer.created' && $job->object->is($result->customer);
-    });
+    Queue::assertPushed(SendWebhookJob::class, fn(SendWebhookJob $job) => $job->webhookType === 'customer.created' && $job->object->is($result->customer));
 });
 
 it('emits customer.updated after updating a customer', function (): void {
@@ -38,9 +36,7 @@ it('emits customer.updated after updating a customer', function (): void {
 
     expect($result->success())->toBeTrue();
 
-    Queue::assertPushed(SendWebhookJob::class, function (SendWebhookJob $job) use ($customer) {
-        return $job->webhookType === 'customer.updated' && $job->object->is($customer);
-    });
+    Queue::assertPushed(SendWebhookJob::class, fn(SendWebhookJob $job) => $job->webhookType === 'customer.updated' && $job->object->is($customer));
 });
 
 it('emits customer.created from the upsert for a new customer', function (): void {

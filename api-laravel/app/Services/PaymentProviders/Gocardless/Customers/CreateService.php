@@ -24,22 +24,22 @@ class CreateService extends AbstractCustomersCreateService
     protected function createOnProvider(PaymentProviderCustomer $providerCustomer, bool $async): void
     {
         if ($async) {
-            GocardlessCreateCustomerJob::dispatch($providerCustomer);
+            dispatch(new \App\Jobs\PaymentProviders\GocardlessCreateCustomerJob($providerCustomer));
 
             return;
         }
 
-        GocardlessCreateCustomerJob::dispatchSync($providerCustomer);
+        dispatch_sync(new \App\Jobs\PaymentProviders\GocardlessCreateCustomerJob($providerCustomer));
     }
 
     protected function generateCheckoutUrl(PaymentProviderCustomer $providerCustomer, bool $async): void
     {
         if ($async) {
-            GocardlessCheckoutUrlJob::dispatch($providerCustomer);
+            dispatch(new \App\Jobs\PaymentProviders\GocardlessCheckoutUrlJob($providerCustomer));
 
             return;
         }
 
-        GocardlessCheckoutUrlJob::dispatchSync($providerCustomer);
+        dispatch_sync(new \App\Jobs\PaymentProviders\GocardlessCheckoutUrlJob($providerCustomer));
     }
 }

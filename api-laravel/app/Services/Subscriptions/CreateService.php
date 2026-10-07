@@ -39,13 +39,6 @@ use App\Services\Customers\UpdateCurrencyService;
  */
 class CreateService extends BaseService
 {
-    protected Customer $customer;
-
-    protected Plan $plan;
-
-    /** @var array<string, mixed> */
-    protected array $params;
-
     protected string $name;
 
     protected CarbonImmutable $subscriptionAt;
@@ -59,22 +52,19 @@ class CreateService extends BaseService
     protected ?Subscription $currentSubscription = null;
 
     public function __construct(
-        Customer $customer,
-        Plan $plan,
-        array $params,
+        protected Customer $customer,
+        protected Plan $plan,
+        /** @var array<string, mixed> */
+        protected array $params,
     ) {
         parent::__construct();
 
-        $this->customer = $customer;
-        $this->plan = $plan;
-        $this->params = $params;
-
-        $this->name = mb_trim((string) ($params['name'] ?? ''));
-        $this->subscriptionAt = $this->toCarbon($params['subscription_at'] ?? null) ?? CarbonImmutable::now();
-        $this->billingTime = isset($params['billing_time']) && $params['billing_time'] !== null
-            ? (string) $params['billing_time']
+        $this->name = mb_trim((string) ($this->params['name'] ?? ''));
+        $this->subscriptionAt = $this->toCarbon($this->params['subscription_at'] ?? null) ?? CarbonImmutable::now();
+        $this->billingTime = isset($this->params['billing_time']) && $this->params['billing_time'] !== null
+            ? (string) $this->params['billing_time']
             : null;
-        $this->externalId = mb_trim((string) ($params['external_id'] ?? ''));
+        $this->externalId = mb_trim((string) ($this->params['external_id'] ?? ''));
     }
 
     public function execute(): BaseResult
@@ -126,8 +116,8 @@ class CreateService extends BaseService
         }
 
         // TODO(port): Remove check we stop supporting `plan_overrides.usage_thresholds`
-        if (! blank($params['usage_thresholds'] ?? null)
-            && ! blank(is_array($params['plan_overrides'] ?? null) ? ($params['plan_overrides']['usage_thresholds'] ?? null) : null)
+        if (filled($params['usage_thresholds'] ?? null)
+            && filled(is_array($params['plan_overrides'] ?? null) ? ($params['plan_overrides']['usage_thresholds'] ?? null) : null)
         ) {
             return $result->validationFailure([
                 'plan_overrides.usage_thresholds' => ['incompatible_params'],
@@ -211,7 +201,7 @@ class CreateService extends BaseService
 
                 // UpdateUsageThresholdsService.call! — WIRED
                 // (usage-monitoring slice).
-                if (! blank($params['usage_thresholds'] ?? null)) {
+                if (filled($params['usage_thresholds'] ?? null)) {
                     UpdateUsageThresholdsService::callBang(
                         subscription: $subscription,
                         usageThresholdsParams: (array) $params['usage_thresholds'],
@@ -555,7 +545,7 @@ class CreateService extends BaseService
 
     protected function connectionsRequested(): bool
     {
-        return ! blank($this->params['connections'] ?? null);
+        return filled($this->params['connections'] ?? null);
     }
 
     protected function organizationFlagEnabled(Organization $organization, string $flag): bool

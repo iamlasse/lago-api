@@ -8,6 +8,7 @@ use App\Models\Concerns\BelongsToOrganization;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Frozen-schema model for `customers_invoice_custom_sections` — Rails'
@@ -25,13 +26,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class CustomerAppliedInvoiceCustomSection extends BaseModel
 {
     use BelongsToOrganization;
-
-    protected function casts(): array
-    {
-        return [
-
-        ];
-    }
+    use HasFactory;
 
     // -- Relationships --------------------------------------------------------
 
@@ -52,5 +47,11 @@ class CustomerAppliedInvoiceCustomSection extends BaseModel
     {
         return $this->belongsTo(InvoiceCustomSection::class);
     }
-}
 
+    protected function casts(): array
+    {
+        return [
+
+        ];
+    }
+}

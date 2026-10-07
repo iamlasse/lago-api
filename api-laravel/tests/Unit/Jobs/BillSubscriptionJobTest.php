@@ -10,7 +10,7 @@ use App\Jobs\BillSubscriptionJob;
  * so two hourly biller runs on the same billing day share one lock and
  * cannot double-bill.
  */
-it('normalizes the lock key to the customer-timezone date', function () {
+it('normalizes the lock key to the customer-timezone date', function (): void {
     $organization = App\Models\Organization::factory()->create();
     // A customer billing in UTC+9: 2026-10-05 15:30 UTC is already Oct 6 there.
     $customer = App\Models\Customer::factory()->create([
@@ -35,7 +35,7 @@ it('normalizes the lock key to the customer-timezone date', function () {
         ->and($key)->toContain('sub-lock-1' === '' ? 'never' : $subscription->id);
 });
 
-it('uses distinct keys for distinct billing days', function () {
+it('uses distinct keys for distinct billing days', function (): void {
     $organization = App\Models\Organization::factory()->create();
     $customer = App\Models\Customer::factory()->create(['organization_id' => $organization->id]);
     $plan = App\Models\Plan::factory()->create(['organization_id' => $organization->id]);
@@ -55,7 +55,7 @@ it('uses distinct keys for distinct billing days', function () {
         ->and($nextDay->uniqueKey())->toContain('2026-10-06');
 });
 
-it('queues on billing when SIDEKIQ_BILLING is set', function () {
+it('queues on billing when SIDEKIQ_BILLING is set', function (): void {
     config(['lago.sidekiq_billing' => null]);
     $organization = App\Models\Organization::factory()->create();
     $customer = App\Models\Customer::factory()->create(['organization_id' => $organization->id]);

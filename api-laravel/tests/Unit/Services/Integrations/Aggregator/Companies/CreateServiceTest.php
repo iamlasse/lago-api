@@ -47,7 +47,7 @@ beforeEach(function (): void {
 
 afterEach(function (): void {
     putenv('NANGO_SECRET_KEY');
-    unset($_ENV['NANGO_SECRET_KEY']);
+    unset(\Illuminate\Support\Env::get('NANGO_SECRET_KEY'));
 });
 
 it('creates the company and returns the contact id', function (): void {

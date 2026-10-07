@@ -122,9 +122,7 @@ class StripeService extends BaseService
             return $result;
         }
 
-        if ($payment === null) {
-            $payment = $this->handleMissingPayment($result);
-        }
+        $payment ??= $this->handleMissingPayment($result);
 
         if ($payment === null) {
             return $result;

@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\GraphQL\Queries;
 
-use App\GraphQL\Support\Args;
 use App\GraphQL\Execution\Errors;
-use App\GraphQL\Support\LagoContext;
 use App\GraphQL\Guards\AuthenticableApiUser;
 use App\GraphQL\Guards\RequiredOrganization;
+use App\GraphQL\Support\Args;
+use App\GraphQL\Support\LagoContext;
+use App\Models\InvoiceCustomSection as ModelsInvoiceCustomSection;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
 /**
@@ -18,7 +19,7 @@ use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
  */
 class InvoiceCustomSection
 {
-    public function __invoke(mixed $root, array $args, GraphQLContext $context): self
+    public function __invoke(mixed $root, array $args, GraphQLContext $context): ModelsInvoiceCustomSection
     {
         AuthenticableApiUser::authorize($context);
         RequiredOrganization::authorize($context);

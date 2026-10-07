@@ -170,7 +170,7 @@ class AllocateOngoingUsageByWalletsService extends BaseService
 
         // Ties broken by fee key so the allocation order is stable across
         // refreshes.
-        uksort($positive, fn (string $a, string $b) => strcmp($a, $b));
+        uksort($positive, strcmp(...));
         uasort($positive, fn (int $x, int $y) => $y <=> $x);
 
         return $positive;

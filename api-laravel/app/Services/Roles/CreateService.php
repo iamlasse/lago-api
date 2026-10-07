@@ -19,7 +19,7 @@ use App\Services\BaseService;
  */
 class CreateService extends BaseService
 {
-    private const RESERVED_CODES = ['admin', 'finance', 'manager'];
+    private const array RESERVED_CODES = ['admin', 'finance', 'manager'];
 
     public function __construct(
         private readonly Organization $organization,

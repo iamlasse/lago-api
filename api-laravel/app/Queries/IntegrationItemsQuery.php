@@ -86,7 +86,7 @@ class IntegrationItemsQuery extends BaseService
 
         return $query
             ->orderBy('integration_items.external_name')
-            ->orderByDesc('integration_items.created_at')
+            ->latest('integration_items.created_at')
             ->orderBy('integration_items.id')
             ->paginate(perPage: $limit, page: $page);
     }

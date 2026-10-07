@@ -28,6 +28,6 @@ abstract class BaseService extends RootBaseService
      */
     protected function refreshDraftInvoices(): void
     {
-        RefreshDraftInvoicesJob::dispatch($this->billingEntity->id);
+        dispatch(new \App\Jobs\BillingEntities\Taxes\RefreshDraftInvoicesJob($this->billingEntity->id));
     }
 }

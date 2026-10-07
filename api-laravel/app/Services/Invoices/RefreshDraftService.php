@@ -162,17 +162,17 @@ class RefreshDraftService extends BaseService
         $timestamp = $this->invoiceSubscriptions->first()?->timestamp;
 
         if ($timestamp !== null) {
-            return Carbon::parse($timestamp)->getTimestamp();
+            return \Illuminate\Support\Facades\Date::parse($timestamp)->getTimestamp();
         }
 
         $fee = $this->invoice->fees()->first();
         $feeTimestamp = $fee?->properties['timestamp'] ?? null;
 
         if ($feeTimestamp !== null) {
-            return Carbon::parse($feeTimestamp)->getTimestamp();
+            return \Illuminate\Support\Facades\Date::parse($feeTimestamp)->getTimestamp();
         }
 
-        return (int) Carbon::parse($this->invoice->created_at)->addSecond()->getTimestamp();
+        return (int) \Illuminate\Support\Facades\Date::parse($this->invoice->created_at)->addSecond()->getTimestamp();
     }
 
     private function resetInvoiceValues(): void

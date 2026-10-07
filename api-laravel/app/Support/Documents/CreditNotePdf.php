@@ -18,17 +18,17 @@ use Illuminate\Support\Facades\App;
  * template selection, locale-scoped rendering and the money/date helpers the
  * credit-note layout shares with the invoice document.
  */
-final class CreditNotePdf
+final readonly class CreditNotePdf
 {
     /** Rails MoneyHelper::SYMBOLS_CURRENCIES — currencies shown with a symbol. */
-    private const SYMBOLS = [
+    private const array SYMBOLS = [
         'USD' => '$',
         'EUR' => '€',
         'GBP' => '£',
         'JPY' => '¥',
     ];
 
-    public function __construct(private readonly CreditNote $creditNote) {}
+    public function __construct(private CreditNote $creditNote) {}
 
     /** Rails: CreditNotes::GeneratePdfService#template. */
     public static function templateName(CreditNote $creditNote): string
@@ -93,7 +93,7 @@ final class CreditNotePdf
 
     public function money(null|int|float|string $amountCents, ?string $currency = null): string
     {
-        $currency = $currency ?? $this->creditNote->currency();
+        $currency ??= $this->creditNote->currency();
         $amount = (float) ($amountCents ?? 0) / Currency::subunitToUnit($currency);
         $formatted = number_format($amount, Currency::exponent($currency), '.', ',');
 
@@ -110,7 +110,7 @@ final class CreditNotePdf
             return '';
         }
 
-        $date = $value instanceof CarbonInterface ? $value : \Illuminate\Support\Carbon::parse($value);
+        $date = $value instanceof CarbonInterface ? $value : \Illuminate\Support\Facades\Date::parse($value);
 
         return $date->translatedFormat('M d, Y');
     }

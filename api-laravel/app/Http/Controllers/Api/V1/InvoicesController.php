@@ -205,7 +205,7 @@ class InvoicesController extends ApiController
         }
 
         // Rails: Invoices::GeneratePdfJob.perform_later(invoice) then head(:ok).
-        GeneratePdfJob::dispatch($invoice);
+        dispatch(new \App\Jobs\Invoices\GeneratePdfJob($invoice));
 
         return response()->json(null, 200);
     }

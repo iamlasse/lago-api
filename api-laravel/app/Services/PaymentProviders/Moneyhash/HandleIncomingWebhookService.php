@@ -52,10 +52,7 @@ class HandleIncomingWebhookService extends BaseService
             return $paymentProviderResult;
         }
 
-        MoneyhashHandleEventJob::dispatch(
-            $organization,
-            (string) $this->inboundWebhook->payload,
-        );
+        dispatch(new \App\Jobs\PaymentProviders\MoneyhashHandleEventJob($organization, (string) $this->inboundWebhook->payload));
 
         $result->event = $this->inboundWebhook->payload;
 

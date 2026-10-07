@@ -73,7 +73,7 @@ it('creates a pending contract starting in the future', function (): void {
     $this->postJson('/api/v2/contracts', ['contract' => [
         'external_customer_id' => $customer->external_id,
         'external_id' => 'contract_future',
-        'started_at' => Carbon::tomorrow()->toIso8601String(),
+        'started_at' => \Illuminate\Support\Facades\Date::tomorrow()->toIso8601String(),
     ]], ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
         ->assertJson(fn (Illuminate\Testing\Fluent\AssertableJson $json) => $json

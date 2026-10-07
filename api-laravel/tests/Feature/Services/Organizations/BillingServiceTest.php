@@ -38,7 +38,7 @@ function billerAt(string $utc): Carbon\CarbonImmutable
     return Carbon\CarbonImmutable::parse($utc, 'UTC');
 }
 
-it('bills a monthly calendar subscription on the first of the month', function () {
+it('bills a monthly calendar subscription on the first of the month', function (): void {
     $f = billerFixture();
     Illuminate\Support\Facades\Bus::fake([BillSubscriptionJob::class]);
 
@@ -46,12 +46,10 @@ it('bills a monthly calendar subscription on the first of the month', function (
     BillingService::call(organization: $f['organization'], billingAt: billerAt('2026-10-01 12:00:00'));
 
     Illuminate\Support\Facades\Bus::assertDispatched(BillSubscriptionJob::class, 1);
-    Illuminate\Support\Facades\Bus::assertDispatched(function (BillSubscriptionJob $job) {
-        return $job->invoicingReason === 'subscription_periodic';
-    });
+    Illuminate\Support\Facades\Bus::assertDispatched(fn(BillSubscriptionJob $job) => $job->invoicingReason === 'subscription_periodic');
 })->group('ledger:svc:Subscriptions.OrganizationBillingService');
 
-it('does not bill the same subscription twice on one day (already_billed_today CTE)', function () {
+it('does not bill the same subscription twice on one day (already_billed_today CTE)', function (): void {
     $f = billerFixture();
     Illuminate\Support\Facades\Bus::fake([BillSubscriptionJob::class]);
 
@@ -74,7 +72,7 @@ it('does not bill the same subscription twice on one day (already_billed_today C
     Illuminate\Support\Facades\Bus::assertNotDispatched(BillSubscriptionJob::class);
 })->group('ledger:svc:Subscriptions.OrganizationBillingService');
 
-it('does not bill on a non-billing day', function () {
+it('does not bill on a non-billing day', function (): void {
     $f = billerFixture();
     Illuminate\Support\Facades\Bus::fake([BillSubscriptionJob::class]);
 
@@ -84,7 +82,7 @@ it('does not bill on a non-billing day', function () {
     Illuminate\Support\Facades\Bus::assertNotDispatched(BillSubscriptionJob::class);
 })->group('ledger:svc:Subscriptions.OrganizationBillingService');
 
-it('bills an anniversary subscription on its monthly anniversary day', function () {
+it('bills an anniversary subscription on its monthly anniversary day', function (): void {
     $f = billerFixture();
     $f['subscription']->update([
         'billing_time' => 'anniversary',
@@ -100,7 +98,7 @@ it('bills an anniversary subscription on its monthly anniversary day', function 
     Illuminate\Support\Facades\Bus::assertDispatched(BillSubscriptionJob::class);
 })->group('ledger:svc:Subscriptions.OrganizationBillingService');
 
-it('terminates the current subscription when a downgrade is pending today', function () {
+it('terminates the current subscription when a downgrade is pending today', function (): void {
     $f = billerFixture();
     $nextPlan = App\Models\Plan::factory()->create([
         'organization_id' => $f['organization']->id,
@@ -130,7 +128,7 @@ it('terminates the current subscription when a downgrade is pending today', func
     Illuminate\Support\Facades\Bus::assertNotDispatched(BillSubscriptionJob::class);
 })->group('ledger:svc:Subscriptions.OrganizationBillingService');
 
-it('groups subscriptions by currency and consolidation into separate invoices', function () {
+it('groups subscriptions by currency and consolidation into separate invoices', function (): void {
     $organization = App\Models\Organization::factory()->create();
     $customer = App\Models\Customer::factory()->create(['organization_id' => $organization->id]);
     $eurPlan = App\Models\Plan::factory()->create(['organization_id' => $organization->id, 'amount_currency' => 'EUR']);
@@ -156,10 +154,6 @@ it('groups subscriptions by currency and consolidation into separate invoices', 
     // Two currencies → two BillSubscriptionJob dispatches.
     Illuminate\Support\Facades\Bus::assertDispatched(BillSubscriptionJob::class, 2);
 
-    Illuminate\Support\Facades\Bus::assertDispatched(function (BillSubscriptionJob $job) use ($a) {
-        return count($job->subscriptions) === 1 && $job->subscriptions[0]->id === $a->id;
-    });
-    Illuminate\Support\Facades\Bus::assertDispatched(function (BillSubscriptionJob $job) use ($b) {
-        return count($job->subscriptions) === 1 && $job->subscriptions[0]->id === $b->id;
-    });
+    Illuminate\Support\Facades\Bus::assertDispatched(fn(BillSubscriptionJob $job) => count($job->subscriptions) === 1 && $job->subscriptions[0]->id === $a->id);
+    Illuminate\Support\Facades\Bus::assertDispatched(fn(BillSubscriptionJob $job) => count($job->subscriptions) === 1 && $job->subscriptions[0]->id === $b->id);
 })->group('ledger:svc:Subscriptions.OrganizationBillingService');

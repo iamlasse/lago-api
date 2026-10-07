@@ -112,13 +112,7 @@ final class Metadata
     /** Ruby Hash#keys.sort == [:key, :value] — exactly the two keys. */
     private function isAssociative(array $item): bool
     {
-        foreach (array_keys($item) as $key) {
-            if (! is_string($key)) {
-                return false;
-            }
-        }
-
-        return true;
+        return array_all(array_keys($item), fn($key) => is_string($key));
     }
 
     /** @return array<string, mixed> */

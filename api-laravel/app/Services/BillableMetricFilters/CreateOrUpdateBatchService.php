@@ -107,7 +107,7 @@ class CreateOrUpdateBatchService extends \App\Services\BaseService
                 ->each(fn (BillableMetricFilter $filter) => $this->discardFilter($filter));
         });
 
-        \App\Jobs\BillableMetricFilters\RefreshDraftInvoicesJob::dispatch((string) $this->billableMetric->id);
+        dispatch(new \App\Jobs\BillableMetricFilters\RefreshDraftInvoicesJob((string) $this->billableMetric->id));
 
         return $result;
     }

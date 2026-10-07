@@ -21,7 +21,7 @@ use InvalidArgumentException;
 final class MoneyMath
 {
     /** Default working scale for intermediate bcmath operations. */
-    public const SCALE = 15;
+    public const int SCALE = 15;
 
     /**
      * Port of Ruby's `.round` (no precision argument) — returns an int,

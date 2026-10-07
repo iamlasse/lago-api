@@ -152,7 +152,7 @@ class CreateService extends BaseService
         // Rails: Integrations::Aggregator::Payments::CreateJob
         // .perform_later(payment:) if result.payment.should_sync_payment?.
         if ($payment->shouldSyncPayment()) {
-            \App\Jobs\Integrations\Aggregator\Payments\CreateJob::dispatch($payment);
+            dispatch(new \App\Jobs\Integrations\Aggregator\Payments\CreateJob($payment));
         }
 
         return $result;
@@ -175,7 +175,7 @@ class CreateService extends BaseService
             return $result;
         }
 
-        PaymentsCreateJob::dispatch($this->invoice, $provider, $this->paymentMethodParams);
+        dispatch(new \App\Jobs\Invoices\PaymentsCreateJob($this->invoice, $provider, $this->paymentMethodParams));
 
         $result->payment_provider = $provider;
 

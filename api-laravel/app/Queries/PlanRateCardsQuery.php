@@ -68,7 +68,7 @@ class PlanRateCardsQuery extends BaseService
         } else {
             // Rails: paginate + apply_consistent_ordering.
             $result->plan_rate_cards = $this->paginate(
-                $planRateCards->orderByDesc('plan_rate_cards.created_at')->orderBy('plan_rate_cards.id'),
+                $planRateCards->latest('plan_rate_cards.created_at')->orderBy('plan_rate_cards.id'),
             );
         }
 

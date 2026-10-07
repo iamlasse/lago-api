@@ -32,7 +32,7 @@ class CreateJob implements ShouldQueue
     public static function dispatchIfShouldSync(Payment $payment): void
     {
         if ($payment->shouldSyncPayment()) {
-            self::dispatch($payment);
+            dispatch(new self($payment));
         }
     }
 

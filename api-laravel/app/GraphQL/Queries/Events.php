@@ -35,8 +35,7 @@ class Events
         [$page, $perPage] = Page::normalizePageAndLimit($args['page'] ?? null, $limit);
 
         $events = Event::query()
-            ->where('organization_id', LagoContext::currentOrganization($context)->id)
-            ->orderByDesc('created_at');
+            ->where('organization_id', LagoContext::currentOrganization($context)->id)->latest();
 
         return Page::fromLengthAwarePaginator($events->paginate(perPage: $perPage, page: $page));
     }

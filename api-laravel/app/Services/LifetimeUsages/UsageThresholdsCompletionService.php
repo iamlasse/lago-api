@@ -46,14 +46,14 @@ class UsageThresholdsCompletionService extends \App\Services\BaseService
         $totalAmountCents = $lifetimeUsage->totalAmountCents();
 
         $largestNonRecurringThresholdAmountCents = (int) ($usageThresholds
-            ->filter(fn (UsageThreshold $t): bool => ! $t->recurring)
+            ->reject(fn (UsageThreshold $t): bool => (bool) $t->recurring)
             ->max('amount_cents') ?? 0);
 
         $recurringThreshold = $usageThresholds->first(fn (UsageThreshold $t): bool => (bool) $t->recurring);
 
         // Split non-recurring thresholds into 2 groups: passed and not passed.
         [$passedThresholds, $notPassedThresholds] = $usageThresholds
-            ->filter(fn (UsageThreshold $t): bool => ! $t->recurring)
+            ->reject(fn (UsageThreshold $t): bool => (bool) $t->recurring)
             ->sortBy('amount_cents')
             ->values()
             ->partition(fn (UsageThreshold $threshold): bool => (int) $threshold->amount_cents <= $totalAmountCents);

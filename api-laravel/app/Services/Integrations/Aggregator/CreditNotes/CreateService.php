@@ -128,7 +128,7 @@ class CreateService extends BaseService
             return $result->notFoundFailure('credit_note');
         }
 
-        CreateJob::dispatch($this->credit_note);
+        dispatch(new \App\Jobs\Integrations\Aggregator\CreditNotes\CreateJob($this->credit_note));
 
         $result->credit_note_id = $this->credit_note->id;
 

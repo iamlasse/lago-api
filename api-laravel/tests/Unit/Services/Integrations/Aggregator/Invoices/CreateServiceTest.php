@@ -44,7 +44,7 @@ beforeEach(function (): void {
 
 afterEach(function (): void {
     putenv('NANGO_SECRET_KEY');
-    unset($_ENV['NANGO_SECRET_KEY']);
+    unset(\Illuminate\Support\Env::get('NANGO_SECRET_KEY'));
 });
 
 it('returns without an accounting integration customer', function (): void {
@@ -154,11 +154,9 @@ it('delivers the error webhook and fails on the invalid fee mapping', function (
         ->and($result->getError()->code)->toBe('invalid_mapping');
 
     // Rails: the BasePayload::Failure error webhook.
-    Queue::assertPushed(App\Jobs\SendWebhookJob::class, function ($job) use ($customer): bool {
-        return $job->object?->id === $customer->id
-            && $job->webhookType === 'customer.accounting_provider_error'
-            && $job->options['provider_error']['error_code'] === 'invalid_mapping';
-    });
+    Queue::assertPushed(App\Jobs\SendWebhookJob::class, fn($job): bool => $job->object?->id === $customer->id
+        && $job->webhookType === 'customer.accounting_provider_error'
+        && $job->options['provider_error']['error_code'] === 'invalid_mapping');
 });
 
 it('delivers the error webhook and fails on a provider validation error', function (): void {

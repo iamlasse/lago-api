@@ -13,17 +13,17 @@ use App\Models\Fee;
  *
  * @param  list<Fee>  $fees
  */
-final class SubscriptionUsage
+final readonly class SubscriptionUsage
 {
     public function __construct(
-        public readonly string $fromDatetime,
-        public readonly string $toDatetime,
-        public readonly string $issuingDate,
-        public readonly string $currency,
-        public readonly int $amountCents,
-        public readonly int $totalAmountCents,
-        public readonly int $taxesAmountCents,
-        public readonly array $fees,
-        public readonly ?UsageProjections $projections = null,
+        public string $fromDatetime,
+        public string $toDatetime,
+        public string $issuingDate,
+        public string $currency,
+        public int $amountCents,
+        public int $totalAmountCents,
+        public int $taxesAmountCents,
+        public array $fees,
+        public ?UsageProjections $projections = null,
     ) {}
 }

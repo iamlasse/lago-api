@@ -50,22 +50,17 @@ class Event extends BaseModel
         'metadata' => '{}',
     ];
 
-    protected $casts = [
-        'properties' => 'array',
-        'metadata' => 'array',
-        'timestamp' => 'datetime',
-    ];
-
     // -- Scopes (Rails: app/models/event.rb) ----------------------------------
 
     /** Rails: `scope :from_datetime` */
-    public function scopeFromDatetime(Builder $query, $fromDatetime): Builder
+    protected function scopeFromDatetime(Builder $query, $fromDatetime): Builder
     {
         return $query->where('timestamp', '>=', $fromDatetime);
     }
 
     /** Rails: `scope :to_datetime` */
-    public function scopeToDatetime(Builder $query, $toDatetime): Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function toDatetime(Builder $query, $toDatetime): Builder
     {
         return $query->where('timestamp', '<=', $toDatetime);
     }
@@ -82,5 +77,13 @@ class Event extends BaseModel
     public function ipAddress(): ?string
     {
         return $this->metadata['ip_address'] ?? null;
+    }
+    protected function casts(): array
+    {
+        return [
+            'properties' => 'array',
+            'metadata' => 'array',
+            'timestamp' => 'datetime',
+        ];
     }
 }

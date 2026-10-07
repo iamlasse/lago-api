@@ -28,6 +28,32 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * columns until the payment-methods slice lands).
  */
 #[Table(name: 'wallet_transactions')]
+#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+    'wallet_id',
+    'transaction_type',
+    'status',
+    'amount',
+    'credit_amount',
+    'settled_at',
+    'invoice_id',
+    'source',
+    'transaction_status',
+    'invoice_requires_successful_payment',
+    'metadata',
+    'credit_note_id',
+    'failed_at',
+    'organization_id',
+    'lock_version',
+    'priority',
+    'name',
+    'payment_method_id',
+    'payment_method_type',
+    'skip_invoice_custom_sections',
+    'remaining_amount_cents',
+    'voided_invoice_id',
+    'billing_entity_id',
+    'purchase_order_number',
+])]
 class WalletTransaction extends BaseModel
 {
     use HasFactory;
@@ -35,33 +61,6 @@ class WalletTransaction extends BaseModel
 
     /** Rails: WalletTransaction::LOWEST_PRIORITY — priority default mirrors Wallet's. */
     public const LOWEST_PRIORITY = 50;
-
-    protected $fillable = [
-        'wallet_id',
-        'transaction_type',
-        'status',
-        'amount',
-        'credit_amount',
-        'settled_at',
-        'invoice_id',
-        'source',
-        'transaction_status',
-        'invoice_requires_successful_payment',
-        'metadata',
-        'credit_note_id',
-        'failed_at',
-        'organization_id',
-        'lock_version',
-        'priority',
-        'name',
-        'payment_method_id',
-        'payment_method_type',
-        'skip_invoice_custom_sections',
-        'remaining_amount_cents',
-        'voided_invoice_id',
-        'billing_entity_id',
-        'purchase_order_number',
-    ];
 
     /**
      * Rails' ActiveRecord carries the schema's column defaults in every new
@@ -101,8 +100,7 @@ class WalletTransaction extends BaseModel
 
         return static::query()
             ->orderBy('priority')
-            ->orderByRaw("array_position(array[{$binds}], transaction_status)", $statuses)
-            ->orderBy('created_at');
+            ->orderByRaw("array_position(array[{$binds}], transaction_status)", $statuses)->oldest();
     }
 
     public function wallet(): BelongsTo
@@ -361,8 +359,7 @@ class WalletTransaction extends BaseModel
 
         return $query
             ->orderBy('priority')
-            ->orderByRaw("CASE WHEN transaction_status = {$granted} THEN 0 ELSE 1 END")
-            ->orderBy('created_at');
+            ->orderByRaw("CASE WHEN transaction_status = {$granted} THEN 0 ELSE 1 END")->oldest();
     }
 
     /** Rails: `scope :inbound` (enum-generated). */

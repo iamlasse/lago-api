@@ -68,7 +68,7 @@ it('creates a wallet', function (): void {
         'purchase_order_number' => 'PO-123',
     ]], ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($customer, $expirationAt) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($customer, $expirationAt): void {
             $json->where('wallet.lago_id', fn ($id) => is_string($id) && $id !== '')
                 ->where('wallet.lago_customer_id', $customer->id)
                 ->where('wallet.external_customer_id', $customer->external_id)
@@ -201,7 +201,7 @@ it('creates a wallet with limitations', function (): void {
         ],
     ]], ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($billableMetric) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($billableMetric): void {
             // Rails merges the limitations hash at the TOP level — the
             // response carries `applies_to`, no `limitations` key.
             $json->where('wallet.applies_to.fee_types', ['charge'])
@@ -349,7 +349,7 @@ it('updates a wallet', function (): void {
         'purchase_order_number' => 'PO-456',
     ]], ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($wallet, $expirationAt) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($wallet, $expirationAt): void {
             $json->where('wallet.lago_id', $wallet->id)
                 ->where('wallet.name', 'wallet1')
                 ->where('wallet.priority', 5)
@@ -468,7 +468,7 @@ it('returns a wallet', function (): void {
 
     $this->getJson('/api/v1/wallets/'.$wallet->id, ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($wallet) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($wallet): void {
             $json->where('wallet.lago_id', $wallet->id)
                 ->where('wallet.name', $wallet->name)
                 ->where('wallet.priority', 50)
@@ -492,7 +492,7 @@ it('terminates a wallet', function (): void {
 
     $this->deleteJson('/api/v1/wallets/'.$wallet->id, [], ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($wallet) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($wallet): void {
             $json->where('wallet.lago_id', $wallet->id)
                 ->where('wallet.name', $wallet->name)
                 ->where('wallet.status', 'terminated')
@@ -526,7 +526,7 @@ it('returns wallets', function (): void {
 
     walletGetWithToken('/api/v1/wallets?external_customer_id='.$customer->external_id.'&page=1&per_page=1', [], $apiKey->value)
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($wallet) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($wallet): void {
             $json->where('wallets.0.lago_id', $wallet->id)
                 ->where('wallets.0.name', $wallet->name)
                 ->where('wallets.0.recurring_transaction_rules', [])
@@ -543,7 +543,7 @@ it('returns wallets with pagination metadata', function (): void {
 
     walletGetWithToken('/api/v1/wallets?external_customer_id='.$customer->external_id.'&page=1&per_page=1', [], $apiKey->value)
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json): void {
             $json->count('wallets', 1)
                 ->where('meta.current_page', 1)
                 ->where('meta.next_page', 2)
@@ -562,7 +562,7 @@ it('filters wallets by currency', function (): void {
 
     walletGetWithToken('/api/v1/wallets?external_customer_id='.$customer->external_id.'&currency=BRL', [], $apiKey->value)
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($brlWallet) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($brlWallet): void {
             $json->count('wallets', 1)
                 ->where('wallets.0.lago_id', $brlWallet->id)
                 ->etc();
@@ -587,7 +587,7 @@ it('filters wallets by billing entity codes', function (): void {
 
     walletGetWithToken('/api/v1/wallets?billing_entity_codes[]=EU', [], $apiKey->value)
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($walletEu) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($walletEu): void {
             $json->count('wallets', 1)
                 ->where('wallets.0.lago_id', $walletEu->id)
                 ->etc();
@@ -595,7 +595,7 @@ it('filters wallets by billing entity codes', function (): void {
 
     walletGetWithToken('/api/v1/wallets?billing_entity_codes[]=EU&billing_entity_codes[]=US', [], $apiKey->value)
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json): void {
             $json->count('wallets', 2)
                 ->etc();
         });

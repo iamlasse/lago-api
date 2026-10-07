@@ -6,9 +6,9 @@ namespace App\GraphQL\Queries;
 
 use App\GraphQL\Execution\Errors;
 use App\GraphQL\Support\LagoContext;
+use App\Services\Auth\SupersetService;
 use App\GraphQL\Guards\AuthenticableApiUser;
 use App\GraphQL\Guards\RequiredOrganization;
-use App\Services\Auth\SupersetService;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
 /**

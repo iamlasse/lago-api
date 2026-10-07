@@ -38,7 +38,7 @@ class UniqueJob
         try {
             $next($job);
         } finally {
-            optional($lock)->release();
+            $lock?->release();
         }
     }
 

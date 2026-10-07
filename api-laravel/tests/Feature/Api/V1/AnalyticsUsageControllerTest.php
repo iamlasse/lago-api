@@ -71,12 +71,10 @@ it('proxies the data api usage under the usages key', function (): void {
         // Rails renders the raw proxy JSON; the beta header is v2-only.
         ->assertHeaderMissing('X-Lago-Endpoint-Status');
 
-    Http::assertSent(function (Illuminate\Http\Client\Request $request) use ($organization): bool {
-        return $request->method() === 'GET'
-            && $request->url() === 'https://data.lago.test/usages/'.$organization->id
-                .'/?currency=EUR&billable_metric_code=account_members&time_granularity=daily'
-            && $request->hasHeader('Authorization', 'Bearer data-api-bearer');
-    });
+    Http::assertSent(fn(Illuminate\Http\Client\Request $request): bool => $request->method() === 'GET'
+        && $request->url() === 'https://data.lago.test/usages/'.$organization->id
+            .'/?currency=EUR&billable_metric_code=account_members&time_granularity=daily'
+        && $request->hasHeader('Authorization', 'Bearer data-api-bearer'));
 });
 
 it('still serves the usage without a premium license (the service filters params instead)', function (): void {
@@ -98,10 +96,8 @@ it('still serves the usage without a premium license (the service filters params
 
     // Non-premium: pinned to daily granularity over the last 30 days,
     // currency dropped, only the billable_metric_code filter kept.
-    Http::assertSent(function (Illuminate\Http\Client\Request $request) use ($organization, $startDate): bool {
-        return $request->url() === 'https://data.lago.test/usages/'.$organization->id
-            .'/?time_granularity=daily&start_of_period_dt='.$startDate;
-    });
+    Http::assertSent(fn(Illuminate\Http\Client\Request $request): bool => $request->url() === 'https://data.lago.test/usages/'.$organization->id
+        .'/?time_granularity=daily&start_of_period_dt='.$startDate);
 });
 
 it('mirrors the route at v2 with the beta header', function (): void {

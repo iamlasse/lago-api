@@ -210,6 +210,6 @@ abstract class BasePayload
 
     protected function formatted_date(?string $date): ?string
     {
-        return $date !== null ? \Illuminate\Support\Carbon::parse($date)->toDateString() : null;
+        return $date !== null ? \Illuminate\Support\Facades\Date::parse($date)->toDateString() : null;
     }
 }

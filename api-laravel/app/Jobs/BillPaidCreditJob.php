@@ -27,7 +27,7 @@ use App\Services\Invoices\PaidCreditService;
  */
 class BillPaidCreditJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use \Illuminate\Foundation\Queue\Queueable;
 
     public int $tries = 15;
 
@@ -57,10 +57,6 @@ class BillPaidCreditJob implements ShouldQueue
             $result->raiseIfError();
         }
 
-        self::dispatch(
-            $this->walletTransaction,
-            $this->timestamp,
-            $result->invoice,
-        )->delay(now()->addSeconds(3));
+        dispatch(new self($this->walletTransaction, $this->timestamp, $result->invoice))->delay(now()->addSeconds(3));
     }
 }

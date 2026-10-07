@@ -36,14 +36,14 @@ use Illuminate\Http\Client\ConnectionException;
  *    connection failures -> Client\ApiConnectionError,
  *    everything else -> Client\InvalidRequestError (Client\StripeError base).
  */
-final class Client
+final readonly class Client
 {
     /** Rails: Stripe.api_version default (config/initializers/stripe.rb). */
-    public const API_VERSION = '2025-04-30.basil';
+    public const string API_VERSION = '2025-04-30.basil';
 
     public function __construct(
-        private readonly string $apiKey,
-        private readonly ?string $idempotencyKey = null,
+        private string $apiKey,
+        private ?string $idempotencyKey = null,
     ) {}
 
     /** @param array<string, mixed> $params top-level Stripe params (nested arrays are bracket-encoded) */
@@ -196,21 +196,12 @@ final class Client
  */
 class StripeError extends Exception
 {
-    public readonly ?string $stripeCode;
-
-    public readonly ?string $paymentIntentId;
-
     public function __construct(
         string $message,
-        ?string $code = null,
-        ?string $paymentIntentId = null,
+        public readonly ?string $stripeCode = null,
+        public readonly ?string $paymentIntentId = null,
         ?Throwable $previous = null,
     ) {
-        // Exception::$code is an int; the Stripe error code is a string, so
-        // it is carried in $stripeCode ($code stays 0).
-        $this->stripeCode = $code;
-        $this->paymentIntentId = $paymentIntentId;
-
         parent::__construct($message, 0, $previous);
     }
 

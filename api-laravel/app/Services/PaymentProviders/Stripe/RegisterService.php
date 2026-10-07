@@ -99,11 +99,11 @@ class RegisterService extends BaseService
             $provider->save();
 
             if ($isNew) {
-                StripeRegisterWebhookJob::dispatch($provider);
+                dispatch(new \App\Jobs\PaymentProviders\StripeRegisterWebhookJob($provider));
             }
 
             if (! $isNew && $provider->requireTermsOfServiceConsent() !== $consentBefore) {
-                StripeExpirePaymentIntentsJob::dispatch($provider);
+                dispatch(new \App\Jobs\PaymentProviders\StripeExpirePaymentIntentsJob($provider));
             }
 
             if ($this->codeChanged($provider, $oldCode)) {
@@ -117,13 +117,13 @@ class RegisterService extends BaseService
                         ->select('customer_id'))
                     ->update(['payment_provider_code' => $provider->code]);
 
-                StripeRefreshWebhookJob::dispatch($provider);
+                dispatch(new \App\Jobs\PaymentProviders\StripeRefreshWebhookJob($provider));
             }
 
             $result->stripe_provider = $provider;
 
             return $result;
-        } catch (Throwable $e) {
+        } catch (Throwable) {
             return $result->singleValidationFailure('value_already_exist', 'code');
         }
     }

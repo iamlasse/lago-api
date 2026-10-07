@@ -31,13 +31,7 @@ trait CreateOrUpdateConcern
      */
     protected function duplicateCodeError(Throwable $exception): bool
     {
-        foreach (self::CODE_UNIQUE_INDEXES as $index) {
-            if (str_contains($exception->getMessage(), $index)) {
-                return true;
-            }
-        }
-
-        return false;
+        return array_any(self::CODE_UNIQUE_INDEXES, fn($index) => str_contains($exception->getMessage(), $index));
     }
 
     /**
@@ -133,13 +127,7 @@ trait CreateOrUpdateConcern
      */
     protected function allThresholdValuesPresent(array $thresholds): bool
     {
-        foreach ($thresholds as $t) {
-            if (($t['value'] ?? null) === null) {
-                return false;
-            }
-        }
-
-        return true;
+        return array_all($thresholds, fn($t) => !(($t['value'] ?? null) === null));
     }
 
     /**
@@ -149,13 +137,7 @@ trait CreateOrUpdateConcern
      */
     protected function allThresholdValuesNumeric(array $thresholds): bool
     {
-        foreach ($thresholds as $t) {
-            if (! $this->validNumericValue($t['value'] ?? null)) {
-                return false;
-            }
-        }
-
-        return true;
+        return array_all($thresholds, fn($t) => $this->validNumericValue($t['value'] ?? null));
     }
 
     /**

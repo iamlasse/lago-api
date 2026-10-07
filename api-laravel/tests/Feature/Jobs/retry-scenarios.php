@@ -88,7 +88,7 @@ function expectThrows(callable $fn, string $class, string $message): void
         $fn();
     } catch (Throwable $e) {
         if (! $e instanceof $class) {
-            throw new RuntimeException($message.' — expected '.$class.', got '.get_class($e));
+            throw new RuntimeException($message.' — expected '.$class.', got '.$e::class);
         }
 
         return;
@@ -124,13 +124,11 @@ $scenarios = [
         Bus::fake([App\Jobs\BillSubscriptionJob::class]);
         retryJob($f)->handle();
 
-        Bus::assertDispatched(function (App\Jobs\BillSubscriptionJob $job) use ($f, $resultInvoice): bool {
-            return $job->invoiceId === $resultInvoice->id
-                && $job->subscriptions[0]->id === $f['subscription']->id
-                && $job->timestamp === 1791241200
-                && $job->invoicingReason === 'subscription_starting'
-                && $job->skipCharges === false;
-        });
+        Bus::assertDispatched(fn(App\Jobs\BillSubscriptionJob $job): bool => $job->invoiceId === $resultInvoice->id
+            && $job->subscriptions[0]->id === $f['subscription']->id
+            && $job->timestamp === 1791241200
+            && $job->invoicingReason === 'subscription_starting'
+            && $job->skipCharges === false);
     },
 
     'raises when the invoice was passed as an argument' => function () use ($serviceMock): void {

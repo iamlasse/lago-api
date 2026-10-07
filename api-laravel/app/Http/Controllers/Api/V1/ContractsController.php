@@ -153,7 +153,7 @@ class ContractsController extends ApiController
 
         $contract = $status !== null && $status !== ''
             ? $this->currentOrganization()->contracts()
-                ->orderByDesc('started_at')
+                ->latest('started_at')
                 ->where('external_id', $request->route('external_id'))
                 ->where('status', in_array($status, array_values(Contract::STATUSES), true) ? $status : 'active')
                 ->first()

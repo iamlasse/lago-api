@@ -79,9 +79,9 @@ final class Anrok extends BasePayload
     private function issuing_date(): ?string
     {
         $issuingDate = $this->invoice->issuing_date !== null
-            ? Carbon::parse($this->invoice->issuing_date)
+            ? \Illuminate\Support\Facades\Date::parse($this->invoice->issuing_date)
             : null;
-        $in30Days = Carbon::now()->addDays(30)->startOfDay();
+        $in30Days = \Illuminate\Support\Facades\Date::now()->addDays(30)->startOfDay();
 
         if ($issuingDate === null) {
             return $in30Days->toDateString();

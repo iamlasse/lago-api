@@ -76,7 +76,7 @@ class IncreaseService extends BaseService
         // Rails: Customers::RefreshWalletJob.perform_after_commit(customer,
         // wallet_ids: [wallet.id]) — the explicit wallet_ids marks the
         // requested refresh and bypasses the customer-wide flag.
-        \App\Jobs\Customers\RefreshWalletJob::dispatch($wallet->customer, [(string) $wallet->id]);
+        dispatch(new \App\Jobs\Customers\RefreshWalletJob($wallet->customer, [(string) $wallet->id]));
 
         // Rails: SendWebhookJob.perform_after_commit("wallet.updated", wallet)
         \App\Jobs\SendWebhookJob::performLater('wallet.updated', $wallet);
@@ -84,7 +84,7 @@ class IncreaseService extends BaseService
         // Rails: UsageMonitoring::ProcessWalletAlertsJob.perform_after_commit(wallet)
         // — the after-commit scheduling is not ported; dispatches immediately
         // (same as the other ported services).
-        \App\Jobs\UsageMonitoring\ProcessWalletAlertsJob::dispatch((string) $wallet->id);
+        dispatch(new \App\Jobs\UsageMonitoring\ProcessWalletAlertsJob((string) $wallet->id));
 
         $result->wallet = $wallet;
 

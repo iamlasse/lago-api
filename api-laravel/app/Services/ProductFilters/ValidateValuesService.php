@@ -84,12 +84,10 @@ class ValidateValuesService extends BaseService
             ->when($this->productFilter !== null, fn ($query) => $query->whereKeyNot($this->productFilter->id))
             ->with('values')
             ->get()
-            ->contains(function (ProductFilter $filter) use ($submitted): bool {
-                return $this->normalized($filter->values->map(fn ($value): array => [
-                    'billable_metric_filter_id' => (string) $value->billable_metric_filter_id,
-                    'value' => $value->value,
-                ])->all()) === $submitted;
-            });
+            ->contains(fn(ProductFilter $filter): bool => $this->normalized($filter->values->map(fn ($value): array => [
+                'billable_metric_filter_id' => (string) $value->billable_metric_filter_id,
+                'value' => $value->value,
+            ])->all()) === $submitted);
     }
 
     /**

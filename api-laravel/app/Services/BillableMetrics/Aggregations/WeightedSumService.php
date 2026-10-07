@@ -115,8 +115,7 @@ final class WeightedSumService extends BaseService
             ->where('external_subscription_id', $this->billingContext->externalId())
             ->where('charge_id', $this->meteredItem->chargeId())
             ->where('timestamp', '<', $this->fromDatetime())
-            ->orderByDesc('timestamp')
-            ->orderByDesc('created_at');
+            ->orderByDesc('timestamp')->latest();
 
         if ($this->chargeFilterId() !== null) {
             $query->where('charge_filter_id', $this->chargeFilterId());
@@ -127,7 +126,7 @@ final class WeightedSumService extends BaseService
 
     private function datetimeMinusASecond(mixed $datetime): mixed
     {
-        return \Carbon\Carbon::parse($datetime)->subSecond();
+        return \Illuminate\Support\Facades\Date::parse($datetime)->subSecond();
     }
 
     /** Rails: `aggregation.ceil(20)`. */

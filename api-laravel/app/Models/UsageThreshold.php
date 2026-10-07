@@ -25,20 +25,19 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * writes actually happen.
  */
 #[Table(name: 'usage_thresholds')]
+#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+    'organization_id',
+    'plan_id',
+    'subscription_id',
+    'threshold_display_name',
+    'amount_cents',
+    'recurring',
+])]
 class UsageThreshold extends BaseModel
 {
     use ConnectionResolvable;
     use HasFactory;
     use SoftDeletes;
-
-    protected $fillable = [
-        'organization_id',
-        'plan_id',
-        'subscription_id',
-        'threshold_display_name',
-        'amount_cents',
-        'recurring',
-    ];
 
     protected $attributes = [
         'recurring' => false,
@@ -48,13 +47,15 @@ class UsageThreshold extends BaseModel
     // -- Rails scopes ------------------------------------------------------------
 
     /** Rails: scope :recurring. */
-    public function scopeRecurring(Builder $query): void
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function recurring(Builder $query): void
     {
         $query->where('recurring', true);
     }
 
     /** Rails: scope :not_recurring. */
-    public function scopeNotRecurring(Builder $query): void
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function notRecurring(Builder $query): void
     {
         $query->where('recurring', false);
     }

@@ -20,49 +20,42 @@ use Database\Factories\NetsuiteCollectionMappingFactory;
 class NetsuiteCollectionMapping extends BaseCollectionMapping
 {
     use HasFactory;
-
-    // -- settings_accessors :tax_nexus, :tax_type, :tax_code, :currencies ----
-
-    public function getTaxNexusAttribute(): mixed
+    protected function taxNexus(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        return $this->getFromSettings('tax_nexus');
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+            return $this->getFromSettings('tax_nexus');
+        }, set: function (mixed $value) {
+            $this->pushToSettings('tax_nexus', $value);
+            return [];
+        });
     }
-
-    public function setTaxNexusAttribute(mixed $value): void
+    protected function taxType(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        $this->pushToSettings('tax_nexus', $value);
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+            return $this->getFromSettings('tax_type');
+        }, set: function (mixed $value) {
+            $this->pushToSettings('tax_type', $value);
+            return [];
+        });
     }
-
-    public function getTaxTypeAttribute(): mixed
+    protected function taxCode(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        return $this->getFromSettings('tax_type');
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+            return $this->getFromSettings('tax_code');
+        }, set: function (mixed $value) {
+            $this->pushToSettings('tax_code', $value);
+            return [];
+        });
     }
-
-    public function setTaxTypeAttribute(mixed $value): void
-    {
-        $this->pushToSettings('tax_type', $value);
-    }
-
-    public function getTaxCodeAttribute(): mixed
-    {
-        return $this->getFromSettings('tax_code');
-    }
-
-    public function setTaxCodeAttribute(mixed $value): void
-    {
-        $this->pushToSettings('tax_code', $value);
-    }
-
     /** @return array<string, string>|null */
-    public function getCurrenciesAttribute(): ?array
+    protected function currencies(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        return $this->getFromSettings('currencies');
-    }
-
-    /** @param  array<string, string>|null  $value */
-    public function setCurrenciesAttribute(?array $value): void
-    {
-        $this->pushToSettings('currencies', $value);
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+            return $this->getFromSettings('currencies');
+        }, set: function (?array $value) {
+            $this->pushToSettings('currencies', $value);
+            return [];
+        });
     }
 
     // -- Validations ----------------------------------------------------------

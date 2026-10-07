@@ -5,7 +5,6 @@ declare(strict_types=1);
 use App\Models\Customer;
 use App\Jobs\SendWebhookJob;
 use App\Models\Subscription;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Queue;
 use App\Jobs\Clock\SubscriptionsToBeTerminatedJob;
 
@@ -21,16 +20,16 @@ function alertSubscription(?string $endingAt, array $subscriptionAttributes = []
     return Subscription::factory()
         ->forCustomer(Customer::factory()->create())
         ->create(array_filter([
-            'ending_at' => $endingAt === null ? null : Carbon::parse($endingAt),
+            'ending_at' => $endingAt === null ? null : Illuminate\Support\Facades\Date::parse($endingAt),
         ]) + $subscriptionAttributes);
 }
 
 beforeEach(function (): void {
     Queue::fake();
-    Carbon::setTestNow(Carbon::parse('2026-06-01 12:00:00'));
+    Illuminate\Support\Facades\Date::setTestNow(Illuminate\Support\Facades\Date::parse('2026-06-01 12:00:00'));
 });
 
-afterEach(fn () => Carbon::setTestNow());
+afterEach(fn () => Illuminate\Support\Facades\Date::setTestNow());
 
 it('enqueues a termination alert for subscriptions ending in 15 days', function (): void {
     $subscription = alertSubscription('2026-06-16 00:00:00');

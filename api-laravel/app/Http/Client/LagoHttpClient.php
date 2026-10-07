@@ -73,7 +73,7 @@ class LagoHttpClient
                 }
 
                 // Rails: RETRY_BACKOFF_RANGE = (0.25..0.5) seconds.
-                usleep(random_int(250_000, 500_000));
+                \Illuminate\Support\Sleep::usleep(random_int(250_000, 500_000));
             }
         }
     }

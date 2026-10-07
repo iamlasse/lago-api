@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Support\ActiveStorage;
 use App\Enums\DataExportFormat;
 use App\Enums\DataExportStatus;
-use App\Models\Casts\PostgresArray;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Frozen-schema model for `data_exports` (Rails' DataExport — a member's
@@ -35,6 +35,8 @@ use Illuminate\Support\Carbon;
 #[Table(name: 'data_exports')]
 class DataExport extends BaseModel
 {
+    use HasFactory;
+
     /** Rails: EXPORT_FORMATS. */
     public const array EXPORT_FORMATS = ['csv'];
 
@@ -47,6 +49,12 @@ class DataExport extends BaseModel
     protected $attributes = [
         'status' => 0,
     ];
+
+    /** Rails: SecureRandom.hex(5) key component of the attachment. */
+    public static function hex5(): string
+    {
+        return bin2hex(random_bytes(5));
+    }
 
     public function organization(): BelongsTo
     {
@@ -118,7 +126,7 @@ class DataExport extends BaseModel
             return false;
         }
 
-        return Carbon::instance($this->expires_at)->isPast();
+        return \Illuminate\Support\Facades\Date::instance($this->expires_at)->isPast();
     }
 
     /** Rails: `completed?`. */
@@ -168,12 +176,6 @@ class DataExport extends BaseModel
             'invoice_fees' => \App\Services\DataExports\Csv\InvoiceFees::class,
             default => null,
         };
-    }
-
-    /** Rails: SecureRandom.hex(5) key component of the attachment. */
-    public static function hex5(): string
-    {
-        return bin2hex(random_bytes(5));
     }
 
     protected function casts(): array

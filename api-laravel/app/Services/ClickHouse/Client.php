@@ -145,7 +145,7 @@ class Client
             }
 
             if ($attempts < self::MAX_RETRIES) {
-                usleep(50000);
+                \Illuminate\Support\Sleep::usleep(50000);
 
                 continue;
             }

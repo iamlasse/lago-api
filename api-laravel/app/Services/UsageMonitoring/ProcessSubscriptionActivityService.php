@@ -49,7 +49,7 @@ class ProcessSubscriptionActivityService extends BaseService
         // of the job's uniqueness strategy.
         try {
             if ($this->organization($subscription)->usingLifetimeUsage()) {
-                RecalculateAndCheckJob::dispatchSync($lifetimeUsage, currentUsage: null);
+                dispatch_sync(new \App\Jobs\LifetimeUsages\RecalculateAndCheckJob($lifetimeUsage, currentUsage: null));
             }
         } catch (Throwable $e) {
             $exceptionToRaise = $e;
@@ -68,10 +68,7 @@ class ProcessSubscriptionActivityService extends BaseService
                         alertable: $subscription,
                         currentMetrics: $lifetimeUsage,
                     ),
-                    Alert::BILLABLE_METRIC_LIFETIME_USAGE_TYPES[0] => ProcessLifetimeUsageAlertJob::dispatch(
-                        alertId: $alert->id,
-                        subscriptionId: $subscription->id,
-                    )->delay($this->processingInterval()),
+                    Alert::BILLABLE_METRIC_LIFETIME_USAGE_TYPES[0] => dispatch(new \App\Jobs\UsageMonitoring\ProcessLifetimeUsageAlertJob(alertId: $alert->id, subscriptionId: $subscription->id))->delay($this->processingInterval()),
                     default => ProcessAlertService::call(
                         alert: $alert,
                         alertable: $subscription,

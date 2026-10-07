@@ -36,12 +36,12 @@ use Firebase\JWT\SignatureInvalidException;
  */
 final class IdTokens
 {
-    public const CERTS_URL = 'https://www.googleapis.com/oauth2/v3/certs';
+    public const string CERTS_URL = 'https://www.googleapis.com/oauth2/v3/certs';
 
     /** Rails gem: WebKeySource::CACHE_TTL = 6 hours. */
-    public const CACHE_TTL = 21600;
+    public const int CACHE_TTL = 21600;
 
-    public const ISSUERS = ['accounts.google.com', 'https://accounts.google.com'];
+    public const array ISSUERS = ['accounts.google.com', 'https://accounts.google.com'];
 
     /**
      * @return array<string, mixed> the verified token claims
@@ -113,12 +113,6 @@ final class IdTokens
     /** @param array<string, mixed> $jwks */
     private static function hasKey(array $jwks, string $kid): bool
     {
-        foreach ((array) ($jwks['keys'] ?? []) as $key) {
-            if (($key['kid'] ?? null) === $kid) {
-                return true;
-            }
-        }
-
-        return false;
+        return array_any((array) ($jwks['keys'] ?? []), fn($key) => ($key['kid'] ?? null) === $kid);
     }
 }

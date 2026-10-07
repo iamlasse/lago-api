@@ -42,13 +42,7 @@ class FreeTrialBillingService extends BaseService
             if (! $subscription->was_already_billed_today
                 && ! $this->alreadyBilledOnDayOne($subscription)) {
                 if ($subscription->plan->pay_in_advance) {
-                    BillSubscriptionJob::dispatch(
-                        [$subscription],
-                        (int) $this->timestamp->getTimestamp(),
-                        'subscription_starting',
-                        null,
-                        true,
-                    );
+                    dispatch(new \App\Jobs\BillSubscriptionJob([$subscription], (int) $this->timestamp->getTimestamp(), 'subscription_starting', null, true));
                 }
             }
 

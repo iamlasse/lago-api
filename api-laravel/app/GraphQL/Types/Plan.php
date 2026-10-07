@@ -61,7 +61,7 @@ class Plan
     /** Rails: object.charges.order(created_at: :asc) (object.rb:71-73). */
     public function charges(PlanModel $root): Collection
     {
-        return $root->charges()->orderBy('created_at')->get();
+        return $root->charges()->oldest()->get();
     }
 
     /** Rails: object.charges.count (object.rb:79-81). */
@@ -73,7 +73,7 @@ class Plan
     /** Rails: object.fixed_charges.order(created_at: :asc) (object.rb:75-77). */
     public function fixedCharges(PlanModel $root): Collection
     {
-        return $root->fixedCharges()->orderBy('created_at')->get();
+        return $root->fixedCharges()->oldest()->get();
     }
 
     /** Rails: object.fixed_charges.count (object.rb:83-85). */

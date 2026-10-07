@@ -212,9 +212,7 @@ it('re-runs the invoice payment and announces the missing provider', function ()
 
     // Without a payment provider the invoice.payment_failure webhook carries
     // the customer_must_have_payment_provider error details.
-    Queue::assertPushed(App\Jobs\SendWebhookJob::class, function ($job): bool {
-        return $job->webhookType === 'invoice.payment_failure';
-    });
+    Queue::assertPushed(App\Jobs\SendWebhookJob::class, fn($job): bool => $job->webhookType === 'invoice.payment_failure');
 })->group('ledger:gql:mutation:retryInvoicePayment');
 
 it('answers the invalid_status not_allowed error on a draft invoice payment retry', function (): void {

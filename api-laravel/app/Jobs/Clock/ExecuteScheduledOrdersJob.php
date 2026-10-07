@@ -42,6 +42,6 @@ class ExecuteScheduledOrdersJob implements ShouldQueue
     {
         Order::query()
             ->executable()
-            ->each(fn (Order $order) => ExecuteOrderJob::dispatch($order));
+            ->each(fn (Order $order) => dispatch(new ExecuteOrderJob($order)));
     }
 }

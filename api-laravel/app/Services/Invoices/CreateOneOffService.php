@@ -162,7 +162,7 @@ class CreateOneOffService extends \App\Services\BaseService
                 // notify: should_deliver_email?) — this code runs after the
                 // transaction block closes (the Laravel equivalent of the
                 // after-commit position).
-                GenerateDocumentsJob::dispatch($this->invoice, $this->shouldDeliverEmail());
+                dispatch(new \App\Jobs\Invoices\GenerateDocumentsJob($this->invoice, $this->shouldDeliverEmail()));
                 // Rails: Integrations::Aggregator::Invoices::CreateJob.
                 // perform_after_commit(invoice:) if invoice.should_sync_invoice?
                 // (the Hubspot leg is the Hubspot slice's).
@@ -185,7 +185,7 @@ class CreateOneOffService extends \App\Services\BaseService
             customer: $this->customer,
             invoiceType: \App\Enums\InvoiceType::OneOff,
             currency: $this->currency,
-            datetime: \Illuminate\Support\Carbon::createFromTimestamp($this->timestamp, 'UTC'),
+            datetime: \Illuminate\Support\Facades\Date::createFromTimestamp($this->timestamp, 'UTC'),
             billingEntity: $this->billingEntity,
             purchaseOrderNumber: $this->purchaseOrderNumber !== null
                 ? mb_trim($this->purchaseOrderNumber)

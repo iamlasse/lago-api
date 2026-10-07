@@ -15,27 +15,27 @@ use App\Models\Wallet;
  * All arithmetic is bcmath on decimal strings; the rounded `amount` carries
  * the currency's exponent digits (Money#round).
  */
-final class WalletCredit
+final readonly class WalletCredit
 {
     /**
      * The monetary amount, at the currency's exponent (Rails Money).
      */
-    public readonly string $amount;
+    public string $amount;
 
     /**
      * The integer cent amount.
      */
-    public readonly int $amountCents;
+    public int $amountCents;
 
     /**
      * The credit amount — for invoiceable credits, the monetary amount
      * converted back to credits ("only multiples of 1 cent should be
      * accepted").
      */
-    public readonly string $creditAmount;
+    public string $creditAmount;
 
     public function __construct(
-        public readonly Wallet $wallet,
+        public Wallet $wallet,
         string|int|float $creditAmount,
         bool $invoiceable = true,
         ?int $amountCents = null,

@@ -122,14 +122,12 @@ it('creates a stripe refund for a refundable credit note', function (): void {
     expect($creditNote->refundStatusEnum())->toBe(CreditNoteRefundStatus::Succeeded)
         ->and($creditNote->refunded_at)->not->toBeNull();
 
-    Http::assertSent(function ($request) use ($creditNote): bool {
-        return str_contains($request->url(), '/v1/refunds')
-            && $request['payment_intent'] === 'provider_pay_1'
-            && $request['amount'] === '400'
-            && $request['reason'] === 'duplicate'
-            && $request->header('Idempotency-Key')[0] === $creditNote->id
-            && $request['metadata']['lago_credit_note_id'] === $creditNote->id;
-    });
+    Http::assertSent(fn($request): bool => str_contains($request->url(), '/v1/refunds')
+        && $request['payment_intent'] === 'provider_pay_1'
+        && $request['amount'] === '400'
+        && $request['reason'] === 'duplicate'
+        && $request->header('Idempotency-Key')[0] === $creditNote->id
+        && $request['metadata']['lago_credit_note_id'] === $creditNote->id);
 });
 
 it('does not create a refund when the credit note has no refund amount', function (): void {
@@ -321,11 +319,9 @@ it('creates an adyen refund through the checkout modifications api', function ()
     $creditNote->refresh();
     expect($creditNote->refundStatusEnum())->toBe(CreditNoteRefundStatus::Pending);
 
-    Http::assertSent(function ($request): bool {
-        return $request['paymentPspReference'] === 'provider_pay_1'
-            && $request['merchantAccount'] === 'LagoMerchant'
-            && $request['amount']['value'] === 400;
-    });
+    Http::assertSent(fn($request): bool => $request['paymentPspReference'] === 'provider_pay_1'
+        && $request['merchantAccount'] === 'LagoMerchant'
+        && $request['amount']['value'] === 400);
 });
 
 it('re-raises and fails the credit note on an adyen error', function (): void {
@@ -415,12 +411,10 @@ it('creates a gocardless refund', function (): void {
     $creditNote->refresh();
     expect($creditNote->refundStatusEnum())->toBe(CreditNoteRefundStatus::Pending);
 
-    Http::assertSent(function ($request): bool {
-        return $request['params']['amount'] === 400
-            && $request['params']['total_amount_confirmation'] === 400
-            && $request['params']['links']['payment'] === 'provider_pay_1'
-            && $request->header('Idempotency-Key')[0] === $request['params']['metadata']['lago_credit_note_id'];
-    });
+    Http::assertSent(fn($request): bool => $request['params']['amount'] === 400
+        && $request['params']['total_amount_confirmation'] === 400
+        && $request['params']['links']['payment'] === 'provider_pay_1'
+        && $request->header('Idempotency-Key')[0] === $request['params']['metadata']['lago_credit_note_id']);
 });
 
 it('maps the gocardless provider status onto the credit note status', function (): void {

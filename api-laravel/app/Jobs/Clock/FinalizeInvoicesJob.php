@@ -43,7 +43,7 @@ class FinalizeInvoicesJob implements ShouldQueue
             ->readyToBeFinalized()
             ->chunkById(500, function ($invoices): void {
                 foreach ($invoices as $invoice) {
-                    FinalizeJob::dispatch($invoice);
+                    dispatch(new FinalizeJob($invoice));
                 }
             });
     }

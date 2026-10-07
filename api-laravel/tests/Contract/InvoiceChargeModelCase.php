@@ -108,7 +108,7 @@ abstract class InvoiceChargeModelCase extends ContractCase
     protected function mintedInvoiceId(): string
     {
         $invoiceId = Invoice::query()
-            ->where('customer_id', function ($query) {
+            ->where('customer_id', function ($query): void {
                 $query->select('id')
                     ->from('customers')
                     ->where('external_id', $this->customerExternalId())

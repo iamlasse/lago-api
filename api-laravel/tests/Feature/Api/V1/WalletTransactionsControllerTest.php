@@ -57,7 +57,7 @@ it('creates paid and granted wallet transactions', function (): void {
         'purchase_order_number' => 'PO-789',
     ]], ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($wallet) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($wallet): void {
             $json->count('wallet_transactions', 2)
                 ->where('wallet_transactions.0.status', 'pending')
                 ->where('wallet_transactions.0.transaction_status', 'purchased')
@@ -104,7 +104,7 @@ it('creates a voided transaction that drains the wallet balance', function (): v
         'voided_credits' => '10',
     ]], ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($wallet) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($wallet): void {
             $json->count('wallet_transactions', 1)
                 ->where('wallet_transactions.0.status', 'settled')
                 ->where('wallet_transactions.0.transaction_status', 'voided')
@@ -128,7 +128,7 @@ it('creates the transactions with metadata', function (): void {
         'metadata' => [['key' => 'valid_value', 'value' => 'also_valid']],
     ]], ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json): void {
             $json->count('wallet_transactions', 2)
                 ->where('wallet_transactions.0.metadata', [['key' => 'valid_value', 'value' => 'also_valid']])
                 ->where('wallet_transactions.1.metadata', [['key' => 'valid_value', 'value' => 'also_valid']])
@@ -148,7 +148,7 @@ it('creates the transactions with a priority', function (): void {
         'priority' => 1,
     ]], ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json): void {
             $json->count('wallet_transactions', 2)
                 ->where('wallet_transactions.0.priority', 1)
                 ->where('wallet_transactions.1.priority', 1)
@@ -181,7 +181,7 @@ it('returns the wallet transactions of the wallet', function (): void {
 
     $this->getJson('/api/v1/wallets/'.$wallet->id.'/wallet_transactions', ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json): void {
             $json->count('wallet_transactions', 2)
                 ->etc();
         });
@@ -200,7 +200,7 @@ it('paginates the wallet transactions with metadata', function (): void {
 
     $this->getJson('/api/v1/wallets/'.$wallet->id.'/wallet_transactions?page=1&per_page=1', ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json): void {
             $json->count('wallet_transactions', 1)
                 ->where('meta.current_page', 1)
                 ->where('meta.next_page', 2)
@@ -220,7 +220,7 @@ it('filters the wallet transactions by status', function (): void {
 
     $this->getJson('/api/v1/wallets/'.$wallet->id.'/wallet_transactions?status=pending', ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($pending) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($pending): void {
             $json->count('wallet_transactions', 1)
                 ->where('wallet_transactions.0.lago_id', $pending->id)
                 ->etc();
@@ -239,7 +239,7 @@ it('filters the wallet transactions by transaction type', function (): void {
 
     $this->getJson('/api/v1/wallets/'.$wallet->id.'/wallet_transactions?transaction_type=outbound', ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($outbound) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($outbound): void {
             $json->count('wallet_transactions', 1)
                 ->where('wallet_transactions.0.lago_id', $outbound->id)
                 ->etc();
@@ -256,7 +256,7 @@ it('filters the wallet transactions by transaction status', function (): void {
 
     $this->getJson('/api/v1/wallets/'.$wallet->id.'/wallet_transactions?transaction_status=voided', ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($voided) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($voided): void {
             $json->count('wallet_transactions', 1)
                 ->where('wallet_transactions.0.lago_id', $voided->id)
                 ->etc();
@@ -272,7 +272,7 @@ it('ignores an invalid transaction_status value', function (): void {
 
     $this->getJson('/api/v1/wallets/'.$wallet->id.'/wallet_transactions?transaction_status=invalid', ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json): void {
             $json->count('wallet_transactions', 2)
                 ->etc();
         });
@@ -287,7 +287,7 @@ it('filters the wallet transactions by a metadata pair', function (): void {
 
     $this->getJson('/api/v1/wallets/'.$wallet->id.'/wallet_transactions?metadata[site_id]=alpha', ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($alpha) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($alpha): void {
             $json->count('wallet_transactions', 1)
                 ->where('wallet_transactions.0.lago_id', $alpha->id)
                 ->etc();
@@ -303,7 +303,7 @@ it('ignores a malformed metadata filter', function (): void {
 
     $this->getJson('/api/v1/wallets/'.$wallet->id.'/wallet_transactions?metadata=foo', ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json): void {
             $json->count('wallet_transactions', 2)
                 ->etc();
         });
@@ -407,7 +407,7 @@ it('mirrors the wallet transaction endpoints at v2 with the beta header', functi
     ]], ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
         ->assertHeader('X-Lago-Endpoint-Status', 'beta')
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json): void {
             $json->count('wallet_transactions', 1)
                 ->etc();
         });

@@ -86,6 +86,6 @@ class MembershipsQuery extends BaseService
         $page = max(1, (int) ($this->pagination['page'] ?? 1));
         $limit = max(1, (int) ($this->pagination['limit'] ?? \App\GraphQL\Support\Page::DEFAULT_LIMIT));
 
-        return $query->orderByDesc('memberships.created_at')->orderBy('memberships.id')->paginate(perPage: $limit, page: $page);
+        return $query->latest('memberships.created_at')->orderBy('memberships.id')->paginate(perPage: $limit, page: $page);
     }
 }

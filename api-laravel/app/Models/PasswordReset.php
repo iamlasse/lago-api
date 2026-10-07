@@ -28,7 +28,8 @@ class PasswordReset extends BaseModel
     }
 
     /** Rails: PasswordReset.where("expire_at > ?", Time.current) — the scope the resolver and the reset service share. */
-    public function scopeActive($query)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function active($query)
     {
         return $query->where('expire_at', '>', now());
     }

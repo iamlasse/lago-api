@@ -18,7 +18,7 @@ use App\Services\Failures\FailedResult;
 class CreateService extends BaseService
 {
     /** Rails: ValidatesBooleanParams::BOOLEAN_FIELDS. */
-    private const BOOLEAN_FIELDS = ['proration', 'display_on_invoice'];
+    private const array BOOLEAN_FIELDS = ['proration', 'display_on_invoice'];
 
     public function __construct(
         private readonly ?Product $product,

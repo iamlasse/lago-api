@@ -125,7 +125,7 @@ class SendWebhookJob implements ShouldQueue
             return null;
         }
 
-        static::dispatch($webhookType, $object, $options, $webhookId);
+        dispatch_sync(new static($webhookType, $object, $options, $webhookId));
 
         return null;
     }
@@ -145,7 +145,7 @@ class SendWebhookJob implements ShouldQueue
 
         if ($this->webhookId !== null) {
             // NOTE: temporary condition to handle legacy enqueued jobs.
-            SendHttpWebhookJob::dispatch(Webhook::findOrFail($this->webhookId));
+            dispatch(new \App\Jobs\SendHttpWebhookJob(Webhook::findOrFail($this->webhookId)));
 
             return;
         }

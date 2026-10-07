@@ -31,10 +31,10 @@ class PortalToken
     public const EXPIRES_IN_HOURS = 12;
 
     /** Rails: `ActiveSupport::MessageVerifier` default digest (SHA256). */
-    private const DIGEST = 'sha256';
+    private const string DIGEST = 'sha256';
 
     /** Rails: the message and its digest are joined with "--". */
-    private const SEPARATOR = '--';
+    private const string SEPARATOR = '--';
 
     /** Rails: `ActiveSupport::MessageVerifier.new(ENV["SECRET_KEY_BASE"])`. */
     public static function generate(string $customerId): string

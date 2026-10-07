@@ -221,23 +221,12 @@ class HandleEventService extends BaseService
         }
 
         if ($eventCode === 'card_token.deleted') {
-            MoneyhashCustomerService::deletePaymentMethod(
-                organizationId: $this->organization->id,
-                customerId: $cardToken['custom_fields']['lago_customer_id'] ?? null,
-                paymentMethodId: (string) ($cardToken['id'] ?? ''),
-                metadata: $cardToken['custom_fields'] ?? [],
-            )->raiseIfError();
+            MoneyhashCustomerService::deletePaymentMethod()->raiseIfError();
 
             return $result;
         }
 
-        MoneyhashCustomerService::updatePaymentMethod(
-            organizationId: $this->organization->id,
-            customerId: $cardToken['custom_fields']['lago_customer_id'] ?? null,
-            paymentMethodId: (string) ($cardToken['id'] ?? ''),
-            metadata: $cardToken['custom_fields'] ?? [],
-            cardDetails: self::extractCardDetails($cardToken),
-        )->raiseIfError();
+        MoneyhashCustomerService::updatePaymentMethod()->raiseIfError();
 
         return $result;
     }

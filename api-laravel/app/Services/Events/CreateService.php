@@ -142,7 +142,7 @@ class CreateService extends BaseService
         [$seconds, $fraction] = array_pad(explode('.', $digits, 2), 2, '0');
 
         $micro = (int) mb_str_pad(mb_substr($fraction, 0, 6), 6, '0');
-        $datetime = Carbon::createFromTimestampUTC((int) $seconds);
+        $datetime = \Illuminate\Support\Facades\Date::createFromTimestampUTC((int) $seconds);
         if ($micro > 0) {
             $datetime->addMicroseconds($negative ? -$micro : $micro);
         }
@@ -180,7 +180,7 @@ class CreateService extends BaseService
     private function enqueuePostProcess(Event $event): void
     {
         try {
-            PostProcessJob::dispatch($event);
+            dispatch(new \App\Jobs\Events\PostProcessJob($event));
         } catch (Throwable $exception) {
             // Hard-deleted rather than discarded: `index_unique_transaction_id`
             // carries no `deleted_at` predicate, so a discarded event would keep

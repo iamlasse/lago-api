@@ -185,7 +185,7 @@ class UpdateService extends BaseService
         }
 
         try {
-            return Carbon::parse($value, config('app.timezone'));
+            return \Illuminate\Support\Facades\Date::parse($value, config('app.timezone'));
         } catch (Throwable) {
             return null;
         }

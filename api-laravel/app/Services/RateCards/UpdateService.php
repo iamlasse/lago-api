@@ -22,7 +22,7 @@ class UpdateService extends BaseService
      * Billing-semantic fields freeze once a rate exists — changing them
      * would alter what the existing rates mean; create a new card instead.
      */
-    private const LOCKED_WITH_RATES = [
+    private const array LOCKED_WITH_RATES = [
         'currency',
         'applied_pricing_unit_code',
         'billing_timing',
@@ -31,7 +31,7 @@ class UpdateService extends BaseService
         'display_on_invoice',
     ];
 
-    private const BOOLEAN_FIELDS = ['proration', 'display_on_invoice'];
+    private const array BOOLEAN_FIELDS = ['proration', 'display_on_invoice'];
 
     public function __construct(
         private readonly ?RateCard $rateCard,

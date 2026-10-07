@@ -57,7 +57,7 @@ class CreateJob implements ShouldQueue
     public static function dispatchIfShouldSync(Invoice $invoice): void
     {
         if (self::shouldSyncInvoice($invoice)) {
-            self::dispatch($invoice);
+            dispatch(new self($invoice));
         }
     }
 

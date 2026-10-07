@@ -58,7 +58,7 @@ class CreateService extends \App\Services\BaseService
 
         $integration->save();
 
-        FetchCompanyIdJob::dispatch($integration);
+        dispatch(new \App\Jobs\Integrations\Avalara\FetchCompanyIdJob($integration));
 
         $result->integration = $integration;
 

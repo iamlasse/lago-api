@@ -54,7 +54,7 @@ class CreateFromParamsService extends BaseService
             return $this->attempt();
         } catch (StaleObjectError $e) {
             if ($this->updateAttempts <= self::MAX_WALLET_UPDATE_ATTEMPTS) {
-                usleep((int) (random_int(100000, 500000)));
+                \Illuminate\Support\Sleep::usleep((int) (random_int(100000, 500000)));
 
                 // Make sure the wallet is reloaded before retrying.
                 $this->result()->current_wallet?->refresh();
@@ -117,9 +117,7 @@ class CreateFromParamsService extends BaseService
         /** @var Wallet $wallet */
         $wallet = $result->current_wallet;
 
-        if ($invoiceRequiresSuccessfulPayment === null) {
-            $invoiceRequiresSuccessfulPayment = (bool) $wallet->invoice_requires_successful_payment;
-        }
+        $invoiceRequiresSuccessfulPayment ??= (bool) $wallet->invoice_requires_successful_payment;
 
         $walletTransactions = [];
 
@@ -223,7 +221,7 @@ class CreateFromParamsService extends BaseService
         // onto their invoice. The provider callbacks that enqueue this in
         // production are an M-later slice; the job itself is ported and
         // settles the transaction here.
-        \App\Jobs\BillPaidCreditJob::dispatch($walletTransaction, now()->getTimestamp());
+        dispatch(new \App\Jobs\BillPaidCreditJob($walletTransaction, now()->getTimestamp()));
 
         return $walletTransaction;
     }

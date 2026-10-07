@@ -186,7 +186,7 @@ class CreateService extends BaseService
         static::updateInvoicesPaidAmountCents($payable, $paymentStatus);
 
         if ($payable->organization->issueReceiptsEnabled()) {
-            \App\Jobs\PaymentReceipts\CreateJob::dispatch($payment);
+            dispatch(new \App\Jobs\PaymentReceipts\CreateJob($payment));
         }
 
         static::deliverRequestedMailerIfFailed($payable);
@@ -205,7 +205,7 @@ class CreateService extends BaseService
             return $result->notFoundFailure('payment_provider');
         }
 
-        PaymentsCreateJob::dispatch($this->payable, $provider, $this->paymentMethodParams);
+        dispatch(new \App\Jobs\PaymentRequests\PaymentsCreateJob($this->payable, $provider, $this->paymentMethodParams));
 
         $result->payment_provider = $provider;
 

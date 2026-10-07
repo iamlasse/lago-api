@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Models\Casts\PostgresArray;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\Table;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Frozen-schema model for `data_export_parts` (Rails' DataExportPart — one
@@ -26,6 +27,8 @@ use Illuminate\Database\Eloquent\Builder;
 #[Table(name: 'data_export_parts')]
 class DataExportPart extends BaseModel
 {
+    use HasFactory;
+
     protected $attributes = [
         'completed' => false,
     ];
@@ -41,7 +44,8 @@ class DataExportPart extends BaseModel
     }
 
     /** Rails: `scope :completed`. */
-    public function scopeCompleted(Builder $query): Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function completed(Builder $query): Builder
     {
         return $query->where('completed', true);
     }

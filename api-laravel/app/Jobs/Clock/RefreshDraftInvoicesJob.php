@@ -44,7 +44,7 @@ class RefreshDraftInvoicesJob implements ShouldQueue
             ->withActiveSubscriptions()
             ->chunkById(500, function ($invoices): void {
                 foreach ($invoices as $invoice) {
-                    RefreshDraftJob::dispatch(invoice: $invoice);
+                    dispatch(new RefreshDraftJob(invoice: $invoice));
                 }
             });
     }

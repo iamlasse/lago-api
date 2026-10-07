@@ -64,31 +64,15 @@ class CreateOrUpdateBatchService extends \App\Services\BaseService
                 // Rails: salesforce doesn't need to reach a provider so it
                 // can be done sync (SYNC_INTEGRATIONS run perform_now).
                 if (in_array($integration->type, self::SYNC_INTEGRATIONS, true)) {
-                    CreateJob::dispatchSync(
-                        integration_customer_params: $params,
-                        integration: $integration,
-                        customer: $this->customer,
-                    );
+                    dispatch_sync(new \App\Jobs\IntegrationCustomers\CreateJob(integration_customer_params: $params, integration: $integration, customer: $this->customer));
                 } else {
-                    CreateJob::dispatch(
-                        integration_customer_params: $params,
-                        integration: $integration,
-                        customer: $this->customer,
-                    );
+                    dispatch(new \App\Jobs\IntegrationCustomers\CreateJob(integration_customer_params: $params, integration: $integration, customer: $this->customer));
                 }
             } elseif (! $this->new_customer && $existing !== null) {
                 if (in_array($integration->type, self::SYNC_INTEGRATIONS, true)) {
-                    UpdateJob::dispatchSync(
-                        integration_customer_params: $params,
-                        integration: $integration,
-                        integration_customer: $existing,
-                    );
+                    dispatch_sync(new \App\Jobs\IntegrationCustomers\UpdateJob(integration_customer_params: $params, integration: $integration, integration_customer: $existing));
                 } else {
-                    UpdateJob::dispatch(
-                        integration_customer_params: $params,
-                        integration: $integration,
-                        integration_customer: $existing,
-                    );
+                    dispatch(new \App\Jobs\IntegrationCustomers\UpdateJob(integration_customer_params: $params, integration: $integration, integration_customer: $existing));
                 }
             }
         }

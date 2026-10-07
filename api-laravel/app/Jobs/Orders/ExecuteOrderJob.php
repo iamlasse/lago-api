@@ -7,8 +7,8 @@ namespace App\Jobs\Orders;
 use App\Models\Order;
 use Illuminate\Bus\Queueable;
 use App\Jobs\Middleware\UniqueJob;
-use Illuminate\Queue\InteractsWithQueue;
 use App\Services\Orders\ExecuteService;
+use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 

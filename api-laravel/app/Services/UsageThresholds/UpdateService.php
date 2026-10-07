@@ -67,7 +67,7 @@ class UpdateService extends \App\Services\BaseService
             });
         } catch (\App\Services\Failures\FailedResult $e) {
             return $result->failWithError($e);
-        } catch (\Illuminate\Database\UniqueConstraintViolationException $e) {
+        } catch (\Illuminate\Database\UniqueConstraintViolationException) {
             return $result->singleValidationFailure('duplicated_values', 'usage_thresholds');
         }
 
@@ -97,13 +97,7 @@ class UpdateService extends \App\Services\BaseService
 
     private function missingAmountCents(array $params): bool
     {
-        foreach ($params as $p) {
-            if (($p['amount_cents'] ?? null) === null || $p['amount_cents'] === '') {
-                return true;
-            }
-        }
-
-        return false;
+        return array_any($params, fn($p) => ($p['amount_cents'] ?? null) === null || $p['amount_cents'] === '');
     }
 
     private function duplicatedAmountCents(array $params): bool
@@ -130,16 +124,7 @@ class UpdateService extends \App\Services\BaseService
 
     private function updateRecurringThreshold(array $params): void
     {
-        $recurringParams = null;
-
-        foreach ($params as $p) {
-            if ($p['recurring']) {
-                $recurringParams = $p;
-
-                break;
-            }
-        }
-
+        $recurringParams = array_find($params, fn($p) => $p['recurring']);
         if ($recurringParams === null) {
             return;
         }
@@ -185,9 +170,7 @@ class UpdateService extends \App\Services\BaseService
      */
     private function thresholds(): \Illuminate\Support\Collection
     {
-        if ($this->thresholdsMemo === null) {
-            $this->thresholdsMemo = $this->model->usageThresholds()->get();
-        }
+        $this->thresholdsMemo ??= $this->model->usageThresholds()->get();
 
         return $this->thresholdsMemo;
     }

@@ -98,7 +98,7 @@ class CreateOrUpdateService extends BaseService
             }
 
             return $result;
-        } catch (Throwable $e) {
+        } catch (Throwable) {
             return $result->singleValidationFailure('value_already_exist', 'provider_customer_id');
         }
     }
@@ -142,11 +142,11 @@ class CreateOrUpdateService extends BaseService
     private function createCustomerOnProvider(PaymentProviderCustomer $providerCustomer): void
     {
         if ($this->async) {
-            StripeCreateCustomerJob::dispatch($providerCustomer);
+            dispatch(new \App\Jobs\PaymentProviders\StripeCreateCustomerJob($providerCustomer));
 
             return;
         }
 
-        StripeCreateCustomerJob::dispatchSync($providerCustomer);
+        dispatch_sync(new \App\Jobs\PaymentProviders\StripeCreateCustomerJob($providerCustomer));
     }
 }

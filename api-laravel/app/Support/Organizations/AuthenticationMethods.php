@@ -23,19 +23,19 @@ use App\Models\Organization;
  */
 final class AuthenticationMethods
 {
-    public const EMAIL_PASSWORD = 'email_password';
+    public const string EMAIL_PASSWORD = 'email_password';
 
-    public const GOOGLE_OAUTH = 'google_oauth';
+    public const string GOOGLE_OAUTH = 'google_oauth';
 
-    public const OKTA = 'okta';
+    public const string OKTA = 'okta';
 
-    public const ENTRA_ID = 'entra_id';
+    public const string ENTRA_ID = 'entra_id';
 
-    public const FREE = [self::EMAIL_PASSWORD, self::GOOGLE_OAUTH];
+    public const array FREE = [self::EMAIL_PASSWORD, self::GOOGLE_OAUTH];
 
-    public const PREMIUM = [self::OKTA, self::ENTRA_ID];
+    public const array PREMIUM = [self::OKTA, self::ENTRA_ID];
 
-    public const ALL = [self::EMAIL_PASSWORD, self::GOOGLE_OAUTH, self::OKTA, self::ENTRA_ID];
+    public const array ALL = [self::EMAIL_PASSWORD, self::GOOGLE_OAUTH, self::OKTA, self::ENTRA_ID];
 
     /**
      * Rails: `<method>_authentication_enabled?` — free methods check the

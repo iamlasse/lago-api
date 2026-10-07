@@ -52,7 +52,7 @@ it('creates a rate card with a nested rate', function (): void {
         'currency' => 'EUR',
         'rates' => [[
             'code' => 'base',
-            'effective_from' => Carbon::today()->toIso8601String(),
+            'effective_from' => \Illuminate\Support\Facades\Date::today()->toIso8601String(),
             'rate_model' => 'standard',
             'billing_interval_unit' => 'month',
             'rate_properties' => ['amount' => '10'],
@@ -103,7 +103,7 @@ it('freezes billing-semantic fields once rates exist', function (): void {
     RateCardRate::factory()->create([
         'organization_id' => $organization->id,
         'rate_card_id' => $rateCard->id,
-        'effective_from' => Carbon::today(),
+        'effective_from' => \Illuminate\Support\Facades\Date::today(),
     ]);
 
     $this->patchJson('/api/v2/rate_cards/'.$rateCard->code, ['rate_card' => [
@@ -127,7 +127,7 @@ it('rejects a rate effective before today', function (): void {
 
     $this->postJson('/api/v2/rate_cards/'.$rateCard->code.'/rates', ['rate' => [
         'code' => 'old',
-        'effective_from' => Carbon::today()->subDays(5)->toIso8601String(),
+        'effective_from' => \Illuminate\Support\Facades\Date::today()->subDays(5)->toIso8601String(),
         'rate_model' => 'standard',
         'rate_properties' => ['amount' => '10'],
     ]], ['Authorization' => 'Bearer '.$apiKey->value])
@@ -149,12 +149,12 @@ it('rejects an append before the active rate', function (): void {
     RateCardRate::factory()->create([
         'organization_id' => $organization->id,
         'rate_card_id' => $rateCard->id,
-        'effective_from' => Carbon::today(),
+        'effective_from' => \Illuminate\Support\Facades\Date::today(),
     ]);
 
     $this->postJson('/api/v2/rate_cards/'.$rateCard->code.'/rates', ['rate' => [
         'code' => 'later',
-        'effective_from' => Carbon::today()->toIso8601String(),
+        'effective_from' => \Illuminate\Support\Facades\Date::today()->toIso8601String(),
         'rate_model' => 'standard',
         'billing_interval_unit' => 'month',
         'rate_properties' => ['amount' => '12'],

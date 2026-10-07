@@ -88,7 +88,7 @@ final class Netsuite extends BasePayload
      */
     private function netsuite_credit_note_items(): array
     {
-        return $this->credit_note->items()->orderBy('created_at')->get()
+        return $this->credit_note->items()->oldest()->get()
             ->map(fn (CreditNoteItem $item) => $this->netsuite_item($item))
             ->all();
     }
@@ -123,7 +123,7 @@ final class Netsuite extends BasePayload
      */
     private function tax_line_items(): array
     {
-        return $this->credit_note->items()->orderBy('created_at')->get()
+        return $this->credit_note->items()->oldest()->get()
             ->map(fn (CreditNoteItem $item) => $this->tax_line_item($item))
             ->all();
     }

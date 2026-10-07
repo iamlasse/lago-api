@@ -103,10 +103,7 @@ class HandleEventService extends BaseService
             return $result;
         }
 
-        AdyenCustomerService::preauthorise(
-            organization: $this->organization,
-            event: $event,
-        )->raiseIfError();
+        AdyenCustomerService::preauthorise()->raiseIfError();
 
         return $result;
     }

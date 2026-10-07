@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use App\Models\Customer;
 use App\Models\Subscription;
-use Illuminate\Support\Carbon;
 use App\Jobs\Clock\ActivateSubscriptionsJob;
 
 uses()->group('ledger:job:Clock.ActivateSubscriptionsJob');
@@ -28,10 +27,10 @@ function clockPendingSubscription(array $attributes = [], array $customerAttribu
 }
 
 it('activates pending subscriptions whose subscription_at day is today', function (): void {
-    Carbon::setTestNow(Carbon::parse('2023-03-10 11:00:00'));
+    Illuminate\Support\Facades\Date::setTestNow(Illuminate\Support\Facades\Date::parse('2023-03-10 11:00:00'));
 
-    $due = clockPendingSubscription(['subscription_at' => Carbon::parse('2023-03-10 08:00:00')]);
-    $future = clockPendingSubscription(['subscription_at' => Carbon::parse('2023-03-11 08:00:00')]);
+    $due = clockPendingSubscription(['subscription_at' => Illuminate\Support\Facades\Date::parse('2023-03-10 08:00:00')]);
+    $future = clockPendingSubscription(['subscription_at' => Illuminate\Support\Facades\Date::parse('2023-03-11 08:00:00')]);
 
     (new ActivateSubscriptionsJob)->handle();
 
@@ -40,10 +39,10 @@ it('activates pending subscriptions whose subscription_at day is today', functio
 });
 
 it('leaves downgrade placeholders to the biller', function (): void {
-    Carbon::setTestNow(Carbon::parse('2023-03-10 11:00:00'));
+    Illuminate\Support\Facades\Date::setTestNow(Illuminate\Support\Facades\Date::parse('2023-03-10 11:00:00'));
 
     $placeholder = clockPendingSubscription([
-        'subscription_at' => Carbon::parse('2023-03-10 08:00:00'),
+        'subscription_at' => Illuminate\Support\Facades\Date::parse('2023-03-10 08:00:00'),
         'previous_subscription_id' => Subscription::factory()->create()->id,
     ]);
 
@@ -56,10 +55,10 @@ it('takes the customer timezone into account', function (): void {
     // now = 2022-12-31 23:00 UTC = 2023-01-01 12:00 in Auckland (+13); the
     // subscription's subscription_at day (2023-01-01 local) matches now's
     // local day, so it activates even though the UTC dates differ.
-    Carbon::setTestNow(Carbon::parse('2022-12-31 23:00:00'));
+    Illuminate\Support\Facades\Date::setTestNow(Illuminate\Support\Facades\Date::parse('2022-12-31 23:00:00'));
 
     $subscription = clockPendingSubscription(
-        ['subscription_at' => Carbon::parse('2023-01-01 00:00:00')],
+        ['subscription_at' => Illuminate\Support\Facades\Date::parse('2023-01-01 00:00:00')],
         ['timezone' => 'Pacific/Auckland'],
     );
 

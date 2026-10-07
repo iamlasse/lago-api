@@ -42,7 +42,7 @@ class ProcessOrganizationSubscriptionActivitiesService extends BaseService
                         ->update(['enqueued' => true, 'enqueued_at' => now()]);
 
                     foreach ($ids as $id) {
-                        ProcessSubscriptionActivityJob::dispatch($id);
+                        dispatch(new \App\Jobs\UsageMonitoring\ProcessSubscriptionActivityJob($id));
                     }
                 });
 

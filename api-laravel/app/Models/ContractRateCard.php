@@ -136,7 +136,8 @@ class ContractRateCard extends BaseModel
      * come due on a billable contract (billing-engine entry point; kept for
      * the billing slice).
      */
-    public function scopeDueForBilling($query, $timestamp)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function dueForBilling($query, $timestamp)
     {
         return $query
             ->join('contracts', 'contracts.id', '=', 'contract_rate_cards.contract_id')

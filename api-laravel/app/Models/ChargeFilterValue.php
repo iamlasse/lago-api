@@ -86,7 +86,7 @@ class ChargeFilterValue extends BaseModel
     /** Rails: default_scope -> { kept.order(updated_at: :asc) }. */
     protected static function booted(): void
     {
-        static::addGlobalScope('keptOrdered', fn (Builder $query) => $query->orderBy('updated_at'));
+        static::addGlobalScope('keptOrdered', fn (Builder $query) => $query->oldest('updated_at'));
     }
 
     protected function casts(): array

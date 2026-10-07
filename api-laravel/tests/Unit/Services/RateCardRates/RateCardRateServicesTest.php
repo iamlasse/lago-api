@@ -39,7 +39,7 @@ function rateRatesPayload(array $overrides = []): array
 {
     return array_merge([
         'code' => 'r1',
-        'effective_from' => Carbon::today()->toIso8601String(),
+        'effective_from' => \Illuminate\Support\Facades\Date::today()->toIso8601String(),
         'rate_model' => 'standard',
         'billing_interval_unit' => 'month',
         'rate_properties' => ['amount' => '10'],
@@ -61,7 +61,7 @@ it('rejects an append before today', function (): void {
     [, $rateCard] = rateRatesFixture();
 
     $result = CreateService::call(rateCard: $rateCard, params: rateRatesPayload([
-        'effective_from' => Carbon::today()->subDays(2)->toIso8601String(),
+        'effective_from' => \Illuminate\Support\Facades\Date::today()->subDays(2)->toIso8601String(),
     ]));
 
     expect($result->failure())->toBeTrue()
@@ -84,7 +84,7 @@ it('marks a superseded rate terminated', function (): void {
     $first = CreateService::call(rateCard: $rateCard, params: rateRatesPayload())->rate_card_rate;
     $second = CreateService::call(rateCard: $rateCard, params: rateRatesPayload([
         'code' => 'r2',
-        'effective_from' => Carbon::tomorrow()->toIso8601String(),
+        'effective_from' => \Illuminate\Support\Facades\Date::tomorrow()->toIso8601String(),
     ]))->rate_card_rate;
 
     // Rails: superseded requires a LATER rate that is already effective —

@@ -17,7 +17,7 @@ final class WebhookEventTypes
      *
      * @var array<string, array{name: string, description: string, category: string, deprecated: bool}>
      */
-    public const CONFIG = [
+    public const array CONFIG = [
         'alert_triggered' => ['name' => 'alert.triggered', 'description' => 'One or more thresholds defined in the alert were crossed', 'category' => 'Alerts', 'deprecated' => false],
         'billable_metric_created' => ['name' => 'billable_metric.created', 'description' => 'A new billable metric has been created', 'category' => 'Billable Metrics', 'deprecated' => false],
         'billable_metric_updated' => ['name' => 'billable_metric.updated', 'description' => 'A billable metric has been updated', 'category' => 'Billable Metrics', 'deprecated' => false],

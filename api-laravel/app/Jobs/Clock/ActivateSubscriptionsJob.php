@@ -7,9 +7,9 @@ namespace App\Jobs\Clock;
 use Illuminate\Bus\Queueable;
 use App\Jobs\Middleware\UniqueJob;
 use Illuminate\Queue\InteractsWithQueue;
-use App\Services\Subscriptions\ActivateAllPendingService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use App\Services\Subscriptions\ActivateAllPendingService;
 
 /**
  * Port of Rails' Clock::ActivateSubscriptionsJob

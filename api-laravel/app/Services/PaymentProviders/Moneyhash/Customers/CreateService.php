@@ -24,22 +24,22 @@ class CreateService extends AbstractCustomersCreateService
     protected function createOnProvider(PaymentProviderCustomer $providerCustomer, bool $async): void
     {
         if ($async) {
-            MoneyhashCreateCustomerJob::dispatch($providerCustomer);
+            dispatch(new \App\Jobs\PaymentProviders\MoneyhashCreateCustomerJob($providerCustomer));
 
             return;
         }
 
-        MoneyhashCreateCustomerJob::dispatchSync($providerCustomer);
+        dispatch_sync(new \App\Jobs\PaymentProviders\MoneyhashCreateCustomerJob($providerCustomer));
     }
 
     protected function generateCheckoutUrl(PaymentProviderCustomer $providerCustomer, bool $async): void
     {
         if ($async) {
-            MoneyhashCheckoutUrlJob::dispatch($providerCustomer);
+            dispatch(new \App\Jobs\PaymentProviders\MoneyhashCheckoutUrlJob($providerCustomer));
 
             return;
         }
 
-        MoneyhashCheckoutUrlJob::dispatchSync($providerCustomer);
+        dispatch_sync(new \App\Jobs\PaymentProviders\MoneyhashCheckoutUrlJob($providerCustomer));
     }
 }

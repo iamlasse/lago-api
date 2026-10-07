@@ -76,7 +76,7 @@ beforeEach(function (): void {
 
 afterEach(function (): void {
     putenv('NANGO_SECRET_KEY');
-    unset($_ENV['NANGO_SECRET_KEY']);
+    unset(\Illuminate\Support\Env::get('NANGO_SECRET_KEY'));
 });
 
 it('returns the provider fees for an anrok invoice', function (): void {
@@ -264,12 +264,10 @@ it('fails with the provider validation code and delivers the tax error webhook',
     // The external customer id was not stamped on failure.
     expect($customer->taxCustomer()->refresh()->external_customer_id)->toBeNull();
 
-    Queue::assertPushed(App\Jobs\SendWebhookJob::class, function ($job) use ($integration): bool {
-        return $job->webhookType === 'customer.tax_provider_error'
-            && $job->options['provider'] === 'anrok'
-            && $job->options['provider_code'] === $integration->code
-            && $job->options['provider_error']['error_code'] === 'taxDateTooFarInFuture';
-    });
+    Queue::assertPushed(App\Jobs\SendWebhookJob::class, fn($job): bool => $job->webhookType === 'customer.tax_provider_error'
+        && $job->options['provider'] === 'anrok'
+        && $job->options['provider_code'] === $integration->code
+        && $job->options['provider_error']['error_code'] === 'taxDateTooFarInFuture');
 });
 
 it('raises the bad gateway error for a 502 body', function (): void {

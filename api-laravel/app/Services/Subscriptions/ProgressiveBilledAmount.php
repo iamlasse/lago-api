@@ -64,8 +64,8 @@ class ProgressiveBilledAmount extends \App\Services\BaseService
             ->where('invoices.invoice_type', \App\Enums\InvoiceType::ProgressiveBilling->value)
             ->whereIn('invoices.status', $statuses)
             ->where('invoice_subscriptions.subscription_id', $subscription->id)
-            ->orderByDesc('invoices.issuing_date')
-            ->orderByDesc('invoices.created_at')
+            ->latest('invoices.issuing_date')
+            ->latest('invoices.created_at')
             ->select('invoice_subscriptions.*')
             ->get();
 

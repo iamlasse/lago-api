@@ -154,8 +154,7 @@ class EntitlementsController extends ApiController
             // Rails: .joins(:feature) — an inner join, so entitlements
             // whose feature was discarded drop out.
             ->whereHas('feature')
-            ->with('feature', 'values.privilege')
-            ->orderBy('created_at')
+            ->with('feature', 'values.privilege')->oldest()
             ->get();
     }
 

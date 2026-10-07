@@ -21,21 +21,14 @@ use App\Services\BaseResult;
  */
 class ValidateService
 {
-    protected BaseResult $result;
-
-    /** @var array<string, mixed> */
-    protected array $args;
-
     /** @var array<string, list<string>> */
     protected array $errors = [];
 
     /**
      * @param  array<string, mixed>  $args  rule:, payment_method:, subscription:, customer:
      */
-    public function __construct(BaseResult $result, array $args)
+    public function __construct(protected BaseResult $result, protected array $args)
     {
-        $this->result = $result;
-        $this->args = $args;
     }
 
     public function valid(): bool

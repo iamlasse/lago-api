@@ -39,6 +39,6 @@ class ExpireOrderFormsJob implements ShouldQueue
 
     public function handle(): void
     {
-        OrderForm::query()->expirable()->each(fn (OrderForm $orderForm) => ExpireOrderFormJob::dispatch($orderForm));
+        OrderForm::query()->expirable()->each(fn (OrderForm $orderForm) => dispatch(new ExpireOrderFormJob($orderForm)));
     }
 }

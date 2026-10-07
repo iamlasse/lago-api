@@ -61,7 +61,7 @@ class ChargebackService extends BaseService
         }
 
         try {
-            return \Illuminate\Support\Carbon::parse($eventDate)->toDateTimeString();
+            return \Illuminate\Support\Facades\Date::parse($eventDate)->toDateTimeString();
         } catch (Throwable) {
             return null;
         }

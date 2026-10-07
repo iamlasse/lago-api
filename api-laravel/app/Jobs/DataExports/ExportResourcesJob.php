@@ -7,9 +7,9 @@ namespace App\Jobs\DataExports;
 use App\Models\DataExport;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
-use App\Services\DataExports\ExportResourcesService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use App\Services\DataExports\ExportResourcesService;
 
 /**
  * Port of Rails' DataExports::ExportResourcesJob

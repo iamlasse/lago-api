@@ -26,17 +26,13 @@ use Illuminate\Support\Facades\DB;
  */
 class ActivateService extends BaseService
 {
-    protected Subscription $subscription;
-
     protected CarbonInterface $timestamp;
 
     public function __construct(
-        Subscription $subscription,
+        protected Subscription $subscription,
         ?CarbonInterface $timestamp = null,
     ) {
         parent::__construct();
-
-        $this->subscription = $subscription;
         $this->timestamp = $timestamp ?? now();
     }
 

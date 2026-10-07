@@ -68,7 +68,7 @@ class TerminateEndedSubscriptionsJob implements ShouldQueue
 
         /** @var Subscription $subscription */
         foreach ($subscriptions as $subscription) {
-            TerminateEndedSubscriptionJob::dispatch($subscription);
+            dispatch(new TerminateEndedSubscriptionJob($subscription));
         }
     }
 

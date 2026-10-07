@@ -323,15 +323,13 @@ it('delivers the payment request payment failure webhook on a provider failure',
     // Rails: Webhooks::PaymentProviders::PaymentRequestPaymentFailureService
     // serializes provider_error + provider_customer_id onto the payment
     // request — the folded enqueue carries the same options.
-    Queue::assertPushed(SendWebhookJob::class, function (SendWebhookJob $job) use ($payable): bool {
-        return $job->webhookType === 'payment_request.payment_failure'
-            && $job->object->is($payable)
-            && $job->options['provider_customer_id'] === 'prov_cus_1'
-            && $job->options['provider_error'] === [
-                'message' => 'Your card was declined.',
-                'error_code' => 'card_declined',
-            ];
-    });
+    Queue::assertPushed(SendWebhookJob::class, fn(SendWebhookJob $job): bool => $job->webhookType === 'payment_request.payment_failure'
+        && $job->object->is($payable)
+        && $job->options['provider_customer_id'] === 'prov_cus_1'
+        && $job->options['provider_error'] === [
+            'message' => 'Your card was declined.',
+            'error_code' => 'card_declined',
+        ]);
 });
 
 // -- `raise if e.result.reraise` (PaymentRequests::Payments::CreateService) --------
@@ -377,15 +375,13 @@ it('delivers the provider refund failure webhook on a stripe refund error', func
 
     // Rails: Webhooks::CreditNotes::PaymentProviderRefundFailureService
     // serializes provider_error + provider_customer_id onto the credit note.
-    Queue::assertPushed(SendWebhookJob::class, function (SendWebhookJob $job) use ($creditNote): bool {
-        return $job->webhookType === 'credit_note.provider_refund_failure'
-            && $job->object->is($creditNote)
-            && $job->options['provider_customer_id'] === 'prov_cus_1'
-            && $job->options['provider_error'] === [
-                'message' => 'Charge has already been refunded',
-                'error_code' => 'charge_already_refunded',
-            ];
-    });
+    Queue::assertPushed(SendWebhookJob::class, fn(SendWebhookJob $job): bool => $job->webhookType === 'credit_note.provider_refund_failure'
+        && $job->object->is($creditNote)
+        && $job->options['provider_customer_id'] === 'prov_cus_1'
+        && $job->options['provider_error'] === [
+            'message' => 'Charge has already been refunded',
+            'error_code' => 'charge_already_refunded',
+        ]);
 });
 
 it('delivers the provider refund failure webhook when the refund fails on the webhook', function (): void {
@@ -408,13 +404,11 @@ it('delivers the provider refund failure webhook when the refund fails on the we
         ->and($result->getError()->code)->toBe('refund_failed')
         ->and($creditNote->refresh()->refundStatusEnum())->toBe(CreditNoteRefundStatus::Failed);
 
-    Queue::assertPushed(SendWebhookJob::class, function (SendWebhookJob $job) use ($creditNote): bool {
-        return $job->webhookType === 'credit_note.provider_refund_failure'
-            && $job->object->is($creditNote)
-            && $job->options['provider_customer_id'] === 'prov_cus_1'
-            && $job->options['provider_error'] === [
-                'message' => 'Payment refund failed',
-                'error_code' => null,
-            ];
-    });
+    Queue::assertPushed(SendWebhookJob::class, fn(SendWebhookJob $job): bool => $job->webhookType === 'credit_note.provider_refund_failure'
+        && $job->object->is($creditNote)
+        && $job->options['provider_customer_id'] === 'prov_cus_1'
+        && $job->options['provider_error'] === [
+            'message' => 'Payment refund failed',
+            'error_code' => null,
+        ]);
 });

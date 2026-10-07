@@ -76,7 +76,8 @@ class Invite extends BaseModel
     }
 
     /** Rails: `scope :pending` via the status enum (Invite.pending). */
-    public function scopePending($query)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function pending($query)
     {
         return $query->where('status', InviteStatus::Pending);
     }

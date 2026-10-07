@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Auth\Superset;
 
+use JsonException;
 use App\Http\Client\LagoSessionClient;
 
 /**
@@ -97,7 +98,7 @@ trait Client
             );
 
             return ['success' => false];
-        } catch (\JsonException $e) {
+        } catch (JsonException $e) {
             // Rails: JSON::ParserError propagates to the service's rescue
             // block, which rewrites it as superset_invalid_response.
             throw $e;

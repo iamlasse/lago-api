@@ -122,7 +122,7 @@ final class SumService extends BaseSumService
      */
     protected function persistedEventStoreInstance(): PostgresStore
     {
-        $from = \Carbon\Carbon::parse($this->fromDatetime());
+        $from = \Illuminate\Support\Facades\Date::parse($this->fromDatetime());
         $topBoundary = $from->copy()->subMicroseconds(self::PERSISTED_TOP_BOUNDARY_DELAY_MICROSECONDS);
 
         $store = $this->eventStore->forWindow(

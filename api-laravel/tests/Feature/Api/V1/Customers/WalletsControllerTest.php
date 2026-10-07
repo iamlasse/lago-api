@@ -309,7 +309,7 @@ it('filters the customer wallets by currency', function (): void {
 
     $this->getJson('/api/v1/customers/'.$customer->external_id.'/wallets?currency=BRL', ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($brl) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($brl): void {
             $json->count('wallets', 1)
                 ->where('wallets.0.lago_id', $brl->id)
                 ->etc();

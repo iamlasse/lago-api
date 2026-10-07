@@ -54,7 +54,7 @@ class DecreaseService extends BaseService
             $wallet->customer->flagWalletsForRefresh();
 
             // Rails: Customers::RefreshWalletJob.perform_after_commit(wallet.customer)
-            \App\Jobs\Customers\RefreshWalletJob::dispatch($wallet->customer);
+            dispatch(new \App\Jobs\Customers\RefreshWalletJob($wallet->customer));
         }
 
         // Rails: SendWebhookJob.perform_after_commit("wallet.updated", wallet)
@@ -63,7 +63,7 @@ class DecreaseService extends BaseService
         // Rails: UsageMonitoring::ProcessWalletAlertsJob.perform_after_commit(wallet)
         // — the after-commit scheduling is not ported; dispatches immediately
         // (same as the other ported services).
-        \App\Jobs\UsageMonitoring\ProcessWalletAlertsJob::dispatch((string) $wallet->id);
+        dispatch(new \App\Jobs\UsageMonitoring\ProcessWalletAlertsJob((string) $wallet->id));
 
         $result->wallet = $wallet;
 

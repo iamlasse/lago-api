@@ -104,7 +104,7 @@ final class MeteredItem
     {
         $fromDate = \Carbon\CarbonImmutable::parse($this->boundaries->chargesFromDatetime)->startOfDay();
         $toDate = \Carbon\CarbonImmutable::parse($this->boundaries->chargesToDatetime)->startOfDay();
-        $currentDate = now()->startOfDay();
+        $currentDate = today();
 
         $totalDays = (int) $fromDate->diffInDays($toDate) + 1;
         $chargesDuration = $this->boundaries->chargesDuration ?? $totalDays;

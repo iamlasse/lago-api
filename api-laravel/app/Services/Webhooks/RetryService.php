@@ -34,7 +34,7 @@ class RetryService extends RootBaseService
             return $result->notAllowedFailure('is_succeeded');
         }
 
-        SendHttpWebhookJob::dispatch($this->webhook)
+        dispatch(new \App\Jobs\SendHttpWebhookJob($this->webhook))
             ->onQueue(SendHttpWebhookJob::queueFor($this->webhook->webhook_type));
 
         $result->webhook = $this->webhook;

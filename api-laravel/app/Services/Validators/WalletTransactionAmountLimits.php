@@ -17,15 +17,15 @@ use function bccomp;
  * NOTE: creditsAmount must be a string to go through
  * Validators\DecimalAmount (floats are rejected in billing math).
  */
-final class WalletTransactionAmountLimits
+final readonly class WalletTransactionAmountLimits
 {
     public function __construct(
-        private readonly BaseResult $result,
-        private readonly Wallet $wallet,
+        private BaseResult $result,
+        private Wallet $wallet,
         /** NOTE: must be a string (see DecimalAmount). */
-        private readonly mixed $creditsAmount,
-        private readonly mixed $ignoreValidation = false,
-        private readonly string $fieldName = 'paid_credits',
+        private mixed $creditsAmount,
+        private mixed $ignoreValidation = false,
+        private string $fieldName = 'paid_credits',
     ) {}
 
     public function raiseIfInvalid(): void

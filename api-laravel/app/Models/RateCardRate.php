@@ -97,13 +97,15 @@ class RateCardRate extends BaseModel
     // -- Scopes ---------------------------------------------------------------
 
     /** Rails: `scope :pending` — `where("effective_from > ?", Time.current)`. */
-    public function scopePending($query)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function pending($query)
     {
         return $query->where('effective_from', '>', now());
     }
 
     /** Rails: `scope :effective` — `where(effective_from: ..Time.current)`. */
-    public function scopeEffective($query)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function effective($query)
     {
         return $query->where('effective_from', '<=', now());
     }
@@ -117,7 +119,7 @@ class RateCardRate extends BaseModel
      */
     public function status(): string
     {
-        $effectiveFrom = Carbon::parse((string) $this->effective_from, 'UTC');
+        $effectiveFrom = \Illuminate\Support\Facades\Date::parse((string) $this->effective_from, 'UTC');
 
         if ($effectiveFrom->gt(now())) {
             return self::STATUSES['pending'];
@@ -220,7 +222,7 @@ class RateCardRate extends BaseModel
             return;
         }
 
-        $this->effective_from = \Carbon\Carbon::parse((string) $raw, 'UTC')->startOfDay();
+        $this->effective_from = \Illuminate\Support\Facades\Date::parse((string) $raw, 'UTC')->startOfDay();
     }
 
     /** @param array<string, list<string>> $errors */
@@ -362,7 +364,7 @@ class RateCardRate extends BaseModel
     protected function validateEffectiveFromIsAppended(array &$errors): void
     {
         $rawEffectiveFrom = $this->getAttributes()['effective_from'] ?? $this->getRawOriginal('effective_from');
-        $effectiveFrom = $rawEffectiveFrom !== null ? Carbon::parse((string) $rawEffectiveFrom, 'UTC') : null;
+        $effectiveFrom = $rawEffectiveFrom !== null ? \Illuminate\Support\Facades\Date::parse((string) $rawEffectiveFrom, 'UTC') : null;
         $card = $this->rateCard;
 
         if ($effectiveFrom === null || $card === null) {
@@ -392,7 +394,7 @@ class RateCardRate extends BaseModel
             return;
         }
 
-        if ($effectiveFrom->lessThanOrEqualTo(Carbon::parse((string) $activeBoundary, 'UTC'))) {
+        if ($effectiveFrom->lessThanOrEqualTo(\Illuminate\Support\Facades\Date::parse((string) $activeBoundary, 'UTC'))) {
             $errors['effective_from'] = ['must_be_after_active_rate'];
         }
     }

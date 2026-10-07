@@ -624,7 +624,7 @@ class PostgresStore extends BaseStore
      */
     public function datetimeLiteral(mixed $datetime, bool $floorToMilliseconds = false): string
     {
-        $carbon = \Carbon\Carbon::parse($datetime)->utc();
+        $carbon = \Illuminate\Support\Facades\Date::parse($datetime)->utc();
 
         if ($floorToMilliseconds) {
             $carbon->microsecond = (int) (floor($carbon->microsecond / 1000) * 1000);
@@ -886,7 +886,7 @@ class PostgresStore extends BaseStore
      */
     protected function newestFirstScope(): Builder
     {
-        return $this->events()->orderByDesc('timestamp')->orderByDesc('created_at');
+        return $this->events()->orderByDesc('timestamp')->latest();
     }
 
     /** Rails' `to_datetime.ceil` — ceil to the whole second. */

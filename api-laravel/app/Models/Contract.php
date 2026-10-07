@@ -116,8 +116,7 @@ class Contract extends BaseModel
             ->when($organizationId !== null, fn (Builder $q) => $q->where('organization_id', $organizationId))
             ->where('external_id', $externalId)
             ->orderByRaw("status = 'active' DESC, status = 'pending' DESC")
-            ->orderByDesc('started_at')
-            ->orderByDesc('created_at')
+            ->latest('started_at')->latest()
             ->first();
     }
 
@@ -195,7 +194,8 @@ class Contract extends BaseModel
     // -- Scopes -----------------------------------------------------------------
 
     /** Rails: `scope :live` — pending and active contracts. */
-    public function scopeLive(Builder $query): Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function live(Builder $query): Builder
     {
         return $query->whereIn('status', self::LIVE_STATUSES);
     }

@@ -19,17 +19,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * for a recurring threshold, the threshold amount for a fixed one.
  */
 #[Table(name: 'applied_usage_thresholds')]
+#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+    'organization_id',
+    'usage_threshold_id',
+    'invoice_id',
+    'lifetime_usage_amount_cents',
+])]
 class AppliedUsageThreshold extends BaseModel
 {
     use ConnectionResolvable;
     use HasFactory;
-
-    protected $fillable = [
-        'organization_id',
-        'usage_threshold_id',
-        'invoice_id',
-        'lifetime_usage_amount_cents',
-    ];
 
     protected $attributes = [
         'lifetime_usage_amount_cents' => 0,

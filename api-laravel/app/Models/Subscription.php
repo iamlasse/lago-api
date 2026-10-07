@@ -189,33 +189,33 @@ class Subscription extends BaseModel
     // same-named boolean status helpers below.
 
     /** Rails: `scope :starting_in_the_future, -> { pending.where(previous_subscription: nil) }`. */
-    public function scopeStartingInTheFuture(Builder $query): Builder
+    protected function scopeStartingInTheFuture(Builder $query): Builder
     {
         return $query->where('status', SubscriptionStatus::Pending->value)
             ->whereNull('previous_subscription_id');
     }
 
-    public function scopePending(Builder $query): Builder
+    protected function scopePending(Builder $query): Builder
     {
         return $query->where('status', SubscriptionStatus::Pending->value);
     }
 
-    public function scopeActive(Builder $query): Builder
+    protected function scopeActive(Builder $query): Builder
     {
         return $query->where('status', SubscriptionStatus::Active->value);
     }
 
-    public function scopeTerminated(Builder $query): Builder
+    protected function scopeTerminated(Builder $query): Builder
     {
         return $query->where('status', SubscriptionStatus::Terminated->value);
     }
 
-    public function scopeCanceled(Builder $query): Builder
+    protected function scopeCanceled(Builder $query): Builder
     {
         return $query->where('status', SubscriptionStatus::Canceled->value);
     }
 
-    public function scopeIncomplete(Builder $query): Builder
+    protected function scopeIncomplete(Builder $query): Builder
     {
         return $query->where('status', SubscriptionStatus::Incomplete->value);
     }
@@ -538,7 +538,7 @@ class Subscription extends BaseModel
         $first = static::query()
             ->where('external_id', $this->external_id)
             ->whereNotNull('started_at')
-            ->orderBy('started_at')
+            ->oldest('started_at')
             ->first();
 
         return $first?->started_at ?? $this->subscription_at;

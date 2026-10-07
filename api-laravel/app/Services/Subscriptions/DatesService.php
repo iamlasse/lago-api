@@ -29,14 +29,10 @@ use App\Services\Subscriptions\Dates\SemiannualService;
  */
 abstract class DatesService
 {
-    protected Subscription $subscription;
-
     protected Plan $plan;
 
     /** Billing time — usually the end of the billing period + 1 day; the termination day when terminated. */
     protected CarbonImmutable $billingAt;
-
-    protected bool $currentUsage;
 
     protected ?CarbonImmutable $fromDatetimeCache = null;
 
@@ -50,27 +46,21 @@ abstract class DatesService
 
     protected ?InvoiceSubscription $lastInvoiceSubscriptionCache = null;
 
-    /**
+    public function __construct(protected Subscription $subscription, CarbonInterface|int|null $billingAt, protected bool $currentUsage, /**
      * When composed services (yearly/semiannual → monthly) receive an already
      * calendar-day value (Rails passes a Date), the billing date must not be
      * re-shifted into the customer timezone — a Date#in_time_zone keeps its
      * calendar day.
      */
-    protected ?CarbonImmutable $billingDateOverride;
-
-    public function __construct(Subscription $subscription, CarbonInterface|int|null $billingAt, bool $currentUsage, ?CarbonImmutable $billingDateOverride = null)
+    protected ?CarbonImmutable $billingDateOverride = null)
     {
-        $this->subscription = $subscription;
-        $this->plan = $subscription->plan;
+        $this->plan = $this->subscription->plan;
 
         $billingAt ??= now();
 
         $this->billingAt = is_int($billingAt)
             ? CarbonImmutable::createFromTimestampUTC($billingAt)
             : CarbonImmutable::instance($billingAt)->utc();
-
-        $this->currentUsage = $currentUsage;
-        $this->billingDateOverride = $billingDateOverride;
     }
 
     abstract protected function computeBaseDate(): CarbonImmutable;

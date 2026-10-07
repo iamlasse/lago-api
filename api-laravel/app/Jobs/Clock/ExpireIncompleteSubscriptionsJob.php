@@ -48,6 +48,6 @@ class ExpireIncompleteSubscriptionsJob implements ShouldQueue
             ->whereHas('activationRules', fn ($q) => $q
                 ->where('subscription_activation_rules.status', 'pending')
                 ->where('subscription_activation_rules.expires_at', '<=', now()))
-            ->each(fn (Subscription $subscription) => ExpireIncompleteJob::dispatch($subscription));
+            ->each(fn (Subscription $subscription) => dispatch(new ExpireIncompleteJob($subscription)));
     }
 }

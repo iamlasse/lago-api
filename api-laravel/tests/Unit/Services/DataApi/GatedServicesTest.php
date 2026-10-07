@@ -67,11 +67,9 @@ it('forwards the params to the expected data api path when premium', function (s
     $expectedUrl = 'https://data.lago.test/'.str_replace('{id}', $this->organization->id, $path)
         .'?currency=EUR';
 
-    Http::assertSent(function (Illuminate\Http\Client\Request $request) use ($expectedUrl): bool {
-        return $request->method() === 'GET'
-            && $request->url() === $expectedUrl
-            && $request->hasHeader('Authorization', 'Bearer data-api-bearer');
-    });
+    Http::assertSent(fn(Illuminate\Http\Client\Request $request): bool => $request->method() === 'GET'
+        && $request->url() === $expectedUrl
+        && $request->hasHeader('Authorization', 'Bearer data-api-bearer'));
 })->with([
     'mrrs' => [MrrsService::class, 'mrrs/{id}/'],
     'revenue streams' => [RevenueStreamsService::class, 'revenue_streams/{id}/'],

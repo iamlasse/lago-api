@@ -25,14 +25,14 @@ use App\Support\Documents\PaymentReceiptPdf;
  * credit-notes slices, a PaymentReceipt or a CreditNote (Rails passes any
  * context: `Utils::PdfGenerator.new(template:, context:)`).
  */
-final class PdfGenerator
+final readonly class PdfGenerator
 {
     /** Rails: SlimHelper::PDF_LOGO_FILENAME (public/assets/images/). */
-    public const PDF_LOGO_FILENAME = 'lago-logo-invoice.png';
+    public const string PDF_LOGO_FILENAME = 'lago-logo-invoice.png';
 
     public function __construct(
-        private readonly string $template,
-        private readonly Invoice|PaymentReceipt|CreditNote $invoice,
+        private string $template,
+        private Invoice|PaymentReceipt|CreditNote $invoice,
     ) {}
 
     /** Rails: `render_html` — the template rendered for the document context. */

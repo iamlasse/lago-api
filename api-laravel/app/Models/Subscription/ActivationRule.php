@@ -143,19 +143,22 @@ class ActivationRule extends BaseModel
     // -- Scopes ------------------------------------------------------------------
 
     /** Rails: `scope :expirable, -> { pending.where("expires_at <= ?", Time.current) }`. */
-    public function scopeExpirable($query): mixed
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function expirable($query): mixed
     {
         return $query->where('status', 'pending')->where('expires_at', '<=', now());
     }
 
     /** Rails: `scope :rejected`. */
-    public function scopeRejected($query): mixed
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function rejected($query): mixed
     {
         return $query->whereIn('status', static::REJECTED_STATUSES);
     }
 
     /** Rails: `scope :fulfilled`. */
-    public function scopeFulfilled($query): mixed
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function fulfilled($query): mixed
     {
         return $query->whereIn('status', static::FULFILLED_STATUSES);
     }

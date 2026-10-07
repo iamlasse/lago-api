@@ -65,7 +65,7 @@ class ContractRateCardsQuery extends BaseService
             // Rails: order_by_product_category(...).order(:effective_date, :id).
             $result->contract_rate_cards = $this->paginate(
                 $contractRateCards
-                    ->orderBy('contract_rate_cards.effective_date')
+                    ->oldest('contract_rate_cards.effective_date')
                     ->orderBy('contract_rate_cards.id'),
             );
         } else {
@@ -73,8 +73,8 @@ class ContractRateCardsQuery extends BaseService
             // apply_consistent_ordering with default effective_date asc.
             $result->contract_rate_cards = $this->paginate(
                 $contractRateCards
-                    ->orderBy('contract_rate_cards.effective_date')
-                    ->orderByDesc('contract_rate_cards.created_at')
+                    ->oldest('contract_rate_cards.effective_date')
+                    ->latest('contract_rate_cards.created_at')
                     ->orderBy('contract_rate_cards.id'),
             );
         }

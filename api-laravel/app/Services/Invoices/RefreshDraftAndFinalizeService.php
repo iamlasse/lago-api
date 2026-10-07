@@ -89,7 +89,7 @@ class RefreshDraftAndFinalizeService extends \App\Services\BaseService
 
             $invoice = $invoice->refresh();
 
-            $invoice->payment_due_date = \Illuminate\Support\Carbon::parse($this->issuingDate($invoice))
+            $invoice->payment_due_date = \Illuminate\Support\Facades\Date::parse($this->issuingDate($invoice))
                 ->addDays((int) $invoice->customer->applicableNetPaymentTerm())
                 ->toDateString();
 
@@ -120,7 +120,7 @@ class RefreshDraftAndFinalizeService extends \App\Services\BaseService
             // Rails: GenerateDocumentsJob.perform_later(invoice:, notify:
             // should_deliver_email?) — premium license + the billing entity's
             // "invoice.finalized" email setting.
-            GenerateDocumentsJob::dispatch($invoice, $this->shouldDeliverEmail($invoice));
+            dispatch(new \App\Jobs\Invoices\GenerateDocumentsJob($invoice, $this->shouldDeliverEmail($invoice)));
             // Rails: Integrations::Aggregator::Invoices::CreateJob.
             // perform_later(invoice:) if invoice.should_sync_invoice?
             // (the Hubspot leg is the Hubspot slice's).

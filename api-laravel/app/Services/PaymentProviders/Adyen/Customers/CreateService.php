@@ -24,22 +24,22 @@ class CreateService extends AbstractCustomersCreateService
     protected function createOnProvider(PaymentProviderCustomer $providerCustomer, bool $async): void
     {
         if ($async) {
-            AdyenCreateCustomerJob::dispatch($providerCustomer);
+            dispatch(new \App\Jobs\PaymentProviders\AdyenCreateCustomerJob($providerCustomer));
 
             return;
         }
 
-        AdyenCreateCustomerJob::dispatchSync($providerCustomer);
+        dispatch_sync(new \App\Jobs\PaymentProviders\AdyenCreateCustomerJob($providerCustomer));
     }
 
     protected function generateCheckoutUrl(PaymentProviderCustomer $providerCustomer, bool $async): void
     {
         if ($async) {
-            AdyenCheckoutUrlJob::dispatch($providerCustomer);
+            dispatch(new \App\Jobs\PaymentProviders\AdyenCheckoutUrlJob($providerCustomer));
 
             return;
         }
 
-        AdyenCheckoutUrlJob::dispatchSync($providerCustomer);
+        dispatch_sync(new \App\Jobs\PaymentProviders\AdyenCheckoutUrlJob($providerCustomer));
     }
 }

@@ -38,16 +38,16 @@ use function is_array;
  */
 class Query extends BaseService
 {
-    private const UUID_REGEX = '/\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\z/i';
+    private const string UUID_REGEX = '/\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\z/i';
 
     /** Rails: Invoice::VISIBLE_STATUS names. */
-    private const VISIBLE_STATUS_NAMES = ['draft', 'finalized', 'voided', 'failed', 'pending'];
+    private const array VISIBLE_STATUS_NAMES = ['draft', 'finalized', 'voided', 'failed', 'pending'];
 
     /** Rails: Invoice::PAYMENT_STATUS names. */
-    private const PAYMENT_STATUS_NAMES = ['pending', 'succeeded', 'failed'];
+    private const array PAYMENT_STATUS_NAMES = ['pending', 'succeeded', 'failed'];
 
     /** Rails: InvoiceSettlement.settlement_types keys (the ported subset). */
-    private const SETTLEMENT_TYPES = ['credit_note'];
+    private const array SETTLEMENT_TYPES = ['credit_note'];
 
     /**
      * @param  array<string, mixed>  $filters  Rails-shaped (snake_case) filters

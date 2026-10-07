@@ -835,7 +835,7 @@ class ClickHouseStore extends BaseStore
      */
     public function datetimeLiteral(mixed $datetime, bool $floorToMilliseconds = false): string
     {
-        $carbon = \Carbon\Carbon::parse($datetime)->utc();
+        $carbon = \Illuminate\Support\Facades\Date::parse($datetime)->utc();
 
         if ($floorToMilliseconds) {
             $carbon->microsecond = (int) (floor($carbon->microsecond / 1000) * 1000);

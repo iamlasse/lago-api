@@ -87,12 +87,10 @@ it('gets the usages for the organization', function (): void {
 
     $expectedStartDate = now()->subDays(30)->toDateString();
 
-    Http::assertSent(function (Illuminate\Http\Client\Request $request) use ($expectedStartDate): bool {
-        return $request->method() === 'GET'
-            && $request->url() === 'https://data.lago.test/usages/'.$this->organization->id
-                .'/?time_granularity=daily&start_of_period_dt='.$expectedStartDate
-            && $request->hasHeader('Authorization', 'Bearer data-api-bearer');
-    });
+    Http::assertSent(fn(Illuminate\Http\Client\Request $request): bool => $request->method() === 'GET'
+        && $request->url() === 'https://data.lago.test/usages/'.$this->organization->id
+            .'/?time_granularity=daily&start_of_period_dt='.$expectedStartDate
+        && $request->hasHeader('Authorization', 'Bearer data-api-bearer'));
 });
 
 it('annotates the deleted billable metrics', function (): void {
@@ -139,10 +137,8 @@ it('keeps the billable metric code filter and drops the rest when not premium', 
 
     $expectedStartDate = now()->subDays(30)->toDateString();
 
-    Http::assertSent(function (Illuminate\Http\Client\Request $request) use ($expectedStartDate): bool {
-        return $request->url() === 'https://data.lago.test/usages/'.$this->organization->id
-            .'/?time_granularity=daily&start_of_period_dt='.$expectedStartDate.'&billable_metric_code=code';
-    });
+    Http::assertSent(fn(Illuminate\Http\Client\Request $request): bool => $request->url() === 'https://data.lago.test/usages/'.$this->organization->id
+        .'/?time_granularity=daily&start_of_period_dt='.$expectedStartDate.'&billable_metric_code=code');
 });
 
 it('forwards the params and defaults the granularity when premium', function (): void {
@@ -152,18 +148,14 @@ it('forwards the params and defaults the granularity when premium', function ():
         'from_date' => '2024-01-01',
     ]));
 
-    Http::assertSent(function (Illuminate\Http\Client\Request $request): bool {
-        return $request->url() === 'https://data.lago.test/usages/'.$this->organization->id
-            .'/?time_granularity=monthly&additional_param=value&from_date=2024-01-01';
-    });
+    Http::assertSent(fn(Illuminate\Http\Client\Request $request): bool => $request->url() === 'https://data.lago.test/usages/'.$this->organization->id
+        .'/?time_granularity=monthly&additional_param=value&from_date=2024-01-01');
 });
 
 it('defaults the granularity to daily when premium without one', function (): void {
     premiumDataApi(fn (): App\Services\BaseResult => dataApiUsagesCall($this->organization));
 
-    Http::assertSent(function (Illuminate\Http\Client\Request $request): bool {
-        return str_contains($request->url(), '/?time_granularity=daily');
-    });
+    Http::assertSent(fn(Illuminate\Http\Client\Request $request): bool => str_contains($request->url(), '/?time_granularity=daily'));
 });
 
 // -- failure modes --------------------------------------------------------------

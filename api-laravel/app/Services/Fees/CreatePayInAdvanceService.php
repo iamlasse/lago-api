@@ -171,7 +171,7 @@ class CreatePayInAdvanceService extends BaseService
         // NOTE: second-precision column comparison — the model bindings
         // truncate microseconds, so a raw `<=` silently excludes a cached row
         // written in the same second as the event's timestamp.
-        $from = \Carbon\Carbon::parse($this->meteredItem->boundaries->chargesFromDatetime);
+        $from = \Illuminate\Support\Facades\Date::parse($this->meteredItem->boundaries->chargesFromDatetime);
         $from->microsecond = 0;
 
         return CachedAggregation::query()
@@ -184,8 +184,7 @@ class CreatePayInAdvanceService extends BaseService
             ])
             ->where('grouped_by', '[]')
             ->where('event_transaction_id', '!=', $this->event->transaction_id)
-            ->orderByDesc('timestamp')
-            ->orderByDesc('created_at')
+            ->orderByDesc('timestamp')->latest()
             ->first();
     }
 

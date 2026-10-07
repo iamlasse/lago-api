@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Jobs\Clock\ApiKeys;
 
 use Illuminate\Bus\Queueable;
-use App\Services\ApiKeys\TrackUsageService;
 use Illuminate\Queue\InteractsWithQueue;
+use App\Services\ApiKeys\TrackUsageService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 

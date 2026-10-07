@@ -19,7 +19,7 @@ beforeEach(function (): void {
 
 afterEach(function (): void {
     putenv('NANGO_SECRET_KEY');
-    unset($_ENV['NANGO_SECRET_KEY']);
+    unset(\Illuminate\Support\Env::get('NANGO_SECRET_KEY'));
 });
 
 it('saves the portal id from the account information', function (): void {

@@ -33,10 +33,10 @@ use Illuminate\Support\Facades\Storage;
 final class ActiveStorage
 {
     /** Record name Rails uses for the invoice PDF attachment. */
-    public const FILE = 'file';
+    public const string FILE = 'file';
 
     /** Record name Rails uses for the invoice XML attachment. */
-    public const XML_FILE = 'xml_file';
+    public const string XML_FILE = 'xml_file';
 
     /**
      * Port of the ActiveStorage service selection in Rails'

@@ -49,7 +49,7 @@ class SendHttpService extends RootBaseService
             $this->markWebhookAsUnsuccessful($e, $retrying);
 
             if ($retrying) {
-                SendHttpWebhookJob::dispatch($this->webhook)
+                dispatch(new \App\Jobs\SendHttpWebhookJob($this->webhook))
                     ->onQueue(SendHttpWebhookJob::queueFor($this->webhook->webhook_type))
                     ->delay(now()->addSeconds($this->waitValue()));
             }

@@ -45,8 +45,7 @@ class InvoiceCreditNotes
 
         $paginator = CreditNote::query()
             ->where('invoice_id', $invoice->id)
-            ->where('status', \App\Enums\CreditNoteStatus::Finalized->value)
-            ->orderByDesc('created_at')
+            ->where('status', \App\Enums\CreditNoteStatus::Finalized->value)->latest()
             ->paginate(perPage: $limit, page: $page);
 
         return Page::fromLengthAwarePaginator($paginator);

@@ -56,9 +56,7 @@ class CancelService extends BaseService
             $result->subscription = $locked;
         });
 
-        if ($result->subscription === null) {
-            $result->subscription = $this->subscription;
-        }
+        $result->subscription ??= $this->subscription;
 
         return $result;
     }
@@ -110,7 +108,7 @@ class CancelService extends BaseService
             ->where('invoice_subscriptions.subscription_id', $subscription->id)
             ->where('invoices.invoice_type', InvoiceType::Subscription->value)
             ->whereIn('invoices.status', [InvoiceStatus::Open->value, InvoiceStatus::Failed->value])
-            ->orderBy('invoices.created_at')
+            ->oldest('invoices.created_at')
             ->first();
     }
 

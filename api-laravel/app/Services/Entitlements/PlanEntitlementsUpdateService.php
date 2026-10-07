@@ -70,8 +70,7 @@ class PlanEntitlementsUpdateService extends BaseService
             // Rails: plan.entitlements.includes(:feature, values: :privilege).reload
             $result->entitlements = Entitlement::query()
                 ->where('plan_id', $plan->id)
-                ->with('feature', 'values.privilege')
-                ->orderBy('created_at')
+                ->with('feature', 'values.privilege')->oldest()
                 ->get();
 
             return $result;

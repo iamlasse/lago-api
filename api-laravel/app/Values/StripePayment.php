@@ -9,14 +9,14 @@ namespace App\Values;
  * define) — the normalized Stripe payment object the webhook handlers pass
  * into the payment-status update services.
  */
-final class StripePayment
+final readonly class StripePayment
 {
     public function __construct(
-        public readonly string $id,
-        public readonly string $status,
+        public string $id,
+        public string $status,
         /** @var array<string, mixed> */
-        public readonly array $metadata = [],
-        public readonly ?string $errorCode = null,
+        public array $metadata = [],
+        public ?string $errorCode = null,
     ) {
         /** @var array<string, mixed> $metadata */
     }

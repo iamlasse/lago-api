@@ -20,27 +20,21 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * unique_by: :idx_subscription_unique — a plain INSERT ... ON CONFLICT DO
  * NOTHING against the partial unique index).
  */
-#[Table(name: 'usage_monitoring_subscription_activities')]
+#[\Illuminate\Database\Eloquent\Attributes\Table(name: 'usage_monitoring_subscription_activities', keyType: 'int')]
+#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+    'organization_id',
+    'subscription_id',
+    'enqueued',
+    'enqueued_at',
+    'inserted_at',
+])]
+#[\Illuminate\Database\Eloquent\Attributes\WithoutTimestamps]
 class SubscriptionActivity extends BaseModel
 {
-    public $timestamps = false;
-
     public $incrementing = true;
-
-    protected $keyType = 'int';
-
-    protected $fillable = [
-        'organization_id',
-        'subscription_id',
-        'enqueued',
-        'enqueued_at',
-        'inserted_at',
-    ];
-
     protected $attributes = [
         'enqueued' => false,
     ];
-
     /**
      * Rails: SubscriptionActivity.insert_all(..., unique_by: :idx_subscription_unique)
      * — conflicts on the partial unique index are skipped.
@@ -52,17 +46,14 @@ class SubscriptionActivity extends BaseModel
             'subscription_id' => $subscription->id,
         ]);
     }
-
     public function organization(): BelongsTo
     {
         return $this->belongsTo(\App\Models\Organization::class);
     }
-
     public function subscription(): BelongsTo
     {
         return $this->belongsTo(Subscription::class);
     }
-
     protected function casts(): array
     {
         return [

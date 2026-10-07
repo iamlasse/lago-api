@@ -15,13 +15,13 @@ namespace App\Support;
 final class Currency
 {
     /** Currencies with no subunit (exponent 0). */
-    private const ZERO_EXPONENT = [
+    private const array ZERO_EXPONENT = [
         'BIF', 'CLP', 'DJF', 'GNF', 'ISK', 'JPY', 'KMF', 'KRW', 'PYG',
         'RWF', 'UGX', 'VND', 'VUV', 'XAF', 'XOF', 'XPF',
     ];
 
     /** Currencies with a three-decimal subunit (exponent 3). */
-    private const THREE_EXPONENT = ['BHD', 'KWD', 'OMR', 'TND'];
+    private const array THREE_EXPONENT = ['BHD', 'KWD', 'OMR', 'TND'];
 
     public static function subunitToUnit(string $currency): int
     {

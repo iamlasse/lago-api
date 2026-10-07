@@ -100,7 +100,7 @@ it('creates a subscription', function (): void {
         'purchase_order_number' => 'PO-123',
     ]], ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($customer, $plan, $externalId) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($customer, $plan, $externalId): void {
             $json->where('subscription.lago_id', fn ($id) => is_string($id) && $id !== '')
                 ->where('subscription.external_id', $externalId)
                 ->where('subscription.external_customer_id', $customer->external_id)
@@ -152,7 +152,7 @@ it('accepts external_customer_id, name and external_id as integers', function ()
         'external_id' => 789,
     ]], ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json): void {
             $json->where('subscription.lago_id', fn ($id) => is_string($id) && $id !== '')
                 ->where('subscription.external_customer_id', '123')
                 ->where('subscription.name', '456')
@@ -251,7 +251,7 @@ it('forbids payment pre-authorization when the feature is not enabled', function
         ],
     ], ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertStatus(403)
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json): void {
             $json->where('status', 403)
                 ->where('error', 'Forbidden')
                 ->where('code', 'feature_not_available')
@@ -289,7 +289,7 @@ it('terminates a subscription without deleting it', function (): void {
         'Authorization' => 'Bearer '.$apiKey->value,
     ])
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($subscription) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($subscription): void {
             $json->where('subscription.lago_id', (string) $subscription->id)
                 ->where('subscription.status', 'terminated')
                 ->where('subscription.terminated_at', fn ($at) => is_string($at) && $at !== '')
@@ -447,7 +447,7 @@ it('cancels a pending subscription when status is given', function (): void {
         'status' => 'pending',
     ], ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($subscription) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($subscription): void {
             $json->where('subscription.lago_id', (string) $subscription->id)
                 ->where('subscription.status', 'canceled')
                 ->where('subscription.canceled_at', fn ($at) => is_string($at) && $at !== '')
@@ -522,7 +522,7 @@ it('updates a subscription', function (): void {
         'subscription_at' => '2022-09-05T12:23:12Z',
     ]], ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($subscription) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($subscription): void {
             $json->where('subscription.lago_id', (string) $subscription->id)
                 ->where('subscription.name', 'subscription name new')
                 ->where('subscription.subscription_at', '2022-09-05T12:23:12Z')
@@ -667,7 +667,7 @@ it('updates a subscription via PATCH', function (): void {
         'subscription_at' => '2022-09-05T12:23:12Z',
     ]], ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($subscription) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($subscription): void {
             $json->where('subscription.lago_id', (string) $subscription->id)
                 ->where('subscription.name', 'subscription name new')
                 ->where('subscription.subscription_at', '2022-09-05T12:23:12Z')
@@ -718,7 +718,7 @@ it('shows a subscription', function (): void {
         'Authorization' => 'Bearer '.$apiKey->value,
     ])
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($subscription) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($subscription): void {
             $json->where('subscription.lago_id', (string) $subscription->id)
                 ->where('subscription.external_id', $subscription->external_id)
                 ->where('subscription.status', 'active')
@@ -789,7 +789,7 @@ it('lists subscriptions', function (): void {
 
     subscriptionGetWithToken('/api/v1/subscriptions', [], $apiKey->value)
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($subscription) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($subscription): void {
             $json->count('subscriptions', 1)
                 ->where('subscriptions.0.lago_id', (string) $subscription->id)
                 ->etc();
@@ -808,7 +808,7 @@ it('lists subscriptions of the given external customer', function (): void {
         'external_customer_id' => $customer2->external_id,
     ], $apiKey->value)
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($subscription2) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($subscription2): void {
             $json->count('subscriptions', 1)
                 ->where('subscriptions.0.lago_id', (string) $subscription2->id)
                 ->etc();
@@ -825,7 +825,7 @@ it('paginates subscriptions with meta data', function (): void {
 
     subscriptionGetWithToken('/api/v1/subscriptions', ['page' => 1, 'per_page' => 1], $apiKey->value)
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json): void {
             $json->count('subscriptions', 1)
                 ->where('meta.current_page', 1)
                 ->where('meta.next_page', 2)
@@ -845,7 +845,7 @@ it('filters subscriptions by plan code', function (): void {
 
     subscriptionGetWithToken('/api/v1/subscriptions', ['plan_code' => $plan->code], $apiKey->value)
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($subscription) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($subscription): void {
             $json->count('subscriptions', 1)
                 ->where('subscriptions.0.lago_id', (string) $subscription->id)
                 ->etc();
@@ -863,7 +863,7 @@ it('filters subscriptions by the overriden legacy spelling', function (): void {
     // overriden: true — overridden (child) plans only.
     subscriptionGetWithToken('/api/v1/subscriptions', ['overriden' => 'true'], $apiKey->value)
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($overriddenSubscription) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($overriddenSubscription): void {
             $json->count('subscriptions', 1)
                 ->where('subscriptions.0.lago_id', (string) $overriddenSubscription->id)
                 ->etc();
@@ -872,7 +872,7 @@ it('filters subscriptions by the overriden legacy spelling', function (): void {
     // overriden: false — parent plans only.
     subscriptionGetWithToken('/api/v1/subscriptions', ['overriden' => 'false'], $apiKey->value)
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($subscription) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($subscription): void {
             $json->count('subscriptions', 1)
                 ->where('subscriptions.0.lago_id', (string) $subscription->id)
                 ->etc();
@@ -881,7 +881,7 @@ it('filters subscriptions by the overriden legacy spelling', function (): void {
     // overridden (correct spelling) wins.
     subscriptionGetWithToken('/api/v1/subscriptions', ['overridden' => 'true'], $apiKey->value)
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($overriddenSubscription) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($overriddenSubscription): void {
             $json->count('subscriptions', 1)
                 ->where('subscriptions.0.lago_id', (string) $overriddenSubscription->id)
                 ->etc();
@@ -898,7 +898,7 @@ it('filters subscriptions by currency', function (): void {
 
     subscriptionGetWithToken('/api/v1/subscriptions', ['currency' => 'BRL'], $apiKey->value)
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($brlSubscription) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($brlSubscription): void {
             $json->count('subscriptions', 1)
                 ->where('subscriptions.0.lago_id', (string) $brlSubscription->id)
                 ->etc();
@@ -919,7 +919,7 @@ it('filters subscriptions by external_id and status', function (): void {
         'status[1]' => 'terminated',
     ], $apiKey->value)
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($active, $terminated) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($active, $terminated): void {
             $json->count('subscriptions', 2)
                 ->where('subscriptions.0.lago_id', fn ($id) => in_array($id, [(string) $active->id, (string) $terminated->id], true))
                 ->etc();
@@ -938,7 +938,7 @@ it('filters subscriptions by billing entity codes', function (): void {
     // Single code.
     subscriptionGetWithToken('/api/v1/subscriptions', ['billing_entity_codes[0]' => 'eu'], $apiKey->value)
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($euSubscription) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($euSubscription): void {
             $json->count('subscriptions', 1)
                 ->where('subscriptions.0.lago_id', (string) $euSubscription->id)
                 ->etc();
@@ -967,7 +967,7 @@ it('filters subscriptions by terminated status', function (): void {
 
     subscriptionGetWithToken('/api/v1/subscriptions', ['status[0]' => 'terminated'], $apiKey->value)
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($terminated) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($terminated): void {
             $json->count('subscriptions', 1)
                 ->where('subscriptions.0.lago_id', (string) $terminated->id)
                 ->etc();
@@ -989,7 +989,7 @@ it('lists next and previous plan codes', function (): void {
 
     subscriptionGetWithToken('/api/v1/subscriptions', [], $apiKey->value)
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($previousPlan, $nextPlan) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($previousPlan, $nextPlan): void {
             $json->where('subscriptions.0.previous_plan_code', $previousPlan->code)
                 ->where('subscriptions.0.next_plan_code', $nextPlan->code)
                 ->etc();

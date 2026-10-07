@@ -23,7 +23,7 @@ final class RequiredOrganization
 
         $currentMembership = LagoContext::currentMembership($context);
 
-        throw_unless($currentMembership, throw self::organizationError('Missing membership'));
+        throw_unless($currentMembership, self::organizationError('Missing membership'));
 
         $currentUser = LagoContext::currentUser($context);
         if (

@@ -33,7 +33,7 @@ class FinalizeBatchService extends BaseService
 
         $invoices = $this->draftInvoices()->get();
 
-        FinalizeAllJob::dispatch($this->organization, $invoices->pluck('id')->all());
+        dispatch(new \App\Jobs\Invoices\FinalizeAllJob($this->organization, $invoices->pluck('id')->all()));
 
         $result->invoices = $invoices;
 

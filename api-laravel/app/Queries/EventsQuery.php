@@ -168,7 +168,7 @@ class EventsQuery extends BaseService
     /** Rails: parse_datetime_filter — Time.zone.parse / DateTime parsing. */
     private function parseDatetimeFilter(string $field): \Carbon\CarbonInterface
     {
-        return \Carbon\Carbon::parse($this->filters[$field])->utc();
+        return \Illuminate\Support\Facades\Date::parse($this->filters[$field])->utc();
     }
 
     /**

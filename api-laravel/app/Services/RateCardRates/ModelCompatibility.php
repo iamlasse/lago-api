@@ -17,12 +17,12 @@ use App\Models\BillableMetric;
 final class ModelCompatibility
 {
     /** Rails: mirrors FixedCharge::CHARGE_MODELS. */
-    private const FIXED_ITEM_RATE_MODELS = ['standard', 'graduated', 'volume'];
+    private const array FIXED_ITEM_RATE_MODELS = ['standard', 'graduated', 'volume'];
 
     /** Rails: mirrors Charge#validate_prorated. */
-    private const PRORATION_ARREARS_MODELS = ['standard', 'volume', 'graduated'];
+    private const array PRORATION_ARREARS_MODELS = ['standard', 'volume', 'graduated'];
 
-    private const PRORATION_ADVANCE_MODELS = ['standard'];
+    private const array PRORATION_ADVANCE_MODELS = ['standard'];
 
     public static function errorCode(?string $rateModel, ?RateCard $rateCard): ?string
     {

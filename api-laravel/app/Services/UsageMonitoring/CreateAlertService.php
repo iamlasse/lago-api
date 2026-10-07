@@ -211,6 +211,6 @@ class CreateAlertService extends BaseService
             return;
         }
 
-        \App\Jobs\UsageMonitoring\ProcessWalletAlertsJob::dispatch($wallet->id);
+        dispatch(new \App\Jobs\UsageMonitoring\ProcessWalletAlertsJob($wallet->id));
     }
 }

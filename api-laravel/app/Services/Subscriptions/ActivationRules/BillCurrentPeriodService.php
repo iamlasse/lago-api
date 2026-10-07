@@ -51,11 +51,7 @@ class BillCurrentPeriodService extends BaseService
             return $result;
         }
 
-        BillSubscriptionJob::dispatch(
-            [$this->subscription],
-            (int) $this->billingAt()->getTimestamp(),
-            'subscription_periodic',
-        );
+        dispatch(new \App\Jobs\BillSubscriptionJob([$this->subscription], (int) $this->billingAt()->getTimestamp(), 'subscription_periodic'));
 
         return $result;
     }

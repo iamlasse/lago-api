@@ -104,13 +104,13 @@ class ManualCreateService extends BaseService
         // Rails: PaymentReceipts::CreateJob.perform_later(result.payment)
         // if organization.issue_receipts_enabled?.
         if ($this->organization->issueReceiptsEnabled()) {
-            CreateJob::dispatch($payment);
+            dispatch(new \App\Jobs\PaymentReceipts\CreateJob($payment));
         }
 
         // Rails after_commit: Integrations::Aggregator::Payments::CreateJob
         // .perform_later(payment: result.payment) if should_sync_payment?.
         if ($payment->shouldSyncPayment()) {
-            \App\Jobs\Integrations\Aggregator\Payments\CreateJob::dispatch($payment);
+            dispatch(new \App\Jobs\Integrations\Aggregator\Payments\CreateJob($payment));
         }
 
         return $result;
@@ -185,6 +185,6 @@ class ManualCreateService extends BaseService
             return null;
         }
 
-        return \Illuminate\Support\Carbon::parse($paidAt, date_default_timezone_get())->utc();
+        return \Illuminate\Support\Facades\Date::parse($paidAt, date_default_timezone_get())->utc();
     }
 }

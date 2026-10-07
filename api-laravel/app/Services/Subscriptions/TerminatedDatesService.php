@@ -18,27 +18,16 @@ use App\Models\InvoiceSubscription;
  */
 class TerminatedDatesService
 {
-    protected Subscription $subscription;
-
     protected ?CarbonImmutable $timestamp;
 
-    protected DatesService $dateService;
-
-    protected bool $matchInvoiceSubscription;
-
     public function __construct(
-        Subscription $subscription,
+        protected Subscription $subscription,
         object $invoice,
-        DatesService $dateService,
-        bool $matchInvoiceSubscription = true,
+        protected DatesService $dateService,
+        protected bool $matchInvoiceSubscription = true,
     ) {
-        $this->subscription = $subscription;
-
         $timestamp = $invoice->invoiceSubscriptions->first()?->timestamp;
         $this->timestamp = $timestamp !== null ? CarbonImmutable::instance($timestamp)->utc() : null;
-
-        $this->dateService = $dateService;
-        $this->matchInvoiceSubscription = $matchInvoiceSubscription;
     }
 
     public function call(): DatesService

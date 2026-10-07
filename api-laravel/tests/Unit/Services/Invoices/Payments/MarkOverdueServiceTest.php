@@ -97,9 +97,7 @@ it('enqueues the invoice.payment_overdue webhook', function (): void {
 
     MarkOverdueService::call(invoice: $invoice);
 
-    Queue::assertPushed(SendWebhookJob::class, function (SendWebhookJob $job) use ($invoice): bool {
-        return $job->webhookType === 'invoice.payment_overdue'
-            && $job->object instanceof Invoice
-            && $job->object->is($invoice);
-    });
+    Queue::assertPushed(SendWebhookJob::class, fn(SendWebhookJob $job): bool => $job->webhookType === 'invoice.payment_overdue'
+        && $job->object instanceof Invoice
+        && $job->object->is($invoice));
 });

@@ -162,7 +162,7 @@ class PostProcessService extends BaseService
             return;
         }
 
-        $date = \Carbon\Carbon::now($customer->applicableTimezone())->toDateString();
+        $date = \Illuminate\Support\Facades\Date::now($customer->applicableTimezone())->toDateString();
 
         foreach ($subs as $subscription) {
             \App\Services\UsageMonitoring\TrackSubscriptionActivityService::call(
@@ -194,6 +194,6 @@ class PostProcessService extends BaseService
             return;
         }
 
-        PayInAdvanceJob::dispatch($this->event);
+        dispatch(new \App\Jobs\Events\PayInAdvanceJob($this->event));
     }
 }

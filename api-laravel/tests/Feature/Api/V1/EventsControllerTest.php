@@ -96,7 +96,7 @@ it('stores a v2 external_contract_id under external_subscription_id', function (
         ->assertOk()
         ->assertJsonPath('event.external_subscription_id', 'contract_external_id');
 
-    expect(Event::query()->orderBy('created_at')->first()->external_subscription_id)
+    expect(Event::query()->oldest()->first()->external_subscription_id)
         ->toBe('contract_external_id');
 });
 

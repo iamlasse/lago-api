@@ -49,10 +49,7 @@ class HandleIncomingWebhookService extends BaseService
             return $result->serviceFailure(code: 'webhook_error', message: 'Invalid signature');
         }
 
-        CashfreeHandleEventJob::dispatch(
-            $paymentProviderResult->payment_provider->organization,
-            $this->body,
-        );
+        dispatch(new \App\Jobs\PaymentProviders\CashfreeHandleEventJob($paymentProviderResult->payment_provider->organization, $this->body));
 
         $result->event = $this->body;
 

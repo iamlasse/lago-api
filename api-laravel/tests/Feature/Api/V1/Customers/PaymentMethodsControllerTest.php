@@ -44,7 +44,7 @@ it('lists the customer payment methods', function (): void {
 
     $this->getJson('/api/v1/customers/'.$customer->external_id.'/payment_methods', ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($method) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($method): void {
             $json->count('payment_methods', 1)
                 ->where('payment_methods.0.lago_id', $method->id)
                 ->where('payment_methods.0.provider_method_id', $method->provider_method_id)
@@ -76,7 +76,7 @@ it('discards a payment method', function (): void {
     // Discarded methods are hidden from the index (Rails: default_scope kept).
     $this->getJson('/api/v1/customers/'.$customer->external_id.'/payment_methods', ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json): void {
             $json->count('payment_methods', 0)
                 ->etc();
         });

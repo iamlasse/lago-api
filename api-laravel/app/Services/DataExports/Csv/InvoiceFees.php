@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace App\Services\DataExports\Csv;
 
-use App\Enums\FeeType;
-use App\Models\DataExportPart;
 use App\Models\Fee;
+use App\Enums\FeeType;
 use App\Models\Invoice;
+use App\Models\DataExportPart;
 use App\Serializers\V1\FeeSerializer;
 use App\Serializers\V1\InvoiceSerializer;
-use Illuminate\Support\Carbon;
 
 /**
  * Port of Rails' DataExports::Csv::InvoiceFees
@@ -74,9 +73,7 @@ class InvoiceFees extends BaseCsvService
                 'invoice',
                 'subscription',
                 'charge',
-                'trueUpFee',
-                'customer',
-                'billableMetric',
+                'trueUpParentFee',
                 'chargeFilter.values.billableMetricFilter',
             ])
             ->get()
@@ -89,7 +86,7 @@ class InvoiceFees extends BaseCsvService
 
                 $billingPeriod = null;
 
-                if ($invoiceSubscription !== null || $fee->feeTypeEnum() === FeeType::AddOn) {
+                if ($invoiceSubscription !== null || $fee->typeEnum() === FeeType::AddOn) {
                     $billingPeriod = ResolveFeeBillingPeriodService::call(
                         fee: $fee,
                         invoiceSubscription: $invoiceSubscription,
@@ -126,7 +123,7 @@ class InvoiceFees extends BaseCsvService
     /** @return array{0: ?string, 1: ?string} Y-m-d dates in the timezone */
     protected function feePeriodDates(Fee $fee, ?object $billingPeriod, string $timezone): array
     {
-        if ($fee->feeTypeEnum() === FeeType::AddOn) {
+        if ($fee->typeEnum() === FeeType::AddOn) {
             $properties = $fee->properties ?? [];
 
             return [
@@ -151,7 +148,7 @@ class InvoiceFees extends BaseCsvService
             return null;
         }
 
-        return Carbon::parse($datetime, 'UTC')->setTimezone($timezone)->toDateString();
+        return \Illuminate\Support\Facades\Date::parse($datetime, 'UTC')->setTimezone($timezone)->toDateString();
     }
 
     /** Rails: add-on fees take the raw property datetimes straight to_date. */
@@ -161,6 +158,6 @@ class InvoiceFees extends BaseCsvService
             return null;
         }
 
-        return Carbon::parse($datetime)->toDateString();
+        return \Illuminate\Support\Facades\Date::parse($datetime)->toDateString();
     }
 }

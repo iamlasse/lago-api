@@ -53,12 +53,8 @@ it('enqueues one OrganizationBillingJob per organization on the clock queue', fu
     (new SubscriptionsBillerJob)->handle();
 
     Bus::assertDispatched(OrganizationBillingJob::class, 2);
-    Bus::assertDispatched(function (OrganizationBillingJob $job) use ($first): bool {
-        return $job->organization->id === $first['organization']->id;
-    });
-    Bus::assertDispatched(function (OrganizationBillingJob $job) use ($second): bool {
-        return $job->organization->id === $second['organization']->id;
-    });
+    Bus::assertDispatched(fn(OrganizationBillingJob $job): bool => $job->organization->id === $first['organization']->id);
+    Bus::assertDispatched(fn(OrganizationBillingJob $job): bool => $job->organization->id === $second['organization']->id);
 
     // Port of `unique :until_executed, on_conflict: :log, lock_ttl: 4.hours`.
     expect((new SubscriptionsBillerJob)->uniqueFor())->toBe(4 * 3600)
@@ -75,10 +71,8 @@ it('runs the organization biller with the current UTC time', function (): void {
     (new OrganizationBillingJob($f['organization']))->handle();
 
     Bus::assertDispatched(BillSubscriptionJob::class, 1);
-    Bus::assertDispatched(function (BillSubscriptionJob $job) use ($expectedTimestamp): bool {
-        return $job->invoicingReason === 'subscription_periodic'
-            && $job->timestamp === $expectedTimestamp;
-    });
+    Bus::assertDispatched(fn(BillSubscriptionJob $job): bool => $job->invoicingReason === 'subscription_periodic'
+        && $job->timestamp === $expectedTimestamp);
     Bus::assertNotDispatched(TerminateJob::class);
 
     expect((new OrganizationBillingJob($f['organization']))->uniqueFor())->toBe(12 * 3600);

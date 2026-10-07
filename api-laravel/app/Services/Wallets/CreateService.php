@@ -218,21 +218,18 @@ class CreateService extends BaseService
             return;
         }
 
-        \App\Jobs\WalletTransactions\CreateJob::dispatch(
-            organizationId: (string) $this->params['organization_id'],
-            params: [
-                'wallet_id' => $wallet->id,
-                'paid_credits' => $paidCredits,
-                'granted_credits' => $grantedCredits,
-                'source' => 'manual',
-                'metadata' => $this->params['transaction_metadata'] ?? null,
-                'name' => $this->params['transaction_name'] ?? null,
-                'priority' => $this->params['transaction_priority'] ?? null,
-                'ignore_paid_top_up_limits' => $this->params['ignore_paid_top_up_limits_on_creation'] ?? null,
-                // TODO(port): recurring_transaction_rule&.resolved_purchase_order_number.
-                'purchase_order_number' => $wallet->purchase_order_number,
-            ],
-        );
+        dispatch(new \App\Jobs\WalletTransactions\CreateJob(organizationId: (string) $this->params['organization_id'], params: [
+            'wallet_id' => $wallet->id,
+            'paid_credits' => $paidCredits,
+            'granted_credits' => $grantedCredits,
+            'source' => 'manual',
+            'metadata' => $this->params['transaction_metadata'] ?? null,
+            'name' => $this->params['transaction_name'] ?? null,
+            'priority' => $this->params['transaction_priority'] ?? null,
+            'ignore_paid_top_up_limits' => $this->params['ignore_paid_top_up_limits_on_creation'] ?? null,
+            // TODO(port): recurring_transaction_rule&.resolved_purchase_order_number.
+            'purchase_order_number' => $wallet->purchase_order_number,
+        ]));
     }
 
     private function valid(BaseResult $result): bool

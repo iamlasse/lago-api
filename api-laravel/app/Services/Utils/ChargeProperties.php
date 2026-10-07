@@ -22,7 +22,7 @@ final class ChargeProperties
      * aggregation, so renaming them would change what that aggregation reads
      * at billing time.
      */
-    public const PRESERVED_KEY = 'custom_properties';
+    public const string PRESERVED_KEY = 'custom_properties';
 
     public static function underscoreKeys(mixed $properties): mixed
     {

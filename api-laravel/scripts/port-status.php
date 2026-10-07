@@ -73,9 +73,7 @@ foreach ($kinds as $kind) {
 }
 foreach ($rows as $row) {
     $kind = $kindOf($row['id']);
-    if (! isset($byKind[$kind])) {
-        $byKind[$kind] = ['rows' => 0, 'done' => 0, 'in_progress' => 0, 'pass' => 0];
-    }
+    $byKind[$kind] ??= ['rows' => 0, 'done' => 0, 'in_progress' => 0, 'pass' => 0];
     $byKind[$kind]['rows']++;
     if ($row['status']['code'] === 'done') {
         $byKind[$kind]['done']++;

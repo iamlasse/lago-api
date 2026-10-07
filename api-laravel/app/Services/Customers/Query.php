@@ -286,7 +286,7 @@ class Query extends BaseService
     /** Rails: apply_consistent_ordering — created_at DESC, id ASC. */
     private function applyConsistentOrdering(Builder $scope): Builder
     {
-        return $scope->orderBy('created_at', 'desc')->orderBy('id', 'asc');
+        return $scope->latest()->orderBy('id', 'asc');
     }
 
     /** Rails: paginate — offset pagination through kaminari page/per. */

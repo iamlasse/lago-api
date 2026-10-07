@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Services\DataExports;
 
-use App\Enums\DataExportFormat;
-use App\Jobs\DataExports\ExportResourcesJob;
+use App\Models\User;
 use App\Models\DataExport;
 use App\Models\Organization;
-use App\Models\User;
 use App\Services\BaseResult;
 use App\Services\BaseService;
+use App\Enums\DataExportFormat;
+use App\Jobs\DataExports\ExportResourcesJob;
 
 /**
  * Port of Rails' DataExports::CreateService
@@ -55,7 +55,7 @@ class CreateService extends BaseService
             'resource_query' => $this->resourceQuery ?? [],
         ]);
 
-        ExportResourcesJob::dispatch($dataExport);
+        dispatch(new ExportResourcesJob($dataExport));
 
         // TODO(port): Utils::SecurityLog.produce (ClickHouse security logs) —
         //   log_type "export", log_event "export.created", resources

@@ -33,12 +33,10 @@ it('does not enqueue when the organization has no webhook endpoints', function (
 it('enqueues when the organization has webhook endpoints', function (): void {
     SendWebhookJob::performLater('customer.created', $this->customer, ['key' => 'value']);
 
-    Queue::assertPushed(SendWebhookJob::class, function (SendWebhookJob $job) {
-        return $job->webhookType === 'customer.created'
-            && $job->object->is($this->customer)
-            && $job->options === ['key' => 'value']
-            && $job->webhookId === null;
-    });
+    Queue::assertPushed(SendWebhookJob::class, fn(SendWebhookJob $job) => $job->webhookType === 'customer.created'
+        && $job->object->is($this->customer)
+        && $job->options === ['key' => 'value']
+        && $job->webhookId === null);
 })->group('ledger:job:SendWebhookJob');
 
 it('enqueues with a webhook id even when endpoints are checked', function (): void {
@@ -65,7 +63,7 @@ it('uses the dedicated worker queues when SIDEKIQ_WEBHOOK is true', function ():
         expect(SendWebhookJob::queueFor('alert.triggered'))->toBe('webhook_worker_high_priority')
             ->and(SendWebhookJob::queueFor('invoice.created'))->toBe('webhook_worker');
     } finally {
-        unset($_ENV['SIDEKIQ_WEBHOOK'], $_SERVER['SIDEKIQ_WEBHOOK']);
+        unset(\Illuminate\Support\Env::get('SIDEKIQ_WEBHOOK'), $_SERVER['SIDEKIQ_WEBHOOK']);
     }
 })->group('ledger:job:SendWebhookJob');
 
@@ -149,7 +147,7 @@ it('routes the http job to the dedicated worker queues when SIDEKIQ_WEBHOOK is t
         expect(SendHttpWebhookJob::queueFor('alert.triggered'))->toBe('webhook_worker_high_priority')
             ->and(SendHttpWebhookJob::queueFor('invoice.created'))->toBe('webhook_worker');
     } finally {
-        unset($_ENV['SIDEKIQ_WEBHOOK'], $_SERVER['SIDEKIQ_WEBHOOK']);
+        unset(\Illuminate\Support\Env::get('SIDEKIQ_WEBHOOK'), $_SERVER['SIDEKIQ_WEBHOOK']);
     }
 })->group('ledger:job:SendHttpWebhookJob');
 
@@ -189,5 +187,5 @@ it('performs the http delivery for its webhook', function (): void {
     // A successful attempt does not re-enqueue the retry job.
     Queue::assertNothingPushed();
 
-    unset($_ENV['LAGO_WEBHOOK_ALLOW_PRIVATE_URLS'], $_SERVER['LAGO_WEBHOOK_ALLOW_PRIVATE_URLS']);
+    unset(\Illuminate\Support\Env::get('LAGO_WEBHOOK_ALLOW_PRIVATE_URLS'), $_SERVER['LAGO_WEBHOOK_ALLOW_PRIVATE_URLS']);
 })->group('ledger:job:SendHttpWebhookJob');

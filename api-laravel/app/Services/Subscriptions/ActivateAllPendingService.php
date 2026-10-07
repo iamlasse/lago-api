@@ -24,7 +24,7 @@ class ActivateAllPendingService extends BaseService
     {
         parent::__construct();
 
-        $this->timestamp = Carbon::createFromTimestampUTC($timestamp);
+        $this->timestamp = \Illuminate\Support\Facades\Date::createFromTimestampUTC($timestamp);
     }
 
     public function execute(): BaseResult

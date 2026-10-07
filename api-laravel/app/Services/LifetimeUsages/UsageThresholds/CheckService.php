@@ -38,7 +38,7 @@ class CheckService extends \App\Services\BaseService
 
         /** @var \Illuminate\Support\Collection<int, UsageThreshold> $fixedThresholds */
         $fixedThresholds = $thresholds
-            ->filter(fn (UsageThreshold $t): bool => ! $t->recurring)
+            ->reject(fn (UsageThreshold $t): bool => (bool) $t->recurring)
             ->sortBy('amount_cents')
             ->values();
 

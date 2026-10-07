@@ -211,7 +211,7 @@ it('projects the end-of-period usage when requested', function (): void {
     $eventAt = $periodStart->addDays(3)->addHours(6);
     $midPeriod = $periodStart->addDays(3)->addHours(12);
 
-    Carbon::setTestNow($midPeriod);
+    \Illuminate\Support\Facades\Date::setTestNow($midPeriod);
 
     try {
         $metric = usageMetric();
@@ -245,6 +245,6 @@ it('projects the end-of-period usage when requested', function (): void {
         expect($payload['projected_amount_cents'])->toBeGreaterThan(1500)
             ->and($payload['charges_usage']['charges_usage'][0]['projected_units'])->toBeGreaterThan('15');
     } finally {
-        Carbon::setTestNow();
+        \Illuminate\Support\Facades\Date::setTestNow();
     }
 });

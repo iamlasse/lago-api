@@ -17,11 +17,11 @@ use Illuminate\Support\Facades\Http;
  * headers: {"Idempotency-Key" => ...}; request bodies use the gem's
  * `params:` envelope.
  */
-final class Client
+final readonly class Client
 {
     public function __construct(
-        private readonly string $accessToken,
-        private readonly string $environment, // 'live' | 'sandbox'
+        private string $accessToken,
+        private string $environment, // 'live' | 'sandbox'
     ) {}
 
     /**

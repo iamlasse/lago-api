@@ -49,7 +49,7 @@ class SetPaymentMethodAndCreateReceiptJob implements ShouldQueue
         // Now that the payment method is saved in the payment, we generate
         // the PaymentReceipt.
         if ($payment->customer?->organization?->issueReceiptsEnabled()) {
-            CreateJob::dispatch($payment);
+            dispatch(new \App\Jobs\PaymentReceipts\CreateJob($payment));
         }
     }
 

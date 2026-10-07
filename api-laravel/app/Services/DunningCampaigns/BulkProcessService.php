@@ -52,7 +52,7 @@ class BulkProcessService extends BaseService
             ->select('customers.id')
             ->chunkById(500, function ($customers): void {
                 foreach ($customers as $customer) {
-                    ProcessCustomerJob::dispatch($customer->id);
+                    dispatch(new \App\Jobs\DunningCampaigns\ProcessCustomerJob($customer->id));
                 }
             });
 

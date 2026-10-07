@@ -27,7 +27,7 @@ use App\Services\Customers\RefreshWalletsService;
  */
 class RefreshWalletJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use \Illuminate\Foundation\Queue\Queueable;
 
     public int $tries = 6;
 

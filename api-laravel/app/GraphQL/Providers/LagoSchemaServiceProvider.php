@@ -70,7 +70,7 @@ class LagoSchemaServiceProvider extends ServiceProvider
         // LagoSchemaBuilder), so the only fields reaching this provider are
         // the billing type's: delegate to the regular resolver provider
         // instead of the previous no-op null binding.
-        $this->app->bind(ProvidesSubscriptionResolver::class, function (): ProvidesSubscriptionResolver {
+        $this->app->bind(function (): \Nuwave\Lighthouse\Support\Contracts\ProvidesSubscriptionResolver {
             return new class implements ProvidesSubscriptionResolver
             {
                 public function provideSubscriptionResolver(FieldValue $fieldValue): Closure

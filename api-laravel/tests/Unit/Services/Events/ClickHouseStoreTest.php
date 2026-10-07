@@ -341,7 +341,7 @@ it('runs the deduplicated count against a real ClickHouse container', function (
 
     $client->execute(
         'INSERT INTO events_enriched ('.implode(', ', array_keys($rows[0])).') FORMAT JSONEachRow '
-            .implode("\n", array_map(static fn (array $row): string => json_encode($row), $rows)),
+            .implode("\n", array_map(json_encode(...), $rows)),
     );
 
     $store = new ClickHouseStore(

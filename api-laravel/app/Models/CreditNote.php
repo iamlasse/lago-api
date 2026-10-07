@@ -373,12 +373,14 @@ class CreditNote extends BaseModel
 
     // -- Scopes (Rails enum scopes) --------------------------------------------
 
-    protected function scopeFinalized(Builder $query): Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function finalized(Builder $query): Builder
     {
         return $query->where('status', CreditNoteStatus::Finalized->value);
     }
 
-    protected function scopeDraft(Builder $query): Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function draft(Builder $query): Builder
     {
         return $query->where('status', CreditNoteStatus::Draft->value);
     }

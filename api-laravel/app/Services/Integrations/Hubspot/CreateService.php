@@ -71,7 +71,7 @@ class CreateService extends \App\Services\BaseService
 
         // TODO(port): Integrations::Aggregator::SyncCustomObjectsAndPropertiesJob
         // — the invoice/subscription custom-object deploy (invoices slice).
-        SavePortalIdJob::dispatch($integration);
+        dispatch(new \App\Jobs\Integrations\Hubspot\SavePortalIdJob($integration));
 
         $result->integration = $integration;
 

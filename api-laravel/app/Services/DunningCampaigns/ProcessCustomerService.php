@@ -75,11 +75,7 @@ class ProcessCustomerService extends BaseService
 
         foreach ($thresholds as $threshold) {
             foreach ($this->overdueBillingEntitiesFor($customer, $organization, $threshold->currency) as $billingEntity) {
-                ProcessAttemptJob::dispatch(
-                    customerId: $customer->id,
-                    dunningCampaignThresholdId: $threshold->id,
-                    billingEntityId: $billingEntity->id,
-                );
+                dispatch(new \App\Jobs\DunningCampaigns\ProcessAttemptJob(customerId: $customer->id, dunningCampaignThresholdId: $threshold->id, billingEntityId: $billingEntity->id));
             }
         }
 

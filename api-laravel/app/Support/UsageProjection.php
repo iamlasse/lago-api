@@ -13,16 +13,16 @@ namespace App\Support;
  * ported) and presentation_breakdowns stay empty (the breakdowns pipeline
  * arrives with the M2 filters slice).
  */
-final class UsageProjection
+final readonly class UsageProjection
 {
     /**
      * @param  list<mixed>  $presentationBreakdowns
      */
     public function __construct(
-        public readonly string $units,
-        public readonly int $amountCents,
-        public readonly ?int $pricingUnitAmountCents = null,
-        public readonly array $presentationBreakdowns = [],
+        public string $units,
+        public int $amountCents,
+        public ?int $pricingUnitAmountCents = null,
+        public array $presentationBreakdowns = [],
     ) {}
 
     public static function zero(): self

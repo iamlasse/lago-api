@@ -44,7 +44,7 @@ abstract class BasePayload extends AggregatorBasePayload
             [
                 'external_contact_id' => $this->integration_customer->external_customer_id,
                 'status' => 'AUTHORISED',
-                'issuing_date' => \Illuminate\Support\Carbon::parse($this->credit_note->issuing_date)->toAtomString(),
+                'issuing_date' => \Illuminate\Support\Facades\Date::parse($this->credit_note->issuing_date)->toAtomString(),
                 'number' => $this->credit_note->number,
                 'currency' => $this->credit_note->currency(),
                 'type' => 'ACCRECCREDIT',

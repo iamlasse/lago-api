@@ -124,7 +124,7 @@ class OverrideService extends BaseService
                     );
                 }
 
-                if (! blank($params['usage_thresholds'] ?? null)
+                if (filled($params['usage_thresholds'] ?? null)
                     && License::premium()
                     && $this->plan->organization->progressiveBillingEnabled()) {
                     \App\Services\UsageThresholds\OverrideService::call(
@@ -133,7 +133,7 @@ class OverrideService extends BaseService
                     );
                 }
 
-                if (! blank($params['minimum_commitment'] ?? null) && License::premium()) {
+                if (filled($params['minimum_commitment'] ?? null) && License::premium()) {
                     $commitment = new Commitment([
                         'organization_id' => $newPlan->organization_id,
                         'commitment_type' => 0, // minimum_commitment

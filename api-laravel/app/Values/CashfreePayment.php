@@ -9,15 +9,15 @@ namespace App\Values;
  * Data define) — the normalized Cashfree payment-link event the webhook
  * handlers pass into the payment-status update services.
  */
-final class CashfreePayment
+final readonly class CashfreePayment
 {
     /**
      * @param  array<string, mixed>  $metadata
      */
     public function __construct(
-        public readonly string $id,
-        public readonly string $status,
-        public readonly array $metadata = [],
+        public string $id,
+        public string $status,
+        public array $metadata = [],
     ) {}
 
     public function metadataValue(string $key): mixed

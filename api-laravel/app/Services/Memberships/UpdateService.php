@@ -59,7 +59,7 @@ class UpdateService extends BaseService
             $oldIds = $oldRoles->pluck('id')->all();
             $newIds = $newRoles->pluck('id')->all();
 
-            foreach ($newIds as $index => $roleId) {
+            foreach ($newIds as $roleId) {
                 if (in_array($roleId, $oldIds, true)) {
                     continue;
                 }
@@ -101,7 +101,7 @@ class UpdateService extends BaseService
      */
     private function grantingAdminWithoutBeingAdmin($newRoles): bool
     {
-        if (! $newRoles->contains(fn (Role $role): bool => (bool) $role->admin)) {
+        if ($newRoles->doesntContain(fn (Role $role): bool => (bool) $role->admin)) {
             return false;
         }
 
@@ -148,7 +148,7 @@ class UpdateService extends BaseService
      */
     private function newRoles()
     {
-        $codes = array_values(array_filter((array) ($this->params['roles'] ?? []), 'is_string'));
+        $codes = array_values(array_filter((array) ($this->params['roles'] ?? []), is_string(...)));
 
         if ($codes === []) {
             // Rails: Role.none when the codes are blank.

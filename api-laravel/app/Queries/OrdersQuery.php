@@ -182,7 +182,7 @@ class OrdersQuery extends BaseService
         }
 
         try {
-            return Carbon::parse($value)->utc();
+            return \Illuminate\Support\Facades\Date::parse($value)->utc();
         } catch (Throwable) {
             return null;
         }

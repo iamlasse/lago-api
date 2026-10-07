@@ -29,7 +29,7 @@ it('creates a pending contract when the start is in the future', function (): vo
     $result = CreateService::call(organization: $organization, params: [
         'external_customer_id' => $customer->external_id,
         'external_id' => 'future',
-        'started_at' => Carbon::tomorrow()->toIso8601String(),
+        'started_at' => \Illuminate\Support\Facades\Date::tomorrow()->toIso8601String(),
     ]);
 
     expect($result->success())->toBeTrue()
@@ -58,7 +58,7 @@ it('rejects an already-ended window on create', function (): void {
     $result = CreateService::call(organization: $organization, params: [
         'external_customer_id' => $customer->external_id,
         'external_id' => 'zombie',
-        'ended_at' => Carbon::yesterday()->toIso8601String(),
+        'ended_at' => \Illuminate\Support\Facades\Date::yesterday()->toIso8601String(),
     ]);
 
     expect($result->failure())->toBeTrue()
@@ -132,7 +132,7 @@ it('re-materializes rate cards when a pending contract changes plan', function (
         'external_customer_id' => $customer->external_id,
         'external_id' => 'reswap',
         'plan_code' => $planA->code,
-        'started_at' => Carbon::tomorrow()->toIso8601String(),
+        'started_at' => \Illuminate\Support\Facades\Date::tomorrow()->toIso8601String(),
     ]);
 
     expect($created->success())->toBeTrue()

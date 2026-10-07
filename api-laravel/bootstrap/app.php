@@ -50,7 +50,7 @@ return Application::configure(basePath: dirname(__DIR__))
             // own loadRoutesFrom) to keep the web group's CSRF off it; same
             // methods + middleware as Nuwave's registration.
             Route::match(['GET', 'POST'], 'api/graphql', GraphQLController::class)
-                ->middleware(config('lighthouse.route.middleware') ?? [])
+                ->middleware(config('lighthouse.route.middleware', []))
                 ->name('graphql.api-alias');
         },
     )

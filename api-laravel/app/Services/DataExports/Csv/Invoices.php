@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\DataExports\Csv;
 
-use App\Models\DataExportPart;
 use App\Models\Invoice;
+use App\Models\DataExportPart;
 use App\Serializers\V1\InvoiceSerializer;
 
 /**
@@ -47,13 +47,6 @@ class Invoices extends BaseCsvService
         'total_offsetted_credit_note_amount_cents',
     ];
 
-    protected function progressiveBillingEnabled(): bool
-    {
-        $organization = $this->dataExportPart->dataExport->organization;
-
-        return $organization !== null && $organization->progressiveBillingEnabled();
-    }
-
     /** @return list<string> */
     protected static function buildHeaders(DataExportPart $dataExportPart): array
     {
@@ -70,6 +63,13 @@ class Invoices extends BaseCsvService
         }
 
         return $headers;
+    }
+
+    protected function progressiveBillingEnabled(): bool
+    {
+        $organization = $this->dataExportPart->dataExport->organization;
+
+        return $organization !== null && $organization->progressiveBillingEnabled();
     }
 
     protected function collection(): iterable

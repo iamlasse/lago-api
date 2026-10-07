@@ -22,9 +22,6 @@ class GeneratePdfAndNotifyJob extends DocumentsJob
 
     public function handle(): void
     {
-        GenerateDocumentsJob::dispatch(
-            paymentReceipt: $this->paymentReceipt,
-            notify: $this->email,
-        );
+        dispatch(new \App\Jobs\PaymentReceipts\GenerateDocumentsJob(paymentReceipt: $this->paymentReceipt, notify: $this->email));
     }
 }

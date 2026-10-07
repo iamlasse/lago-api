@@ -137,7 +137,7 @@ class PullTaxesAndApplyService extends \App\Services\BaseService
         } elseif ($invoice->isFinalized()) {
             SendWebhookJob::performLater('invoice.created', $invoice);
             // Rails: Utils::ActivityLog.produce(invoice, "invoice.created") — TODO(port).
-            GenerateDocumentsJob::dispatch($invoice, $this->should_deliver_email($invoice));
+            dispatch(new \App\Jobs\Invoices\GenerateDocumentsJob($invoice, $this->should_deliver_email($invoice)));
             // Rails: aggregator invoice sync + hubspot create jobs — TODO(port)
             // with the accounting integrations slice.
             (new InvoicePaymentsCreateService(invoice: $invoice))->callAsync();

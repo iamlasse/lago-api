@@ -67,7 +67,7 @@ class CreateService extends \App\Services\BaseService
         $integration->save();
 
         // Rails: PerformSyncJob.set(wait: 2.seconds).perform_later(integration:).
-        PerformSyncJob::dispatch($integration)->delay(now()->addSeconds(2));
+        dispatch(new \App\Jobs\Integrations\Aggregator\PerformSyncJob($integration))->delay(now()->addSeconds(2));
 
         $result->integration = $integration;
 

@@ -54,7 +54,7 @@ class CreditNoteItems extends BaseCsvService
             $creditNote->number,
             $creditNote->invoice->number,
             // Rails: issuing_date.iso8601.
-            optional($creditNote->issuing_date)->toDateString(),
+            $creditNote->issuing_date?->toDateString(),
             $serialized['lago_id'],
             $serialized['fee']['lago_id'] ?? null,
             $serialized['amount_currency'],

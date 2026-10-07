@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Jobs\Clock;
 
-use App\Models\InboundWebhook;
 use Illuminate\Bus\Queueable;
+use App\Models\InboundWebhook;
 use App\Jobs\Middleware\UniqueJob;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;

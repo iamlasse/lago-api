@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Services\Auth\Superset;
 
-use App\Http\Client\LagoHttpError;
+use Throwable;
+use JsonException;
 use App\Models\Organization;
 use App\Services\BaseResult;
 use App\Services\BaseService;
+use App\Http\Client\LagoHttpError;
 use Illuminate\Http\Client\ConnectionException;
 
 /**
@@ -42,9 +44,9 @@ class GuestTokenService extends BaseService
             return $this->run($this->result);
         } catch (ConnectionException $e) {
             return $this->result->serviceFailure('superset_timeout', 'Superset request timed out: '.$e->getMessage(), $e);
-        } catch (\JsonException $e) {
+        } catch (JsonException $e) {
             return $this->result->serviceFailure('superset_invalid_response', 'Invalid JSON response from Superset: '.$e->getMessage(), $e);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return $this->result->serviceFailure('superset_error', 'Superset operation failed: '.$e->getMessage(), $e);
         }
     }

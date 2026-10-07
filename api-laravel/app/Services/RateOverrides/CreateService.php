@@ -25,7 +25,7 @@ class CreateService extends BaseService
      * Structural card fields are inherited, never overridden. A caller
      * naming one has misunderstood the contract, not made a typo — reject it.
      */
-    private const NOT_OVERRIDABLE_FIELDS = [
+    private const array NOT_OVERRIDABLE_FIELDS = [
         'billing_timing',
         'currency',
         'proration',

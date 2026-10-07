@@ -53,7 +53,7 @@ class MarkInvoicesAsPaymentOverdueJob implements ShouldQueue
             // keeps the default id-keyed chunk walk.
             ->chunkById(1000, function ($invoices): void {
                 foreach ($invoices as $invoice) {
-                    MarkOverdueJob::dispatch(invoice: $invoice);
+                    dispatch(new MarkOverdueJob(invoice: $invoice));
                 }
             });
     }

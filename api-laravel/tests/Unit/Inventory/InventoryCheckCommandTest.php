@@ -86,7 +86,7 @@ class InventoryCheckCommandTest extends TestCase
     public function test_milestone_gate_passes_when_row_meets_the_gate(): void
     {
         $this->patchLedgerRow('svc:Support.FrozenSql', [
-            'laravel' => 'App\\Support\\FrozenSql',
+            'laravel' => \App\Support\FrozenSql::class,
             'status' => ['code' => 'done', 'test' => 'written', 'contract' => 'pass'],
             'tests' => ['tests/Unit/FrozenSqlTest.php'],
         ]);
@@ -114,7 +114,7 @@ class InventoryCheckCommandTest extends TestCase
     public function test_milestone_gate_flags_declared_test_file_that_does_not_exist(): void
     {
         $this->patchLedgerRow('svc:Support.FrozenSql', [
-            'laravel' => 'App\\Support\\FrozenSql',
+            'laravel' => \App\Support\FrozenSql::class,
             'status' => ['code' => 'done', 'test' => 'written', 'contract' => 'pass'],
             'tests' => ['tests/Unit/Inventory/fixtures/does-not-exist.php'],
         ]);

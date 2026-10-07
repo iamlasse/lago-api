@@ -39,10 +39,7 @@ class HandleIncomingWebhookService extends BaseService
             return $result->serviceFailure(code: 'webhook_error', message: 'Invalid payload');
         }
 
-        StripeHandleEventJob::dispatch(
-            $this->inboundWebhook->organization,
-            $event,
-        );
+        dispatch(new \App\Jobs\PaymentProviders\StripeHandleEventJob($this->inboundWebhook->organization, $event));
 
         $result->event = $event;
 

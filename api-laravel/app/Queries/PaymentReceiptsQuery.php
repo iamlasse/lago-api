@@ -84,7 +84,7 @@ class PaymentReceiptsQuery extends BaseService
         }
 
         $result->payment_receipts = $this->paginate(
-            $receipts->orderByDesc('payment_receipts.created_at')->orderBy('payment_receipts.id'),
+            $receipts->latest('payment_receipts.created_at')->orderBy('payment_receipts.id'),
         );
 
         return $result;

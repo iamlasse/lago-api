@@ -84,7 +84,7 @@ it('records a manual payment and settles the invoice', function (): void {
         'reference' => 'Bank transfer #12',
     ]], ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($invoice, $customer) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($invoice, $customer): void {
             $json->where('payment.amount_cents', 1000)
                 ->where('payment.amount_currency', 'EUR')
                 ->where('payment.status', 'succeeded')
@@ -112,7 +112,7 @@ it('lists the organization payments', function (): void {
 
     $this->getJson('/api/v1/payments', ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($payment) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) use ($payment): void {
             $json->count('payments', 1)
                 ->where('payments.0.lago_id', $payment->id)
                 ->where('payments.0.payment_status', 'succeeded')
@@ -130,7 +130,7 @@ it('filters payments by external_customer_id', function (): void {
 
     $this->getJson('/api/v1/payments?external_customer_id='.$otherCustomer->external_id, ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json): void {
             $json->count('payments', 0)
                 ->where('meta.total_count', 0)
                 ->etc();
@@ -166,7 +166,7 @@ it('lists the payments of a customer', function (): void {
 
     $this->getJson('/api/v1/customers/'.$customer->external_id.'/payments', ['Authorization' => 'Bearer '.$apiKey->value])
         ->assertOk()
-        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json) {
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json): void {
             $json->count('payments', 1)
                 ->where('meta.total_count', 1)
                 ->etc();

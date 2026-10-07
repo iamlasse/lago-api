@@ -69,13 +69,15 @@ class PaymentIntent extends BaseModel
     }
 
     /** Rails: scope :non_expired. */
-    public function scopeNonExpired($query)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function nonExpired($query)
     {
         return $query->where('expires_at', '>', now());
     }
 
     /** Rails: scope :awaiting_expiration. */
-    public function scopeAwaitingExpiration($query)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function awaitingExpiration($query)
     {
         return $query->where('status', 0)->where('expires_at', '<=', now());
     }

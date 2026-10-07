@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Services\DataExports\Csv;
 
-use App\Enums\FeeType;
 use App\Models\Fee;
-use App\Models\InvoiceSubscription;
+use App\Enums\FeeType;
 use App\Services\BaseResult;
 use App\Services\BaseService;
 use Illuminate\Support\Carbon;
+use App\Models\InvoiceSubscription;
 
 /**
  * Port of Rails' DataExports::Csv::ResolveFeeBillingPeriodService
@@ -42,7 +42,7 @@ class ResolveFeeBillingPeriodService extends BaseService
     /** @return array{0: mixed, 1: mixed} */
     private function billingPeriod(): array
     {
-        $feeType = $this->fee->feeTypeEnum();
+        $feeType = $this->fee->typeEnum();
 
         return match ($feeType) {
             FeeType::Subscription => $this->propertiesPeriod('from_datetime', 'to_datetime')
@@ -128,7 +128,7 @@ class ResolveFeeBillingPeriodService extends BaseService
     private function parseDatetime(mixed $value): ?Carbon
     {
         if (is_string($value)) {
-            return Carbon::parse($value);
+            return \Illuminate\Support\Facades\Date::parse($value);
         }
 
         return $value;

@@ -60,14 +60,10 @@ class UpdateConnectionService extends BaseService
             /** @var Integration $integration */
             $integration = $integrationCustomer->integration;
 
-            UpdateJob::dispatch(
-                integration_customer_params: array_merge($this->params, [
-                    'integration_type' => array_flip(IntegrationCustomer::PROVIDER_TYPES)[$integration->type] ?? null,
-                    'integration_code' => $integration->code,
-                ]),
-                integration: $integration,
-                integration_customer: $integrationCustomer,
-            );
+            dispatch(new \App\Jobs\IntegrationCustomers\UpdateJob(integration_customer_params: array_merge($this->params, [
+                'integration_type' => array_flip(IntegrationCustomer::PROVIDER_TYPES)[$integration->type] ?? null,
+                'integration_code' => $integration->code,
+            ]), integration: $integration, integration_customer: $integrationCustomer));
         }
 
         $result->integration_customer = $integrationCustomer->refresh();

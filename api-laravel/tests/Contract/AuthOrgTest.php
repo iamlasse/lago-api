@@ -23,11 +23,11 @@ use Illuminate\Support\Facades\Queue;
  */
 class AuthOrgTest extends ContractCase
 {
-    private const ORGANIZATION_ID = '1a4a0d6e-0000-4000-8000-000000000001';
+    private const string ORGANIZATION_ID = '1a4a0d6e-0000-4000-8000-000000000001';
 
-    private const USER_ID = '1a4a0d6e-0000-4000-8000-000000000002';
+    private const string USER_ID = '1a4a0d6e-0000-4000-8000-000000000002';
 
-    private const USER_EMAIL = 'capture@example.invalid';
+    private const string USER_EMAIL = 'capture@example.invalid';
 
     protected string $scenario = 'auth_org';
 

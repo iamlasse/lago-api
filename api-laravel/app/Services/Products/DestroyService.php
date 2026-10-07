@@ -39,7 +39,7 @@ class DestroyService extends BaseService
             }
 
             DB::transaction(function () use ($product): void {
-                $now = Carbon::now('UTC');
+                $now = \Illuminate\Support\Facades\Date::now('UTC');
 
                 // Rails: discard_all! cascades — filter values, filters,
                 // rates, cards, then the product itself.

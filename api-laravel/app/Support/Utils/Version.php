@@ -11,14 +11,14 @@ namespace App\Support\Utils;
  * when it holds a tag, `number` is the tag. Missing file → `default`
  * (Rails passes Rails.env).
  */
-final class Version
+final readonly class Version
 {
-    public const GITHUB_BASE_URL = 'https://github.com/getlago/lago-api';
+    public const string GITHUB_BASE_URL = 'https://github.com/getlago/lago-api';
 
     public function __construct(
-        public readonly string $number,
-        public readonly string $githubUrl,
-        public readonly ?string $sha,
+        public string $number,
+        public string $githubUrl,
+        public ?string $sha,
     ) {}
 
     public static function call(string $default): self

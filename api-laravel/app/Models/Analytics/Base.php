@@ -106,7 +106,7 @@ abstract class Base
             return $version;
         }
 
-        $version = (string) Carbon::now()->getTimestamp();
+        $version = (string) \Illuminate\Support\Facades\Date::now()->getTimestamp();
         Cache::put($key, $version, DateInterval::createFromDateString('1 day'));
 
         return $version;
@@ -116,7 +116,7 @@ abstract class Base
     {
         Cache::put(
             static::cacheVersionKey($organizationId, $externalCustomerId),
-            (string) Carbon::now()->getTimestamp(),
+            (string) \Illuminate\Support\Facades\Date::now()->getTimestamp(),
             DateInterval::createFromDateString('1 day'),
         );
     }

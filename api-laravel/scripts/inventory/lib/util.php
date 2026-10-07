@@ -209,9 +209,7 @@ if (! function_exists('inv_ruby_class_from_path')) {
 
         $parts = explode('/', (string) $withoutExt);
 
-        $parts = array_map(static function (string $part): string {
-            return str_replace(' ', '', ucwords(str_replace('_', ' ', $part)));
-        }, $parts);
+        $parts = array_map(static fn(string $part): string => str_replace(' ', '', ucwords(str_replace('_', ' ', $part))), $parts);
 
         return implode('.', $parts);
     }

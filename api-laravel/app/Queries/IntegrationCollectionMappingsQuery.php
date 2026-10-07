@@ -37,7 +37,7 @@ class IntegrationCollectionMappingsQuery extends BaseService
             ->select('integration_collection_mappings.*');
 
         // Rails: apply_consistent_ordering — created_at desc, id asc.
-        $mappings->orderByDesc('integration_collection_mappings.created_at')
+        $mappings->latest('integration_collection_mappings.created_at')
             ->orderBy('integration_collection_mappings.id');
 
         $integrationId = $this->filters['integration_id'] ?? null;

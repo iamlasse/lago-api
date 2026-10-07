@@ -21,6 +21,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * Laravel morph map; consumers query the owner rows by id.
  */
 #[Table(name: 'item_metadata')]
+#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+    'organization_id',
+    'owner_type',
+    'owner_id',
+    'value',
+])]
 class ItemMetadata extends BaseModel
 {
     use HasFactory;
@@ -30,13 +36,6 @@ class ItemMetadata extends BaseModel
     public const MAX_KEY_LENGTH = 100;
 
     public const MAX_VALUE_LENGTH = 255;
-
-    protected $fillable = [
-        'organization_id',
-        'owner_type',
-        'owner_id',
-        'value',
-    ];
 
     public function organization(): BelongsTo
     {

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use App\Models\Customer;
 use App\Models\Subscription;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Queue;
 use App\Jobs\Clock\TerminateEndedSubscriptionsJob;
 use App\Jobs\Subscriptions\TerminateEndedSubscriptionJob;
@@ -21,14 +20,14 @@ function clockEndingSubscription(?string $endingAt, array $customerAttributes = 
     $customer = Customer::factory()->create($customerAttributes);
 
     return Subscription::factory()->forCustomer($customer)->create([
-        'ending_at' => $endingAt === null ? null : Carbon::parse($endingAt),
+        'ending_at' => $endingAt === null ? null : Illuminate\Support\Facades\Date::parse($endingAt),
     ]);
 }
 
 it('enqueues a terminate job for subscriptions whose ending_at day is today', function (): void {
     Queue::fake();
 
-    Carbon::setTestNow(Carbon::parse('2023-02-15 12:00:00'));
+    Illuminate\Support\Facades\Date::setTestNow(Illuminate\Support\Facades\Date::parse('2023-02-15 12:00:00'));
 
     $endingToday = clockEndingSubscription('2023-02-15 06:00:00');
     $endingLater = clockEndingSubscription('2024-02-15 06:00:00');
@@ -43,13 +42,13 @@ it('enqueues a terminate job for subscriptions whose ending_at day is today', fu
         fn (TerminateEndedSubscriptionJob $job) => $job->subscription->id === $endingToday->id,
     );
 
-    Carbon::setTestNow();
+    Illuminate\Support\Facades\Date::setTestNow();
 });
 
 it('does not enqueue subscriptions ending on nearby days', function (): void {
     Queue::fake();
 
-    Carbon::setTestNow(Carbon::parse('2023-02-15 12:00:00'));
+    Illuminate\Support\Facades\Date::setTestNow(Illuminate\Support\Facades\Date::parse('2023-02-15 12:00:00'));
 
     clockEndingSubscription('2023-02-14 23:00:00');
     clockEndingSubscription('2023-02-16 01:00:00');
@@ -58,7 +57,7 @@ it('does not enqueue subscriptions ending on nearby days', function (): void {
 
     Queue::assertNotPushed(TerminateEndedSubscriptionJob::class);
 
-    Carbon::setTestNow();
+    Illuminate\Support\Facades\Date::setTestNow();
 });
 
 it('takes the customer timezone into account (far behind UTC)', function (): void {
@@ -68,7 +67,7 @@ it('takes the customer timezone into account (far behind UTC)', function (): voi
     // ending_at = 2022-10-21 00:30 UTC = 2022-10-20 13:30 in Midway — the
     // same local day (Oct 20), so the subscription terminates even though
     // the UTC days differ.
-    Carbon::setTestNow(Carbon::parse('2022-10-20 12:00:00'));
+    Illuminate\Support\Facades\Date::setTestNow(Illuminate\Support\Facades\Date::parse('2022-10-20 12:00:00'));
 
     $subscription = clockEndingSubscription('2022-10-21 00:30:00', ['timezone' => 'Pacific/Midway']);
 
@@ -79,5 +78,5 @@ it('takes the customer timezone into account (far behind UTC)', function (): voi
         fn (TerminateEndedSubscriptionJob $job) => $job->subscription->id === $subscription->id,
     );
 
-    Carbon::setTestNow();
+    Illuminate\Support\Facades\Date::setTestNow();
 });

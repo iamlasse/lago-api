@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace App\Services\DataExports;
 
+use Throwable;
+use RuntimeException;
 use App\Models\DataExport;
-use App\Models\DataExportPart;
 use App\Services\BaseResult;
 use App\Services\BaseService;
+use App\Models\DataExportPart;
 use App\Services\Invoices\Query;
 use App\Queries\CreditNotesQuery;
 use Illuminate\Support\Facades\DB;
-use Throwable;
+use App\Jobs\DataExports\ProcessPartJob;
 
 /**
  * Port of Rails' DataExports::ExportResourcesService
@@ -23,7 +25,9 @@ use Throwable;
 class ExportResourcesService extends BaseService
 {
     public const string EXPIRED_FAILURE_MESSAGE = 'Data Export already expired';
+
     public const string PROCESSED_FAILURE_MESSAGE = 'Data Export already processed';
+
     public const int DEFAULT_BATCH_SIZE = 20;
 
     /** Page size used when draining the paged Query services (see below). */
@@ -88,13 +92,21 @@ class ExportResourcesService extends BaseService
     /** @return list<string> */
     private function allObjectIds(): array
     {
+        // The resource_query rides a jsonb column; tolerate a JSON string
+        // payload (e.g. the quoted-scalar round trip) like Rails'
+        // resource_query.except would on a hash.
         $resourceQuery = $this->dataExport->resource_query ?? [];
+
+        if (is_string($resourceQuery)) {
+            $resourceQuery = json_decode($resourceQuery, true) ?: [];
+        }
+
         $resourceType = $this->dataExport->resource_type;
 
         return match ($resourceType) {
             'credit_notes', 'credit_note_items' => $this->creditNoteIds($resourceQuery),
             'invoices', 'invoice_fees' => $this->allInvoiceIds($resourceQuery),
-            default => throw new \RuntimeException(
+            default => throw new RuntimeException(
                 "'{$resourceType}' resource not supported",
             ),
         };
@@ -118,7 +130,7 @@ class ExportResourcesService extends BaseService
 
         $ids = [];
 
-        for ($page = 1;; $page++) {
+        for ($page = 1; ; $page++) {
             $result = new Query(
                 organization: $this->dataExport->organization,
                 filters: $filters,
@@ -152,7 +164,7 @@ class ExportResourcesService extends BaseService
 
         $ids = [];
 
-        for ($page = 1;; $page++) {
+        for ($page = 1; ; $page++) {
             $result = CreditNotesQuery::call(
                 organization: $this->dataExport->organization,
                 filters: $filters,

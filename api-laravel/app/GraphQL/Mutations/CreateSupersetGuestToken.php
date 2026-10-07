@@ -32,9 +32,11 @@ class CreateSupersetGuestToken
         AuthenticableApiUser::authorize($context);
         RequiredOrganization::authorize($context);
 
+        $input = is_array($args['input'] ?? null) ? $args['input'] : $args;
+
         $result = GuestTokenService::call(
             organization: LagoContext::currentOrganization($context),
-            dashboardId: (string) ($args['dashboardId'] ?? $args['dashboard_id'] ?? ''),
+            dashboardId: (string) ($input['dashboardId'] ?? $input['dashboard_id'] ?? ''),
             user: [],
         );
 

@@ -33,6 +33,43 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * plain columns until the payment-methods slice lands).
  */
 #[Table(name: 'wallets')]
+#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+    'customer_id',
+    'status',
+    'name',
+    'rate_amount',
+    'credits_balance',
+    'consumed_credits',
+    'expiration_at',
+    'last_balance_sync_at',
+    'last_consumed_credit_at',
+    'terminated_at',
+    'balance_cents',
+    'balance_currency',
+    'consumed_amount_cents',
+    'consumed_amount_currency',
+    'ongoing_balance_cents',
+    'ongoing_usage_balance_cents',
+    'credits_ongoing_balance',
+    'credits_ongoing_usage_balance',
+    'depleted_ongoing_balance',
+    'invoice_requires_successful_payment',
+    'lock_version',
+    'ready_to_be_refreshed',
+    'organization_id',
+    'allowed_fee_types',
+    'last_ongoing_balance_sync_at',
+    'priority',
+    'paid_top_up_min_amount_cents',
+    'paid_top_up_max_amount_cents',
+    'payment_method_id',
+    'payment_method_type',
+    'skip_invoice_custom_sections',
+    'traceable',
+    'code',
+    'billing_entity_id',
+    'purchase_order_number',
+])]
 class Wallet extends BaseModel
 {
     use ConnectionResolvable;
@@ -44,44 +81,6 @@ class Wallet extends BaseModel
 
     /** Rails: REFRESH_RELEVANT_ATTRIBUTES — changes here re-enqueue the ongoing-balance refresh. */
     public const REFRESH_RELEVANT_ATTRIBUTES = ['code', 'priority', 'allowed_fee_types'];
-
-    protected $fillable = [
-        'customer_id',
-        'status',
-        'name',
-        'rate_amount',
-        'credits_balance',
-        'consumed_credits',
-        'expiration_at',
-        'last_balance_sync_at',
-        'last_consumed_credit_at',
-        'terminated_at',
-        'balance_cents',
-        'balance_currency',
-        'consumed_amount_cents',
-        'consumed_amount_currency',
-        'ongoing_balance_cents',
-        'ongoing_usage_balance_cents',
-        'credits_ongoing_balance',
-        'credits_ongoing_usage_balance',
-        'depleted_ongoing_balance',
-        'invoice_requires_successful_payment',
-        'lock_version',
-        'ready_to_be_refreshed',
-        'organization_id',
-        'allowed_fee_types',
-        'last_ongoing_balance_sync_at',
-        'priority',
-        'paid_top_up_min_amount_cents',
-        'paid_top_up_max_amount_cents',
-        'payment_method_id',
-        'payment_method_type',
-        'skip_invoice_custom_sections',
-        'traceable',
-        'code',
-        'billing_entity_id',
-        'purchase_order_number',
-    ];
 
     /**
      * Rails' ActiveRecord carries the schema's column defaults in every new
@@ -116,7 +115,7 @@ class Wallet extends BaseModel
     /** Rails: `self.in_application_order` — order(:priority, :created_at). */
     public static function inApplicationOrder(): Builder
     {
-        return static::query()->orderBy('priority')->orderBy('created_at');
+        return static::query()->orderBy('priority')->oldest();
     }
 
     public function customer(): BelongsTo

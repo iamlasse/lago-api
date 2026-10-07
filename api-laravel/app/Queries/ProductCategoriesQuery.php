@@ -47,7 +47,7 @@ class ProductCategoriesQuery extends BaseService
 
         // Rails: paginate + apply_consistent_ordering (created_at desc, id asc).
         $result->product_categories = $this->paginate(
-            $productCategories->orderByDesc('product_categories.created_at')->orderBy('product_categories.id'),
+            $productCategories->latest('product_categories.created_at')->orderBy('product_categories.id'),
         );
 
         return $result;

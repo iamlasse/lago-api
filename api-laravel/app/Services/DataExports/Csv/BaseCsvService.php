@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Services\DataExports\Csv;
 
-use App\Models\DataExportPart;
+use Throwable;
 use App\Services\BaseResult;
 use App\Services\BaseService;
+use App\Models\DataExportPart;
 
 /**
  * Port of Rails' DataExports::Csv::BaseCsvService
@@ -23,6 +24,26 @@ abstract class BaseCsvService extends BaseService
         protected readonly DataExportPart $dataExportPart,
     ) {
         parent::__construct();
+    }
+
+    /** @return list<string> */
+    abstract protected static function buildHeaders(DataExportPart $dataExportPart): array;
+
+    /** Rails: `collection` — the part's objects. */
+    abstract protected function collection(): iterable;
+
+    /** Rails: `serialize_item(item, csv)` — one `csv << row` per item. */
+    abstract protected function serializeItem(mixed $item, $stream): void;
+
+    /**
+     * Rails: `headers` — computed off a transient instance built around one
+     * of the export's parts (see CombinePartsService).
+     *
+     * @return list<string>
+     */
+    public static function headers(DataExportPart $dataExportPart): array
+    {
+        return static::buildHeaders($dataExportPart);
     }
 
     public function execute(): BaseResult
@@ -46,26 +67,6 @@ abstract class BaseCsvService extends BaseService
     }
 
     /**
-     * Rails: `headers` — computed off a transient instance built around one
-     * of the export's parts (see CombinePartsService).
-     *
-     * @return list<string>
-     */
-    public static function headers(DataExportPart $dataExportPart): array
-    {
-        return static::buildHeaders($dataExportPart);
-    }
-
-    /** @return list<string> */
-    abstract protected static function buildHeaders(DataExportPart $dataExportPart): array;
-
-    /** Rails: `collection` — the part's objects. */
-    abstract protected function collection(): iterable;
-
-    /** Rails: `serialize_item(item, csv)` — one `csv << row` per item. */
-    abstract protected function serializeItem(mixed $item, $stream): void;
-
-    /**
      * Rails: `org_has_multiple_billing_entities?` — the billing_entity_code
      * column is appended only then.
      */
@@ -82,12 +83,32 @@ abstract class BaseCsvService extends BaseService
 
     /**
      * Ruby CSV defaults (CSV.new): comma separator, `"` quoting only when
-     * needed, `""` doubling, `\n` row terminator.
+     * needed, `""` doubling, `\n` row terminator. Hash/object cells (e.g.
+     * fees' grouped_by, which the serializer renders `{}` when empty) go
+     * through their JSON form like Ruby's CSV to_s of a Hash.
      */
     protected function writeRow($stream, array $row): void
     {
         fputcsv($stream, array_map(
-            fn (mixed $value): string => (string) $value,
+            function (mixed $value): string {
+                if ($value === null) {
+                    return '';
+                }
+
+                if (is_scalar($value)) {
+                    return (string) $value;
+                }
+
+                // Hash/object cells (e.g. fees' grouped_by, which the
+                // serializer renders `{}` when empty) go through their JSON
+                // form like Ruby's CSV to_s of a Hash; Carbon etc. through
+                // __toString.
+                try {
+                    return (string) $value;
+                } catch (Throwable) {
+                    return json_encode($value, JSON_UNESCAPED_SLASHES);
+                }
+            },
             $row,
         ), ',', '"', '\\', "\n");
     }

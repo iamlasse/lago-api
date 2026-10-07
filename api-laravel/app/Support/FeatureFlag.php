@@ -19,7 +19,7 @@ final class FeatureFlag
      *
      * @var list<string>
      */
-    public const DEFINITION = [
+    public const array DEFINITION = [
         'postgres_enriched_events',
         'wallet_traceability',
         'order_forms',

@@ -48,14 +48,12 @@ it('re-enqueues billing for stuck generating subscription invoices', function ()
 
     (new RetryGeneratingSubscriptionInvoicesJob)->handle();
 
-    Queue::assertPushed(BillSubscriptionJob::class, function (BillSubscriptionJob $job) use ($invoice, $subscription, $invoiceSubscription): bool {
-        return count($job->subscriptions) === 1
-            && $job->subscriptions[0]->is($subscription)
-            && $job->invoicingReason === 'subscription_periodic'
-            && $job->invoiceId === $invoice->id
-            && $job->skipCharges === true
-            && $job->timestamp === Carbon\Carbon::parse($invoiceSubscription->timestamp)->getTimestamp();
-    });
+    Queue::assertPushed(BillSubscriptionJob::class, fn (BillSubscriptionJob $job): bool => count($job->subscriptions) === 1
+        && $job->subscriptions[0]->is($subscription)
+        && $job->invoicingReason === 'subscription_periodic'
+        && $job->invoiceId === $invoice->id
+        && $job->skipCharges === true
+        && $job->timestamp === Illuminate\Support\Facades\Date::parse($invoiceSubscription->timestamp)->getTimestamp());
 });
 
 it('skips invoices generated less than a day ago', function (): void {

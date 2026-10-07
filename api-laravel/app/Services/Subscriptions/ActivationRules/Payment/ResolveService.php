@@ -134,8 +134,7 @@ class ResolveService extends BaseService
     {
         return Payment::query()
             ->where('invoice_id', $this->invoice->id)
-            ->where('payable_payment_status', 'succeeded')
-            ->orderByDesc('created_at')
+            ->where('payable_payment_status', 'succeeded')->latest()
             ->first();
     }
 }

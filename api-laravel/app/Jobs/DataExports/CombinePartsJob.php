@@ -8,9 +8,9 @@ use App\Models\DataExport;
 use Illuminate\Bus\Queueable;
 use App\Jobs\Middleware\UniqueJob;
 use Illuminate\Queue\InteractsWithQueue;
-use App\Services\DataExports\CombinePartsService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use App\Services\DataExports\CombinePartsService;
 
 /**
  * Port of Rails' DataExports::CombinePartsJob

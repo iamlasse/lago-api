@@ -85,7 +85,7 @@ class AdyenService extends BaseService
             // Rails: Integrations::Aggregator::Payments::CreateJob
             // .perform_later(payment:) if payment.should_sync_payment?.
             if ($payment->shouldSyncPayment()) {
-                \App\Jobs\Integrations\Aggregator\Payments\CreateJob::dispatch($payment);
+                dispatch(new \App\Jobs\Integrations\Aggregator\Payments\CreateJob($payment));
             }
 
             self::updateInvoicePaymentStatus($invoice, (string) $payablePaymentStatus);

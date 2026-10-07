@@ -120,7 +120,8 @@ class Payment extends BaseModel
      * Rails: scope :for_organization — only payments whose payable is a
      * visible invoice of the organization, or a payment request of it.
      */
-    public function scopeForOrganization($query, Organization $organization)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function forOrganization($query, Organization $organization)
     {
         return $query->where('payments.organization_id', $organization->id)
             ->where(function ($q) use ($organization): void {

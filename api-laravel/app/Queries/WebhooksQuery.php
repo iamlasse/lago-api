@@ -91,7 +91,7 @@ class WebhooksQuery extends BaseService
         $webhooks = $this->withHttpStatuses($webhooks);
 
         // Rails: paginate → order(updated_at: :desc, created_at: :desc).
-        return $webhooks->orderByDesc('updated_at')->orderByDesc('created_at');
+        return $webhooks->latest('updated_at')->latest();
     }
 
     /**

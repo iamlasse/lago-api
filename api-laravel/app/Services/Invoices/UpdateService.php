@@ -157,7 +157,7 @@ class UpdateService extends \App\Services\BaseService
             return;
         }
 
-        \App\Jobs\PaymentIntentsExpireJob::dispatch($this->invoice);
+        dispatch(new \App\Jobs\PaymentIntentsExpireJob($this->invoice));
     }
 
     /** TODO(port): Invoices::UpdateFeesPaymentStatusJob. */
@@ -202,11 +202,7 @@ class UpdateService extends \App\Services\BaseService
             return;
         }
 
-        \App\Jobs\Subscriptions\ActivationRules\Payment\ResolveJob::dispatch(
-            $subscription,
-            $this->invoice,
-            $paymentStatus === InvoicePaymentStatus::Succeeded ? 'succeeded' : 'failed',
-        );
+        dispatch(new \App\Jobs\Subscriptions\ActivationRules\Payment\ResolveJob($subscription, $this->invoice, $paymentStatus === InvoicePaymentStatus::Succeeded ? 'succeeded' : 'failed'));
     }
 
     private function deliverWebhook(): void

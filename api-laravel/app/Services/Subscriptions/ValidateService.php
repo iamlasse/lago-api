@@ -21,21 +21,14 @@ use App\Support\Utils\Datetime;
  */
 class ValidateService
 {
-    protected BaseResult $result;
-
-    /** @var array<string, mixed> */
-    protected array $args;
-
     /** @var array<string, list<string>> */
     protected array $errors = [];
 
     /**
      * @param  array<string, mixed>  $args
      */
-    public function __construct(BaseResult $result, array $args)
+    public function __construct(protected BaseResult $result, protected array $args)
     {
-        $this->result = $result;
-        $this->args = $args;
     }
 
     public function valid(): bool
@@ -113,7 +106,7 @@ class ValidateService
             && Datetime::validFormat($this->args['subscription_at'] ?? null)
             && $endingAtParsed !== null
             && $subscriptionAtParsed !== null
-            && $endingAtParsed->startOfDay()->gt(now()->startOfDay())
+            && $endingAtParsed->startOfDay()->gt(today())
             && $endingAtParsed->startOfDay()->gt($subscriptionAtParsed->startOfDay())
         ) {
             return true;

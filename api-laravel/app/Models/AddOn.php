@@ -162,7 +162,8 @@ class AddOn extends BaseModel
      * Laravel-idiom alias of the SoftDeletes scope, mirroring Rails'
      * `default_scope -> { kept }` naming.
      */
-    public function scopeKept(Builder $query): Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function kept(Builder $query): Builder
     {
         return $query->whereNull('deleted_at');
     }

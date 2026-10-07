@@ -30,9 +30,9 @@ class CreateService extends BaseService
      * Eloquent equivalent in the port, so it lives where organizations are
      * created.
      */
-    private const SLUG_FORMAT = '/\A[a-z0-9]([a-z0-9-]*[a-z0-9])?\z/';
+    private const string SLUG_FORMAT = '/\A[a-z0-9]([a-z0-9-]*[a-z0-9])?\z/';
 
-    private const RESERVED_SLUGS = [
+    private const array RESERVED_SLUGS = [
         'auth', 'login', 'sign-up', 'forgot-password', 'reset-password', 'invitation',
         'customer-portal', '404', 'forbidden', 'api', 'admin', 'graphql', 'webhooks', 'google', 'okta', 'entra',
         'settings', 'new', 'design-system', 'devtool',

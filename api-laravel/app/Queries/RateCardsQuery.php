@@ -101,7 +101,7 @@ class RateCardsQuery extends BaseService
 
         // Rails: paginate + apply_consistent_ordering.
         $result->rate_cards = $this->paginate(
-            $rateCards->orderByDesc('rate_cards.created_at')->orderBy('rate_cards.id'),
+            $rateCards->latest('rate_cards.created_at')->orderBy('rate_cards.id'),
         );
 
         return $result;

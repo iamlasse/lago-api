@@ -23,15 +23,15 @@ use Illuminate\Support\Facades\Http;
  * request errors to ::Adyen::ValidationError; `call()` reproduces that
  * mapping and otherwise returns the decoded body with the HTTP status.
  */
-final class Client
+final readonly class Client
 {
     /** Gem: Adyen::Checkout DEFAULT_VERSION. */
-    public const API_VERSION = 70;
+    public const int API_VERSION = 70;
 
     public function __construct(
-        private readonly string $apiKey,
-        private readonly string $environment, // 'test' | 'live'
-        private readonly ?string $livePrefix = null,
+        private string $apiKey,
+        private string $environment, // 'test' | 'live'
+        private ?string $livePrefix = null,
     ) {}
 
     /**

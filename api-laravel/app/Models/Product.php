@@ -145,7 +145,8 @@ class Product extends BaseModel
      *
      * @param  list<string>|null  $categoryIds
      */
-    public function scopeInCategories(Builder $query, ?array $categoryIds, bool $includeUncategorized = false): Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function inCategories(Builder $query, ?array $categoryIds, bool $includeUncategorized = false): Builder
     {
         if ($categoryIds !== null && $categoryIds !== [] && $includeUncategorized) {
             return $query->where(fn (Builder $q) => $q

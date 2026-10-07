@@ -107,7 +107,7 @@ $sharedApi = function (): void {
         // validates the blank-expression case and answers Rails'
         // invalid_expression envelope for every non-blank expression instead
         // of evaluating it (see BillableMetricsController).
-        Route::prefix('billable_metrics')->as('billable_metrics:')->group(function () {
+        Route::prefix('billable_metrics')->as('billable_metrics:')->group(function (): void {
             Route::get('', [BillableMetricsController::class, 'index']);
             Route::post('', [BillableMetricsController::class, 'create']);
             Route::post('evaluate_expression', [BillableMetricsController::class, 'evaluateExpression']);
@@ -145,7 +145,7 @@ $sharedApi = function (): void {
         // -- taxes -----------------------------------------------------------------
         // Keyed by code like billable metrics (Rails: `resources :taxes,
         // param: :code, code: /.*/`).
-        Route::prefix('taxes')->as('taxes:')->group(function () {
+        Route::prefix('taxes')->as('taxes:')->group(function (): void {
             Route::get('', [TaxesController::class, 'index']);
             Route::post('', [TaxesController::class, 'create']);
 
@@ -162,7 +162,7 @@ $sharedApi = function (): void {
         // -- webhook endpoints ------------------------------------------------------
         // Keyed by uuid id — Rails draws these with the default param
         // constraint (no dots), so no `.+` here.
-        Route::prefix('webhook_endpoints')->as('webhook_endpoints:')->group(function () {
+        Route::prefix('webhook_endpoints')->as('webhook_endpoints:')->group(function (): void {
             Route::get('', [WebhookEndpointsController::class, 'index']);
             Route::post('', [WebhookEndpointsController::class, 'create']);
 
@@ -185,7 +185,7 @@ $sharedApi = function (): void {
         // services; only index/show need no service).
         // create/update/destroy (ChargeFilters::Create/Update/DestroyService
         // not ported — only index/show need no service).
-        Route::prefix('plans')->as('plans:')->group(function () {
+        Route::prefix('plans')->as('plans:')->group(function (): void {
             Route::get('', [PlansController::class, 'index']);
             Route::post('', [PlansController::class, 'create']);
             Route::get('{plan_code}/charges', [ChargesController::class, 'index']);
@@ -237,7 +237,7 @@ $sharedApi = function (): void {
         // contain dots) and the feature code: PATCH merges the entitlements
         // hash, DELETE removes one feature entitlement (Rails draws no
         // create — overrides are merged in).
-        Route::prefix('subscriptions')->as('subscriptions:')->group(function () {
+        Route::prefix('subscriptions')->as('subscriptions:')->group(function (): void {
             Route::get('', [SubscriptionsController::class, 'index']);
             Route::post('', [SubscriptionsController::class, 'create']);
 
@@ -277,7 +277,7 @@ $sharedApi = function (): void {
         // resend_email is premium-gated inside Emails::ResendService and
         // payment_url's happy path lives with the PSP slice
         // (PaymentIntents::FetchService).
-        Route::prefix('invoices')->as('invoices:')->group(function () {
+        Route::prefix('invoices')->as('invoices:')->group(function (): void {
             Route::get('', [InvoicesController::class, 'index']);
             Route::post('', [InvoicesController::class, 'create']);
             Route::post('preview', [InvoicesController::class, 'preview']);

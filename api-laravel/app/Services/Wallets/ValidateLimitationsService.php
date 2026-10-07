@@ -68,7 +68,7 @@ class ValidateLimitationsService extends BaseValidator
         }
 
         $validTypes = FeeType::options();
-        $incoming = array_map('strval', (array) $feeTypes);
+        $incoming = array_map(strval(...), (array) $feeTypes);
         $invalid = array_diff($incoming, $validTypes);
 
         if ($invalid !== []) {

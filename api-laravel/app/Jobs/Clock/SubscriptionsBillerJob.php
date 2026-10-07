@@ -40,7 +40,7 @@ class SubscriptionsBillerJob implements ShouldQueue
     {
         Organization::query()->chunkById(200, function ($organizations): void {
             foreach ($organizations as $organization) {
-                OrganizationBillingJob::dispatch(organization: $organization);
+                dispatch(new OrganizationBillingJob(organization: $organization));
             }
         });
     }

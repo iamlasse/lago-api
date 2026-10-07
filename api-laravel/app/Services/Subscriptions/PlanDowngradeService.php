@@ -26,26 +26,13 @@ use App\Services\BillingEntities\ResolveService;
  */
 class PlanDowngradeService extends BaseService
 {
-    protected Customer $customer;
-
-    protected Subscription $currentSubscription;
-
-    protected Plan $plan;
-
-    /** @var array<string, mixed> */
-    protected array $params;
-
     protected string $name;
 
-    public function __construct(Customer $customer, Subscription $currentSubscription, Plan $plan, array $params)
+    public function __construct(protected Customer $customer, protected Subscription $currentSubscription, protected Plan $plan, /** @var array<string, mixed> */
+    protected array $params)
     {
         parent::__construct();
-
-        $this->customer = $customer;
-        $this->currentSubscription = $currentSubscription;
-        $this->plan = $plan;
-        $this->params = $params;
-        $this->name = mb_trim((string) ($params['name'] ?? ''));
+        $this->name = mb_trim((string) ($this->params['name'] ?? ''));
     }
 
     public function execute(): BaseResult
@@ -105,11 +92,11 @@ class PlanDowngradeService extends BaseService
 
             $newSubscription->save();
 
-            if (! blank($this->params['activation_rules'] ?? null)) {
+            if (filled($this->params['activation_rules'] ?? null)) {
                 $this->applyActivationRules($newSubscription);
             }
 
-            if (! blank($this->params['billing_entity_id'] ?? null) || ! blank($this->params['billing_entity_code'] ?? null)) {
+            if (filled($this->params['billing_entity_id'] ?? null) || filled($this->params['billing_entity_code'] ?? null)) {
                 $overrideEntity = ResolveService::call(
                     organization: $this->currentSubscription->organization,
                     billingEntityCode: $this->params['billing_entity_code'] ?? null,
@@ -174,7 +161,7 @@ class PlanDowngradeService extends BaseService
             $this->currentSubscription->name = $this->name;
         }
 
-        if (! blank($this->params['billing_entity_id'] ?? null) || ! blank($this->params['billing_entity_code'] ?? null)) {
+        if (filled($this->params['billing_entity_id'] ?? null) || filled($this->params['billing_entity_code'] ?? null)) {
             $overrideEntity = ResolveService::call(
                 organization: $this->currentSubscription->organization,
                 billingEntityCode: $this->params['billing_entity_code'] ?? null,

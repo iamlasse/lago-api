@@ -116,13 +116,7 @@ class BillSubscriptionJob implements ShouldQueue
 
         Log::info('BillSubscriptionJob[Invoice ID: '.($this->invoiceId ?? 'nil').'] - Retrying with invoice');
 
-        self::dispatch(
-            $this->subscriptions,
-            $this->timestamp,
-            $this->invoicingReason,
-            $invoice->id,
-            $this->skipCharges,
-        )->delay($isBillingDate ? 300 : 3);
+        dispatch(new self($this->subscriptions, $this->timestamp, $this->invoicingReason, $invoice->id, $this->skipCharges))->delay($isBillingDate ? 300 : 3);
     }
 
     /**

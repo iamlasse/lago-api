@@ -45,7 +45,7 @@ it('builds the xero payment body with the account mapping end-to-end', function 
     expect($body)->toHaveCount(1)
         ->and($body[0]['invoice_id'])->toBe('xero-inv-1')
         ->and($body[0]['account_code'])->toBe('xero-code-1')
-        ->and($body[0]['date'])->toBe(Illuminate\Support\Carbon::parse($payment->created_at)->toAtomString())
+        ->and($body[0]['date'])->toBe(\Illuminate\Support\Facades\Date::parse($payment->created_at)->toAtomString())
         ->and($body[0]['amount_cents'])->toBe(150);
 
     // The factory dispatches the Xero payload for a Xero integration.

@@ -76,10 +76,10 @@ class CreateService extends \App\Services\BaseService
 
         $integration->save();
 
-        SendRestletEndpointJob::dispatch($integration);
+        dispatch(new \App\Jobs\Integrations\Aggregator\SendRestletEndpointJob($integration));
 
         // Rails: PerformSyncJob.set(wait: 2.seconds).perform_later(integration:, sync_items: false).
-        PerformSyncJob::dispatch($integration, false)->delay(now()->addSeconds(2));
+        dispatch(new \App\Jobs\Integrations\Aggregator\PerformSyncJob($integration, false))->delay(now()->addSeconds(2));
 
         $result->integration = $integration;
 

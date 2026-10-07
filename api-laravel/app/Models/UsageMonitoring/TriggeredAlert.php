@@ -17,6 +17,19 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * (app/models/usage_monitoring/triggered_alert.rb).
  */
 #[Table(name: 'usage_monitoring_triggered_alerts')]
+#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+    'organization_id',
+    'usage_monitoring_alert_id',
+    'subscription_id',
+    'wallet_id',
+    'kind',
+    'current_value',
+    'previous_value',
+    'crossed_thresholds',
+    'in_alarm_thresholds',
+    'fully_resolved',
+    'triggered_at',
+])]
 class TriggeredAlert extends BaseModel
 {
     use HasFactory;
@@ -26,20 +39,6 @@ class TriggeredAlert extends BaseModel
         'triggered' => 'triggered',
         'resolved' => 'resolved',
         'seeded' => 'seeded',
-    ];
-
-    protected $fillable = [
-        'organization_id',
-        'usage_monitoring_alert_id',
-        'subscription_id',
-        'wallet_id',
-        'kind',
-        'current_value',
-        'previous_value',
-        'crossed_thresholds',
-        'in_alarm_thresholds',
-        'fully_resolved',
-        'triggered_at',
     ];
 
     protected $attributes = [

@@ -66,7 +66,7 @@ class RetryService extends \App\Services\BaseService
         }
 
         // Rails: Invoices::ProviderTaxes::PullTaxesAndApplyJob.perform_later(invoice:).
-        \App\Jobs\Invoices\ProviderTaxes\PullTaxesAndApplyJob::dispatch($updated ?? $this->invoice);
+        dispatch(new \App\Jobs\Invoices\ProviderTaxes\PullTaxesAndApplyJob($updated ?? $this->invoice));
 
         $result->invoice = $updated ?? $this->invoice;
 

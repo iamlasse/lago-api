@@ -170,6 +170,6 @@ class UpdateAlertService extends BaseService
             return;
         }
 
-        \App\Jobs\UsageMonitoring\ProcessWalletAlertsJob::dispatch($alert->wallet_id);
+        dispatch(new \App\Jobs\UsageMonitoring\ProcessWalletAlertsJob($alert->wallet_id));
     }
 }

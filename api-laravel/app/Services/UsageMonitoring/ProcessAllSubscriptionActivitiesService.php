@@ -31,7 +31,7 @@ class ProcessAllSubscriptionActivitiesService extends BaseService
             ->distinct()
             ->pluck('organization_id')
             ->each(function (string $organizationId): void {
-                ProcessOrganizationSubscriptionActivitiesJob::dispatch($organizationId);
+                dispatch(new \App\Jobs\UsageMonitoring\ProcessOrganizationSubscriptionActivitiesJob($organizationId));
             });
 
         return $result;

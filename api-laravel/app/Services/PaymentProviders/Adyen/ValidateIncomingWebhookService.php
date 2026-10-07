@@ -29,7 +29,7 @@ use App\Services\BaseService;
 class ValidateIncomingWebhookService extends BaseService
 {
     /** Gem: HmacValidator::WEBHOOK_VALIDATION_KEYS. */
-    private const WEBHOOK_VALIDATION_KEYS = [
+    private const array WEBHOOK_VALIDATION_KEYS = [
         'pspReference',
         'originalReference',
         'merchantAccountCode',

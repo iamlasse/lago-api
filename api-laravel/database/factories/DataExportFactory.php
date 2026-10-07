@@ -23,7 +23,7 @@ class DataExportFactory extends Factory
             'membership_id' => MembershipFactory::new(),
             'format' => 0, // csv
             'resource_type' => 'invoices',
-            'resource_query' => '{}',
+            'resource_query' => [],
             'status' => 0, // pending
         ];
     }

@@ -154,7 +154,8 @@ class Order extends BaseModel
      * Rails scope `executable` — created orders whose execute_at has come
      * due (the clock slice draws this scope).
      */
-    public function scopeExecutable(Builder $query): Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function executable(Builder $query): Builder
     {
         return $query
             ->where('status', OrderStatus::Created->value)

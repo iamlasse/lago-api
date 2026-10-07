@@ -137,7 +137,7 @@ class AlertsController extends ApiController
 
         $subscription = $this->currentOrganization()->subscriptions()
             ->where('external_id', is_scalar($externalId) ? (string) $externalId : '')
-            ->orderByDesc('started_at')
+            ->latest('started_at')
             ->first();
 
         if ($subscription === null) {

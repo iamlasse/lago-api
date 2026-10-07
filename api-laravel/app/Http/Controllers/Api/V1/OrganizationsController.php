@@ -137,7 +137,7 @@ class OrganizationsController extends ApiController
      */
     private function rsaPrivateKey(): OpenSSLAsymmetricKey
     {
-        $material = config('lago.rsa_private_key') ?? env('LAGO_RSA_PRIVATE_KEY');
+        $material = config('lago.rsa_private_key', env('LAGO_RSA_PRIVATE_KEY'));
 
         if ($material === null || $material === '') {
             throw new RuntimeException(

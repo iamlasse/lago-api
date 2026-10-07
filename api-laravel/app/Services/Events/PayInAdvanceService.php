@@ -165,16 +165,9 @@ class PayInAdvanceService extends BaseService
     private function enqueue(MeteredItem $meteredItem): void
     {
         if ($meteredItem->invoiceable()) {
-            CreatePayInAdvanceChargeJob::dispatch(
-                timestamp: \App\Support\Utils\Datetime::serialize($this->event->timestamp),
-                chargeId: $meteredItem->chargeId(),
-                eventId: $this->event->id,
-            );
+            dispatch(new \App\Jobs\Invoices\CreatePayInAdvanceChargeJob(timestamp: \App\Support\Utils\Datetime::serialize($this->event->timestamp), chargeId: $meteredItem->chargeId(), eventId: $this->event->id));
         } else {
-            CreatePayInAdvanceJob::dispatch(
-                chargeId: $meteredItem->chargeId(),
-                eventId: $this->event->id,
-            );
+            dispatch(new \App\Jobs\Fees\CreatePayInAdvanceJob(chargeId: $meteredItem->chargeId(), eventId: $this->event->id));
         }
     }
 }

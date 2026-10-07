@@ -82,7 +82,7 @@ abstract class AbstractCustomersCreateService extends BaseService
             }
 
             return $result;
-        } catch (Throwable $e) {
+        } catch (Throwable) {
             return $result->singleValidationFailure('value_already_exist', 'provider_customer_id');
         }
     }

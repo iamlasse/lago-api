@@ -108,7 +108,7 @@ class ChargeUsageSerializer extends ModelSerializer
      */
     protected function groupedUsage(array $fees): array
     {
-        if (! collect($fees)->contains(fn (Fee $fee) => (array) $fee->grouped_by !== [])) {
+        if (collect($fees)->doesntContain(fn (Fee $fee) => (array) $fee->grouped_by !== [])) {
             return [];
         }
 

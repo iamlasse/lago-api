@@ -32,7 +32,7 @@ class RetryBatchService extends BaseService
 
         $invoices = $this->failedInvoices()->get();
 
-        RetryAllJob::dispatch($this->organization, $invoices->pluck('id')->all());
+        dispatch(new \App\Jobs\Invoices\RetryAllJob($this->organization, $invoices->pluck('id')->all()));
 
         $result->invoices = $invoices;
 

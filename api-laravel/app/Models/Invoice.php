@@ -659,8 +659,7 @@ class Invoice extends BaseModel
     public function refundablePayment(): ?Payment
     {
         $payment = $this->payments()
-            ->where('payable_payment_status', 'succeeded')
-            ->orderByDesc('created_at')
+            ->where('payable_payment_status', 'succeeded')->latest()
             ->first();
 
         if ($payment !== null) {
@@ -670,8 +669,7 @@ class Invoice extends BaseModel
         return Payment::query()
             ->where('payable_type', 'PaymentRequest')
             ->where('payable_payment_status', 'succeeded')
-            ->whereIn('payable_id', $this->paymentRequests()->where('payment_requests.payment_status', 1)->select('payment_requests.id'))
-            ->orderByDesc('created_at')
+            ->whereIn('payable_id', $this->paymentRequests()->where('payment_requests.payment_status', 1)->select('payment_requests.id'))->latest()
             ->first();
     }
 

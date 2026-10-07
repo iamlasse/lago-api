@@ -65,14 +65,13 @@ it('closes out an active subscription whose trial just ended', function (): void
         ->and($subscription->trial_ended_at->format('Y-m-d H:i'))->toBe('2024-05-15 10:00');
 
     // The pay-in-advance plan bills at trial end, skipping the charges.
-    Queue::assertPushed(BillSubscriptionJob::class, function (BillSubscriptionJob $job) use ($subscription) {
+    Queue::assertPushed(BillSubscriptionJob::class, 
         // The service hydrates its own instance from the SQL pass — compare
         // by id.
-        return count($job->subscriptions) === 1
-            && $job->subscriptions[0]->id === $subscription->id
-            && $job->invoicingReason === 'subscription_starting'
-            && $job->skipCharges === true;
-    });
+        fn(BillSubscriptionJob $job) => count($job->subscriptions) === 1
+        && $job->subscriptions[0]->id === $subscription->id
+        && $job->invoicingReason === 'subscription_starting'
+        && $job->skipCharges === true);
 
     Queue::assertPushed(SendWebhookJob::class, fn (SendWebhookJob $job) => true);
 });

@@ -29,6 +29,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * Not ported (TODO(port)): PaperTrail trace.
  */
 #[Table(name: 'usage_monitoring_alerts')]
+#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+    'organization_id',
+    'subscription_external_id',
+    'billable_metric_id',
+    'wallet_id',
+    'alert_type',
+    'previous_value',
+    'last_processed_at',
+    'name',
+    'code',
+    'direction',
+])]
 class Alert extends BaseModel
 {
     use HasFactory;
@@ -89,19 +101,6 @@ class Alert extends BaseModel
         'decreasing' => 'decreasing',
     ];
 
-    protected $fillable = [
-        'organization_id',
-        'subscription_external_id',
-        'billable_metric_id',
-        'wallet_id',
-        'alert_type',
-        'previous_value',
-        'last_processed_at',
-        'name',
-        'code',
-        'direction',
-    ];
-
     protected $attributes = [
         'previous_value' => '0.0',
         'direction' => 'increasing',
@@ -115,31 +114,36 @@ class Alert extends BaseModel
     // -- Rails scopes ------------------------------------------------------------
 
     /** Rails: scope :using_current_usage. */
-    public function scopeUsingCurrentUsage(Builder $query): void
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function usingCurrentUsage(Builder $query): void
     {
         $query->whereIn('alert_type', self::CURRENT_USAGE_TYPES);
     }
 
     /** Rails: scope :using_lifetime_usage. */
-    public function scopeUsingLifetimeUsage(Builder $query): void
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function usingLifetimeUsage(Builder $query): void
     {
         $query->where('alert_type', 'lifetime_usage_amount');
     }
 
     /** Rails: scope :using_billable_metric_lifetime_usage. */
-    public function scopeUsingBillableMetricLifetimeUsage(Builder $query): void
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function usingBillableMetricLifetimeUsage(Builder $query): void
     {
         $query->whereIn('alert_type', self::BILLABLE_METRIC_LIFETIME_USAGE_TYPES);
     }
 
     /** Rails: scope :using_subscription. */
-    public function scopeUsingSubscription(Builder $query): void
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function usingSubscription(Builder $query): void
     {
         $query->whereIn('alert_type', self::SUBSCRIPTION_TYPES);
     }
 
     /** Rails: scope :using_wallet. */
-    public function scopeUsingWallet(Builder $query): void
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function usingWallet(Builder $query): void
     {
         $query->whereIn('alert_type', self::WALLET_TYPES);
     }

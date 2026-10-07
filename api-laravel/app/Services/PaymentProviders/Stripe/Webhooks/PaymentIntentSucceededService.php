@@ -27,10 +27,7 @@ class PaymentIntentSucceededService extends BaseService
             //
             // TODO(port): the provider_payment_method_data snapshot
             // (Payments::SetPaymentMethodDataService) rides in the same job.
-            SetPaymentMethodAndCreateReceiptJob::dispatch(
-                payment: $payment,
-                providerPaymentMethodId: $this->dataObject()['payment_method'] ?? null,
-            );
+            dispatch(new \App\Jobs\Payments\SetPaymentMethodAndCreateReceiptJob(payment: $payment, providerPaymentMethodId: $this->dataObject()['payment_method'] ?? null));
         }
 
         return $result;

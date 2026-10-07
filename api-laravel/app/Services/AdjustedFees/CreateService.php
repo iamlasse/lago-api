@@ -95,21 +95,26 @@ class CreateService extends BaseService
             }
 
             $result->adjusted_fee = $adjustedFee->refresh();
-            $result->fee = $fee->fixed_charge_id !== null
-                ? $this->invoice->fees()
-                    ->where('subscription_id', $fee->subscription_id)
-                    ->where('fixed_charge_id', $fee->fixed_charge_id)
-                    ->first()
-                : $this->invoice->fees()
-                    ->where('subscription_id', $fee->subscription_id)
-                    ->where('charge_id', $fee->charge_id)
-                    ->where(function ($query) use ($fee): void {
-                        // Rails find_by matches NULL charge_filter_id too.
-                        $fee->charge_filter_id === null
-                            ? $query->whereNull('charge_filter_id')
-                            : $query->where('charge_filter_id', $fee->charge_filter_id);
-                    })
-                    ->first();
+            // Rails: invoice.fees.find_by(subscription_id:, fixed_charge_id:)
+            // / find_by(subscription_id:, charge_id:, charge_filter_id:) —
+            // find_by matches NULL columns, a plain SQL `=` never does.
+            $nullAware = function ($query, string $column, ?string $value): void {
+                $value === null
+                    ? $query->whereNull($column)
+                    : $query->where($column, $value);
+            };
+
+            $result->fee = $this->invoice->fees()
+                ->where('subscription_id', $fee->subscription_id)
+                ->where(function ($query) use ($fee, $nullAware): void {
+                    if ($fee->fixed_charge_id !== null) {
+                        $nullAware($query, 'fixed_charge_id', $fee->fixed_charge_id);
+                    } else {
+                        $nullAware($query, 'charge_id', $fee->charge_id);
+                        $nullAware($query, 'charge_filter_id', $fee->charge_filter_id);
+                    }
+                })
+                ->first();
 
             return $result;
         } catch (FailedResult $e) {
@@ -126,7 +131,8 @@ class CreateService extends BaseService
     private function subscription(): ?Subscription
     {
         return $this->invoice->subscriptions()
-            ->firstWhere('id', $this->params['subscription_id'] ?? null);
+            ->where('subscriptions.id', $this->params['subscription_id'] ?? null)
+            ->first();
     }
 
     private function forbidden(): bool

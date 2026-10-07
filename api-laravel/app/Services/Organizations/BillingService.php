@@ -60,7 +60,7 @@ class BillingService extends BaseService
                     // NOTE: In case of downgrade, the subscription remains
                     // active until the end of the period; a next subscription
                     // is pending, the current one must be terminated.
-                    TerminateJob::dispatch($subscription, $this->today->getTimestamp());
+                    dispatch(new \App\Jobs\Subscriptions\TerminateJob($subscription, $this->today->getTimestamp()));
                 } else {
                     $billingSubscriptions[] = $subscription;
                 }
@@ -77,11 +77,7 @@ class BillingService extends BaseService
             $subscriptionGroups = $this->groupByPurchaseOrderNumber($subscriptionGroups);
 
             foreach ($subscriptionGroups as $subscriptions) {
-                BillSubscriptionJob::dispatch(
-                    $subscriptions,
-                    $this->today->getTimestamp(),
-                    'subscription_periodic',
-                );
+                dispatch(new \App\Jobs\BillSubscriptionJob($subscriptions, $this->today->getTimestamp(), 'subscription_periodic'));
 
                 // TODO(port): BillNonInvoiceableFeesJob::dispatch.
             }

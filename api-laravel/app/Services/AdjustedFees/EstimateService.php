@@ -224,7 +224,8 @@ class EstimateService extends BaseService
         }
 
         $subscription = $this->invoice->subscriptions()
-            ->firstWhere('id', $this->params['invoice_subscription_id'] ?? null);
+            ->where('subscriptions.id', $this->params['invoice_subscription_id'] ?? null)
+            ->first();
 
         if ($subscription === null) {
             $result->notFoundFailure('subscription')->raiseIfError();
@@ -252,7 +253,8 @@ class EstimateService extends BaseService
     private function initializeFeeForFixedCharge(BaseResult $result): Fee
     {
         $subscription = $this->invoice->subscriptions()
-            ->firstWhere('id', $this->params['invoice_subscription_id'] ?? null);
+            ->where('subscriptions.id', $this->params['invoice_subscription_id'] ?? null)
+            ->first();
 
         if ($subscription === null) {
             $result->notFoundFailure('subscription')->raiseIfError();

@@ -132,9 +132,9 @@ abstract class BaseService
      */
     protected function findCachedAggregation(mixed $withFromDatetime, mixed $withToDatetime, ?array $groupedBy = null): ?CachedAggregation
     {
-        $from = \Carbon\Carbon::parse($withFromDatetime);
+        $from = \Illuminate\Support\Facades\Date::parse($withFromDatetime);
         $from->microsecond = 0;
-        $to = \Carbon\Carbon::parse($withToDatetime);
+        $to = \Illuminate\Support\Facades\Date::parse($withToDatetime);
         $to->microsecond = 0;
 
         // NOTE: second-precision column comparison — the model bindings
@@ -151,8 +151,7 @@ abstract class BaseService
             // (the [] is bound as an empty string) — bind the encoded JSON
             // string instead.
             ->where('grouped_by', json_encode($groupedBy !== null && $groupedBy !== [] ? $groupedBy : []))
-            ->orderByDesc('timestamp')
-            ->orderByDesc('created_at');
+            ->orderByDesc('timestamp')->latest();
 
         // Rails excludes the current in-flight event's cached row; no event
         // filter exists on this path yet.

@@ -593,7 +593,8 @@ class Customer extends BaseModel
      * with no explicit campaign that are not excluded from dunning (they
      * resolve the billing entity's applied campaign at runtime).
      */
-    public function scopeFallingBackToDefaultDunningCampaign($query)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function fallingBackToDefaultDunningCampaign($query)
     {
         return $query->whereNull('applied_dunning_campaign_id')
             ->where('exclude_from_dunning_campaign', false);

@@ -106,7 +106,7 @@ function railsSchemaSurface(): array
  */
 function servedSchemaSurface(): array
 {
-    $schema = app(Nuwave\Lighthouse\Schema\SchemaBuilder::class)->schema();
+    $schema = resolve(Nuwave\Lighthouse\Schema\SchemaBuilder::class)->schema();
 
     $result = GraphQL::executeQuery($schema, <<<'GQL'
     query {

@@ -424,12 +424,10 @@ it('generates an adyen payment link for the payment request', function (): void 
     expect($result->success())->toBeTrue()
         ->and($result->payment_url)->toBe('https://pay.adyen.com/links/pr1');
 
-    Http::assertSent(function ($request): bool {
-        return $request['amount']['value'] === 1000
-            && $request['reference'] === 'Overdue invoices'
-            && $request['metadata']['lago_payable_type'] === 'PaymentRequest'
-            && $request['metadata']['payment_type'] === 'one-time';
-    });
+    Http::assertSent(fn($request): bool => $request['amount']['value'] === 1000
+        && $request['reference'] === 'Overdue invoices'
+        && $request['metadata']['lago_payable_type'] === 'PaymentRequest'
+        && $request['metadata']['payment_type'] === 'one-time');
 });
 
 it('generates a stripe checkout url for the payment request', function (): void {

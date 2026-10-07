@@ -40,9 +40,7 @@ it('resolves the clickhouse store when the flag and the organization opt in', fu
 it('overrides the resolved store for the duration of a block', function (): void {
     $organization = storeFactoryOrganization();
 
-    $inside = StoreFactory::withOverride(ClickHouseStore::class, true, function () use ($organization): string {
-        return StoreFactory::storeClass($organization);
-    });
+    $inside = StoreFactory::withOverride(ClickHouseStore::class, true, fn(): string => StoreFactory::storeClass($organization));
 
     expect($inside)->toBe(ClickHouseStore::class)
         ->and(StoreFactory::storeClass($organization))->toBe(PostgresStore::class);

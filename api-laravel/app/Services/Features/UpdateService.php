@@ -76,7 +76,7 @@ class UpdateService extends BaseService
             // stale-association shape as the auth_org webhook_url fix).
             $feature->setRelation(
                 'privileges',
-                $feature->privileges()->orderBy('created_at')->orderBy('code')->get(),
+                $feature->privileges()->oldest()->orderBy('code')->get(),
             );
 
             $result->feature = $feature;

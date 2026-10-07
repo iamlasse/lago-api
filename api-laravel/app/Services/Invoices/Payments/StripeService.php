@@ -82,9 +82,7 @@ class StripeService extends BaseService
             $payment = $this->createPaymentFromEvent($result);
         }
 
-        if ($payment === null) {
-            $payment = $this->handleMissingPayment($result);
-        }
+        $payment ??= $this->handleMissingPayment($result);
 
         if ($payment === null) {
             return $result;
@@ -115,7 +113,7 @@ class StripeService extends BaseService
         // Rails: Integrations::Aggregator::Payments::CreateJob
         // .perform_later(payment:) if payment.should_sync_payment?.
         if ($payment->shouldSyncPayment()) {
-            \App\Jobs\Integrations\Aggregator\Payments\CreateJob::dispatch($payment);
+            dispatch(new \App\Jobs\Integrations\Aggregator\Payments\CreateJob($payment));
         }
 
         if (! $this->authenticationRetryPending($payment, $this->status)) {

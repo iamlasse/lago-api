@@ -16,6 +16,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * (app/models/usage_monitoring/alert_threshold.rb).
  */
 #[Table(name: 'usage_monitoring_alert_thresholds')]
+#[\Illuminate\Database\Eloquent\Attributes\Fillable([
+    'organization_id',
+    'usage_monitoring_alert_id',
+    'code',
+    'value',
+    'recurring',
+    'notify_on',
+])]
 class AlertThreshold extends BaseModel
 {
     use HasFactory;
@@ -29,15 +37,6 @@ class AlertThreshold extends BaseModel
 
     /** Rails: NOTIFY_ON_VALUES. */
     public const NOTIFY_ON_VALUES = [self::NOTIFY_ON_TRIGGERED, self::NOTIFY_ON_RESOLVED];
-
-    protected $fillable = [
-        'organization_id',
-        'usage_monitoring_alert_id',
-        'code',
-        'value',
-        'recurring',
-        'notify_on',
-    ];
 
     protected $attributes = [
         'recurring' => false,

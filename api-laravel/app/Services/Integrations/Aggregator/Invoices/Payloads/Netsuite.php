@@ -217,7 +217,7 @@ final class Netsuite extends BasePayload
     private function due_date(): ?string
     {
         return $this->invoice->payment_due_date !== null
-            ? \Illuminate\Support\Carbon::parse($this->invoice->payment_due_date)->format('n/j/Y')
+            ? \Illuminate\Support\Facades\Date::parse($this->invoice->payment_due_date)->format('n/j/Y')
             : null;
     }
 
@@ -225,7 +225,7 @@ final class Netsuite extends BasePayload
     private function issuing_date(): ?string
     {
         return $this->invoice->issuing_date !== null
-            ? \Illuminate\Support\Carbon::parse($this->invoice->issuing_date)->format('n/j/Y')
+            ? \Illuminate\Support\Facades\Date::parse($this->invoice->issuing_date)->format('n/j/Y')
             : null;
     }
 
@@ -382,7 +382,7 @@ final class Netsuite extends BasePayload
     private function service_period_date(mixed $date): ?string
     {
         return $date !== null
-            ? \Illuminate\Support\Carbon::parse($date)->format('n/j/Y')
+            ? \Illuminate\Support\Facades\Date::parse($date)->format('n/j/Y')
             : null;
     }
 }

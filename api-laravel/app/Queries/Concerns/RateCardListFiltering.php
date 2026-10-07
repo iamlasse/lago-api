@@ -47,7 +47,7 @@ trait RateCardListFiltering
     {
         $hasFilters = collect(['product_ids', 'product_filter_ids', 'without_product_filter',
             'product_category_ids', 'without_product_category', 'product_type'])
-            ->some(fn (string $key): bool => ($this->filters[$key] ?? null) !== null
+            ->contains(fn (string $key): bool => ($this->filters[$key] ?? null) !== null
                 && ($this->filters[$key] ?? null) !== []);
 
         if (($this->searchTerm ?? null) === null && ! $hasFilters) {

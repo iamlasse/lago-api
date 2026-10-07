@@ -51,10 +51,7 @@ class HandleIncomingWebhookService extends BaseService
             return $result->serviceFailure(code: 'webhook_error', message: 'Invalid webhook secret');
         }
 
-        FlutterwaveHandleEventJob::dispatch(
-            $paymentProviderResult->payment_provider->organization,
-            $this->body,
-        );
+        dispatch(new \App\Jobs\PaymentProviders\FlutterwaveHandleEventJob($paymentProviderResult->payment_provider->organization, $this->body));
 
         $result->event = $this->body;
 

@@ -124,9 +124,9 @@ class LagoSessionClient
                 $this->validateResponse($response);
 
                 return $response;
-            } catch (ConnectionException) {
+            } catch (ConnectionException $connectionException) {
                 if ($attempt >= self::MAX_RETRIES_ATTEMPTS) {
-                    throw;
+                    throw $connectionException;
                 }
             }
         }
@@ -189,6 +189,6 @@ class LagoSessionClient
             return $this->baseUrl;
         }
 
-        return rtrim($this->baseUrl, '/').'/'.ltrim($path, '/');
+        return mb_rtrim($this->baseUrl, '/').'/'.mb_ltrim($path, '/');
     }
 }

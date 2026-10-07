@@ -115,7 +115,7 @@ class ContractsQuery extends BaseService
 
         // Rails: paginate + apply_consistent_ordering.
         $result->contracts = $this->paginate(
-            $contracts->orderByDesc('contracts.created_at')->orderBy('contracts.id'),
+            $contracts->latest('contracts.created_at')->orderBy('contracts.id'),
         );
 
         return $result;

@@ -24,7 +24,7 @@ class UpdateService extends BaseService
      * on presence: sending one on an active rate is an error even with an
      * unchanged value.
      */
-    private const FROZEN_ON_ACTIVE = [
+    private const array FROZEN_ON_ACTIVE = [
         'effective_from',
         'rate_model',
         'min_amount_cents',

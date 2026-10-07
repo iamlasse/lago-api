@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\Services\DataExports;
 
+use Throwable;
 use App\Models\DataExport;
-use App\Models\DataExportPart;
 use App\Services\BaseResult;
 use App\Services\BaseService;
-use Throwable;
 
 /**
  * Port of Rails' DataExports::CreatePartService

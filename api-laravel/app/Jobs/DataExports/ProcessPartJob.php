@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Jobs\DataExports;
 
-use App\Models\DataExportPart;
 use Illuminate\Bus\Queueable;
+use App\Models\DataExportPart;
 use Illuminate\Queue\InteractsWithQueue;
-use App\Services\DataExports\ProcessPartService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use App\Services\DataExports\ProcessPartService;
 
 /**
  * Port of Rails' DataExports::ProcessPartJob

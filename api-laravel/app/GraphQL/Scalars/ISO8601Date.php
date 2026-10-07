@@ -30,7 +30,7 @@ class ISO8601Date extends ScalarType
 
         if (is_string($value)) {
             try {
-                return Carbon::parse($value)->setTimezone('UTC')->format('Y-m-d\TH:i:s\Z');
+                return \Illuminate\Support\Facades\Date::parse($value)->setTimezone('UTC')->format('Y-m-d\TH:i:s\Z');
             } catch (Exception $e) {
                 throw new Error('ISO8601Date cannot serialize value: '.$value);
             }
@@ -46,7 +46,7 @@ class ISO8601Date extends ScalarType
         }
 
         try {
-            return Carbon::parse($value)->startOfDay()->setTimezone('UTC');
+            return \Illuminate\Support\Facades\Date::parse($value)->startOfDay()->setTimezone('UTC');
         } catch (Exception $e) {
             throw new Error('ISO8601Date cannot represent value: '.$value);
         }

@@ -68,7 +68,7 @@ final class Xero extends BasePayload
      */
     protected function fees(): \Illuminate\Support\Collection
     {
-        return $this->invoice->fees()->orderBy('created_at')->get();
+        return $this->invoice->fees()->oldest()->get();
     }
 
     /** Rails: Fee#grouped_by_display. */

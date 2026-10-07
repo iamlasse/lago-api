@@ -90,7 +90,8 @@ class IntegrationCustomer extends BaseModel
      * Rails: `scope :accounting_kind` — the accounting provider kinds
      * (netsuite / xero).
      */
-    public function scopeAccountingKind($query)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function accountingKind($query)
     {
         return $query->whereIn('type', self::ACCOUNTING_INTEGRATION_TYPES);
     }

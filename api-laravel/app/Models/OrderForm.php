@@ -114,7 +114,8 @@ class OrderForm extends BaseModel
      * customer billing entity's timezone) has come. The clock-driven
      * OrderForms::ExpireJob selects with it.
      */
-    public function scopeExpirable(Builder $query): Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function expirable(Builder $query): Builder
     {
         return $query
             ->where('status', 'generated')

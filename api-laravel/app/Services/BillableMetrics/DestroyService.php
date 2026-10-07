@@ -70,7 +70,7 @@ class DestroyService extends BaseService
         });
 
         // BillableMetricFilters::DestroyAllJob — WIRED (usage-monitoring slice).
-        \App\Jobs\BillableMetricFilters\DestroyAllJob::dispatch((string) $metric->id);
+        dispatch(new \App\Jobs\BillableMetricFilters\DestroyAllJob((string) $metric->id));
         // TODO(port): SendWebhookJob.perform_after_commit(
         //   "billable_metric.deleted", metric) — webhook emission hook point.
 

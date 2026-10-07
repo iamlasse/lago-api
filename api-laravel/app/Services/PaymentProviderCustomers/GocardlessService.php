@@ -97,7 +97,7 @@ class GocardlessService extends BaseService
 
         $this->deliverSuccessWebhook($customer);
 
-        GocardlessCheckoutUrlJob::dispatch($providerCustomer);
+        dispatch(new \App\Jobs\PaymentProviders\GocardlessCheckoutUrlJob($providerCustomer));
 
         $result->gocardless_customer = $providerCustomer;
 

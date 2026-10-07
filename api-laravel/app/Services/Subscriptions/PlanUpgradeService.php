@@ -25,23 +25,13 @@ use Illuminate\Support\Facades\DB;
  */
 class PlanUpgradeService extends BaseService
 {
-    protected Subscription $currentSubscription;
-
-    protected Plan $plan;
-
-    /** @var array<string, mixed> */
-    protected array $params;
-
     protected string $name;
 
-    public function __construct(Subscription $currentSubscription, Plan $plan, array $params)
+    public function __construct(protected Subscription $currentSubscription, protected Plan $plan, /** @var array<string, mixed> */
+    protected array $params)
     {
         parent::__construct();
-
-        $this->currentSubscription = $currentSubscription;
-        $this->plan = $plan;
-        $this->params = $params;
-        $this->name = mb_trim((string) ($params['name'] ?? ''));
+        $this->name = mb_trim((string) ($this->params['name'] ?? ''));
     }
 
     public function execute(): BaseResult
@@ -70,7 +60,7 @@ class PlanUpgradeService extends BaseService
             $newSubscription->status = SubscriptionStatus::Pending->value;
             $newSubscription->save();
 
-            if (! blank($this->params['activation_rules'] ?? null)) {
+            if (filled($this->params['activation_rules'] ?? null)) {
                 $this->applyActivationRules($newSubscription);
             }
 
