@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Queue;
 use App\Jobs\Clock\TerminateEndedSubscriptionsJob;
 use App\Jobs\Subscriptions\TerminateEndedSubscriptionJob;
 
-it('debugs the pushed job', function (): void {
+it('debugs the pushed job id', function (): void {
     Queue::fake();
     Carbon::setTestNow(Carbon::parse('2023-02-15 12:00:00'));
 
@@ -24,10 +24,7 @@ it('debugs the pushed job', function (): void {
 
     $pushed = Queue::pushed(TerminateEndedSubscriptionJob::class);
     foreach ($pushed as $record) {
-        var_dump(get_class($record));
-        $props = array_keys(get_object_vars($record));
-        var_dump($props);
-        var_dump($record->subscription);
+        var_dump('job sub id: '.$record->subscription->id, 'sub id: '.$sub->id, 'equal: '.var_export($record->subscription->id === $sub->id, true));
     }
     expect(true)->toBeTrue();
 });
