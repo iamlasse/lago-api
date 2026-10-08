@@ -73,6 +73,12 @@ class ContractRateCard extends BaseModel
         return $this->hasMany(RatePhase::class)->orderBy('position');
     }
 
+    /** Rails: `has_many :billing_segments`. */
+    public function billingSegments(): HasMany
+    {
+        return $this->hasMany(BillingSegment::class);
+    }
+
     // -- Validations ------------------------------------------------------------
 
     /**
@@ -139,7 +145,11 @@ class ContractRateCard extends BaseModel
     #[\Illuminate\Database\Eloquent\Attributes\Scope]
     protected function dueForBilling($query, $timestamp)
     {
+        // Qualified select: joins would otherwise collide on `id` and poison
+        // the hydrated models with foreign keys (Rails' joins default to
+        // SELECT "contract_rate_cards".*).
         return $query
+            ->select('contract_rate_cards.*')
             ->join('contracts', 'contracts.id', '=', 'contract_rate_cards.contract_id')
             ->join('customers', 'customers.id', '=', 'contracts.customer_id')
             ->whereNull('customers.deleted_at')

@@ -11,6 +11,7 @@ use App\Services\Validators\Metadata;
 use App\Services\Validators\DecimalAmount;
 use App\Services\Validators\ExpirationDate;
 
+use function count;
 use function array_key_exists;
 
 /**
@@ -18,10 +19,8 @@ use function array_key_exists;
  * (app/services/wallets/validate_service.rb).
  *
  * Not ported (TODO(port)):
- * - recurring_transaction_rules validation (no RecurringTransactionRule
- *   model yet) — args are accepted and skipped.
- * - payment_method validation (no PaymentMethod model yet) — args are
- *   accepted and skipped.
+ * - payment_method validation (no PaymentMethods::ValidateService yet) —
+ *   args are accepted and skipped.
  * - connections validation (no BillingObjectConnections::ValidateService
  *   port yet) — args are accepted and skipped.
  */
@@ -53,7 +52,9 @@ class ValidateService extends BaseValidator
             $this->validExpirationAt();
         }
 
-        // TODO(port): valid_recurring_transaction_rules? (see class docblock).
+        if (! empty($this->args['recurring_transaction_rules'])) {
+            $this->validRecurringTransactionRules();
+        }
 
         if (array_key_exists('transaction_metadata', $this->args) && $this->args['transaction_metadata'] !== null) {
             $this->validMetadata();
@@ -75,6 +76,25 @@ class ValidateService extends BaseValidator
         }
 
         return true;
+    }
+
+    /** Rails: `valid_recurring_transaction_rules?`. */
+    private function validRecurringTransactionRules(): void
+    {
+        $rules = (array) $this->args['recurring_transaction_rules'];
+
+        if (count($rules) > 1) {
+            $this->addError('recurring_transaction_rules', 'invalid_number_of_recurring_rules');
+
+            return;
+        }
+
+        /** @var array<string, mixed> $first */
+        $first = (array) ($rules[0] ?? []);
+
+        if (! RecurringTransactionRules\ValidateService::call(params: $first)) {
+            $this->addError('recurring_transaction_rules', 'invalid_recurring_rule');
+        }
     }
 
     private function customer(): ?Customer

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Support\MoneyMath;
 use App\Enums\WalletStatus;
+use App\Support\WalletCredit;
 use App\Models\Casts\BcNumeric;
 use App\Models\Casts\PostgresArray;
 use App\Services\Validators\Currencies;
@@ -26,8 +28,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * domain.
  *
  * Not ported (TODO(port)): PaperTrail trace, HasPurchaseOrderNumber
- * activity hooks (the plain string column is ported), recurring transaction
- * rules relations (RecurringTransactionRule has no model yet), invoice
+ * activity hooks (the plain string column is ported), invoice
  * custom sections, UsageMonitoring alerts, Clickhouse activity logs,
  * PaymentMethod (payment_method_id / payment_method_type are carried as
  * plain columns until the payment-methods slice lands).
@@ -341,6 +342,35 @@ class Wallet extends BaseModel
             'wallet_id',
             'invoice_custom_section_id',
         )->whereNull('invoice_custom_sections.deleted_at');
+    }
+
+    // -- Recurring transaction rules (wallet-completion slice, appended) ---------
+
+    /** Rails: `has_many :recurring_transaction_rules, dependent: :destroy`. */
+    public function recurringTransactionRules(): HasMany
+    {
+        return $this->hasMany(RecurringTransactionRule::class);
+    }
+
+    /** Rails: `paid_top_up_min_credits` — the min top-up amount expressed in credits. */
+    public function paidTopUpMinCredits(): ?string
+    {
+        if ($this->paid_top_up_min_amount_cents === null) {
+            return null;
+        }
+
+        // BigDecimal#to_s rendering, like Rails' BigDecimal division result.
+        return MoneyMath::toF(WalletCredit::fromAmountCents($this, $this->paid_top_up_min_amount_cents)->creditAmount);
+    }
+
+    /** Rails: `paid_top_up_max_credits` — the max top-up amount expressed in credits. */
+    public function paidTopUpMaxCredits(): ?string
+    {
+        if ($this->paid_top_up_max_amount_cents === null) {
+            return null;
+        }
+
+        return MoneyMath::toF(WalletCredit::fromAmountCents($this, $this->paid_top_up_max_amount_cents)->creditAmount);
     }
 
     // -- Currency virtual attribute (Rails: currency= / currency) ---------------

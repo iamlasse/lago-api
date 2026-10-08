@@ -44,15 +44,13 @@ class Wallet
     }
 
     /**
-     * Rails: `object.recurring_transaction_rules.active` — no
-     * RecurringTransactionRule model is ported yet (TODO(port)), so the
-     * rule list is empty like the REST serializer's.
+     * Rails: `object.recurring_transaction_rules.active`.
      *
      * @return list<mixed>
      */
     public function recurringTransactionRules(WalletModel $wallet): array
     {
-        return [];
+        return $wallet->recurringTransactionRules()->active()->get()->all();
     }
 
     /** Rails: `applies_to` is declared `method: :itself` — the wallet itself. */

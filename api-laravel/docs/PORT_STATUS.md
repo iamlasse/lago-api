@@ -11,12 +11,12 @@ per the ledger rules (`code=done` requires `test ∈ {ported, written}`).
 | Metric | Count |
 | --- | --- |
 | Ledger rows (Rails surface under coverage) | 2636 |
-| Done | 1113 |
+| Done | 1149 |
 | In progress | 11 |
-| Todo | 1511 |
+| Todo | 1475 |
 | Contract goldens replaying green (`contract=pass`) | 549 |
-| Tests ported from Rails specs | 809 |
-| Tests written first (no Rails spec to port) | 304 |
+| Tests ported from Rails specs | 840 |
+| Tests written first (no Rails spec to port) | 305 |
 
 ## Progress by kind
 
@@ -24,9 +24,9 @@ per the ledger rules (`code=done` requires `test ∈ {ported, written}`).
 | --- | --- | --- | --- | --- |
 | `rest` (provisional inventory) | 627 | 281 | 0 | 161 |
 | `gql` | 387 | 335 | 5 | 324 |
-| `svc` | 1052 | 294 | 6 | 54 |
-| `ser` | 155 | 32 | 0 | 2 |
-| `job` | 269 | 25 | 0 | 8 |
+| `svc` | 1052 | 313 | 6 | 54 |
+| `ser` | 155 | 33 | 0 | 2 |
+| `job` | 269 | 41 | 0 | 8 |
 | `table` | 146 | 146 | 0 | 0 |
 
 `table` rows are the frozen schema itself (all done by construction — the
@@ -63,7 +63,7 @@ have no Laravel counterpart and are deliberately left `todo`:
 - `svc:Events.Stores.Utils.ClickhouseConnection` (todo)
 - `svc:Events.Stores.Utils.ClickhouseSqlHelpers` (todo)
 
-### Done without a contract scenario (419 rows)
+### Done without a contract scenario (455 rows)
 
 Rows whose code and tests are in, but whose behavior no captured golden
 scenario covers yet (`contract=untested`). The contract harness
@@ -76,9 +76,9 @@ diff, not by contract goldens.
 | --- | --- |
 | `rest` | 121 |
 | `gql` | 11 |
-| `svc` | 240 |
-| `ser` | 30 |
-| `job` | 17 |
+| `svc` | 259 |
+| `ser` | 31 |
+| `job` | 33 |
 
 ### Open domains
 
@@ -90,24 +90,24 @@ services/jobs/serializers by their first namespace segment).
 | `rest` | 346 |
 | `Integrations` | 113 |
 | `PaymentProviders` | 77 |
-| `Invoices` | 71 |
-| `V1` | 69 |
+| `Invoices` | 69 |
+| `V1` | 68 |
 | `Webhooks` | 68 |
 | `DatabaseMigrations` | 65 |
 | `gql` | 52 |
 | `EInvoices` | 45 |
-| `Events` | 41 |
-| `Clock` | 27 |
+| `Events` | 39 |
 | `PaymentProviderCustomers` | 26 |
-| `Subscriptions` | 24 |
+| `Subscriptions` | 23 |
 | `BillableMetrics` | 18 |
 | `Charges` | 17 |
+| `Clock` | 17 |
 | `CreditNotes` | 16 |
 | `Fees` | 16 |
 | `Utils` | 16 |
-| `Wallets` | 16 |
 | `Customers` | 15 |
-| …92 smaller domains | 385 |
+| `X402` | 15 |
+| …91 smaller domains | 366 |
 
 ## Test gates
 

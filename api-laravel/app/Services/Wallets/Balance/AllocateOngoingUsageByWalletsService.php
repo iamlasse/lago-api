@@ -257,10 +257,12 @@ class AllocateOngoingUsageByWalletsService extends BaseService
         return $targetMatch || $typeMatch || $unrestrictedWallet;
     }
 
-    /** TODO(port): threshold rules — no RecurringTransactionRule model yet. */
+    /** Rails: `threshold_wallet?` — a currently-active threshold rule makes the wallet absorb everything. */
     private function thresholdWallet(Wallet $wallet): bool
     {
-        return false;
+        return $wallet->recurringTransactionRules()
+            ->get()
+            ->contains(fn ($rule) => $rule->currentlyActive() && $rule->isThreshold());
     }
 
     private function feeTargetingWalletsEnabled(): bool

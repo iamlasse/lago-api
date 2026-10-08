@@ -65,6 +65,18 @@ class PricingUnit extends BaseModel
         return $errors;
     }
 
+    /** Rails: `exponent` — pricing units always carry two decimals. */
+    public function exponent(): int
+    {
+        return 2;
+    }
+
+    /** Rails: `subunit_to_unit` — 10 ** exponent. */
+    public function subunitToUnit(): int
+    {
+        return 10 ** $this->exponent();
+    }
+
     protected function casts(): array
     {
         return [

@@ -88,8 +88,6 @@ class CreateService extends BaseService
                 ? CarbonImmutable::parse((string) $params['started_at'], 'UTC')
                 : CarbonImmutable::now('UTC');
 
-            // TODO(port): BillingSegments::ScheduleJob.perform_after_commit —
-            // the billing engine's segment scheduling (billing slice).
             // TODO(port): settings resolution (billing entity / payment
             // method) — GraphQL-only inputs so far.
 
@@ -117,6 +115,12 @@ class CreateService extends BaseService
                 if ($contract->catalogPlan !== null) {
                     MaterializeRateCardsService::callBang(contract: $contract);
                 }
+
+                // Port of Rails' BillingSegments::ScheduleJob
+                // .perform_after_commit(customer.id) — a card billed in
+                // advance is due the moment the contract starts, so its
+                // invoice must not wait for the hourly producer.
+                DB::afterCommit(fn () => dispatch(new \App\Jobs\BillingSegments\ScheduleJob($customer->id)));
 
                 return $contract;
             });

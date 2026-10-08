@@ -11,13 +11,13 @@ use Illuminate\Support\Str;
 use App\Models\WalletTarget;
 use App\Services\BaseResult;
 use App\Services\BaseService;
-use App\Services\InvoiceCustomSections\AttachToResourceService;
 use App\Support\WalletCredit;
 use Illuminate\Support\Facades\DB;
 use App\Services\Validators\DecimalAmount;
 use App\Services\Metadata\UpdateItemService;
 use App\Services\Customers\UpdateCurrencyService;
 use App\Services\Validators\WalletTransactionAmountLimits;
+use App\Services\InvoiceCustomSections\AttachToResourceService;
 
 use function array_key_exists;
 
@@ -25,15 +25,10 @@ use function array_key_exists;
  * Port of Rails' Wallets::CreateService (app/services/wallets/create_service.rb).
  *
  * Not ported (TODO(port)):
- * - recurring_transaction_rules (no RecurringTransactionRule model yet) —
- *   args are accepted and ignored; no RecurringTransactionRules::CreateService.
  * - InvoiceCustomSections::AttachToResourceService (invoice custom sections
  *   slice).
  * - BillingObjectConnections::AttachToResourceService — the
  *   multi_connection forbidden check and connection attach are skipped.
- * - schedule_top_up: wired — WalletTransactions\CreateJob carries the
- *   initial paid_credits / granted_credits after commit (the recurring
- *   rule's first grant waits on RecurringTransactionRules::CreateService).
  * - activity_loggable middleware.
  */
 class CreateService extends BaseService
@@ -132,8 +127,10 @@ class CreateService extends BaseService
 
         $wallet = new Wallet($attributes);
 
+        $recurringTransactionRule = null;
+
         try {
-            DB::transaction(function () use ($wallet, $customer, $result): void {
+            DB::transaction(function () use ($wallet, $customer, $result, &$recurringTransactionRule): void {
                 $currency = $this->params['currency'] ?? null;
 
                 if (($currency ?? '') !== '' && ($customer->currency ?? '') === '') {
@@ -152,8 +149,15 @@ class CreateService extends BaseService
 
                 $this->validateWalletInitialAmount($wallet, $result);
 
-                // TODO(port): recurring_transaction_rules creation
-                // (RecurringTransactionRules::CreateService).
+                $recurringTransactionRule = null;
+
+                if (! empty($this->params['recurring_transaction_rules'])) {
+                    $recurringTransactionRule = RecurringTransactionRules\CreateService::callBang(
+                        wallet: $wallet,
+                        walletParams: $this->params,
+                    )->recurring_transaction_rule;
+                }
+
                 AttachToResourceService::call(resource: $wallet, params: $this->params);
 
                 // TODO(port): BillingObjectConnections::AttachToResourceService
@@ -184,9 +188,8 @@ class CreateService extends BaseService
 
             // Rails: schedule_top_up — WalletTransactions::CreateJob
             // .perform_after_commit(organization_id:, params:) with the
-            // initial paid/granted credits (the recurring rule's first grant
-            // waits on RecurringTransactionRules::CreateService).
-            $this->scheduleTopUp($wallet);
+            // initial paid/granted credits.
+            $this->scheduleTopUp($wallet, $recurringTransactionRule);
 
             return $result;
         } catch (\App\Services\Failures\FailedResult $e) {
@@ -205,7 +208,7 @@ class CreateService extends BaseService
     }
 
     /** Rails: `schedule_top_up` — enqueues the wallet's initial top-up. */
-    private function scheduleTopUp(Wallet $wallet): void
+    private function scheduleTopUp(Wallet $wallet, ?\App\Models\RecurringTransactionRule $recurringTransactionRule): void
     {
         $paidCredits = $this->paidCredits();
         $grantedCredits = $this->grantedCredits();
@@ -227,8 +230,8 @@ class CreateService extends BaseService
             'name' => $this->params['transaction_name'] ?? null,
             'priority' => $this->params['transaction_priority'] ?? null,
             'ignore_paid_top_up_limits' => $this->params['ignore_paid_top_up_limits_on_creation'] ?? null,
-            // TODO(port): recurring_transaction_rule&.resolved_purchase_order_number.
-            'purchase_order_number' => $wallet->purchase_order_number,
+            'purchase_order_number' => $recurringTransactionRule?->resolvedPurchaseOrderNumber()
+                ?? $wallet->purchase_order_number,
         ]));
     }
 

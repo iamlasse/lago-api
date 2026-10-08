@@ -117,6 +117,57 @@ class Payment extends BaseModel
     }
 
     /**
+     * Polymorphic payable (Rails: belongs_to :payable, polymorphic: true).
+     * The `payable_type` column stores Rails class names ("Invoice" /
+     * "PaymentRequest") — mapped to the Laravel classes via the global
+     * morph map registered in AppServiceProvider.
+     */
+    public function payable(): MorphTo
+    {
+        return $this->morphTo();
+    }
+
+    // -- retry/recovery slice (appended) -------------------------------------
+
+    /**
+     * Rails: Payment#payment_provider_type — the provider slug
+     * ("stripe"/"gocardless"/...) derived from the provider row's type.
+     */
+    public function paymentProviderType(): ?string
+    {
+        return $this->paymentProvider?->paymentType();
+    }
+
+    /**
+     * Rails: Payment#gated_subscription_activation? — the payable invoice is
+     * open with a payment-gated subscription, i.e. its activation is held on
+     * this payment landing. Abandoned-payment cancellation must not touch
+     * these: cancelling would land a failed status that resolves the
+     * activation through Invoices::UpdateService, which has its own window
+     * and its own clock.
+     */
+    public function gatedSubscriptionActivation(): bool
+    {
+        $payable = $this->payable;
+
+        return $payable instanceof Invoice
+            && $payable->statusEnum() === \App\Enums\InvoiceStatus::Open
+            && $payable->subscriptions()->get()->contains(fn (Subscription $subscription) => $subscription->paymentGated());
+    }
+
+    // -- payment-receipts slice (appended) -----------------------------------
+
+    /**
+     * Rails: has_one :payment_receipt (payment_receipts.payment_id UNIQUE —
+     * the receipt is created at most once per payment by
+     * PaymentReceipts::CreateService).
+     */
+    public function paymentReceipt(): HasOne
+    {
+        return $this->hasOne(PaymentReceipt::class);
+    }
+
+    /**
      * Rails: scope :for_organization — only payments whose payable is a
      * visible invoice of the organization, or a payment request of it.
      */
@@ -141,29 +192,6 @@ class Payment extends BaseModel
                         ->where('payment_requests.organization_id', $organization->id);
                 });
             });
-    }
-
-    /**
-     * Polymorphic payable (Rails: belongs_to :payable, polymorphic: true).
-     * The `payable_type` column stores Rails class names ("Invoice" /
-     * "PaymentRequest") — mapped to the Laravel classes via the global
-     * morph map registered in AppServiceProvider.
-     */
-    public function payable(): MorphTo
-    {
-        return $this->morphTo();
-    }
-
-    // -- payment-receipts slice (appended) -----------------------------------
-
-    /**
-     * Rails: has_one :payment_receipt (payment_receipts.payment_id UNIQUE —
-     * the receipt is created at most once per payment by
-     * PaymentReceipts::CreateService).
-     */
-    public function paymentReceipt(): HasOne
-    {
-        return $this->hasOne(PaymentReceipt::class);
     }
 
     protected function casts(): array

@@ -5148,7 +5148,7 @@
         "contract": "pass"
       },
       "tests": [
-        "tests/Feature/GraphQL/Resolvers/WalletsResolverTest.php"
+        "tests/Feature/GraphQL/WalletsResolverTest.php"
       ],
       "notes": "Contract: replayed green via WalletsResolverTest."
     },
@@ -5190,7 +5190,7 @@
         "contract": "pass"
       },
       "tests": [
-        "tests/Feature/GraphQL/Resolvers/WalletsResolverTest.php"
+        "tests/Feature/GraphQL/WalletsResolverTest.php"
       ],
       "notes": "Contract: replayed green via WalletsResolverTest."
     },
@@ -5232,7 +5232,7 @@
         "contract": "pass"
       },
       "tests": [
-        "tests/Feature/GraphQL/Resolvers/WalletsResolverTest.php"
+        "tests/Feature/GraphQL/WalletsResolverTest.php"
       ],
       "notes": "Contract: replayed green via WalletsResolverTest."
     },
@@ -5246,7 +5246,7 @@
         "contract": "pass"
       },
       "tests": [
-        "tests/Feature/GraphQL/Resolvers/WalletsResolverTest.php"
+        "tests/Feature/GraphQL/WalletsResolverTest.php"
       ],
       "notes": "Contract: replayed green via WalletsResolverTest."
     },
@@ -5461,11 +5461,14 @@
       "source": "app/jobs/billing_segments/process_job.rb",
       "laravel": "App\\Jobs\\BillingSegments\\ProcessJob",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
+      "tests": [
+        "tests/Feature/Jobs/BillingSegments/ClockBillingSegmentsJobsTest.php",
+        "tests/Feature/Services/BillingSegments/BillingSegmentsScenarioTest.php"
+      ],
       "notes": ""
     },
     {
@@ -5473,11 +5476,14 @@
       "source": "app/jobs/billing_segments/schedule_job.rb",
       "laravel": "App\\Jobs\\BillingSegments\\ScheduleJob",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
+      "tests": [
+        "tests/Feature/Jobs/BillingSegments/ClockBillingSegmentsJobsTest.php",
+        "tests/Feature/Services/BillingSegments/BillingSegmentsScenarioTest.php"
+      ],
       "notes": ""
     },
     {
@@ -5581,11 +5587,14 @@
       "source": "app/jobs/clock/cancel_abandoned_payments_job.rb",
       "laravel": "App\\Jobs\\Clock\\CancelAbandonedPaymentsJob",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
+      "tests": [
+        "tests/Unit/Jobs/Clock/CancelAbandonedPaymentsJobTest.php",
+        "tests/Unit/Services/Invoices/Payments/CancelAbandonedServiceTest.php"
+      ],
       "notes": ""
     },
     {
@@ -5593,11 +5602,13 @@
       "source": "app/jobs/clock/compute_all_daily_usages_job.rb",
       "laravel": "App\\Jobs\\Clock\\ComputeAllDailyUsagesJob",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
+      "tests": [
+        "tests/Unit/Jobs/Clock/ComputeAllDailyUsagesJobTest.php"
+      ],
       "notes": ""
     },
     {
@@ -5617,11 +5628,14 @@
       "source": "app/jobs/clock/create_billing_segments_job.rb",
       "laravel": "App\\Jobs\\Clock\\CreateBillingSegmentsJob",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
+      "tests": [
+        "tests/Feature/Jobs/BillingSegments/ClockBillingSegmentsJobsTest.php",
+        "tests/Feature/Services/BillingSegments/BillingSegmentsScenarioTest.php"
+      ],
       "notes": ""
     },
     {
@@ -5629,11 +5643,14 @@
       "source": "app/jobs/clock/create_interval_wallet_transactions_job.rb",
       "laravel": "App\\Jobs\\Clock\\CreateIntervalWalletTransactionsJob",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
+      "tests": [
+        "tests/Unit/Jobs/Clock/CreateIntervalWalletTransactionsJobTest.php",
+        "tests/Unit/Services/Wallets/CreateIntervalWalletTransactionsServiceTest.php"
+      ],
       "notes": ""
     },
     {
@@ -5641,8 +5658,8 @@
       "source": "app/jobs/clock/events_validation_job.rb",
       "laravel": "App\\Jobs\\Clock\\EventsValidationJob",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
       "tests": [],
@@ -5729,11 +5746,13 @@
       "source": "app/jobs/clock/inbound_webhooks_retry_job.rb",
       "laravel": "App\\Jobs\\Clock\\InboundWebhooksRetryJob",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
+      "tests": [
+        "tests/Unit/Jobs/Clock/InboundWebhooksRetryJobTest.php"
+      ],
       "notes": ""
     },
     {
@@ -5767,11 +5786,13 @@
       "source": "app/jobs/clock/process_billing_segments_job.rb",
       "laravel": "App\\Jobs\\Clock\\ProcessBillingSegmentsJob",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
+      "tests": [
+        "tests/Feature/Jobs/BillingSegments/ClockBillingSegmentsJobsTest.php"
+      ],
       "notes": ""
     },
     {
@@ -5803,8 +5824,8 @@
       "source": "app/jobs/clock/record_deletions_cleanup_job.rb",
       "laravel": "App\\Jobs\\Clock\\RecordDeletionsCleanupJob",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
       "tests": [],
@@ -5867,11 +5888,13 @@
       "source": "app/jobs/clock/retry_failed_invoices_job.rb",
       "laravel": "App\\Jobs\\Clock\\RetryFailedInvoicesJob",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
+      "tests": [
+        "tests/Unit/Jobs/Clock/RetryFailedInvoicesJobTest.php"
+      ],
       "notes": ""
     },
     {
@@ -5943,11 +5966,13 @@
       "source": "app/jobs/clock/terminate_recurring_transaction_rules_job.rb",
       "laravel": "App\\Jobs\\Clock\\TerminateRecurringTransactionRulesJob",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
+      "tests": [
+        "tests/Unit/Jobs/Clock/TerminateRecurringTransactionRulesJobTest.php"
+      ],
       "notes": ""
     },
     {
@@ -6173,11 +6198,14 @@
       "source": "app/jobs/daily_usages/compute_job.rb",
       "laravel": "App\\Jobs\\DailyUsages\\ComputeJob",
       "status": {
-        "code": "todo",
+        "code": "done",
         "test": "todo",
         "contract": "untested"
       },
-      "tests": [],
+      "tests": [
+        "tests/Unit/Jobs/Clock/ComputeAllDailyUsagesJobTest.php",
+        "tests/Unit/Services/DailyUsages/ComputeAllServiceTest.php"
+      ],
       "notes": ""
     },
     {
@@ -6185,7 +6213,7 @@
       "source": "app/jobs/daily_usages/fill_from_invoice_job.rb",
       "laravel": "App\\Jobs\\DailyUsages\\FillFromInvoiceJob",
       "status": {
-        "code": "todo",
+        "code": "done",
         "test": "todo",
         "contract": "untested"
       },
@@ -7099,8 +7127,8 @@
       "source": "app/jobs/events/post_validation_job.rb",
       "laravel": "App\\Jobs\\Events\\PostValidationJob",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
       "tests": [],
@@ -7647,11 +7675,14 @@
       "source": "app/jobs/invoices/payments/cancel_abandoned_job.rb",
       "laravel": "App\\Jobs\\Invoices\\Payments\\CancelAbandonedJob",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
+      "tests": [
+        "tests/Unit/Jobs/Clock/CancelAbandonedPaymentsJobTest.php",
+        "tests/Unit/Services/Invoices/Payments/CancelAbandonedServiceTest.php"
+      ],
       "notes": ""
     },
     {
@@ -9133,7 +9164,7 @@
     {
       "id": "rest:DELETE:/api/v2/contracts/:external_id",
       "source": "config/routes.rb (static parse — provisional)",
-      "laravel": "App\\Http\\Controllers\\Api\\V2\\ContractsController",
+      "laravel": "App\\Http\\Controllers\\Api\\V1\\ContractsController",
       "status": {
         "code": "done",
         "test": "ported",
@@ -13375,7 +13406,7 @@
     {
       "id": "rest:PATCH:/api/v2/contracts/:external_id",
       "source": "config/routes.rb (static parse — provisional)",
-      "laravel": "App\\Http\\Controllers\\Api\\V2\\ContractsController",
+      "laravel": "App\\Http\\Controllers\\Api\\V1\\ContractsController",
       "status": {
         "code": "done",
         "test": "ported",
@@ -16167,7 +16198,7 @@
     {
       "id": "rest:PUT:/api/v2/contracts/:external_id",
       "source": "config/routes.rb (static parse — provisional)",
-      "laravel": "App\\Http\\Controllers\\Api\\V2\\ContractsController",
+      "laravel": "App\\Http\\Controllers\\Api\\V1\\ContractsController",
       "status": {
         "code": "done",
         "test": "ported",
@@ -18456,11 +18487,14 @@
       "source": "app/serializers/v1/wallets/recurring_transaction_rule_serializer.rb",
       "laravel": "App\\Serializers\\V1\\Wallets\\RecurringTransactionRuleSerializer",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "written",
         "contract": "untested"
       },
-      "tests": [],
+      "tests": [
+        "tests/Feature/GraphQL/WalletsResolverTest.php",
+        "tests/Feature/Api/V1/WalletsControllerTest.php"
+      ],
       "notes": ""
     },
     {
@@ -19842,11 +19876,13 @@
       "source": "app/services/billing_segments/create_service.rb",
       "laravel": "App\\Services\\BillingSegments\\CreateService",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
+      "tests": [
+        "tests/Feature/Services/BillingSegments/CreateServiceTest.php"
+      ],
       "notes": ""
     },
     {
@@ -19854,11 +19890,13 @@
       "source": "app/services/billing_segments/fees/compute_service.rb",
       "laravel": "App\\Services\\BillingSegments\\Fees\\ComputeService",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
+      "tests": [
+        "tests/Feature/Services/BillingSegments/ProcessServiceTest.php"
+      ],
       "notes": ""
     },
     {
@@ -19866,11 +19904,14 @@
       "source": "app/services/billing_segments/missing_billable_segments_service.rb",
       "laravel": "App\\Services\\BillingSegments\\MissingBillableSegmentsService",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
+      "tests": [
+        "tests/Feature/Services/BillingSegments/CreateServiceTest.php",
+        "tests/Feature/Services/BillingSegments/ScheduleServiceTest.php"
+      ],
       "notes": ""
     },
     {
@@ -19878,11 +19919,13 @@
       "source": "app/services/billing_segments/process_service.rb",
       "laravel": "App\\Services\\BillingSegments\\ProcessService",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
+      "tests": [
+        "tests/Feature/Services/BillingSegments/ProcessServiceTest.php"
+      ],
       "notes": ""
     },
     {
@@ -19890,11 +19933,13 @@
       "source": "app/services/billing_segments/schedule_service.rb",
       "laravel": "App\\Services\\BillingSegments\\ScheduleService",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
+      "tests": [
+        "tests/Feature/Services/BillingSegments/ScheduleServiceTest.php"
+      ],
       "notes": ""
     },
     {
@@ -21618,11 +21663,13 @@
       "source": "app/services/daily_usages/compute_all_service.rb",
       "laravel": "App\\Services\\DailyUsages\\ComputeAllService",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
+      "tests": [
+        "tests/Unit/Services/DailyUsages/ComputeAllServiceTest.php"
+      ],
       "notes": ""
     },
     {
@@ -21630,11 +21677,13 @@
       "source": "app/services/daily_usages/compute_diff_service.rb",
       "laravel": "App\\Services\\DailyUsages\\ComputeDiffService",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
+      "tests": [
+        "tests/Unit/Services/DailyUsages/ComputeDiffServiceTest.php"
+      ],
       "notes": ""
     },
     {
@@ -21642,11 +21691,13 @@
       "source": "app/services/daily_usages/compute_service.rb",
       "laravel": "App\\Services\\DailyUsages\\ComputeService",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
+      "tests": [
+        "tests/Unit/Services/DailyUsages/ComputeServiceTest.php"
+      ],
       "notes": ""
     },
     {
@@ -21654,7 +21705,7 @@
       "source": "app/services/daily_usages/fill_from_invoice_service.rb",
       "laravel": "App\\Services\\DailyUsages\\FillFromInvoiceService",
       "status": {
-        "code": "todo",
+        "code": "done",
         "test": "todo",
         "contract": "untested"
       },
@@ -21678,7 +21729,7 @@
       "source": "app/services/daily_usages/retryable_error.rb",
       "laravel": "App\\Services\\DailyUsages\\RetryableError",
       "status": {
-        "code": "todo",
+        "code": "done",
         "test": "todo",
         "contract": "untested"
       },
@@ -22588,8 +22639,8 @@
       "source": "app/services/events/post_validation_service.rb",
       "laravel": "App\\Services\\Events\\PostValidationService",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
       "tests": [],
@@ -25760,11 +25811,13 @@
       "source": "app/services/invoices/payments/cancel_abandoned_service.rb",
       "laravel": "App\\Services\\Invoices\\Payments\\CancelAbandonedService",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
+      "tests": [
+        "tests/Unit/Services/Invoices/Payments/CancelAbandonedServiceTest.php"
+      ],
       "notes": ""
     },
     {
@@ -27965,7 +28018,7 @@
     {
       "id": "svc:PaymentRequests.Payments.PaymentProviders.Factory",
       "source": "app/services/payment_requests/payments/payment_providers/factory.rb",
-      "laravel": "App\\Services\\PaymentRequests\\Payments\\PaymentProviders\\Factory",
+      "laravel": "App\\Services\\PaymentRequests\\Payments\\GeneratePaymentUrlService",
       "status": {
         "code": "done",
         "test": "ported",
@@ -29185,8 +29238,8 @@
       "source": "app/services/subscriptions/billing_date_query.rb",
       "laravel": "App\\Services\\Subscriptions\\BillingDateQuery",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
       "tests": [],
@@ -30460,11 +30513,13 @@
       "source": "app/services/wallets/create_interval_wallet_transactions_service.rb",
       "laravel": "App\\Services\\Wallets\\CreateIntervalWalletTransactionsService",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
+      "tests": [
+        "tests/Unit/Services/Wallets/CreateIntervalWalletTransactionsServiceTest.php"
+      ],
       "notes": ""
     },
     {
@@ -30498,11 +30553,13 @@
       "source": "app/services/wallets/recurring_transaction_rules/create_service.rb",
       "laravel": "App\\Services\\Wallets\\RecurringTransactionRules\\CreateService",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
+      "tests": [
+        "tests/Unit/Services/Wallets/RecurringTransactionRules/CreateServiceTest.php"
+      ],
       "notes": ""
     },
     {
@@ -30510,11 +30567,13 @@
       "source": "app/services/wallets/recurring_transaction_rules/terminate_service.rb",
       "laravel": "App\\Services\\Wallets\\RecurringTransactionRules\\TerminateService",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
+      "tests": [
+        "tests/Unit/Services/Wallets/RecurringTransactionRules/TerminateServiceTest.php"
+      ],
       "notes": ""
     },
     {
@@ -30522,11 +30581,13 @@
       "source": "app/services/wallets/recurring_transaction_rules/update_service.rb",
       "laravel": "App\\Services\\Wallets\\RecurringTransactionRules\\UpdateService",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
+      "tests": [
+        "tests/Unit/Services/Wallets/RecurringTransactionRules/UpdateServiceTest.php"
+      ],
       "notes": ""
     },
     {
@@ -30534,11 +30595,13 @@
       "source": "app/services/wallets/recurring_transaction_rules/validate_service.rb",
       "laravel": "App\\Services\\Wallets\\RecurringTransactionRules\\ValidateService",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
+      "tests": [
+        "tests/Unit/Services/Wallets/RecurringTransactionRules/ValidateServiceTest.php"
+      ],
       "notes": ""
     },
     {
@@ -30598,11 +30661,13 @@
       "source": "app/services/wallets/validate_recurring_transaction_rules_service.rb",
       "laravel": "App\\Services\\Wallets\\ValidateRecurringTransactionRulesService",
       "status": {
-        "code": "todo",
-        "test": "todo",
+        "code": "done",
+        "test": "ported",
         "contract": "untested"
       },
-      "tests": [],
+      "tests": [
+        "tests/Unit/Services/Wallets/ValidateRecurringTransactionRulesServiceTest.php"
+      ],
       "notes": ""
     },
     {

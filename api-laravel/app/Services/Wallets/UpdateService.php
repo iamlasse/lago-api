@@ -8,9 +8,9 @@ use App\Models\Wallet;
 use App\Models\WalletTarget;
 use App\Services\BaseResult;
 use App\Services\BaseService;
-use App\Services\InvoiceCustomSections\AttachToResourceService;
 use Illuminate\Support\Facades\DB;
 use App\Services\Metadata\UpdateItemService;
+use App\Services\InvoiceCustomSections\AttachToResourceService;
 
 use function count;
 use function array_key_exists;
@@ -19,8 +19,6 @@ use function array_key_exists;
  * Port of Rails' Wallets::UpdateService (app/services/wallets/update_service.rb).
  *
  * Not ported (TODO(port)):
- * - recurring_transaction_rules (RecurringTransactionRules::UpdateService
- *   and the per-rule amount-limits validation) — args accepted and ignored.
  * - InvoiceCustomSections::AttachToResourceService.
  * - BillingObjectConnections::AttachToResourceService — the multi_connection
  *   forbidden check and the connection attach are skipped.
@@ -60,8 +58,12 @@ class UpdateService extends BaseService
             return $result;
         }
 
-        // TODO(port): valid_recurring_transaction_rules? / valid_limitations?
-        // sets result.billable_metrics + identifiers below (same as Rails).
+        if (! (new ValidateRecurringTransactionRulesService($result, $params))->valid()) {
+            return $result;
+        }
+
+        // Rails: valid_limitations? sets result.billable_metrics +
+        // identifiers (same as Rails).
         $result->billable_metrics = $this->billableMetrics();
         $result->billable_metric_identifiers = $this->billableMetricIdentifiers();
 
@@ -117,8 +119,21 @@ class UpdateService extends BaseService
                     $wallet->paid_top_up_max_amount_cents = $params['paid_top_up_max_amount_cents'];
                 }
 
-                // TODO(port): `if params[:recurring_transaction_rules] && License.premium?`
-                // — RecurringTransactionRules::UpdateService + validate_rule!.
+                if (array_key_exists('recurring_transaction_rules', $params) && $params['recurring_transaction_rules'] !== null && $this->premium()) {
+                    RecurringTransactionRules\UpdateService::callBang(
+                        wallet: $wallet,
+                        params: $params['recurring_transaction_rules'],
+                    );
+                }
+
+                // NOTE: validate through the .active scope (fresh query)
+                // rather than the bare relation, exactly like Rails — the
+                // scope also skips terminated rules, which must not block
+                // the update.
+                $wallet->recurringTransactionRules()
+                    ->active()
+                    ->get()
+                    ->each(fn ($rule) => $this->validateRule($result, $rule));
 
                 if (array_key_exists('applies_to', $params) && array_key_exists('fee_types', (array) ($params['applies_to'] ?? []))) {
                     $wallet->allowed_fee_types = $params['applies_to']['fee_types'];
@@ -170,6 +185,33 @@ class UpdateService extends BaseService
             return $result;
         } catch (\App\Services\Failures\FailedResult $e) {
             return $this->embedFailure($result, $e);
+        }
+    }
+
+    /** Rails: `validate_rule!` — the freshly-loaded active rules still respect the wallet's limits. */
+    private function validateRule(BaseResult $result, \App\Models\RecurringTransactionRule $rule): void
+    {
+        if (! $rule->isFixed()) {
+            return;
+        }
+
+        $creditAmount = (string) $rule->paid_credits;
+
+        // credit_amount.nil? || credit_amount.zero?
+        if (bccomp(bcadd($creditAmount, '0', 5), '0', 5) === 0) {
+            return;
+        }
+
+        $validator = new \App\Services\Validators\WalletTransactionAmountLimits(
+            result: $result,
+            wallet: $this->wallet,
+            creditsAmount: $creditAmount,
+            ignoreValidation: (bool) $rule->ignore_paid_top_up_limits,
+        );
+
+        if (! $validator->valid()) {
+            $result->singleValidationFailure('invalid_recurring_rule', 'recurring_transaction_rules');
+            $result->raiseIfError();
         }
     }
 

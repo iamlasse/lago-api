@@ -159,13 +159,42 @@ it('creates a wallet with metadata', function (): void {
         ]);
 });
 
-it('accepts and ignores recurring transaction rules (TODO port)', function (): void {
+it('creates and serializes the wallet recurring transaction rule', function (): void {
+    [$organization, $apiKey] = walletOrganization();
+    $customer = Customer::factory()->forOrganization($organization)->create();
+    config(['lago.license' => 'premium-license-token']);
+
+    $this->postJson('/api/v1/wallets', ['wallet' => [
+        'external_customer_id' => $customer->external_id,
+        'rate_amount' => '1',
+        'name' => 'Wallet1',
+        'currency' => 'EUR',
+        'paid_credits' => '10',
+        'granted_credits' => '10',
+        'recurring_transaction_rules' => [[
+            'trigger' => 'interval',
+            'interval' => 'monthly',
+            'paid_credits' => '5',
+        ]],
+    ]], ['Authorization' => 'Bearer '.$apiKey->value])
+        ->assertOk()
+        ->assertJson(function (Illuminate\Testing\Fluent\AssertableJson $json): void {
+            $json->where('wallet.recurring_transaction_rules.0.trigger', 'interval')
+                ->where('wallet.recurring_transaction_rules.0.interval', 'monthly')
+                ->where('wallet.recurring_transaction_rules.0.paid_credits', '5.0')
+                ->where('wallet.recurring_transaction_rules.0.granted_credits', '0.0')
+                ->where('wallet.recurring_transaction_rules.0.status', 'active')
+                ->where('wallet.recurring_transaction_rules.0.method', 'fixed')
+                ->etc();
+        });
+});
+
+it('accepts and ignores recurring transaction rules when freemium', function (): void {
     [$organization, $apiKey] = walletOrganization();
     $customer = Customer::factory()->forOrganization($organization)->create();
 
-    // TODO(port): RecurringTransactionRules slice — Rails persists the rule
-    // and schedules the top-up; the port accepts the params and answers a
-    // success with an empty rule list.
+    // Rails: RecurringTransactionRules::CreateService returns early when
+    // License.premium? is false — the wallet is created, the rule ignored.
     $this->postJson('/api/v1/wallets', ['wallet' => [
         'external_customer_id' => $customer->external_id,
         'rate_amount' => '1',

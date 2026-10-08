@@ -58,9 +58,15 @@ class WalletSerializer extends ModelSerializer
         ];
 
         if ($this->include('recurring_transaction_rules')) {
-            // TODO(port): RecurringTransactionRule has no model yet — Rails
-            // serializes the active rules.
-            $payload['recurring_transaction_rules'] = [];
+            // Rails: CollectionSerializer over the currently-active rules
+            // (model.recurring_transaction_rules.select(&:currently_active?)).
+            // The collection serializer emits its own collection_name key —
+            // merged into the payload like Rails' `payload.merge!`.
+            $payload = [...$payload, ...(new CollectionSerializer(
+                $wallet->recurringTransactionRules->filter(fn ($rule) => $rule->currentlyActive())->values(),
+                Wallets\RecurringTransactionRuleSerializer::class,
+                ['collection_name' => 'recurring_transaction_rules'],
+            ))->serialize()];
         }
 
         if ($this->include('limitations')) {

@@ -117,7 +117,7 @@ class SubscriptionService extends \App\Services\BaseService
         $result->non_invoiceable_fees = $feeResult->non_invoiceable_fees;
 
         // TODO(port): SendWebhookJob "fee.created" for each non-invoiceable fee.
-        // TODO(port): DailyUsages::FillFromInvoiceJob (revenue analytics).
+        $this->fillDailyUsage($invoice);
 
         if ($this->taxError($feeResult)) {
             if ($this->gracePeriod($invoice)) {
@@ -144,6 +144,39 @@ class SubscriptionService extends \App\Services\BaseService
         }
 
         return $result;
+    }
+
+    /**
+     * Rails: `fill_daily_usage` — when the organization carries the
+     * revenue_analytics premium integration, enqueue
+     * DailyUsages\FillFromInvoiceJob for the invoice's usage-trackable
+     * subscriptions (Rails gates on organization.revenue_analytics_enabled?;
+     * the port follows the codebase's premium-integration convention).
+     */
+    private function fillDailyUsage(Invoice $invoice): void
+    {
+        $organization = $invoice->organization;
+
+        if (! \App\Support\License::premium()
+            || ! in_array('revenue_analytics', (array) ($organization->premium_integrations ?? []), true)
+        ) {
+            return;
+        }
+
+        $usageTrackableReasons = ['subscription_periodic', 'subscription_terminating'];
+
+        $subscriptions = $invoice->invoiceSubscriptions
+            ->filter(fn ($is): bool => in_array($is->invoicingReasonName(), $usageTrackableReasons, true))
+            ->map(fn ($is) => $is->subscription)
+            ->filter()
+            ->values()
+            ->all();
+
+        if ($subscriptions === []) {
+            return;
+        }
+
+        dispatch(new \App\Jobs\DailyUsages\FillFromInvoiceJob($invoice, $subscriptions));
     }
 
     // TODO(integration): verify signature against ported DatesService / services

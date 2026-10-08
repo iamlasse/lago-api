@@ -299,3 +299,48 @@ it('returns not found for an unknown wallet transaction', function (): void {
 
     expect($response->json('errors.0.extensions.status'))->toBe(404);
 });
+
+// -- wallet { recurringTransactionRules } -----------------------------------------
+
+it('returns the active recurring transaction rules of a wallet', function (): void {
+    [$organization, $user] = gqlWalletsSetup();
+
+    $wallet = gqlMakeWallet($organization);
+    $activeRule = App\Models\RecurringTransactionRule::factory()->forWallet($wallet)->create();
+    $expiredRule = App\Models\RecurringTransactionRule::factory()->forWallet($wallet)->create([
+        'expiration_at' => now()->subDay(),
+    ]);
+    App\Models\RecurringTransactionRule::factory()->forWallet($wallet)->create([
+        'status' => App\Enums\RecurringTransactionRuleStatus::Terminated->value,
+    ]);
+
+    $query = <<<'GQL'
+query ($id: ID!) {
+    wallet(id: $id) {
+        id
+        recurringTransactionRules {
+            lagoId
+            trigger
+            interval
+            method
+            paidCredits
+            grantedCredits
+        }
+    }
+}
+GQL;
+
+    $response = gqlPost($query, ['id' => $wallet->id], gqlAuthHeaders($user, $organization->id));
+
+    $response->assertOk();
+
+    $rules = $response->json('data.wallet.recurringTransactionRules');
+
+    expect(count($rules))->toBe(1)
+        ->and($rules[0]['lagoId'])->toBe($activeRule->id)
+        ->and($rules[0]['trigger'])->toBe('interval')
+        ->and($rules[0]['interval'])->toBe('monthly')
+        ->and($rules[0]['method'])->toBe('fixed')
+        ->and($rules[0]['paidCredits'])->toBe('10.0')
+        ->and($rules[0]['grantedCredits'])->toBe('10.0');
+});

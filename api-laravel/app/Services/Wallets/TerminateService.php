@@ -12,10 +12,6 @@ use Illuminate\Support\Facades\DB;
 /**
  * Port of Rails' Wallets::TerminateService
  * (app/services/wallets/terminate_service.rb).
- *
- * TODO(port): Rails terminates the wallet's recurring_transaction_rules in
- * the same transaction (RecurringTransactionRules::TerminateService) — no
- * RecurringTransactionRule model yet.
  */
 class TerminateService extends BaseService
 {
@@ -38,8 +34,11 @@ class TerminateService extends BaseService
             DB::transaction(function () use ($wallet): void {
                 $wallet->markAsTerminated();
 
-                // TODO(port): terminate the wallet's recurring_transaction_rules
-                // (RecurringTransactionRules::TerminateService).
+                $wallet->recurringTransactionRules()
+                    ->get()
+                    ->each(fn ($rule) => RecurringTransactionRules\TerminateService::call(
+                        recurringTransactionRule: $rule,
+                    ));
 
                 $wallet->customer->flagWalletsForRefresh();
 

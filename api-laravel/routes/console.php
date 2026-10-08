@@ -81,6 +81,16 @@ Schedule::job(new App\Jobs\Clock\TerminateEndedSubscriptionsJob)->hourlyAt(5);
 // every(1.hour, "schedule:api_keys_track_usage", at: "*:15") — "15 */1 * * *"
 Schedule::job(new App\Jobs\Clock\ApiKeys\TrackUsageJob)->hourlyAt(15);
 
+// Billing-segments slice (clock.rb entries):
+// every(1.hour, "schedule:create_billing_segments", at: "*:12") — "12 */1 * * *"
+Schedule::job(new App\Jobs\Clock\CreateBillingSegmentsJob)->hourlyAt(12);
+
+// Five minutes behind the producer, so a card that comes due is invoiced in
+// the same hour. A fan-out that runs long only defers its stragglers to the
+// next tick; nothing is lost.
+// every(1.hour, "schedule:process_billing_segments", at: "*:17") — "17 */1 * * *"
+Schedule::job(new App\Jobs\Clock\ProcessBillingSegmentsJob)->hourlyAt(17);
+
 // every(1.hour, "schedule:terminate_coupons", at: "*:30") — "30 */1 * * *"
 Schedule::job(new App\Jobs\Clock\TerminateCouponsJob)->hourlyAt(30);
 
@@ -89,6 +99,12 @@ Schedule::job(new App\Jobs\Clock\TerminateWalletsJob)->hourlyAt(45);
 
 // every(1.hour, "schedule:termination_alert", at: "*:50") — "50 */1 * * *"
 Schedule::job(new App\Jobs\Clock\SubscriptionsToBeTerminatedJob)->hourlyAt(50);
+
+// every(1.hour, "schedule:terminate_expired_wallet_transaction_rules", at: "*:50") — "50 */1 * * *"
+Schedule::job(new App\Jobs\Clock\TerminateRecurringTransactionRulesJob)->hourlyAt(50);
+
+// every(1.hour, "schedule:top_up_wallet_interval_credits", at: "*:55") — "55 */1 * * *"
+Schedule::job(new App\Jobs\Clock\CreateIntervalWalletTransactionsJob)->hourlyAt(55);
 
 // every(1.hour, "schedule:execute_scheduled_orders", at: "*:45") — "45 */1 * * *"
 Schedule::job(new App\Jobs\Clock\ExecuteScheduledOrdersJob)->hourlyAt(45);
@@ -100,3 +116,32 @@ Schedule::job(new App\Jobs\Clock\WebhooksCleanupJob)->dailyAt('01:00');
 // (Rails' clock.rb declares at: "01:10" but ships the "5 1 * * *" cron; the
 // cron wins, exactly like Rails.)
 Schedule::job(new App\Jobs\Clock\InboundWebhooksCleanupJob)->cron('5 1 * * *');
+
+// ---------------------------------------------------------------------------
+// Retry/recovery slice (clock.rb entries)
+// ---------------------------------------------------------------------------
+
+// every(1.hour, "schedule:cancel_abandoned_payments", at: "*:40") — "40 */1 * * *"
+Schedule::job(new App\Jobs\Clock\CancelAbandonedPaymentsJob)->hourlyAt(40);
+
+// every(15.minutes, "schedule:retry_failed_invoices") — "*/15 * * * *"
+Schedule::job(new App\Jobs\Clock\RetryFailedInvoicesJob)->everyFifteenMinutes();
+
+// every(15.minutes, "schedule:retry_inbound_webhooks") — "*/15 * * * *"
+Schedule::job(new App\Jobs\Clock\InboundWebhooksRetryJob)->everyFifteenMinutes();
+
+// ---------------------------------------------------------------------------
+// Usage/records completion slice (clock.rb entries)
+// ---------------------------------------------------------------------------
+
+// every(1.hour, "schedule:post_validate_events", at: "*:05") — "5 */1 * * *"
+// Rails skips the entry entirely when LAGO_DISABLE_EVENTS_VALIDATION is set.
+if (env('LAGO_DISABLE_EVENTS_VALIDATION') !== true && filter_var(env('LAGO_DISABLE_EVENTS_VALIDATION'), FILTER_VALIDATE_BOOL) !== true) {
+    Schedule::job(new App\Jobs\Clock\EventsValidationJob)->hourlyAt(5);
+}
+
+// every(1.hour, "schedule:compute_daily_usage", at: "*:15") — "15 */1 * * *"
+Schedule::job(new App\Jobs\Clock\ComputeAllDailyUsagesJob)->hourlyAt(15);
+
+// every(1.day, "schedule:clean_record_deletions", at: "01:20") — cron "20 1 * * *"
+Schedule::job(new App\Jobs\Clock\RecordDeletionsCleanupJob)->cron('20 1 * * *');

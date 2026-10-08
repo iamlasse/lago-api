@@ -100,9 +100,18 @@ class DetermineService extends BaseService
         }
 
         if (in_array($walletTransaction->sourceEnum()?->label(), ['interval', 'threshold'], true)) {
-            // TODO(port): the wallet's active recurring transaction rule
-            // (RecurringTransactionRule has no model yet) — Rails falls back
-            // to rule.payment_method_id before the wallet's own setting.
+            // Rails: the wallet's active recurring transaction rule — manual
+            // rules yield nothing, rules with a payment method win before the
+            // wallet's own setting.
+            $rule = $walletTransaction->wallet?->recurringTransactionRules()->active()->first();
+
+            if ($rule !== null && $rule->payment_method_type === 'manual') {
+                return null;
+            }
+
+            if ($rule !== null && $rule->payment_method_id !== null) {
+                return $this->customer->paymentMethods()->where('id', $rule->payment_method_id)->first();
+            }
         }
 
         $wallet = $walletTransaction->wallet;
