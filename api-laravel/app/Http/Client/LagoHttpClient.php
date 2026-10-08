@@ -79,6 +79,36 @@ class LagoHttpClient
     }
 
     /**
+     * Rails: `get(headers:, body:)` — the rare GET-with-JSON-body form (the
+     * aggregator custom-object fetch). Sends the GET, raises LagoHttpError
+     * for non-success codes and JSON-parses the body
+     * (`response.body.presence || "{}"`), like `get`.
+     *
+     * @param  array<string, mixed>  $body
+     * @param  array<string, string>  $headers
+     */
+    public function getWithBody(array $body, array $headers): mixed
+    {
+        $this->guardAddress();
+
+        $response = Http::withHeaders($headers)
+            ->withBody(json_encode($body, JSON_UNESCAPED_SLASHES), 'application/json')
+            ->when($this->readTimeout !== null, fn ($http) => $http->timeout($this->readTimeout))
+            ->when($this->openTimeout !== null, fn ($http) => $http->connectTimeout($this->openTimeout))
+            ->get($this->url);
+
+        $code = $response->status();
+        if (! in_array($code, self::RESPONSE_SUCCESS_CODES, true)) {
+            throw new LagoHttpError($code, $response->body(), $this->url, $response->headers());
+        }
+
+        // Rails: JSON.parse(response.body.presence || "{}").
+        $raw = $response->body();
+
+        return json_decode($raw === '' ? '{}' : $raw, true, 512, JSON_THROW_ON_ERROR);
+    }
+
+    /**
      * Rails: `post_with_response` — POSTs the JSON-encoded body with the
      * given headers and raises LagoHttpError for non-success codes.
      *

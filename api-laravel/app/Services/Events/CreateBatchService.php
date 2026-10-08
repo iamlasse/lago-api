@@ -146,8 +146,7 @@ class CreateBatchService extends BaseService
         // nothing behind downstream either.
         $this->enqueuePostProcessJobs($result);
 
-        // TODO(port): kafka raw-events producer (Events::KafkaProducerService —
-        // M2 later).
+        KafkaProducerService::callBang(events: (array) $result->events, organization: $this->organization);
     }
 
     /**
@@ -262,7 +261,7 @@ class CreateBatchService extends BaseService
 
         try {
             foreach ($events as $event) {
-                dispatch(new \App\Jobs\Events\PostProcessJob($event));
+                dispatch(new PostProcessJob($event));
             }
         } catch (Throwable $exception) {
             // `perform_all_later` is a single bulk push, so one failure strands the

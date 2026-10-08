@@ -30,8 +30,10 @@ use App\Serializers\Base\CollectionSerializer;
  * - TODO(port): the ClickHouse branches of show/index (Clickhouse::EventsRaw)
  *   and the enriched serializer of index_enriched — the port always reads
  *   the Postgres `events` table, Rails' pg path.
- * - TODO(port): kafka raw-events producer (Events::KafkaProducerService —
- *   produced by the create services, M2 later).
+ * - The kafka raw-events producer is WIRED (Events\KafkaProducerService,
+ *   called from the create services); the transport stays a no-op until
+ *   the php-rdkafka extension or a Kafka REST proxy is configured (see
+ *   DEPLOY.md, "Kafka").
  */
 class EventsController extends ApiController
 {

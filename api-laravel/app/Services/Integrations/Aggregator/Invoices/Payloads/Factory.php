@@ -27,6 +27,10 @@ final class Factory
                 integration_customer: $integration_customer,
                 invoice: $invoice,
             ),
+            'Integrations::HubspotIntegration' => new Hubspot(
+                integration_customer: $integration_customer,
+                invoice: $invoice,
+            ),
             default => throw new LogicException('NotImplementedError'),
         };
     }

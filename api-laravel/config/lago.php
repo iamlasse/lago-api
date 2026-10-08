@@ -89,6 +89,34 @@ return [
         'ssl' => (bool) env('LAGO_CLICKHOUSE_SSL', false),
     ],
 
+    // RealtimeUsage.enabled? — ENV["LAGO_REALTIME_USAGE_ENABLED"], read
+    // through config so tests can flip the gate with config([...]).
+    'realtime_usage' => [
+        'enabled' => env('LAGO_REALTIME_USAGE_ENABLED'),
+    ],
+
+    // karafka.rb Kafka settings (LAGO_KAFKA_* env) — consumers (see
+    // app/Console/Commands/KafkaConsumeCommand.php), the raw-events
+    // producer (Events\KafkaProducerService) and the log producers
+    // (App\Services\Logs\{ApiLog,ActivityLog,SecurityLog}).
+    'kafka' => [
+        'bootstrap_servers' => env('LAGO_KAFKA_BOOTSTRAP_SERVERS'),
+        'raw_events_topic' => env('LAGO_KAFKA_RAW_EVENTS_TOPIC'),
+        'security_protocol' => env('LAGO_KAFKA_SECURITY_PROTOCOL'),
+        'sasl_mechanisms' => env('LAGO_KAFKA_SASL_MECHANISMS'),
+        'sasl_username' => env('LAGO_KAFKA_USERNAME'),
+        'sasl_password' => env('LAGO_KAFKA_PASSWORD'),
+        'events_charged_in_advance_topic' => env('LAGO_KAFKA_EVENTS_CHARGED_IN_ADVANCE_TOPIC'),
+        'realtime_usage_triggers_topic' => env('LAGO_KAFKA_REALTIME_USAGE_TRIGGERS_TOPIC'),
+        // Rails reads these ENV names inside
+        // app/services/utils/{api,activity,security}_log.rb and the
+        // clickhouse *_queue table SETTINGS.
+        'consumer_group' => env('LAGO_KAFKA_CLICKHOUSE_CONSUMER_GROUP'),
+        'api_logs_topic' => env('LAGO_KAFKA_API_LOGS_TOPIC'),
+        'activity_logs_topic' => env('LAGO_KAFKA_ACTIVITY_LOGS_TOPIC'),
+        'security_logs_topic' => env('LAGO_KAFKA_SECURITY_LOGS_TOPIC'),
+    ],
+
     'webhook' => [
         // app/services/webhooks/send_http_service.rb
         'timeout_seconds' => (int) env('LAGO_WEBHOOK_TIMEOUT_SECONDS', 30),

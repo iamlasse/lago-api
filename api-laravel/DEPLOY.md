@@ -93,6 +93,41 @@ the entrypoint falls back to a `queue:work redis` process covering the full
 queue surface with `--tries=1` (the port's `max_retries 0` semantics) and
 `--max-time=3600` process recycling.
 
+## Kafka (Karafka port)
+
+Rails runs a separate `karafka` process (karafka.rb + app/consumers/*). The
+port carries the same machinery as a long-running artisan command plus the
+raw-events producer, wired exactly like Rails:
+
+| Rail | Port |
+|---|---|
+| `EventsChargedInAdvanceConsumer` (re-dispatches `Events::PayInAdvanceJob`, `wait: CLICKHOUSE_MERGE_DELAY` = 15s) | `App\Services\Kafka\EventsChargedInAdvanceConsumer`, routes topic `LAGO_KAFKA_EVENTS_CHARGED_IN_ADVANCE_TOPIC` |
+| `WalletRefreshTriggersConsumer` (inline per-customer `Wallets::RealtimeRefreshService`) | `App\Services\Kafka\WalletRefreshTriggersConsumer`, routes topic `LAGO_KAFKA_REALTIME_USAGE_TRIGGERS_TOPIC` |
+| `Events::KafkaProducerService` (raw events → `LAGO_KAFKA_RAW_EVENTS_TOPIC`, called after the post-process enqueue) | `App\Services\Events\KafkaProducerService`, called from `Events\CreateService` / `Events\CreateBatchService` |
+| `karafka` process | `php artisan kafka:consume` (add it to the deployment as a dedicated long-running service; `--once` smoke-tests the wiring) |
+
+**Transport decision** (no composer changes are allowed in the port, and
+`php:8.4` does not bundle `php-rdkafka`): the consumer/producer *logic* is
+ported and unit-tested with synthetic messages
+(`app/Services/Kafka/*Consumer.php`, `Events\KafkaProducerService`); the
+librdkafka adapters (`app/Services/Kafka/Transports/RdKafka*Transport.php`)
+activate only when the `rdkafka` extension is loaded, and `kafka:consume`
+refuses to start without it with a pointer here. Until the deployment image
+adds `php-rdkafka` (pecl install + `enable-extension=rdkafka.so`, plus
+`LAGO_KAFKA_BOOTSTRAP_SERVERS` / `LAGO_KAFKA_*_TOPIC` env), the producer is
+a logged no-op and the consumers stay unstarted — the realtime-usage
+sweep path covers the wallet refreshes. TODO(port): a Kafka REST proxy
+adapter (`/topics/{topic}` POST, `produce_many_async` equivalent) as the
+no-extension alternative.
+
+The Yabeda metrics (`Yabeda.realtime_usage.*`, the Karafka Prometheus
+exporter on `LAGO_KARAFKA_METRICS_PORT`) port to the `MetricsSink` seam
+(`app/Support/Metrics/`); the default sink discards until a Prometheus
+exposition sink is written. The wallet refresh bucket wait reads
+`Clickhouse::UsageBucket` in Rails — ported behind
+`App\Services\Wallets\Buckets\UsageBucketReadiness`, defaulting to
+"always caught up" until the usage bucket sink lands.
+
 ## Swap test (drop-in parity walkthrough)
 
 Run the same walkthrough against Rails and Laravel and diff responses.

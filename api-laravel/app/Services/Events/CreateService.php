@@ -109,8 +109,8 @@ class CreateService extends BaseService
         // nothing behind downstream either.
         $this->enqueuePostProcess($event);
 
-        // TODO(port): kafka raw-events producer (Events::KafkaProducerService —
-        // M2 later; enqueued AFTER the post-process job, per Rails).
+        // Rail: produce_kafka_event(event) — AFTER the post-process job.
+        $this->produceKafkaEvent([$event]);
 
         return $result;
     }
@@ -180,7 +180,7 @@ class CreateService extends BaseService
     private function enqueuePostProcess(Event $event): void
     {
         try {
-            dispatch(new \App\Jobs\Events\PostProcessJob($event));
+            dispatch(new PostProcessJob($event));
         } catch (Throwable $exception) {
             // Hard-deleted rather than discarded: `index_unique_transaction_id`
             // carries no `deleted_at` predicate, so a discarded event would keep
@@ -189,5 +189,17 @@ class CreateService extends BaseService
 
             throw $exception;
         }
+    }
+
+    /**
+     * Rail: `produce_kafka_event(event)` — the raw-events dual-write; a
+     * no-op unless LAGO_KAFKA_BOOTSTRAP_SERVERS and
+     * LAGO_KAFKA_RAW_EVENTS_TOPIC are both set (KafkaProducerService).
+     *
+     * @param  list<Event>  $events
+     */
+    private function produceKafkaEvent(array $events): void
+    {
+        KafkaProducerService::callBang(events: $events, organization: $this->organization);
     }
 }

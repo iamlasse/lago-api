@@ -479,6 +479,16 @@ class Organization extends BaseModel
         return $this->lifetimeUsageEnabled() || $this->progressiveBillingEnabled();
     }
 
+    /**
+     * Rails: security_logs_enabled? (premium integration "security_logs")
+     — the per-org gate behind Utils::SecurityLog and the security log
+     * read surfaces.
+     */
+    public function securityLogsEnabled(): bool
+    {
+        return $this->premiumIntegrationEnabled('security_logs');
+    }
+
     /** Rails: has_many :integrations (Integrations::BaseIntegration). */
     public function integrations(): HasMany
     {
